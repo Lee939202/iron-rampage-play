@@ -7,7 +7,6 @@
 <title>钢铁暴走</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=ZCOOL+QingKe+HuangYou&display=swap">
 <style>
 /* 布局：一块全屏画布承载战斗；菜单、升级、结算等界面是叠在上面的斜切钢板面板。单一暗色风格。 */
 :root{
@@ -45,6 +44,13 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 #loading .lb{width:200px;height:6px;background:var(--steel-2);overflow:hidden}
 #loading .lb i{display:block;height:100%;width:0;background:var(--amber);transition:width .2s}
 #loading .ls{font-size:13px;color:var(--muted)}
+#rotate{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;background:var(--bg);text-align:center}
+#rotate svg{width:72px;height:72px;fill:none;stroke:var(--amber);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#rotate .rot-phone{transform-origin:24px 20px;animation:rotPhone 2.4s ease-in-out infinite}
+#rotate b{font-family:var(--f-display);font-size:26px;letter-spacing:.08em}
+#rotate span{font-size:13px;color:var(--muted)}
+@keyframes rotPhone{0%,25%{transform:rotate(90deg)}55%,100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){#rotate .rot-phone{animation:none}}
 
 /* ---------- 主菜单 ---------- */
 .menu{justify-content:space-between;background:#05070a}
@@ -321,19 +327,86 @@ input.settings-control[type="range"]{width:100%;min-height:44px;margin:0;cursor:
 .damage-track i{display:block;height:100%;background:#d59b56}
 .damage-row:first-child .damage-track i{background:#ffc27a}
 .report-empty{font-size:13px;line-height:1.7;color:#b3c5d2;margin:0}
-.injury-report{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0;padding:14px 0;border-top:1px solid #2c3d49;border-bottom:1px solid #2c3d49}
+.injury-report{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0;padding:14px 0 0;border-top:1px solid #2c3d49}
 .injury-report>div{min-width:0}
 .injury-report .fatal{grid-column:1/-1}
 .injury-report dt{font-size:12px;color:#aebfcc;margin:0 0 6px}
 .injury-report dd{font-size:15px;margin:0;color:#e1e8ee;font-variant-numeric:tabular-nums;line-height:1.5}
 .injury-report .fatal dd{color:#edb2a6}
-.report-advice{font-size:13px;line-height:1.8;margin:16px 0 0;color:#d8d2b8;padding:12px 14px;background:#24241b;border:1px solid #5b5940}
-.report-advice b{color:#f1d899;margin-right:6px;font-weight:600}
 #endProtocol{color:#d9bd95}
 #endBuild .build-training{grid-column:1/-1;font-size:12px;color:#c9b4dc;line-height:1.7;padding-top:8px}
 #scrEnd .btn-col{gap:8px}
 #scrEnd .btn.primary{min-height:54px;font-size:26px}
 #scrEnd .btn:not(.primary){min-height:44px;font-size:16px;font-family:var(--f-body);letter-spacing:.02em}
+.end-cause{margin-top:14px;padding:12px 14px;background:#2a1a1a;border:1px solid #7a3b34;border-left:4px solid var(--red)}
+.end-cause.win{background:#24241b;border-color:#5b5940;border-left-color:var(--gold)}
+.end-cause-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px}
+.end-cause-head small{font-size:12px;color:#c9a59e}
+.end-cause-head b{font-size:18px;font-weight:600;color:#f3c0b5}
+.end-cause.win .end-cause-head small{color:#cbbf95}
+.end-cause.win .end-cause-head b{color:var(--gold)}
+.end-cause-advice{margin:6px 0 0;font-size:13px;line-height:1.7;color:#e3dccb}
+.end-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.end-stats .rec{display:table;margin:4px 0 0;vertical-align:0}
+.end-more{margin-top:10px;font-size:13px;background:#0d131bd9;border:1px solid #2d3947}
+.end-more summary{padding:10px 14px;cursor:pointer;color:#d1dce6;touch-action:manipulation}
+.end-more summary:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px}
+.end-more .stats{margin:0;padding:0 10px 10px}
+@media (max-height:760px){#scrEnd .btn-col{grid-template-columns:1fr 1fr;gap:7px}#scrEnd .btn.primary{grid-column:1/-1}}
+.btn[data-badge]::after{content:attr(data-badge);flex:none;padding:2px 7px;font-family:var(--f-body);font-size:11px;font-weight:600;letter-spacing:0;line-height:1.4;color:#1b1206;background:var(--amber)}
+.goal-line{display:grid;gap:6px;width:100%;box-sizing:border-box;padding:9px 12px;text-align:left;color:var(--fg);font:inherit;background:rgba(12,18,25,.8);border:1px solid #3a4652;touch-action:manipulation}
+button.goal-line{cursor:pointer}
+.goal-line .goal-text{display:flex;align-items:baseline;gap:8px;min-width:0;font-size:13px}
+.goal-line small{flex:none;font-size:12px;color:var(--muted)}
+.goal-line b{font-weight:600;color:#f1d899;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.goal-line .num{margin-left:auto;flex:none;font-family:var(--f-num);font-size:17px;color:#e1e8ee}
+.goal-line.ready .num{color:var(--gold)}
+.goal-bar{display:block;height:6px;background:var(--steel-2);overflow:hidden}
+.goal-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--amber),var(--gold))}
+.goal-bar i.grow{animation:goalFill .9s ease-out .35s backwards}
+@keyframes goalFill{from{width:var(--from)}}
+.end-goal{display:grid;gap:8px;margin-top:8px}
+.end-goal .goal-line{background:var(--steel);border-color:var(--line)}
+.goal-chip{justify-self:start;border-color:#8a7440;color:#f1d899}
+.mech-thumb.locked.affordable small{color:var(--gold)}
+.hangar-jump{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin:10px 0 0;padding:0 14px;font:inherit;font-size:14px;color:#f1d899;background:rgba(36,36,27,.9);border:1px solid #5b5940;cursor:pointer;touch-action:manipulation}
+.hangar-jump::after{content:"↓";color:var(--amber)}
+@media (prefers-reduced-motion:reduce){.goal-bar i.grow{animation:none}}
+.end-ach{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:10px;padding:10px 12px;background:#1c2116;border:1px solid #56603a}
+.end-ach small{font-size:12px;color:#c8d39c}
+.ach-chips{display:contents}
+.ach-chip{padding:3px 8px;font-size:13px;color:#1b1206;background:var(--gold)}
+.ach-chip.medal{background:#9fd0e6}
+.mech-record{margin:8px 0 0;font-size:12px;line-height:1.6;color:#b9c7d2}
+.talent-medal{display:inline-block;margin-top:4px;padding:1px 6px;font-style:normal;font-size:11px;color:#1b1206;background:var(--gold)}
+.achievement-section{margin-top:28px;padding-top:3px;border-top:1px solid #344451}
+.achievement-section .sec{margin-bottom:4px}
+.ach-count{float:right;font-family:var(--f-num);font-weight:600;letter-spacing:.05em;color:#f1d899}
+.medal-wall{display:grid;gap:6px;margin-top:10px}
+.medal-row{display:grid;grid-template-columns:32px 3.2em repeat(3,minmax(0,1fr));align-items:center;gap:6px}
+.medal-row b{font-size:13px;font-weight:600}
+.medal{padding:6px 2px;font-size:12px;text-align:center;color:#6f7d89;background:#101720;border:1px solid #26323d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.medal.on{color:#1b1206;background:linear-gradient(180deg,#ffe08a,var(--gold));border-color:#ffe9a8}
+.ach-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.ach{padding:8px 10px;background:#101720;border:1px solid #26323d;opacity:.6}
+.ach.on{opacity:1;border-color:#8a7440;background:#1d1b12}
+.ach b{display:block;font-size:13px;font-weight:600;color:#e6edf2}
+.ach.on b{color:#f1d899}
+.ach span{display:block;margin-top:2px;font-size:11px;line-height:1.5;color:#9fb0bd}
+.ach-skin{display:inline-block;margin-top:4px;font-style:normal;font-size:11px;color:#c8d39c}
+.skin-section{margin-top:14px}
+.skin-section .sec{margin:0 0 8px}
+.skin-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.skin-choice{display:grid;justify-items:center;gap:3px;min-height:72px;padding:8px 2px 6px;font:inherit;color:var(--fg);background:#101720;border:1px solid #26323d;cursor:pointer;touch-action:manipulation}
+.skin-choice b{font-size:13px;font-weight:600}
+.skin-choice small{min-height:14px;font-size:10px;line-height:1.4;color:#9fb0bd;text-align:center}
+.skin-choice.selected{border-color:var(--amber);background:#1d1b12}
+.skin-choice.selected small{color:#f1d899}
+.skin-choice:disabled{cursor:default}
+.skin-choice.locked{opacity:.55}
+.skin-dot{display:block;width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.35)}
+.skin-dot.factory{background:conic-gradient(#e87a2a 0 25%,#6f7a3a 0 50%,#3a7bd5 0 75%,#e8e8ec 0)}
+.skin-choice.locked .skin-dot{filter:grayscale(.85) brightness(.7)}
 @media (hover:hover){.mech-thumb:hover{background:#21333e}.talent-choice:hover:not(:disabled){border-color:#9f805a}.btn:hover:not(:disabled),.chip:hover:not(:disabled),.buy:hover:not(:disabled){filter:brightness(1.12)}}
 @media (min-width:760px){.hangar-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;padding-top:24px}.hangar-machine{align-self:start;position:sticky;top:12px}.preview-stage{height:330px}.up-list{grid-template-columns:1fr 1fr}.hangar-launch{flex-direction:row;align-items:center;justify-content:space-between;max-width:1080px;gap:24px}.hangar-launch p{text-align:left}.hangar-launch .btn{width:280px!important;margin:0!important}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.stat.gold,.stat.record{grid-column:span 2}.end-content .build{grid-template-columns:repeat(4,minmax(0,1fr))}.menu-bottom{max-width:470px}.title-block{margin:0}.title{font-size:104px}}
 @media (max-width:350px){.scroll{padding-left:12px;padding-right:12px}.bar{padding-left:12px;padding-right:12px}.menu-bottom{padding-left:12px;padding-right:12px}.menu-stats{font-size:11px}.menu-stats b{font-size:21px}.tag{font-size:12px;line-height:1.6}.preview-stage{height:220px}.mech-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.mech-thumb{min-height:78px;display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:1fr 1fr;padding:6px;text-align:left;gap:1px 2px}.mech-thumb img{grid-row:1/3;width:42px;height:52px}.mech-thumb b{align-self:end;font-size:12px}.mech-thumb small{align-self:start;font-size:10px}.mech-stats>div{padding:10px 5px}.mech-stats dd{font-size:24px}.mech-stats dd small{font-size:9px}.settings-row{grid-template-columns:minmax(0,1fr) 112px;gap:10px}.end-title{font-size:38px}.deployment{gap:8px;padding:8px}.deployment img{width:48px;height:48px}.deployment .chip{padding:0 10px}}
@@ -347,6 +420,9 @@ input.settings-control[type="range"]{min-width:0}
 .menu-stats{background:rgba(5,9,13,.84);padding:7px 8px;border:1px solid #344451;text-shadow:0 1px 2px #000}
 @media (max-width:350px){.mech-list{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.mech-thumb{display:flex;min-height:80px;padding:5px 1px;gap:2px;text-align:center}.mech-thumb img{width:36px;height:40px}.mech-thumb b,.mech-thumb small{align-self:auto}.mech-heading h3{font-size:32px}}
 @media (max-width:350px) and (max-height:620px){.preview-stage{height:180px}.demo-controls{padding:8px 0}.hangar-layout{padding-top:10px}}
+
+/* 中断收益恢复状态，使用现有菜单宽度且不盖住出击按钮。 */
+.save-notice { margin: 8px 0; padding: 10px 12px; color: var(--text); background: #102d30; border: 1px solid #326367; font-size: 14px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -378,8 +454,10 @@ input.settings-control[type="range"]{min-width:0}
         <div><span class="deployment-label">当前出击</span><b id="menuMech">先锋</b><span id="menuTalent">战术协议</span></div>
         <button id="menuChangeMech" class="chip">调整</button>
       </div>
+      <p id="saveNotice" class="save-notice" role="status" hidden></p>
       <button id="btnStart" class="btn primary">出 击</button>
       <div class="menu-actions"><button id="btnHangar" class="btn">机库改装</button><button id="btnTraining" class="btn ghost">安全训练</button></div>
+      <button id="menuGoal" type="button" class="goal-line" hidden></button>
       <p id="mFastest" class="menu-record">最快突围 · 等待首次胜利</p>
       <details class="howto-details"><summary>操作说明</summary><ul class="howto">
         <li>按住屏幕<b>拖动</b>移动，武器全自动开火</li>
@@ -394,6 +472,7 @@ input.settings-control[type="range"]{min-width:0}
   <section id="scrHangar" class="screen panel-screen hangar-screen" hidden aria-labelledby="hangarTitle">
     <header class="bar"><button id="hgBack" class="chip">返回</button><h2 id="hangarTitle">机库</h2><div class="coins">金币<b id="hgCoins">0</b></div></header>
     <div class="scroll"><div class="scroll-in hangar-content">
+      <button id="hgUpJump" type="button" class="hangar-jump" hidden></button>
       <div class="hangar-layout">
         <div class="hangar-machine">
           <div class="mech-heading"><div><span id="hgPreviewClass" class="mech-class"></span><h3 id="hgPreviewName"></h3></div><span id="hgAvailability" class="mech-availability"></span></div>
@@ -403,17 +482,20 @@ input.settings-control[type="range"]{min-width:0}
           </div>
           <div class="demo-controls"><button id="hgDemo" class="chip">演示能力</button><p id="hgDemoStatus" aria-live="polite">展示机体武器与作战动作</p></div>
           <div id="mechList" class="mech-list" aria-label="预览机体"></div>
+          <section class="skin-section" aria-labelledby="skinTitle"><h3 id="skinTitle" class="sec"><span>涂装</span></h3><div id="skinList" class="skin-list"></div><p id="skinStatus" class="section-note"></p></section>
         </div>
         <div class="hangar-specification">
           <p id="hgPreviewDescription" class="mech-description"></p>
           <dl id="hgStats" class="mech-stats"></dl>
+          <p id="hgRecord" class="mech-record"></p>
           <p class="section-note">基础属性 · 永久改装与协议效果在出击时生效</p>
           <div id="hgAbilities" class="mech-abilities"></div>
-          <div class="mech-equip"><button id="hgSelect" class="btn">装备机体</button><button id="hgUnlock" class="btn unlock" hidden>解锁机体</button><p id="hgSelectionStatus" class="selection-status" aria-live="polite"></p></div>
+          <div class="mech-equip"><button id="hgSelect" class="btn">装备机体</button><button id="hgUnlock" class="btn unlock" hidden>解锁机体</button><button id="hgGoal" type="button" class="chip goal-chip" hidden>设为下一个目标</button><p id="hgSelectionStatus" class="selection-status" aria-live="polite"></p></div>
           <section class="talent-section" aria-labelledby="talentTitle"><h3 id="talentTitle" class="sec"><span>战术协议</span></h3><p class="section-note">三选一 · 决定本局路线，出击后固定</p><div id="talentList" class="talent-list"></div><p id="talentStatus" class="selection-status" aria-live="polite"></p></section>
         </div>
       </div>
       <section class="permanent-section" aria-labelledby="upgradeTitle"><h3 id="upgradeTitle" class="sec"><span>永久改装</span></h3><p class="section-note">所有已解锁机体共享</p><div id="upList" class="up-list"></div></section>
+      <section class="achievement-section" aria-labelledby="achTitle"><h3 id="achTitle" class="sec"><span>勋章与成就</span><b id="achCount" class="ach-count"></b></h3><p class="section-note">协议勋章：用这个协议突围一次点亮</p><div id="medalWall" class="medal-wall"></div><div id="achList" class="ach-list"></div></section>
     </div></div>
     <footer class="foot"><div class="hangar-launch"><p id="hgLaunchLabel"></p><button id="hgStart" class="btn primary">出击</button></div></footer>
   </section>
@@ -477,8 +559,12 @@ input.settings-control[type="range"]{min-width:0}
     <div class="scroll"><div class="scroll-in end-content">
       <h2 id="endTitle" class="end-title lose">机体损毁</h2>
       <div id="endSub" class="end-sub"></div>
-      <div id="endStats" class="stats"></div>
-      <section class="report-section" aria-labelledby="endReportTitle"><h3 id="endReportTitle" class="sec"><span>战斗复盘</span></h3><div id="endDamage" class="damage-report"></div><p id="endDamageNote" class="section-note"></p><dl id="endInjuries" class="injury-report"></dl><p id="endAdvice" class="report-advice"></p></section>
+      <div id="endCause" class="end-cause lose"><div class="end-cause-head"><small id="endCauseLabel">致命来源</small><b id="endCauseName"></b></div><p id="endAdvice" class="end-cause-advice"></p></div>
+      <div id="endStats" class="stats end-stats"></div>
+      <div id="endGoal" class="end-goal" hidden><div id="endGoalLine" class="goal-line"></div><button id="endGoalGo" type="button" class="chip goal-chip" hidden>去解锁</button></div>
+      <div id="endAch" class="end-ach" hidden><small>新成就</small><div id="endAchList" class="ach-chips"></div></div>
+      <details id="endMore" class="end-more"><summary>更多数据</summary><div id="endMoreStats" class="stats"></div></details>
+      <section class="report-section" aria-labelledby="endReportTitle"><h3 id="endReportTitle" class="sec"><span>战斗复盘</span></h3><div id="endDamage" class="damage-report"></div><p id="endDamageNote" class="section-note"></p><dl id="endInjuries" class="injury-report"></dl></section>
       <section class="report-section" aria-labelledby="endBuildTitle"><h3 id="endBuildTitle" class="sec"><span>最终配装</span></h3><p id="endProtocol" class="section-note"></p><div id="endBuild" class="build"></div></section>
     </div></div>
     <footer class="foot"><div class="btn-col">
@@ -490,6 +576,7 @@ input.settings-control[type="range"]{min-width:0}
 
   <div id="loading"><div class="lt">钢铁暴走</div><div class="lb"><i id="lbar"></i></div><div class="ls" id="lstat">机甲装配中…</div></div>
 </div>
+<div id="rotate" role="alert" hidden><svg viewBox="0 0 48 48" aria-hidden="true"><g class="rot-phone"><rect x="17" y="7" width="14" height="26" rx="2.5"/><path d="M22 29.5h4"/></g><path d="M9 26a15 15 0 0 0 13 15"/><path d="M18 37.5l4 3.5-4 3.5"/></svg><b>请竖屏游玩</b><span>竖屏才能看清整片战场，转回来就能继续</span></div>
 <script>
 (() => {
 'use strict';
@@ -518,62 +605,86 @@ const RIG_CFG = {
   engineer: { ts: 86, ls: 88, legY: .035, legX: .18, spread: 0, stride: 13, gun: [[0, -.28]], pod: [[-.335, .015], [.325, .015]], thr: [[-.12, .30], [.12, .30]], flame: '255,210,105', mass: .85 },
 };
 
+// ---- src/data/skins.js ----
+// 换色涂装：成就解锁、每台机甲各自选；改色算法是纯函数，贴图模块用它处理像素
+// 每台机甲涂装区的平均色相、饱和度、亮度（从 mech_*.webp 统计）；keep 是保留原色的色相段（黄色警示条、指示灯）
+const SKIN_BASE = {
+  assault: { h: 25, s: .77, l: .33 },
+  heavy: { h: 62, s: .27, l: .33, keep: [18, 52] },
+  phantom: { h: 294, s: .6, l: .42 },
+  storm: { h: 207, s: .76, l: .25 },
+  lancer: { h: 3, s: .61, l: .35 },
+  engineer: { h: 62, s: .39, l: .37, keep: [18, 52] },
+};
+// h/s/l 是涂装区换成的目标平均值；panel 是接近白色的面板要乘上的颜色，panelK 是力度
+const SKINS = [
+  { id: 'factory', name: '出厂', need: null },
+  { id: 'sand', name: '沙暴', need: 'scorpion', h: 36, s: .42, l: .45, panel: [236, 222, 196], panelK: .35 },
+  { id: 'jade', name: '翠林', need: 'relay-3', h: 150, s: .6, l: .34 },
+  { id: 'crimson', name: '赤焰', need: 'first-win', h: 356, s: .78, l: .36, panel: [118, 122, 132], panelK: .7 },
+  { id: 'violet', name: '紫电', need: 'combo-300', h: 272, s: .7, l: .38 },
+  { id: 'frost', name: '寒霜', need: 'scorpion-clean', h: 200, s: .35, l: .62, panel: [228, 242, 255], panelK: .25 },
+  { id: 'shadow', name: '暗影', need: 'perfect-30', h: 220, s: .1, l: .2, panel: [92, 98, 110], panelK: .8 },
+  { id: 'gold', name: '鎏金', need: 'all-mechs-win', h: 43, s: .85, l: .45, panel: [62, 60, 66], panelK: .75 },
+];
+const skinById = id => SKINS.find(s => s.id === id);
+const skinUnlocked = (skin, meta) => !skin.need || !!meta.achievements?.[skin.need];
+const skinForAchievement = id => SKINS.find(s => s.need === id);
+// 这台机甲当前用的涂装；没选、选了未解锁的或不存在的都回到出厂
+function selectedSkin(meta, mechId) {
+  const skin = skinById(meta.skins?.[mechId]);
+  return skin && skinUnlocked(skin, meta) ? skin : SKINS[0];
+}
+// 界面色块用的颜色
+const skinSwatch = skin => skin.h === undefined ? '' : `hsl(${skin.h} ${Math.round(skin.s * 100)}% ${Math.round(Math.min(.62, skin.l + .12) * 100)}%)`;
+
+const skinStep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+function skinHslToRgb(h, s, l) {
+  const c = (1 - Math.abs(2 * l - 1)) * s, hp = (h % 360 + 360) % 360 / 60, x = c * (1 - Math.abs(hp % 2 - 1)), m = l - c / 2;
+  const [r, g, b] = hp < 1 ? [c, x, 0] : hp < 2 ? [x, c, 0] : hp < 3 ? [0, c, x] : hp < 4 ? [0, x, c] : hp < 5 ? [x, 0, c] : [c, 0, x];
+  return [r + m, g + m, b + m];
+}
+// 原地改 RGBA 像素：涂装区旋转色相、用伽马把平均饱和度/亮度映射到目标（不会过曝）；青色发光和 keep 段不动；白色面板按 panel 相乘
+function recolorPixels(data, mechId, skin) {
+  const base = SKIN_BASE[mechId];
+  if (!base || skin.h === undefined) return data;
+  const dh = skin.h - base.h, gl = Math.log(skin.l) / Math.log(base.l);
+  // 饱和度要降就按比例乘（高饱和也会降下来），要升就用伽马
+  const lowerS = skin.s < base.s, ks = lowerS ? skin.s / base.s : Math.log(skin.s) / Math.log(base.s);
+  const panel = skin.panel, pk = panel ? skin.panelK || 0 : 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (!data[i + 3]) continue;
+    const r = data[i] / 255, g = data[i + 1] / 255, b = data[i + 2] / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), c = mx - mn, l = (mx + mn) / 2;
+    const h = c === 0 ? 0 : (mx === r ? ((g - b) / c + 6) % 6 : mx === g ? (b - r) / c + 2 : (r - g) / c + 4) * 60;
+    let w = skinStep(.06, .16, c);
+    if (h >= 168 && h <= 206 && c > .25 && mx > .55) w = 0;
+    // keep 段两端各留几度渐变，免得黄绿交界处出现硬边
+    if (base.keep) w *= 1 - skinStep(base.keep[0] - 4, base.keep[0] + 2, h) * (1 - skinStep(base.keep[1] - 2, base.keep[1] + 4, h));
+    let R = r, G = g, B = b;
+    if (w > 0) {
+      const s = Math.min(1, c / (1 - Math.abs(2 * l - 1) + 1e-9));
+      const [pr, pg, pb] = skinHslToRgb(h + dh, lowerS ? s * ks : Math.pow(s, ks), Math.pow(l, gl));
+      R += (pr - R) * w; G += (pg - G) * w; B += (pb - B) * w;
+    }
+    const wp = pk && (1 - skinStep(.05, .12, c)) * skinStep(.55, .75, l) * pk;
+    if (wp > 0) { R += (R * panel[0] / 255 - R) * wp; G += (G * panel[1] / 255 - G) * wp; B += (B * panel[2] / 255 - B) * wp; }
+    data[i] = Math.round(Math.min(1, Math.max(0, R)) * 255);
+    data[i + 1] = Math.round(Math.min(1, Math.max(0, G)) * 255);
+    data[i + 2] = Math.round(Math.min(1, Math.max(0, B)) * 255);
+  }
+  return data;
+}
+
 // ---- src/data/sprites.js ----
 // 需要加载的贴图清单（文件位于 assets/sprites/）
 const SPRITES = ['mech_assault', 'mech_heavy', 'mech_phantom', 'mech_storm', 'mech_lancer', 'mech_engineer', 'enemy_crawler', 'enemy_brute', 'enemy_gunner', 'enemy_bomber', 'enemy_charger', 'boss_scorpion', 'boss_queen', 'saw_blade', 'drone_unit'];
 const RIG_PARTS = ['rig_assault_torso', 'rig_assault_legs', 'rig_heavy_torso', 'rig_heavy_legs', 'rig_phantom_torso', 'rig_phantom_legs', 'rig_storm_torso', 'rig_storm_legs', 'rig_lancer_torso', 'rig_lancer_legs', 'rig_engineer_torso', 'rig_engineer_legs'];
 const SCENE_IMAGES = ['ground', 'ground_industrial', 'ground_polluted', 'ground_hive', 'keyart'];
-
-// ---- src/core/assets.js ----
-// 贴图加载与预处理：受击白剪影、分层机甲部件、发光贴图缓存
-
-const RIG = {};
-function buildRigs() {
-  for (const m of MECHS) {
-    const t = IMG[`rig_${m.id}_torso`], l = IMG[`rig_${m.id}_legs`]; if (!t || !l) continue;
-    const half = left => { const w = l.naturalWidth, h = l.naturalHeight, c = offscreen(w, h), x = c.getContext('2d'); x.beginPath(); x.rect(left ? 0 : w / 2, 0, w / 2, h); x.clip(); x.drawImage(l, 0, 0); return c; };
-    const L = half(true), R = half(false);
-    const c = RIG_CFG[m.id], gc = `rgb(${c.flame})`; // 残影用机体主色剪影，白剪影只用于受击闪白
-    RIG[m.id] = { ...c, torso: t, torsoF: silhouette(t, '#fff'), legL: L, legR: R, legLF: silhouette(L, '#fff'), legRF: silhouette(R, '#fff'), torsoG: silhouette(t, gc), legLG: silhouette(L, gc), legRG: silhouette(R, gc) };
-  }
-}
-const IMG = {}, FLASH = {}, TINT = {};
-function offscreen(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
-function silhouette(im, color, alpha = 1) { const c = offscreen(im.naturalWidth || im.width, im.naturalHeight || im.height), x = c.getContext('2d'); x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-atop'; x.globalAlpha = alpha; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); return c; }
-function loadImg(k, ext = 'webp') {
-  return new Promise(res => { const im = new Image(); im.onload = () => { IMG[k] = im; res(true); }; im.onerror = () => res(false); im.src = 'assets/sprites/' + k + '.' + ext; });
-}
-async function loadAll(onProg) {
-  const list = [...SPRITES, ...RIG_PARTS, ...SCENE_IMAGES]; let n = 0;
-  await Promise.all(list.map(k => loadImg(k).then(() => onProg(++n / list.length))));
-  for (const k of SPRITES) if (IMG[k]) { FLASH[k] = silhouette(IMG[k], '#fff'); }
-  if (IMG.boss_queen) TINT.boss_queen = silhouette(IMG.boss_queen, '#ff1030', .38);
-  buildRigs();
-}
-const glowCache = {};
-function glow(rgb, r) { // 预渲染发光圆，叠加模式下画子弹/粒子
-  const k = rgb + '|' + r; let c = glowCache[k]; if (c) return c;
-  c = offscreen(r * 2, r * 2); const x = c.getContext('2d'), g = x.createRadialGradient(r, r, 0, r, r, r);
-  g.addColorStop(0, `rgba(${rgb},1)`); g.addColorStop(.35, `rgba(${rgb},.55)`); g.addColorStop(1, `rgba(${rgb},0)`);
-  x.fillStyle = g; x.fillRect(0, 0, r * 2, r * 2); return glowCache[k] = c;
-}
-const G16 = {}; // 常用发光贴图（半径 32），按尺寸缩放绘制
-const gl = rgb => G16[rgb] || (G16[rgb] = glow(rgb, 32));
-const SHADOW = (() => { const c = offscreen(64, 64), x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(0,0,0,.85)'); g.addColorStop(.6, 'rgba(0,0,0,.45)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return c; })();
-
-// ---- src/core/util.js ----
-// 通用小工具：数学、随机、数组原地压缩、时间格式化
-const TAU = Math.PI * 2, PI = Math.PI;
-const $ = s => document.querySelector(s);
-const rand = (a, b) => a + Math.random() * (b - a);
-const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
-const lerp = (a, b, t) => a + (b - a) * t;
-const d2 = (ax, ay, bx, by) => { const dx = ax - bx, dy = ay - by; return dx * dx + dy * dy; };
-const angLerp = (a, b, t) => { const d = ((b - a + PI) % TAU + TAU) % TAU - PI; return a + d * t; };
-const pick = a => a[Math.random() * a.length | 0];
-function weighted(items) { let s = 0; for (const it of items) s += it.w; let r = Math.random() * s; for (const it of items) { if ((r -= it.w) <= 0) return it; } return items[items.length - 1]; }
-function compact(a, keep) { let j = 0; for (let i = 0; i < a.length; i++) { const o = a[i]; if (keep(o)) a[j++] = o; } a.length = j; }
-const fmtTime = t => { t = Math.max(0, Math.floor(t)); return String(t / 60 | 0).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+// 进菜单前只等这些（菜单背景用 CSS 引用封面图，预载避免闪一下）；其余在菜单出现后后台加载
+const MENU_IMAGES = ['keyart'];
+// 旧地面只在某一幕地面加载失败时兜底
+const GROUND_FALLBACK = 'ground';
 
 // ---- src/data/settings.js ----
 // 设置默认值、可选项、音量参数与自适应画质预算
@@ -587,7 +698,12 @@ const QUALITY_LEVELS = [
   { particleScale: .28, glowScale: .18, detail: 0, dprCap: 1.25 },
 ];
 const QUALITY_MANUAL_LEVEL = Object.freeze({ high: 0, medium: 2, low: 3 });
-const QUALITY_ADAPTIVE = Object.freeze({ smooth: .08, slowFrameMs: 24, slowCpuMs: 18, stableFrameMs: 19.5, stableCpuMs: 12.8, downMs: 1800, upMs: 9000, cooldownMs: 4000, maxSampleMs: 250, maxWeightMs: 50 });
+const QUALITY_ADAPTIVE = Object.freeze({
+  smooth: .08, slowFrameMs: 24, slowCpuMs: 18, stableFrameMs: 19.5, stableCpuMs: 12.8,
+  downMs: 1800, upMs: 9000, cooldownMs: 4000, maxSampleMs: 250, maxWeightMs: 50,
+  minFrameImprovement: .1, refreshCapCpuMs: 8, refreshSlowMarginMs: 6, refreshStableMarginMs: 2,
+  upFailureWindowMs: 20000, upRetryMultiplier: 2, maxUpFailures: 2,
+});
 const AUDIO_SETTINGS = Object.freeze({ master: .75, sfx: 1, music: .46, duckScale: .3, duckAttack: .025, duckRelease: .1, duckDuration: .25, maxDuckDuration: 3, gainSlew: .025 });
 const MATERIAL_SOUNDS = {
   armor: { gap: .055, filter: 'highpass', noise: [ .045, .075, 2600, 1200 ], tone: ['triangle', 1550, 560, .045, .055] },
@@ -612,16 +728,18 @@ function normalizeSettingsSnapshot(value, reducedMotion = false) {
 }
 
 // ---- src/core/save.js ----
-// 本地存档与旧版本迁移：保留成长数据、未知字段和独立音量
+// 本地存档与多页面增量合并：保留成长数据、未知字段和共享设置引用
 
 const SAVE_KEY = 'ironrampage.v1';
 function saveRecord(value) { return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
-const meta = (() => {
-  let source = {};
-  try { source = saveRecord(JSON.parse(localStorage.getItem(SAVE_KEY) || 'null')); } catch (_) { }
+function saveIsRecord(value) { return value !== null && typeof value === 'object' && !Array.isArray(value); }
+function saveCopy(value) { return value === undefined ? undefined : JSON.parse(JSON.stringify(value)); }
+function saveEqual(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+function normalizeMeta(source) {
+  source = saveRecord(source);
   let reducedMotion = false;
   try { reducedMotion = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; } catch (_) { }
-  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {} };
+  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {}, goal: '', achievements: {}, mechStats: {}, skins: {} };
   const settings = normalizeSettingsSnapshot(source.settings, reducedMotion);
   // 仅旧格式的总静音映射为双通道静音；新格式以已保存的独立音量为准。
   if (!Object.keys(saveRecord(source.settings)).length && source.sound === false) { settings.musicVolume = 0; settings.sfxVolume = 0; }
@@ -634,24 +752,272 @@ const meta = (() => {
   for (const key of ['move', 'dash', 'overload', 'perfect']) {
     if (typeof tutorialProgress[key] !== 'boolean') tutorialProgress[key] = source.tutorial === true;
   }
-  return Object.assign(d, source, {
-    up: { ...saveRecord(source.up) }, unlocked: { assault: true, ...saveRecord(source.unlocked) },
+  const normalized = Object.assign(d, source, {
+    up: { ...saveRecord(source.up) }, unlocked: { ...saveRecord(source.unlocked), assault: true },
     settings, audioRestore, tutorialProgress, talents: { ...saveRecord(source.talents) },
+    pendingSettlements: { ...saveRecord(source.pendingSettlements) }, settledRuns: { ...saveRecord(source.settledRuns) },
     fastestWin: typeof source.fastestWin === 'number' && Number.isFinite(source.fastestWin) && source.fastestWin >= 0 ? source.fastestWin : 0,
     sound: settings.musicVolume > 0 || settings.sfxVolume > 0,
+    goal: typeof source.goal === 'string' ? source.goal : '',
+    achievements: { ...saveRecord(source.achievements) }, mechStats: { ...saveRecord(source.mechStats) },
+    skins: Object.fromEntries(Object.entries(saveRecord(source.skins)).filter(([, v]) => typeof v === 'string')),
   });
+  for (const key of ['coins', 'runs', 'wins', 'best', 'bestKills']) {
+    if (typeof normalized[key] !== 'number' || !Number.isFinite(normalized[key]) || normalized[key] < 0) normalized[key] = 0;
+  }
+  return normalized;
+}
+function readMetaSnapshot() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return null;
+  let source;
+  try { source = JSON.parse(raw); } catch (_) { return null; }
+  return saveIsRecord(source) ? normalizeMeta(source) : null;
+}
+const meta = (() => {
+  try { return readMetaSnapshot() || normalizeMeta({}); } catch (_) { return normalizeMeta({}); }
 })();
-const saveMeta = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(meta)); } catch (_) { } };
+let saveBaseline = saveCopy(meta), saveNotifying = false;
+const metaListeners = new Set();
+function subscribeMeta(listener) { metaListeners.add(listener); return () => metaListeners.delete(listener); }
+function changedMetaKeys(before, after) {
+  return [...new Set([...Object.keys(before), ...Object.keys(after)])].filter(key => !saveEqual(before[key], after[key]));
+}
+function notifyMeta(reason, changedKeys) {
+  if (!changedKeys.length || saveNotifying) return;
+  saveNotifying = true;
+  try {
+    for (const listener of metaListeners) {
+      try { listener(meta, { reason, changedKeys }); } catch (_) { }
+    }
+  } finally { saveNotifying = false; }
+}
+function mergeSaveFields(base, local, fresh) {
+  const merged = saveCopy(saveRecord(fresh));
+  for (const key of new Set([...Object.keys(saveRecord(base)), ...Object.keys(saveRecord(local))])) {
+    const hasLocal = Object.hasOwn(local, key), hasBase = Object.hasOwn(base, key);
+    if (hasLocal === hasBase && saveEqual(local[key], base[key])) continue;
+    if (!hasLocal) { delete merged[key]; continue; }
+    const value = local[key];
+    // 只提交本页修改的叶子字段，保留远端新增字段及其他对局的结算记录。
+    const next = saveIsRecord(value) && (!hasBase || saveIsRecord(base[key]))
+      ? mergeSaveFields(saveRecord(base[key]), value, saveRecord(merged[key])) : saveCopy(value);
+    Object.defineProperty(merged, key, { value: next, enumerable: true, configurable: true, writable: true });
+  }
+  return merged;
+}
+function mergeMetaSnapshots(base, local, fresh) {
+  const merged = mergeSaveFields(base, local, fresh);
+  // 可累计的字段按本页差额合并；纪录、解锁和永久改装不被旧页回退。
+  for (const key of ['coins', 'runs', 'wins']) merged[key] = fresh[key] + (Number.isFinite(local[key]) ? local[key] - base[key] : 0);
+  for (const key of ['best', 'bestKills']) merged[key] = Math.max(fresh[key], Number.isFinite(local[key]) ? local[key] : 0);
+  const times = [fresh.fastestWin, local.fastestWin].filter(value => Number.isFinite(value) && value > 0);
+  merged.fastestWin = times.length ? Math.min(...times) : 0;
+  merged.up = { ...saveRecord(fresh.up) };
+  for (const [key, value] of Object.entries(saveRecord(local.up))) {
+    if (Number.isFinite(value)) merged.up[key] = Math.max(Number.isFinite(merged.up[key]) ? merged.up[key] : 0, value);
+  }
+  // 分机甲战绩：局数、突围按本页差额累计，纪录取更好的一边（最快突围取更短的非零值）
+  merged.mechStats = { ...saveRecord(fresh.mechStats) };
+  for (const [id, value] of Object.entries(saveRecord(local.mechStats))) {
+    const l = saveRecord(value), b = saveRecord(saveRecord(base.mechStats)[id]), f = saveRecord(merged.mechStats[id]);
+    const n = v => (Number.isFinite(v) && v > 0 ? v : 0), fast = [f.fastest, l.fastest].map(n).filter(v => v > 0);
+    merged.mechStats[id] = { runs: n(f.runs) + Math.max(0, n(l.runs) - n(b.runs)), wins: n(f.wins) + Math.max(0, n(l.wins) - n(b.wins)),
+      fastest: fast.length ? Math.min(...fast) : 0, best: Math.max(n(f.best), n(l.best)), bestKills: Math.max(n(f.bestKills), n(l.bestKills)) };
+  }
+  merged.unlocked = { ...saveRecord(fresh.unlocked) };
+  for (const [key, value] of Object.entries(saveRecord(local.unlocked))) {
+    if (value === true || !Object.hasOwn(merged.unlocked, key)) merged.unlocked[key] = value;
+  }
+  return normalizeMeta(merged);
+}
+function applyMetaSnapshot(target, source) {
+  for (const key of Object.keys(target)) if (!Object.hasOwn(source, key)) delete target[key];
+  for (const [key, value] of Object.entries(source)) {
+    if (saveIsRecord(target[key]) && saveIsRecord(value) && Object.hasOwn(target, key)) applyMetaSnapshot(target[key], value);
+    else Object.defineProperty(target, key, { value: saveCopy(value), enumerable: true, configurable: true, writable: true });
+  }
+}
+function reloadMeta() {
+  try {
+    const fresh = readMetaSnapshot(); if (!fresh) return false;
+    const merged = mergeMetaSnapshots(saveBaseline, meta, fresh), changedKeys = changedMetaKeys(meta, merged);
+    applyMetaSnapshot(meta, merged);
+    // 本页尚未保存的差异继续留在内存；以远端为新基线，下一次保存只加这份差额。
+    saveBaseline = fresh;
+    notifyMeta('reload', changedKeys);
+    return true;
+  } catch (_) { return false; }
+}
+function saveMeta() {
+  try {
+    const fresh = readMetaSnapshot() || saveBaseline, merged = mergeMetaSnapshots(saveBaseline, meta, fresh);
+    const serialized = JSON.stringify(merged), saved = JSON.parse(serialized), changedKeys = changedMetaKeys(saveBaseline, saved);
+    localStorage.setItem(SAVE_KEY, serialized);
+    // 写入失败时不更新内存或基线，让下次重试仍保留尚未落盘的收益。
+    applyMetaSnapshot(meta, saved); saveBaseline = saved;
+    notifyMeta('save', changedKeys);
+    return true;
+  } catch (_) { return false; }
+}
+if (typeof window !== 'undefined') window.addEventListener?.('storage', event => {
+  if (event.key === SAVE_KEY && (!event.storageArea || event.storageArea === localStorage)) reloadMeta();
+});
 const upLv = id => meta.up[id] || 0;
+
+// ---- src/core/assets.js ----
+// 贴图加载与预处理：受击白剪影、分层机甲部件、换色涂装、发光贴图缓存；菜单只等封面图，其余后台加载
+
+// RIG[mechId] 是这台机甲当前涂装的分层部件，对局绘制直接用；出厂版留在 RIG_BASE
+const RIG = {};
+const RIG_BASE = {};
+function splitLegs(l) {
+  const half = left => { const w = l.naturalWidth || l.width, h = l.naturalHeight || l.height, c = offscreen(w, h), x = c.getContext('2d'); x.beginPath(); x.rect(left ? 0 : w / 2, 0, w / 2, h); x.clip(); x.drawImage(l, 0, 0); return c; };
+  return [half(true), half(false)];
+}
+function buildRig(m) {
+  const t = IMG[`rig_${m.id}_torso`], l = IMG[`rig_${m.id}_legs`]; if (!t || !l || RIG_BASE[m.id]) return;
+  const [L, R] = splitLegs(l);
+  const c = RIG_CFG[m.id], gc = `rgb(${c.flame})`; // 残影用机体主色剪影，白剪影只用于受击闪白
+  RIG_BASE[m.id] = { ...c, torso: t, torsoF: silhouette(t, '#fff'), legL: L, legR: R, legLF: silhouette(L, '#fff'), legRF: silhouette(R, '#fff'), torsoG: silhouette(t, gc), legLG: silhouette(L, gc), legRG: silhouette(R, gc) };
+  applyMechSkin(m.id);
+}
+// 换色涂装：改色结果按「贴图:涂装」缓存；画布读不到像素时退回原图
+const skinCache = {};
+function skinImage(k, mechId, skin) {
+  const key = k + ':' + skin.id;
+  if (key in skinCache) return skinCache[key];
+  const im = IMG[k]; if (!im) return null;
+  let out = null;
+  try {
+    const c = offscreen(im.naturalWidth || im.width, im.naturalHeight || im.height), x = c.getContext('2d');
+    x.drawImage(im, 0, 0);
+    const d = x.getImageData(0, 0, c.width, c.height); recolorPixels(d.data, mechId, skin); x.putImageData(d, 0, 0); out = c;
+  } catch (_) { }
+  return skinCache[key] = out;
+}
+// 把 RIG[mechId] 换成当前涂装；受击白剪影和残影形状不变，共用出厂版
+const rigSkins = {};
+function applyMechSkin(mechId) {
+  const base = RIG_BASE[mechId]; if (!base) return;
+  const skin = selectedSkin(meta, mechId), key = mechId + ':' + skin.id;
+  if (skin.id !== 'factory' && !rigSkins[key]) {
+    const t = skinImage(`rig_${mechId}_torso`, mechId, skin), l = skinImage(`rig_${mechId}_legs`, mechId, skin);
+    if (t && l) { const [L, R] = splitLegs(l); rigSkins[key] = { ...base, torso: t, legL: L, legR: R }; }
+  }
+  RIG[mechId] = rigSkins[key] || base;
+}
+// 机库预览、菜单、缩略图用的整图：当前涂装的改色版，贴图没到或出厂涂装时用原图
+function mechSprite(mech) {
+  const skin = selectedSkin(meta, mech.id);
+  return skin.id === 'factory' ? IMG[mech.img] : skinImage(mech.img, mech.id, skin) || IMG[mech.img];
+}
+const skinURLs = {};
+function mechSpriteURL(mech) {
+  const plain = `assets/sprites/${mech.img}.webp`, skin = selectedSkin(meta, mech.id), key = mech.id + ':' + skin.id;
+  if (skin.id === 'factory' || !IMG[mech.img]) return plain;
+  if (!skinURLs[key]) { const c = skinImage(mech.img, mech.id, skin); try { skinURLs[key] = c ? c.toDataURL('image/png') : plain; } catch (_) { skinURLs[key] = plain; } }
+  return skinURLs[key];
+}
+const IMG = {}, FLASH = {}, TINT = {};
+function offscreen(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function silhouette(im, color, alpha = 1) { const c = offscreen(im.naturalWidth || im.width, im.naturalHeight || im.height), x = c.getContext('2d'); x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-atop'; x.globalAlpha = alpha; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); return c; }
+// 每张图到达时单独预处理，不必等整批加载完
+function prepareImg(k) {
+  if (SPRITES.includes(k)) FLASH[k] = silhouette(IMG[k], '#fff');
+  if (k === 'boss_queen') TINT.boss_queen = silhouette(IMG[k], '#ff1030', .38);
+  if (RIG_PARTS.includes(k)) for (const m of MECHS) if (k.startsWith(`rig_${m.id}_`)) buildRig(m);
+}
+const imgLoads = {};
+function loadImg(k) {
+  return imgLoads[k] || (imgLoads[k] = new Promise(res => {
+    const im = new Image();
+    im.onload = () => { IMG[k] = im; prepareImg(k); res(true); };
+    im.onerror = () => res(false);
+    im.src = 'assets/sprites/' + k + '.webp';
+  }));
+}
+function loadImgList(list, onProg) {
+  let n = 0;
+  return Promise.all(list.map(k => loadImg(k).then(ok => { onProg(++n / list.length); return ok; })));
+}
+const loadMenuAssets = (onProg = () => { }) => loadImgList(MENU_IMAGES, onProg);
+let gameAssetLoad = null, gameAssetDone = false, gameAssetProgress = 0;
+const gameAssetListeners = new Set();
+// 开局需要的全部贴图；幕地面都到了就不再请求旧地面，只在缺图时兜底
+function loadGameAssets() {
+  if (gameAssetLoad) return gameAssetLoad;
+  const list = [...SPRITES, ...RIG_PARTS, ...SCENE_IMAGES.filter(k => !MENU_IMAGES.includes(k) && k !== GROUND_FALLBACK)];
+  gameAssetLoad = loadImgList(list, k => { gameAssetProgress = k; for (const fn of gameAssetListeners) fn(k); })
+    .then(() => SCENE_IMAGES.some(k => k.startsWith(GROUND_FALLBACK + '_') && !IMG[k]) ? loadImg(GROUND_FALLBACK) : true)
+    .then(() => { gameAssetDone = true; });
+  return gameAssetLoad;
+}
+const gameAssetsReady = () => gameAssetDone;
+function onGameAssetProgress(fn) { gameAssetListeners.add(fn); fn(gameAssetProgress); return () => gameAssetListeners.delete(fn); }
+const glowCache = {};
+function glow(rgb, r) { // 预渲染发光圆，叠加模式下画子弹/粒子
+  const k = rgb + '|' + r; let c = glowCache[k]; if (c) return c;
+  c = offscreen(r * 2, r * 2); const x = c.getContext('2d'), g = x.createRadialGradient(r, r, 0, r, r, r);
+  g.addColorStop(0, `rgba(${rgb},1)`); g.addColorStop(.35, `rgba(${rgb},.55)`); g.addColorStop(1, `rgba(${rgb},0)`);
+  x.fillStyle = g; x.fillRect(0, 0, r * 2, r * 2); return glowCache[k] = c;
+}
+const G16 = {}; // 常用发光贴图（半径 32），按尺寸缩放绘制
+const gl = rgb => G16[rgb] || (G16[rgb] = glow(rgb, 32));
+const SHADOW = (() => { const c = offscreen(64, 64), x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(0,0,0,.85)'); g.addColorStop(.6, 'rgba(0,0,0,.45)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return c; })();
+
+// ---- src/core/fonts.js ----
+// 网络字体：启动时由脚本插入 Google Fonts 样式表，不阻塞首帧；加载前先用系统字体，到了自动替换
+const FONT_CSS_URL = 'https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=ZCOOL+QingKe+HuangYou&display=swap';
+let fontLoad = null;
+function loadFonts() {
+  if (fontLoad) return fontLoad;
+  fontLoad = new Promise(resolve => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = FONT_CSS_URL;
+    link.onerror = () => resolve(false);
+    link.onload = () => {
+      if (!document.fonts || !document.fonts.load) { resolve(true); return; }
+      Promise.all([document.fonts.load('600 20px Teko'), document.fonts.load('20px "ZCOOL QingKe HuangYou"', '钢铁暴走连杀')]).then(() => resolve(true), () => resolve(false));
+    };
+    document.head.appendChild(link);
+  });
+  return fontLoad;
+}
+// 最多等 ms 毫秒，超时就先用系统字体继续
+const waitFonts = ms => Promise.race([loadFonts(), new Promise(r => setTimeout(() => r(false), ms))]);
+
+// ---- src/core/util.js ----
+// 通用小工具：数学、随机、数组原地压缩、时间格式化
+const TAU = Math.PI * 2, PI = Math.PI;
+const $ = s => document.querySelector(s);
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const d2 = (ax, ay, bx, by) => { const dx = ax - bx, dy = ay - by; return dx * dx + dy * dy; };
+const angLerp = (a, b, t) => { const d = ((b - a + PI) % TAU + TAU) % TAU - PI; return a + d * t; };
+const pick = a => a[Math.random() * a.length | 0];
+function weighted(items) { let s = 0; for (const it of items) s += it.w; let r = Math.random() * s; for (const it of items) { if ((r -= it.w) <= 0) return it; } return items[items.length - 1]; }
+function compact(a, keep) { let j = 0; for (let i = 0; i < a.length; i++) { const o = a[i]; if (keep(o)) a[j++] = o; } a.length = j; }
+const fmtTime = t => { t = Math.max(0, Math.floor(t)); return String(t / 60 | 0).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
 
 // ---- src/core/settings.js ----
 // 设置共享对象原地更新与订阅，不依赖界面和音频初始化
 
 const settingsListeners = new Set();
+let settingsLastSnapshot = JSON.parse(JSON.stringify(meta.settings));
+function notifySettingsChanges() {
+  const settings = meta.settings, keys = new Set([...Object.keys(settingsLastSnapshot), ...Object.keys(settings)]);
+  const changed = [...keys].filter(key => JSON.stringify(settingsLastSnapshot[key]) !== JSON.stringify(settings[key]));
+  settingsLastSnapshot = JSON.parse(JSON.stringify(settings));
+  if (changed.length) for (const listener of settingsListeners) listener(settings, changed);
+}
+subscribeMeta((value, detail) => { if (detail.changedKeys.includes('settings')) notifySettingsChanges(); });
 function getSettings() { return meta.settings; }
 function subscribeSettings(listener) { settingsListeners.add(listener); return () => settingsListeners.delete(listener); }
 function updateSettings(patch) {
   if (!patch || typeof patch !== 'object' || Array.isArray(patch)) return meta.settings;
+  reloadMeta();
   const changed = [];
   for (const key of Object.keys(SETTINGS_DEFAULT)) {
     if (!Object.hasOwn(patch, key)) continue;
@@ -669,17 +1035,18 @@ function updateSettings(patch) {
   if (!changed.length) return meta.settings;
   meta.sound = meta.settings.musicVolume > 0 || meta.settings.sfxVolume > 0;
   saveMeta();
-  for (const listener of settingsListeners) listener(meta.settings, changed);
+  notifySettingsChanges(); // 保存失败时本页仍立即应用设置；成功保存的通知已由快照去重。
   return meta.settings;
 }
 
 // ---- src/core/quality.js ----
-// 只削减装饰的自适应画质：先减粒子和光晕，持续拥堵后降像素比，稳定后恢复
+// 只削减装饰的自适应画质：检验降档效果、识别刷新上限，并记住本局失败的升档
 
 const qualityListeners = new Set();
 let qualityMode = getSettings().quality, qualityAutoLevel = 0;
 const qualityBudget = { ...QUALITY_LEVELS[qualityMode === 'auto' ? qualityAutoLevel : QUALITY_MANUAL_LEVEL[qualityMode]] };
 const qualitySample = { frame: 0, cpu: 0, slow: 0, stable: 0, cooldown: 0 };
+const qualityTrials = { refreshCapMs: 0, reduction: null, upgrades: QUALITY_LEVELS.map(() => null), failures: QUALITY_LEVELS.map(() => 0) };
 function getQualityBudget() { return qualityBudget; }
 function subscribeQuality(listener) { qualityListeners.add(listener); return () => qualityListeners.delete(listener); }
 function clearQualitySample() { qualitySample.frame = 0; qualitySample.cpu = 0; qualitySample.slow = 0; qualitySample.stable = 0; }
@@ -689,33 +1056,73 @@ function publishQualityBudget() {
   Object.assign(qualityBudget, next);
   for (const listener of qualityListeners) listener(qualityBudget);
 }
+function resetAdaptiveQualityRun() {
+  // 开局撤回尚未验证的试降；保留已确认的档位和刷新上限。
+  const trial = qualityTrials.reduction;
+  if (qualityMode === 'auto' && trial && qualityAutoLevel === trial.level + 1) qualityAutoLevel = trial.level;
+  qualityTrials.reduction = null; qualityTrials.upgrades.fill(null); qualityTrials.failures.fill(0);
+  qualitySample.cooldown = 0; clearQualitySample(); publishQualityBudget();
+  return qualityBudget;
+}
 subscribeSettings((settings, changed) => {
   if (!changed.includes('quality')) return;
-  qualityMode = settings.quality; qualityAutoLevel = 0; qualitySample.cooldown = 0;
-  clearQualitySample(); publishQualityBudget();
+  qualityMode = settings.quality; qualityAutoLevel = 0; qualityTrials.refreshCapMs = 0;
+  resetAdaptiveQualityRun();
 });
+function qualitySlowFrameLimit() {
+  return qualityTrials.refreshCapMs ? qualityTrials.refreshCapMs + QUALITY_ADAPTIVE.refreshSlowMarginMs : QUALITY_ADAPTIVE.slowFrameMs;
+}
 function requestQualityReduction() {
   if (qualityMode !== 'auto' || qualityAutoLevel >= QUALITY_LEVELS.length - 1) return qualityBudget;
+  const level = qualityAutoLevel, failures = qualityTrials.failures[level];
+  // 帧间隔确实偏慢时才检验刷新上限；单纯处理器超时的有效降档仍应保留。
+  qualityTrials.reduction = qualitySample.frame > qualitySlowFrameLimit() ? { level, frame: qualitySample.frame, failures } : null;
+  if (qualityTrials.upgrades[level] !== null) qualityTrials.failures[level]++;
+  qualityTrials.upgrades[level] = null;
   qualityAutoLevel++; qualitySample.cooldown = QUALITY_ADAPTIVE.cooldownMs;
   clearQualitySample(); publishQualityBudget(); return qualityBudget;
+}
+function checkQualityReduction() {
+  const trial = qualityTrials.reduction, cfg = QUALITY_ADAPTIVE;
+  qualityTrials.reduction = null;
+  if (!trial || qualityAutoLevel !== trial.level + 1) return;
+  // 处理器空闲本身不能排除图形瓶颈，必须先观察降档未能改善帧间隔。
+  if (qualitySample.frame >= trial.frame * (1 - cfg.minFrameImprovement) && qualitySample.cpu < cfg.refreshCapCpuMs) {
+    qualityTrials.refreshCapMs = qualitySample.frame; qualityAutoLevel = trial.level;
+    qualityTrials.failures[trial.level] = trial.failures;
+    clearQualitySample(); publishQualityBudget();
+  }
 }
 function updateAdaptiveQuality(frameMs, cpuMs, active) {
   const cfg = QUALITY_ADAPTIVE, sample = qualitySample;
   if (qualityMode !== 'auto') return qualityBudget;
-  if (!active || !Number.isFinite(frameMs) || frameMs <= 0 || frameMs > cfg.maxSampleMs || !Number.isFinite(cpuMs) || cpuMs < 0) {
+  if (!active || !Number.isFinite(frameMs) || frameMs <= 0 || !Number.isFinite(cpuMs) || cpuMs < 0) {
     clearQualitySample(); return qualityBudget;
   }
+  if (frameMs > cfg.maxSampleMs) return qualityBudget;
   const weight = Math.min(frameMs, cfg.maxWeightMs);
+  for (let level = 0; level < qualityTrials.upgrades.length; level++) {
+    if (qualityTrials.upgrades[level] === null) continue;
+    qualityTrials.upgrades[level] += frameMs;
+    if (qualityTrials.upgrades[level] > cfg.upFailureWindowMs) {
+      qualityTrials.upgrades[level] = null; qualityTrials.failures[level] = 0;
+    }
+  }
   sample.frame = sample.frame ? sample.frame + (frameMs - sample.frame) * cfg.smooth : frameMs;
   sample.cpu = sample.cpu ? sample.cpu + (cpuMs - sample.cpu) * cfg.smooth : cpuMs;
-  if (sample.cooldown > 0) { sample.cooldown = Math.max(0, sample.cooldown - weight); sample.slow = 0; sample.stable = 0; return qualityBudget; }
-  const slow = sample.frame > cfg.slowFrameMs || sample.cpu > cfg.slowCpuMs;
-  const stable = sample.frame < cfg.stableFrameMs && sample.cpu < cfg.stableCpuMs;
+  if (sample.cooldown > 0) {
+    sample.cooldown = Math.max(0, sample.cooldown - weight); sample.slow = 0; sample.stable = 0;
+    if (!sample.cooldown) checkQualityReduction();
+    return qualityBudget;
+  }
+  const slow = sample.frame > qualitySlowFrameLimit() || sample.cpu > cfg.slowCpuMs;
+  const stable = sample.frame < Math.max(cfg.stableFrameMs, qualityTrials.refreshCapMs + cfg.refreshStableMarginMs) && sample.cpu < cfg.stableCpuMs;
   sample.slow = slow ? sample.slow + weight : 0;
   sample.stable = stable ? sample.stable + weight : 0;
+  const target = qualityAutoLevel - 1, failures = qualityTrials.failures[target] || 0;
   if (sample.slow >= cfg.downMs) requestQualityReduction();
-  else if (sample.stable >= cfg.upMs && qualityAutoLevel > 0) {
-    qualityAutoLevel--; sample.cooldown = cfg.cooldownMs;
+  else if (qualityAutoLevel > 0 && failures < cfg.maxUpFailures && sample.stable >= cfg.upMs * cfg.upRetryMultiplier ** failures) {
+    qualityAutoLevel--; qualityTrials.upgrades[qualityAutoLevel] = 0; sample.cooldown = cfg.cooldownMs;
     clearQualitySample(); publishQualityBudget();
   }
   return qualityBudget;
@@ -747,8 +1154,9 @@ window.addEventListener('resize', resize);
 // ---- src/core/audio.js ----
 // 音频：全部用 WebAudio 实时合成的音效与背景音乐
 
-const AU = { ctx: null, master: null, sfx: null, music: null, duck: null, duckUntil: 0, noise: null, last: {} };
+const AU = { ctx: null, master: null, sfx: null, music: null, duck: null, duckUntil: 0, noise: null, last: {}, voices: new Set(), background: false, musicPaused: false };
 function audioInit() {
+  if (AU.background) return;
   if (AU.ctx) { if (AU.ctx.state === 'suspended') AU.ctx.resume()?.catch(() => { }); return; }
   const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
   try {
@@ -766,10 +1174,34 @@ function audioInit() {
 function syncAudioSettings(settings) {
   if (!AU.ctx) return;
   const t = AU.ctx.currentTime;
-  AU.sfx.gain.setTargetAtTime(settings.sfxVolume * AUDIO_SETTINGS.sfx, t, AUDIO_SETTINGS.gainSlew);
-  AU.music.gain.setTargetAtTime(settings.musicVolume * AUDIO_SETTINGS.music, t, AUDIO_SETTINGS.gainSlew);
+  AU.sfx.gain.setTargetAtTime(AU.background ? 0 : settings.sfxVolume * AUDIO_SETTINGS.sfx, t, AUDIO_SETTINGS.gainSlew);
+  AU.music.gain.setTargetAtTime(AU.musicPaused || AU.background ? 0 : settings.musicVolume * AUDIO_SETTINGS.music, t, AUDIO_SETTINGS.gainSlew);
 }
 subscribeSettings(syncAudioSettings);
+// 暂停菜单保留交互音效；切后台则停止全部声音，且普通输入初始化不能偷偷恢复。
+function audioPause({ suspend = false } = {}) {
+  const resume = MUS.on || MUS.resume;
+  musicStop(); MUS.resume = resume; AU.musicPaused = true;
+  if (suspend) AU.background = true;
+  syncAudioSettings(getSettings());
+  // 清掉已提前安排的声音，避免时钟挂起后旧音符和恢复的新节拍叠播。
+  for (const voice of AU.voices) if (suspend || voice.music) {
+    try { voice.source.stop(); } catch (_) { }
+    AU.voices.delete(voice);
+  }
+  if (suspend && AU.ctx?.state === 'running') AU.ctx.suspend()?.then(() => {
+    // 挂起尚未完成时页面可能已经回来，按最新可见状态修正异步结果。
+    if (!AU.background) audioInit();
+  }).catch(() => { });
+}
+function audioResume({ music = true } = {}) {
+  AU.background = false; AU.musicPaused = !music; audioInit();
+  if (!AU.ctx) return;
+  // 音频时钟可能已走过很久，恢复时从新一拍开始，不能补发积压音符。
+  MUS.next = AU.ctx.currentTime + .1;
+  syncAudioSettings(getSettings());
+  if (music && MUS.resume) musicStart();
+}
 // 保留旧总开关接口，重新开启时恢复各自音量，而不是覆盖成最大音量。
 function setSound(on) {
   updateSettings({ musicVolume: on ? meta.audioRestore.musicVolume : 0, sfxVolume: on ? meta.audioRestore.sfxVolume : 0 });
@@ -784,18 +1216,22 @@ function duckMusic(duration = AUDIO_SETTINGS.duckDuration) {
   gain.setValueAtTime(AUDIO_SETTINGS.duckScale, Math.max(t + AUDIO_SETTINGS.duckAttack, AU.duckUntil));
   gain.linearRampToValueAtTime(1, Math.max(t + AUDIO_SETTINGS.duckAttack, AU.duckUntil) + AUDIO_SETTINGS.duckRelease);
 }
-const okA = (k, gap) => { if (!AU.ctx || getSettings().sfxVolume <= 0) return false; const t = AU.ctx.currentTime; if ((AU.last[k] ?? -Infinity) + gap > t) return false; AU.last[k] = t; return true; };
+const okA = (k, gap) => { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return false; const t = AU.ctx.currentTime; if ((AU.last[k] ?? -Infinity) + gap > t) return false; AU.last[k] = t; return true; };
+function trackAudioSource(source, dest) {
+  const voice = { source, music: dest === AU.music };
+  AU.voices.add(voice); source.onended = () => AU.voices.delete(voice);
+}
 function osc(type, f0, f1, dur, vol, t, dest) {
   const c = AU.ctx; t = t ?? c.currentTime; const o = c.createOscillator(), g = c.createGain();
   o.type = type; o.frequency.setValueAtTime(f0, t); if (f1) o.frequency.exponentialRampToValueAtTime(Math.max(1, f1), t + dur);
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-  o.connect(g); g.connect(dest || AU.sfx); o.start(t); o.stop(t + dur + .03);
+  o.connect(g); g.connect(dest || AU.sfx); trackAudioSource(o, dest); o.start(t); o.stop(t + dur + .03);
 }
 function nz(dur, vol, ftype, f0, f1, t, dest, q = 1) {
   const c = AU.ctx; t = t ?? c.currentTime; const s = c.createBufferSource(); s.buffer = AU.noise;
   const f = c.createBiquadFilter(); f.type = ftype; f.Q.value = q; f.frequency.setValueAtTime(f0, t); if (f1) f.frequency.exponentialRampToValueAtTime(f1, t + dur);
   const g = c.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-  s.connect(f); f.connect(g); g.connect(dest || AU.sfx); s.start(t, Math.random() * .5); s.stop(t + dur + .03);
+  s.connect(f); f.connect(g); g.connect(dest || AU.sfx); trackAudioSource(s, dest); s.start(t, Math.random() * .5); s.stop(t + dur + .03);
 }
 const SFX = {
   material(kind) {
@@ -818,29 +1254,33 @@ const SFX = {
   dash() { if (!okA('dash', .1)) return; nz(.22, .2, 'bandpass', 500, 3500, null, null, 1.5); },
   perfect() { if (!okA('perfect', .2)) return; osc('sine', 300, 1600, .35, .18); osc('triangle', 600, 3200, .4, .08); nz(.5, .12, 'highpass', 6000); },
   overload() { if (!okA('over', .3)) return; osc('sine', 90, 30, 1.2, .8); osc('sawtooth', 60, 220, .6, .12); nz(1, .5, 'lowpass', 2400, 80); },
-  level() { if (!AU.ctx || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime;[523, 659, 784, 1047].forEach((f, i) => osc('square', f, null, .12, .07, t + i * .07)); },
-  evo() { if (!AU.ctx || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime;[392, 523, 659, 784, 1047, 1319].forEach((f, i) => osc('triangle', f, null, .25, .12, t + i * .06)); },
-  warn() { if (!AU.ctx || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime; for (let i = 0; i < 3; i++) { osc('sawtooth', 440, 880, .35, .1, t + i * .7); osc('sawtooth', 880, 440, .3, .1, t + i * .7 + .35); } },
+  level() { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime;[523, 659, 784, 1047].forEach((f, i) => osc('square', f, null, .12, .07, t + i * .07)); },
+  evo() { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime;[392, 523, 659, 784, 1047, 1319].forEach((f, i) => osc('triangle', f, null, .25, .12, t + i * .06)); },
+  warn() { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime; for (let i = 0; i < 3; i++) { osc('sawtooth', 440, 880, .35, .1, t + i * .7); osc('sawtooth', 880, 440, .3, .1, t + i * .7 + .35); } },
   step(m) { if (!okA('step', .1)) return; osc('sine', m >= 1 ? 70 : 120, 38, m >= 1 ? .16 : .08, m >= 1 ? .22 : .07); nz(.06, m >= 1 ? .1 : .04, 'lowpass', 500); },
   eshot() { if (!okA('eshot', .12)) return; osc('triangle', 520, 260, .12, .05); },
-  click() { if (!AU.ctx || getSettings().sfxVolume <= 0) return; osc('square', 900, 600, .04, .05); },
-  chest() { if (!AU.ctx || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime; for (let i = 0; i < 10; i++) osc('square', 700 + i * 90, null, .05, .04, t + i * .09); },
+  click() { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return; osc('square', 900, 600, .04, .05); },
+  chest() { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime; for (let i = 0; i < 10; i++) osc('square', 700 + i * 90, null, .05, .04, t + i * .09); },
 };
 // 背景音乐：132 BPM 的合成器循环，Boss 战时加码
-const MUS = { on: false, step: 0, next: 0, timer: 0, intensity: 1 };
+const MUS = { on: false, resume: false, step: 0, next: 0, timer: 0, intensity: 1 };
 const STEP = 60 / 132 / 4;
 const BASS = [40, 40, 52, 40, 40, 47, 40, 45, 40, 40, 52, 40, 43, 45, 47, 50];
 const mid = n => 440 * Math.pow(2, (n - 69) / 12);
 function musicStart() {
-  if (!AU.ctx || MUS.on) return; MUS.on = true; MUS.step = 0; MUS.next = AU.ctx.currentTime + .1;
+  if (!AU.ctx || MUS.on) return;
+  if (AU.background) { MUS.resume = true; return; }
+  AU.musicPaused = false; syncAudioSettings(getSettings());
+  MUS.on = true; MUS.resume = false; MUS.step = 0; MUS.next = AU.ctx.currentTime + .1;
   MUS.timer = setInterval(() => {
-    if (!AU.ctx) return;
+    if (!AU.ctx || !MUS.on || AU.background || AU.musicPaused || AU.ctx.state !== 'running') return;
+    if (MUS.next < AU.ctx.currentTime - STEP) MUS.next = AU.ctx.currentTime + .1;
     while (MUS.next < AU.ctx.currentTime + .15) { musicStep(MUS.step, MUS.next); MUS.next += STEP; MUS.step = (MUS.step + 1) % 64; }
   }, 30);
 }
-function musicStop() { MUS.on = false; clearInterval(MUS.timer); }
+function musicStop() { MUS.on = false; MUS.resume = false; clearInterval(MUS.timer); MUS.timer = 0; }
 function musicStep(s, t) {
-  if (getSettings().musicVolume <= 0) return;
+  if (AU.background || AU.musicPaused || getSettings().musicVolume <= 0) return;
   const i = s % 16, bar = (s / 16 | 0) % 4, M = AU.music, hi = MUS.intensity >= 2;
   if (i % 4 === 0) { osc('sine', 150, 40, .28, .9, t, M); }
   if (i === 4 || i === 12) { nz(.16, .35, 'bandpass', 1800, 900, t, M, .8); }
@@ -851,7 +1291,7 @@ function musicStep(s, t) {
     o.type = 'sawtooth'; o.frequency.value = mid(BASS[i] + tr); f.type = 'lowpass'; f.Q.value = 8;
     f.frequency.setValueAtTime(hi ? 1600 : 900, t); f.frequency.exponentialRampToValueAtTime(140, t + STEP * 1.6);
     g.gain.setValueAtTime(.22, t); g.gain.exponentialRampToValueAtTime(.001, t + STEP * 1.8);
-    o.connect(f); f.connect(g); g.connect(M); o.start(t); o.stop(t + STEP * 2);
+    o.connect(f); f.connect(g); g.connect(M); trackAudioSource(o, M); o.start(t); o.stop(t + STEP * 2);
   }
   if (hi && i % 4 === 2) osc('square', mid(BASS[(i + 5) % 16] + tr + 24), null, .09, .035, t, M);
 }
@@ -894,10 +1334,16 @@ function runReward(coins, kills, bossKills, win) {
   return { killBonus, bossBonus, winBonus, earned: coins + killBonus + bossBonus + winBonus };
 }
 
+// ---- src/data/player-input.js ----
+// 玩家方向输入：有效移动阈值与松开摇杆后的冲刺记忆时长。
+const PLAYER_INPUT = Object.freeze({ deadzone: .15, dashMemorySeconds: .8 });
+
 // ---- src/data/experience.js ----
 // 教学与反馈预算：只影响引导和装饰，不改变敌弹碰撞
 const EXPERIENCE = {
-  tutorialDistance: 50, tutorialHintEvery: 7, practiceBulletEvery: 4, practiceBulletDistance: 120, practiceBulletSpeed: 60,
+  tutorialDistance: 50, tutorialHintEvery: 7, tutorialHintCap: 2, tutorialMoveUntil: 30, tutorialDashUntil: 60, tutorialThreatRadius: 120,
+  toastQueueCap: 6, toastLowQueueCap: 2, toastQueueLife: 12, toastLowQueueLife: 7,
+  practiceBulletEvery: 4, practiceBulletDistance: 120, practiceBulletSpeed: 60,
   particleCap: 700, impactGap: .055, heavyGap: .14, heavyStop: .025, cameraKickMax: 9,
 };
 const TUTORIAL_STEPS = [
@@ -923,7 +1369,50 @@ function dmgText(x, y, v, crit) {
   if (G.texts.length > 70) G.texts.shift();
   G.texts.push({ x, y, str: String(Math.round(v)), col: crit ? '255,214,80' : '255,255,255', size: crit ? 19 : 14, life: .6, max: .6, vy: -70, crit });
 }
-const toast = (text, t = 3) => { G.toast = { text, t, max: t }; };
+function pruneToastQueue() {
+  G.toastQueue = (G.toastQueue || []).filter(q => q.t > 0 && q.expiresAt > (G.toastClock || 0));
+}
+function queueToast(message) {
+  message.expiresAt = (G.toastClock || 0) + (message.priority === 1 ? EXPERIENCE.toastLowQueueLife : EXPERIENCE.toastQueueLife);
+  G.toastQueue.push(message);
+  G.toastQueue.sort((a, b) => b.priority - a.priority);
+  // 保留近期教学；总队列满时先舍弃低优先级，防止旧消息积压到局末。
+  while (G.toastQueue.filter(q => q.priority === 1).length > EXPERIENCE.toastLowQueueCap) {
+    G.toastQueue.splice(G.toastQueue.findIndex(q => q.priority === 1), 1);
+  }
+  if (G.toastQueue.length > EXPERIENCE.toastQueueCap) G.toastQueue.length = EXPERIENCE.toastQueueCap;
+}
+function toast(text, t = 3) {
+  if (!G) return false;
+  const options = text && typeof text === 'object' ? text : { text, t };
+  const duration = options.t ?? 3, priority = [1, 2, 3].includes(options.priority) ? options.priority : 2;
+  if (typeof options.text !== 'string' || !options.text.trim() || !Number.isFinite(duration) || duration <= 0) return false;
+  pruneToastQueue();
+  if (G.toast?.text === options.text || G.toastQueue.some(q => q.text === options.text)) return false;
+  const message = { text: options.text, t: duration, max: duration, priority };
+  if (!G.toast || !(G.toast.t > 0)) G.toast = message;
+  else if (priority > (G.toast.priority ?? 2)) {
+    queueToast(G.toast); G.toast = message;
+  } else queueToast(message);
+  return true;
+}
+function updateToasts(dt) {
+  if (!G) return;
+  G.toastClock = G.toastClock || 0; pruneToastQueue();
+  if (!Number.isFinite(dt) || dt < 0) return;
+  let remaining = dt;
+  // 用本局更新时钟顺序消耗剩余时长，抢占恢复和跨帧余量都不会重置倒计时。
+  while (true) {
+    if (!G.toast || !(G.toast.t > 0)) {
+      pruneToastQueue(); G.toast = G.toastQueue.shift() || null;
+    }
+    if (!G.toast) { G.toastClock += remaining; break; }
+    const elapsed = Math.min(remaining, G.toast.t);
+    G.toast.t -= elapsed; G.toastClock += elapsed; remaining -= elapsed;
+    if (G.toast.t > 0) break;
+    G.toast = null;
+  }
+}
 const flash = (col, a) => { if (G.settings?.flashes === false) return; G.flashC = col; G.flashA = Math.max(G.flashA, a); };
 // 命中碎屑按武器区分，逐目标限频，避免持续锯刃产生无上限粒子。
 function weaponImpact(source, e, angle, material) {
@@ -964,6 +1453,8 @@ function updateFx(dt) {
 // 空间网格：按格子索引敌人，加速范围查询
 
 const CELL = 64, grid = new Map();
+const gridQueryBuffers = [];
+let gridQueryDepth = 0;
 const gk = (cx, cy) => cx * 100003 + cy;
 function rebuildGrid() {
   grid.clear();
@@ -975,9 +1466,20 @@ function rebuildGrid() {
 }
 function query(x, y, r, fn) {
   const q = ++G.qid, x0 = Math.floor((x - r) / CELL), x1 = Math.floor((x + r) / CELL), y0 = Math.floor((y - r) / CELL), y1 = Math.floor((y + r) / CELL);
-  for (let cx = x0; cx <= x1; cx++) for (let cy = y0; cy <= y1; cy++) {
-    const a = grid.get(gk(cx, cy)); if (!a) continue;
-    for (const e of a) { if (e.q === q || e.dead) continue; e.q = q; if (fn(e) === false) return; }
+  const candidates = gridQueryBuffers[gridQueryDepth] || (gridQueryBuffers[gridQueryDepth] = []);
+  let count = 0;
+  gridQueryDepth++;
+  try {
+    // 先收齐候选，再允许回调触发嵌套查询，避免内层改写去重标记后外层重复命中。
+    for (let cx = x0; cx <= x1; cx++) for (let cy = y0; cy <= y1; cy++) {
+      const a = grid.get(gk(cx, cy)); if (!a) continue;
+      for (const e of a) { if (e.q === q || e.dead) continue; e.q = q; candidates[count++] = e; }
+    }
+    for (let i = 0; i < count; i++) { const e = candidates[i]; if (!e.dead && fn(e) === false) return; }
+  } finally {
+    // 清引用但保留容量，复用各层缓冲区；提前结束或异常也释放深度。
+    for (let i = 0; i < count; i++) candidates[i] = null;
+    gridQueryDepth--;
   }
 }
 function nearest(x, y, maxR, skip) {
@@ -1066,10 +1568,27 @@ function reportCauseName(cause) {
   if (kind === 'enemy') return { crawler: '爬行虫', bomber: '自爆蜂', gunner: '喷射虫', brute: '重甲虫', charger: '冲锋虫', barrage: '弹幕精英' }[id] || '虫群攻击';
   return '未标记来源';
 }
+// 按致命来源给对症建议；没对上的来源返回空串，交给通用顺序
+const FATAL_ADVICE = {
+  'enemy:gunner': '喷射虫的酸液弹飞得慢：迎着弹冲刺能极限闪避并把子弹反弹回去，别停在原地和它对射。',
+  'enemy:barrage': '弹幕精英会预判走位、每隔约 3 秒扇形齐射：别一直直线跑，横向变向，或迎着弹幕冲刺穿过去。',
+  'enemy:charger': '冲锋虫停下瞄准时会亮出预警线：往线的侧面闪开，别顺着线往后退。',
+  'enemy:bomber': '自爆蜂贴身后约半秒才爆炸：被追上就冲刺拉开，或者先把它打掉再往前走。',
+  'enemy:crawler': '被虫群围住了：超载蓄满就在虫群中间释放清场，或者冲刺从最薄的缺口穿出去，别等包围合拢。',
+  'enemy:brute': '重甲虫血厚但走得慢：别和它贴身互换，绕开它先清小虫，被围住就冲刺破围。',
+  'boss:scorpion': '毒蝎领主每轮连招后都有弱点窗口：连招时绕圈拉开距离，窗口里再贴近集中输出。',
+  'boss:queen': '深渊母巢弹幕越打越密：留着冲刺穿过弹幕缝隙，迎弹冲刺还能反弹子弹；连招后的弱点窗口再集中输出。',
+};
+function fatalAdvice(cause) {
+  if (!cause) return '';
+  if (cause.startsWith('hazard:')) return '行动奖励可以放弃；预警变亮时先离开危险区，再回来继续。';
+  return FATAL_ADVICE[cause] || '';
+}
 function buildRunAdvice(run) {
   const report = run.report;
   if (!report) return '保持移动，把冲刺留给最危险的包围。';
-  if (report.fatalHit?.cause?.startsWith('hazard:')) return '行动奖励可以放弃；预警变亮时先离开危险区，再回来继续。';
+  const fatal = !run.won && !run.abandoned && fatalAdvice(report.fatalHit?.cause);
+  if (fatal) return fatal;
   if (report.actions.dash < 2 && run.t > 30) return '下一局多用冲刺穿过包围，蓄满的冷却不会自动积存。';
   if (report.actions.overload === 0 && run.t > 90) return '超载蓄满就找密集虫群释放，清场后再捡升级晶体。';
   if (!run.player.weapons.some(w => w.evo) && run.t > 150) return '先把主武器升到五级，并把对应芯片升到三级，再开补给箱。';
@@ -1304,8 +1823,10 @@ const DASH_T = .17, DASH_V = 840;
 function tryDash() {
   const p = G && G.player; if (!p || G.state !== 'playing' || p.dashCd > 0 || p.hp <= 0 || G.endT > 0) return;
   let mx = IN.mx, my = IN.my; const k = keyVec(); mx += k[0]; my += k[1];
-  const m = Math.hypot(mx, my);
-  if (m > .15) { p.ddx = mx / m; p.ddy = my / m; } else { p.ddx = Math.cos(p.angle); p.ddy = Math.sin(p.angle); }
+  const m = Math.hypot(mx, my), sinceMove = G.t - p.lastMoveAt;
+  if (m > PLAYER_INPUT.deadzone) { p.ddx = mx / m; p.ddy = my / m; }
+  else if (sinceMove >= 0 && sinceMove <= PLAYER_INPUT.dashMemorySeconds) { p.ddx = p.lastMoveX; p.ddy = p.lastMoveY; }
+  else { p.ddx = Math.cos(p.angle); p.ddy = Math.sin(p.angle); }
   p.dashT = talentDashDuration(DASH_T); p.dashCd = G.stats.dashCd; p.invuln = Math.max(p.invuln, p.dashT + .08); p.perfectUsed = false;
   beginMechDash(); onTalentDash(); recordAction('dash'); recordTutorialAction('dash'); SFX.dash();
 }
@@ -1324,7 +1845,10 @@ function updatePlayer(dt, rdt) {
   if (p.hp <= 0 || G.endT > 0) { p.vx = p.vy = 0; p.dashT = 0; decayPlayerEffects(dt, rdt); return; }
   updateMechTraits(dt);
   let mx = IN.mx, my = IN.my; const k = keyVec(); mx += k[0]; my += k[1];
-  const m = Math.hypot(mx, my); if (m > 1) { mx /= m; my /= m; }
+  const m = Math.hypot(mx, my);
+  // 使用本局游戏时间，暂停和选卡不会消耗方向记忆；新机体自然没有上一局记录。
+  if (m > PLAYER_INPUT.deadzone) { p.lastMoveX = mx / m; p.lastMoveY = my / m; p.lastMoveAt = G.t; }
+  if (m > 1) { mx /= m; my /= m; }
   if (p.dashT > 0) {
     p.dashT -= dt; p.x += p.ddx * DASH_V * dt; p.y += p.ddy * DASH_V * dt; p.vx = p.ddx * st.speed; p.vy = p.ddy * st.speed;
     p.ghosts.push({ x: p.x, y: p.y, a: p.angle, la: p.legA, ph: p.ph, life: .25 });
@@ -1352,7 +1876,7 @@ function updatePlayer(dt, rdt) {
   decayPlayerEffects(dt, rdt);
   if (over && Math.random() < .5) part(p.x + rand(-16, 16), p.y + rand(-16, 16), rand(-40, 40), rand(-40, 40), .4, rand(3, 6), '255,140,40');
   if (st.regen > 0 && p.hp < p.maxHp) p.hp = Math.min(p.maxHp, p.hp + st.regen * dt);
-  if (p.overload >= 100 && !G.overHinted) { G.overHinted = true; toast('超载就绪！点「超载」释放'); }
+  if (p.overload >= 100 && !G.overHinted) { G.overHinted = true; toast({ text: '超载就绪！点「超载」释放', priority: 1 }); }
 }
 // 击毁或等待胜利时也继续消退现有特效；每次玩家更新只调用一次。
 function decayPlayerEffects(dt, rdt) {
@@ -1392,7 +1916,8 @@ function checkPerfect() {
 }
 function perfectDodge() {
   const p = G.player; p.perfectUsed = true; G.perfects++; recordAction('perfect'); recordTutorialAction('perfect');
-  G.slowT = .55; p.invuln = Math.max(p.invuln, .7); p.overload = Math.min(100, p.overload + 22);
+  G.slowT = .55; p.invuln = Math.max(p.invuln, .7);
+  if (!(p.overT > 0)) p.overload = Math.min(100, p.overload + 22);
   let n = 0;
   for (const b of G.ebullets) { // 反弹附近的敌弹
     if (b.dead || d2(b.x, b.y, p.x, p.y) > 190 * 190) continue;
@@ -1405,6 +1930,7 @@ function perfectDodge() {
   flash('90,230,255', .25); SFX.perfect();
 }
 function hurtPlayer(dmg, sx, sy, cause = 'unknown') {
+  if (G.debugGod) return true; // 调试无敌照常消耗敌弹，且不消耗机体护盾。
   const p = G.player; if (G.practice) return p.dashT <= 0; if (p.invuln > 0 || p.dashT > 0 || p.hp <= 0) return false;
   if (absorbMechHit()) return true; // 护盾命中也消耗敌弹，但不扣生命。
   dmg = incomingDamage(dmg, G.t, G.stats.armor + talentArmorBonus(), p.overT > 0);
@@ -1463,6 +1989,136 @@ function trainingStats(p) {
   const ranks = p.training || {}, power = progressionRank(ranks.power), guard = progressionRank(ranks.guard), mobility = progressionRank(ranks.mobility);
   const mobilityBonus = .18 * mobility / (mobility + 10);
   return { dmgMul: 1 + .35 * power / (power + 10), speedMul: 1 + mobilityBonus, dashMul: 1 - mobilityBonus, hpBonus: 4 * guard };
+}
+
+// ---- src/game/persistence.js ----
+// 对局中断快照与幂等结算：每局独立标识，跨页恢复后续局只补新增收益
+
+let persistenceIdentityCounter = 0;
+function createRunIdentity() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const origin = typeof performance !== 'undefined' ? performance.timeOrigin || performance.now() : 0;
+  return `run-${Date.now().toString(36)}-${origin}-${++persistenceIdentityCounter}`;
+}
+function persistenceRecord(value) { return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
+function validRunSnapshot(value, id) {
+  if (!value || typeof value !== 'object' || typeof id !== 'string' || !id || ['__proto__', 'constructor', 'prototype'].includes(id)) return null;
+  if (!Number.isFinite(value.t) || value.t < 0 || value.t > Number.MAX_SAFE_INTEGER) return null;
+  if (!['coins', 'kills', 'bossKills'].every(key => Number.isSafeInteger(value[key]) && value[key] >= 0)) return null;
+  return { id, mech: typeof value.mech === 'string' ? value.mech : value.mech?.id || '', t: value.t,
+    coins: value.coins, kills: value.kills, bossKills: value.bossKills, won: value.won === true,
+    savedAt: Number.isFinite(value.savedAt) ? value.savedAt : Date.now() };
+}
+function snapshotRunProgress(run, win = run?.won) {
+  if (!run || run.practice) return null;
+  if (!run.runId) run.runId = createRunIdentity();
+  return validRunSnapshot({ ...run, won: !!win, savedAt: Date.now() }, run.runId);
+}
+function checkpointRun() {
+  if (!G || G.practice || G.state === 'end') return false;
+  const snapshot = snapshotRunProgress(G); if (!snapshot) return false;
+  reloadMeta();
+  meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
+  meta.settledRuns = persistenceRecord(meta.settledRuns);
+  const prior = persistenceRecord(meta.settledRuns[snapshot.id]);
+  const earned = runReward(snapshot.coins, snapshot.kills, snapshot.bossKills, snapshot.won).earned;
+  if (prior.earned >= earned && prior.t >= snapshot.t && (!snapshot.won || prior.won)) return false;
+  meta.pendingSettlements[snapshot.id] = snapshot;
+  return saveMeta();
+}
+function settleRunSnapshot(snapshot) {
+  reloadMeta();
+  meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
+  meta.settledRuns = persistenceRecord(meta.settledRuns);
+  const prior = persistenceRecord(meta.settledRuns[snapshot.id]);
+  const earned = runReward(snapshot.coins, snapshot.kills, snapshot.bossKills, snapshot.won).earned;
+  const previousPaid = Number.isSafeInteger(prior.earned) && prior.earned >= 0 ? prior.earned : 0;
+  const credited = Math.max(0, earned - previousPaid), newBest = snapshot.t > meta.best;
+  const fastest = snapshot.won && snapshot.t > 0 && (!meta.fastestWin || snapshot.t < meta.fastestWin);
+  meta.coins += credited; meta.best = Math.max(meta.best, snapshot.t); meta.bestKills = Math.max(meta.bestKills, snapshot.kills);
+  if (snapshot.won && !prior.won) meta.wins++;
+  if (fastest) meta.fastestWin = snapshot.t;
+  meta.settledRuns[snapshot.id] = { earned: Math.max(previousPaid, earned), won: !!(snapshot.won || prior.won), t: Math.max(prior.t || 0, snapshot.t) };
+  // 只清本局的记录；其他标签页的对局快照由三方存档合并保留。
+  const pending = meta.pendingSettlements[snapshot.id];
+  if (!pending || pending.savedAt <= snapshot.savedAt) delete meta.pendingSettlements[snapshot.id];
+  const saved = saveMeta();
+  return { earned, credited, previousPaid, alreadyPaid: previousPaid >= earned, newBest, fastest, saved };
+}
+function settleRunProgress(run, win) {
+  const snapshot = snapshotRunProgress(run, win);
+  return snapshot ? settleRunSnapshot(snapshot) : { earned: 0, credited: 0, previousPaid: 0, alreadyPaid: false, newBest: false, fastest: false, saved: false };
+}
+function recoverPendingRuns() {
+  reloadMeta();
+  meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
+  const legacy = meta.pendingSettle;
+  if (legacy) {
+    const id = legacy.runId || `legacy-${legacy.savedAt || 0}-${legacy.mech || ''}`;
+    const snapshot = validRunSnapshot(legacy, id);
+    if (snapshot) meta.pendingSettlements[id] = snapshot;
+    delete meta.pendingSettle;
+  }
+  const pending = Object.entries(meta.pendingSettlements), result = { credited: 0, recovered: 0, saved: true };
+  for (const [id, value] of pending) {
+    const snapshot = validRunSnapshot(value, id);
+    if (!snapshot) { delete meta.pendingSettlements[id]; continue; }
+    const receipt = settleRunSnapshot(snapshot);
+    result.credited += receipt.credited; result.recovered++; result.saved = result.saved && receipt.saved;
+  }
+  if (pending.length || legacy) result.saved = saveMeta() && result.saved;
+  return result;
+}
+
+// ---- src/data/achievements.js ----
+// 成就与协议勋章墙：纯数据加判定函数，结算时调用；按机甲记录的战绩也在这里累计
+
+// s 是 achievementSummary 生成的本局快照，meta 是已经累计完本局战绩的存档
+const ACHIEVEMENTS = [
+  { id: 'first-win', name: '突出重围', desc: '第一次突围成功', test: s => s.win },
+  { id: 'scorpion', name: '蝎尾折断', desc: '击破毒蝎领主', test: s => s.bossKills >= 1 },
+  { id: 'scorpion-clean', name: '毫发无伤', desc: '击破毒蝎领主，全程没被它打中', test: s => s.bossKills >= 1 && s.scorpionHurt === 0 },
+  { id: 'queen', name: '母巢震颤', desc: '击破第二个首领深渊母巢', test: s => s.bossKills >= 2 },
+  { id: 'perfect-30', name: '弹幕舞者', desc: '一局里极限闪避 30 次', test: s => s.perfects >= 30 },
+  { id: 'combo-300', name: '连斩风暴', desc: '一局里连杀达到 300', test: s => s.bestCombo >= 300 },
+  { id: 'kills-2000', name: '虫潮收割', desc: '一局击杀 2000 只', test: s => s.kills >= 2000 },
+  { id: 'relay-3', name: '行动专家', desc: '一局完成 3 次行动', test: s => s.relayClears >= 3 },
+  { id: 'evo-2', name: '双重进化', desc: '一局里进化两把武器', test: s => s.evolved >= 2 },
+  { id: 'full-loadout', name: '满编出击', desc: '一局里装满 4 把武器和 4 块芯片', test: s => s.weapons >= 4 && s.passives >= 4 },
+  { id: 'all-mechs-win', name: '全员突围', desc: '六台机甲都突围过', test: (s, meta) => MECHS.every(m => meta.mechStats?.[m.id]?.wins > 0) },
+  { id: 'veteran-30', name: '久经沙场', desc: '累计打完 30 局', test: (s, meta) => MECHS.reduce((n, m) => n + (meta.mechStats?.[m.id]?.runs || 0), 0) >= 30 },
+];
+// 协议勋章墙：每个协议第一次突围点亮一格，六台机甲各三格
+const PROTOCOL_MEDALS = TALENTS.map(t => ({ id: 'proto:' + t.id, mechId: t.mechId, talentId: t.id, name: t.name }));
+const ACHIEVEMENT_TOTAL = ACHIEVEMENTS.length + PROTOCOL_MEDALS.length;
+
+// 结算时从对局里取判定需要的数，之后的判定不再碰对局对象
+function achievementSummary(run, win) {
+  const p = run.player || {};
+  return {
+    win: !!win, mechId: run.mech?.id, talentId: run.talent?.id, t: run.t || 0,
+    kills: run.kills || 0, bestCombo: run.bestCombo || 0, perfects: run.perfects || 0, bossKills: run.bossKills || 0, relayClears: run.relayClears || 0,
+    evolved: (p.weapons || []).filter(w => w.evo).length, weapons: (p.weapons || []).length, passives: (p.passives || []).length,
+    scorpionHurt: run.report?.damageTakenBySource?.['boss:scorpion'] || 0,
+  };
+}
+// 返回本局新拿到的成就和勋章 id（已拿过的不重复）
+function evaluateAchievements(summary, meta) {
+  const have = meta.achievements || {};
+  const fresh = ACHIEVEMENTS.filter(a => !have[a.id] && a.test(summary, meta)).map(a => a.id);
+  const medal = summary.win && PROTOCOL_MEDALS.find(m => m.talentId === summary.talentId);
+  if (medal && !have[medal.id]) fresh.push(medal.id);
+  return fresh;
+}
+const achievementById = id => ACHIEVEMENTS.find(a => a.id === id) || PROTOCOL_MEDALS.find(m => m.id === id);
+// 单台机甲的战绩：局数、突围、最快突围、最长存活、最多击杀
+function applyMechStats(stats, summary) {
+  const num = v => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : 0);
+  const s = { runs: num(stats?.runs), wins: num(stats?.wins), fastest: num(stats?.fastest), best: num(stats?.best), bestKills: num(stats?.bestKills) };
+  s.runs++;
+  if (summary.win) { s.wins++; if (summary.t > 0 && (!s.fastest || summary.t < s.fastest)) s.fastest = summary.t; }
+  s.best = Math.max(s.best, summary.t); s.bestKills = Math.max(s.bestKills, summary.kills);
+  return s;
 }
 
 // ---- src/data/enemies.js ----
@@ -1525,6 +2181,48 @@ const BOSS_WEAK_POINTS = {
   queen: { duration: 2, damageMul: 1.35, trigger: 'ring' },
 };
 
+// ---- src/data/meta-upgrades.js ----
+// 机库永久改装项
+const META_UPS = [
+  { id: 'hp', name: '强化装甲', desc: '最大生命 +12', max: 5, cost: [80, 160, 260, 380, 520] },
+  { id: 'dmg', name: '火力增幅', desc: '全武器伤害 +6%', max: 5, cost: [100, 200, 320, 460, 620] },
+  { id: 'spd', name: '引擎改装', desc: '移动速度 +5%', max: 5, cost: [80, 160, 260, 380, 520] },
+  { id: 'xp', name: '学习协议', desc: '经验获取 +8%', max: 5, cost: [90, 180, 290, 420, 560] },
+  { id: 'reroll', name: '战术刷新', desc: '每局升级刷新次数 +1', max: 3, cost: [120, 260, 420] },
+  { id: 'revive', name: '紧急重启', desc: '每局可原地复活一次', max: 1, cost: [700] },
+];
+
+// ---- src/data/goals.js ----
+// 局外目标：能买几项改装、下一个解锁目标；菜单、机库和结算页共用的纯函数
+
+// 改装下一级的价格，满级返回 0
+function nextUpgradeCost(u, ups = {}) {
+  const lv = ups[u.id] || 0;
+  return lv >= u.max ? 0 : u.cost[lv];
+}
+// 当前金币能单独买下的改装项数（每项只算下一级）
+function affordableUpgradeCount(meta) {
+  return META_UPS.filter(u => { const cost = nextUpgradeCost(u, meta.up); return cost > 0 && meta.coins >= cost; }).length;
+}
+function affordableMechCount(meta) {
+  return MECHS.filter(m => !meta.unlocked?.[m.id] && meta.coins >= m.cost).length;
+}
+// 机库按钮上的角标：先提示能升级的改装，没有时再提示能解锁的机体
+function hangarBadge(meta) {
+  const n = affordableUpgradeCount(meta);
+  return n ? `可升级 ${n}` : affordableMechCount(meta) ? '可解锁机体' : '';
+}
+// 下一个目标：机库里设定的机甲优先，否则取最便宜的未解锁机甲；机甲全解锁后取最便宜的下一级改装；全部买完返回 null
+function nextGoal(meta) {
+  const locked = MECHS.filter(m => !meta.unlocked?.[m.id]);
+  const mech = locked.find(m => m.id === meta.goal) || locked.slice().sort((a, b) => a.cost - b.cost)[0];
+  const goal = mech ? { kind: 'mech', id: mech.id, name: mech.name, cost: mech.cost }
+    : META_UPS.map(u => ({ kind: 'up', id: u.id, name: `${u.name} ${(meta.up?.[u.id] || 0) + 1} 级`, cost: nextUpgradeCost(u, meta.up) }))
+      .filter(g => g.cost > 0).sort((a, b) => a.cost - b.cost)[0];
+  if (!goal) return null;
+  return { ...goal, have: Math.max(0, Math.min(meta.coins, goal.cost)), ready: meta.coins >= goal.cost };
+}
+
 // ---- src/ui/icons.js ----
 // 界面用的线框 SVG 图标
 
@@ -1546,17 +2244,6 @@ const ICONS = {
   gold: '<circle cx="24" cy="24" r="16"/><path d="M28 17h-6a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8h-7M24 13v4M24 33v3"/>',
 };
 const svgI = k => `<svg class="i" viewBox="0 0 48 48" aria-hidden="true">${ICONS[k] || ''}</svg>`;
-
-// ---- src/data/meta-upgrades.js ----
-// 机库永久改装项
-const META_UPS = [
-  { id: 'hp', name: '强化装甲', desc: '最大生命 +12', max: 5, cost: [80, 160, 260, 380, 520] },
-  { id: 'dmg', name: '火力增幅', desc: '全武器伤害 +6%', max: 5, cost: [100, 200, 320, 460, 620] },
-  { id: 'spd', name: '引擎改装', desc: '移动速度 +5%', max: 5, cost: [80, 160, 260, 380, 520] },
-  { id: 'xp', name: '学习协议', desc: '经验获取 +8%', max: 5, cost: [90, 180, 290, 420, 560] },
-  { id: 'reroll', name: '战术刷新', desc: '每局升级刷新次数 +1', max: 3, cost: [120, 260, 420] },
-  { id: 'revive', name: '紧急重启', desc: '每局可原地复活一次', max: 1, cost: [700] },
-];
 
 // ---- src/game/elites.js ----
 // 单词缀精英：护盾吸收与恢复、急速恢复窗口、可锁定躲避的弹幕蓄力
@@ -1685,7 +2372,7 @@ function director(dt) {
       G.nextElite = t + (elite ? phase ? phase.eliteInterval : 35 : ELITE_SPAWN_RULES.retry);
       if (elite) {
         if (id) G.eliteAffixIndex = (ELITE_AFFIX_ORDER.indexOf(id) + 1) % ELITE_AFFIX_ORDER.length;
-        toast(id ? `${ELITE_AFFIXES[id].name}精英出现 · 击败可得补给箱` : '精英出现！击败它掉落补给箱');
+        toast({ text: id ? `${ELITE_AFFIXES[id].name}精英出现 · 击败可得补给箱` : '精英出现！击败它掉落补给箱', priority: 3 });
       }
     }
   }
@@ -1758,7 +2445,8 @@ function bossDeath(e) {
   for (let i = 0; i < 15; i++) drop('coin', e.x + rand(-70, 70), e.y + rand(-70, 70), 2);
   drop('heal', e.x + 40, e.y);
   G.banner = { kind: 'info', title: e.final ? '母巢击破！' : '首领击破！', sub: e.final ? '突围成功' : '拾取补给箱', t: 2.4, max: 2.4, col: '255,205,71' };
-  if (e.final) { G.victoryT = 3.2; G.won = true; }
+  // 最终首领倒下后场上金币全部吸过来，倒计时结束前能捡完
+  if (e.final) { G.victoryT = 3.2; G.won = true; for (const q of G.pickups) if (q.kind === 'coin') { q.mag = true; q.t = Math.max(q.t, .3); } }
 }
 function drop(kind, x, y, v = 1) {
   if (kind === 'xp' && G.pickups.length > 420) { // 晶体太多时合并，避免掉帧
@@ -2223,7 +2911,7 @@ function offerRelay() {
       const first = { x: relay.x + Math.cos(angle) * cfg.routeLeg, y: relay.y + Math.sin(angle) * cfg.routeLeg };
       relay.route = { points: [{ x: relay.x, y: relay.y }, first, { x: first.x + Math.cos(turn) * cfg.routeLeg, y: first.y + Math.sin(turn) * cfg.routeLeg }], index: 1, angle, speed: cfg.speed };
     }
-    toast('发现' + cfg.title + ' · 靠近内圈启动', 4);
+    toast({ text: '发现' + cfg.title + ' · 靠近内圈启动', t: 4, priority: 3 });
     return;
   }
 }
@@ -2251,7 +2939,7 @@ function activateRelay() {
       spawnEnemy(cfg.guardTypes[i], relay.x + Math.cos(angle) * cfg.guardDistance, relay.y + Math.sin(angle) * cfg.guardDistance);
     }
   }
-  toast(cfg.startText, 4); SFX.click();
+  toast({ text: cfg.startText, t: 4, priority: 3 }); SFX.click();
 }
 function moveRelayConvoy(relay, dt) {
   const route = relay.route;
@@ -2317,14 +3005,14 @@ function completeRelay() {
   if (relay.status !== 'active') return;
   relay.status = 'complete'; relay.progress = relay.required; relay.timeLeft = RELAY_CONFIG.resultFor; relay.hazards.length = 0;
   G.pendingRelay = true; G.relayClears++; recordRelayResult(relay);
-  toast((relay.type === 'hunt' ? '围猎成功' : '回收成功') + ' · 选择军械奖励'); SFX.level();
+  toast({ text: (relay.type === 'hunt' ? '围猎成功' : '回收成功') + ' · 选择军械奖励', priority: 3 }); SFX.level();
 }
 function failRelay(reason) {
   const relay = G.relay;
   if (relay.status === 'complete' || relay.status === 'failed') return;
   relay.status = 'failed'; relay.reason = reason; relay.timeLeft = RELAY_CONFIG.resultFor; relay.hazards.length = 0;
   if (relay.target && !relay.target.dead) relay.target.objectiveTarget = false;
-  recordRelayResult(relay); toast(reason);
+  recordRelayResult(relay); toast({ text: reason, priority: 3 });
 }
 
 // ---- src/game/projectiles.js ----
@@ -2729,7 +3417,7 @@ $('#cards').addEventListener('click', e => {
   lvLastFeedback = feedback; SFX.click(); G.pendingLevels--;
   if (G.pendingLevels > 0) { lvOpts = buildOptions(); renderLevelChoices(); }
   else {
-    G.toast = { text: lvLastFeedback, t: 2.4, max: 2.4 };
+    toast({ text: lvLastFeedback, t: 2.4, priority: 2 });
     G.state = 'playing'; show(null); G.player.invuln = Math.max(G.player.invuln, .6);
   }
 });
@@ -2772,7 +3460,7 @@ $('#relayCards').addEventListener('click', e => {
   if (!applyOpt(o)) { refreshStaleRelayChoices(); return; }
   G.pendingRelay = false; relayRewardOptions = []; SFX.click();
   $('#relayFeedback').textContent = feedback;
-  G.toast = { text: feedback, t: 2.4, max: 2.4 };
+  toast({ text: feedback, t: 2.4, priority: 2 });
   G.player.invuln = Math.max(G.player.invuln, .6); G.state = 'playing'; show(null);
 });
 
@@ -2780,9 +3468,10 @@ $('#relayCards').addEventListener('click', e => {
 // 对局：开局、属性结算、每帧主更新
 
 function newRun({ practice = false } = {}) {
+  reloadMeta();
   const mech = MECHS.find(m => m.id === meta.sel && meta.unlocked[m.id]) || MECHS[0];
   setG({
-    state: 'playing', practice, settings: meta.settings || {}, report: initRunReport(), t: 0, rt: 0, mech, kills: 0, coins: 0, combo: 0, comboT: 0, bestCombo: 0, perfects: 0, bossKills: 0,
+    state: 'playing', runId: createRunIdentity(), debugGod: false, practice, settings: meta.settings || {}, report: initRunReport(), t: 0, rt: 0, mech, kills: 0, coins: 0, combo: 0, comboT: 0, bestCombo: 0, perfects: 0, bossKills: 0,
     enemies: [], ebullets: [], pbullets: [], prints: [], missiles: [], beams: [], bolts: [], waves: [], pickups: [], parts: [], texts: [], decals: [], later: [],
     spawnAcc: 0, nextElite: 35, bossIdx: 0, boss: null, warn: null, swarmIdx: 0, eid: 1, qid: 1,
     kickX: 0, kickY: 0, shake: 0, flashA: 0, flashC: '255,255,255', timeScale: 1, slowT: 0, hitStop: 0,
@@ -2816,7 +3505,7 @@ const halfDiag = () => Math.hypot(VW, VH) / 2;
 function update(rdt) {
   const p = G.player;
   if (G.banner) { G.banner.t -= rdt; if (G.banner.t <= 0) G.banner = null; }
-  if (G.toast) { G.toast.t -= rdt; if (G.toast.t <= 0) G.toast = null; }
+  updateToasts(rdt);
   G.flashA = Math.max(0, G.flashA - rdt * 2.2);
   if (G.hitStop > 0) { G.hitStop -= rdt; return; }
   if (G.slowT > 0) { G.slowT -= rdt; G.timeScale = .22; } else G.timeScale = Math.min(1, G.timeScale + rdt * 2.5);
@@ -2916,7 +3605,7 @@ function drawHangarPreview(t, active) {
   const move = dash ? Math.sin(Math.min(1, (t - 1) / .5) * Math.PI) * 42 : 0;
   const mx = dash ? move * .45 : 0, my = -move;
   const color = mech.id === 'phantom' ? '#d89dff' : mech.id === 'heavy' || mech.id === 'engineer' ? '#ffc973' : '#82deef';
-  const im = IMG[mech.img];
+  const im = mechSprite(mech);
   if (dash && im) {
     for (let i = 3; i >= 1; i--) { ctx.globalAlpha = .11 * (4 - i); ctx.drawImage(im, mx - 98 - i * 6, my - 96 + i * 15, 196, 196); }
     ctx.globalAlpha = 1;
@@ -2972,6 +3661,22 @@ function drawHangarWeapon(ctx, mech, t, over, color) {
   }
 }
 window.addEventListener('resize', () => { if (hangarPreviewCanvas && !hangarPreviewCanvas.closest('[hidden]') && !hangarPreviewFrame) drawHangarPreview(0, false); });
+
+// ---- src/ui/achievements.js ----
+// 机库里的协议勋章墙、成就列表和单台机甲战绩
+
+function mechRecordText(mechId) {
+  const s = meta.mechStats?.[mechId];
+  if (!s || !s.runs) return '本机还没有出击记录';
+  return `本机战绩 · 出击 ${s.runs} · 突围 ${s.wins}${s.fastest ? ` · 最快突围 ${fmtTime(s.fastest)}` : ''} · 最久存活 ${fmtTime(s.best)} · 最多击杀 ${s.bestKills}`;
+}
+function renderAchievements() {
+  const have = meta.achievements || {};
+  const got = ACHIEVEMENTS.filter(a => have[a.id]).length + PROTOCOL_MEDALS.filter(m => have[m.id]).length;
+  $('#achCount').textContent = `${got} / ${ACHIEVEMENT_TOTAL}`;
+  $('#medalWall').innerHTML = MECHS.map(mech => `<div class="medal-row"><img src="assets/sprites/${mech.img}.webp" alt="" width="32" height="32"><b>${mech.name}</b>${PROTOCOL_MEDALS.filter(m => m.mechId === mech.id).map(m => `<span class="medal${have[m.id] ? ' on' : ''}" aria-label="${mech.name}${m.name}${have[m.id] ? '，已突围' : '，未突围'}">${m.name}</span>`).join('')}</div>`).join('');
+  $('#achList').innerHTML = ACHIEVEMENTS.map(a => { const skin = skinForAchievement(a.id); return `<div class="ach${have[a.id] ? ' on' : ''}"><b>${a.name}</b><span>${a.desc}</span>${skin ? `<em class="ach-skin">解锁涂装 · ${skin.name}</em>` : ''}</div>`; }).join('');
+}
 
 // ---- src/ui/settings.js ----
 // 设置面板：独立音量、战斗舒适度、画质与教学入口
@@ -3085,26 +3790,63 @@ function syncSoundLabels() {
   for (const id of ['#btnSound', '#psSound']) { const el = $(id); if (el) el.textContent = text; }
 }
 function selectedHangarMech() { return MECHS.find(m => m.id === meta.sel && meta.unlocked[m.id]) || MECHS[0]; }
+function refreshStoredViews() {
+  if (G && G.state !== 'end') return;
+  if (!scr.menu.hidden) refreshMenu();
+  if (!scr.hangar.hidden) renderHangar();
+}
+function showRecoveryNotice(result) {
+  const notice = $('#saveNotice'); if (!notice) return;
+  notice.hidden = !result?.recovered;
+  notice.textContent = result?.saved ? `上局中断，已结算 ${result.credited} 金币` : '上局中断，收益暂未写入浏览器，请保持此页打开';
+}
+// 后台贴图到齐前，菜单和机库只能用原图地址、机库预览只画机体名字；到齐后补刷当时开着的那一页
+let assetRefreshWatch = false;
+function refreshWhenAssetsArrive() {
+  if (assetRefreshWatch || gameAssetsReady()) return;
+  assetRefreshWatch = true;
+  loadGameAssets().then(() => { if (!scr.menu.hidden) refreshMenu(); else if (!scr.hangar.hidden) renderHangar(); });
+}
 function refreshMenu() {
   const mech = selectedHangarMech(), talent = getSelectedTalent(mech.id, meta.talents);
   $('#mCoins').textContent = meta.coins; $('#mBest').textContent = meta.best ? fmtTime(meta.best) : '--'; $('#mWins').textContent = meta.wins;
   $('#menuMech').textContent = `${mech.name} · ${mech.cls}`;
   $('#menuTalent').textContent = talent.name + '协议';
-  $('#menuMechImage').src = `assets/sprites/${mech.img}.webp`;
+  $('#menuMechImage').src = mechSpriteURL(mech);
+  refreshWhenAssetsArrive();
   $('#mFastest').textContent = meta.fastestWin ? `最快突围 · ${fmtTime(meta.fastestWin)}` : '最快突围 · 等待首次胜利';
+  setBadge($('#btnHangar'), hangarBadge(meta));
+  const goal = nextGoal(meta), goalLine = $('#menuGoal');
+  goalLine.hidden = !goal;
+  if (goal) { goalLine.innerHTML = goalLineHtml(goal); goalLine.className = 'goal-line' + (goal.ready ? ' ready' : ''); goalLine.dataset.target = goalTarget(goal); }
+}
+// 按钮角标（如「可升级 3」），空串时移除
+function setBadge(button, text) { if (text) button.dataset.badge = text; else delete button.dataset.badge; }
+const goalTarget = goal => goal.kind === 'mech' ? goal.id : 'upgrades';
+// 「下一个目标」一行进度，菜单和结算页共用；from 是结算前的金币，进度条从这里涨到现在
+function goalLineHtml(goal, from = goal.have) {
+  const pct = v => (Math.max(0, Math.min(1, v / goal.cost)) * 100).toFixed(1) + '%';
+  const bar = from < goal.have ? ` class="grow" style="--from:${pct(from)};width:${pct(goal.have)}"` : ` style="width:${pct(goal.have)}"`;
+  return `<span class="goal-text"><small>下一个目标</small><b>${goal.name}</b><span class="num">${goal.ready ? '金币够了' : `${goal.have} / ${goal.cost}`}</span></span><span class="goal-bar" aria-hidden="true"><i${bar}></i></span>`;
 }
 function openMenu() { setG(null); musicStop(); refreshMenu(); show('menu'); }
-function openHangar() { previewMechId = selectedHangarMech().id; show('hangar'); renderHangar(); }
+// target：机甲 id 时直接预览那台机甲，'upgrades' 时滚到永久改装
+function openHangar(target) {
+  previewMechId = MECHS.some(m => m.id === target) ? target : selectedHangarMech().id;
+  show('hangar'); renderHangar(); refreshWhenAssetsArrive();
+  if (target === 'upgrades') $('#upgradeTitle').scrollIntoView?.({ block: 'start' });
+}
 function renderHangar() {
   const focused = document.activeElement, focusMech = focused?.dataset?.mech, focusTalent = focused?.dataset?.talent, focusUpgrade = focused?.dataset?.up;
   const m = MECHS.find(mech => mech.id === previewMechId) || selectedHangarMech(), selected = selectedHangarMech();
   const unlocked = !!meta.unlocked[m.id], equipped = selected.id === m.id, talent = getSelectedTalent(m.id, meta.talents);
   $('#hgCoins').textContent = meta.coins;
-  $('#mechList').innerHTML = MECHS.map(mech => `<button type="button" class="mech-thumb ${mech.id === m.id ? 'preview' : ''} ${mech.id === selected.id ? 'equipped' : ''} ${meta.unlocked[mech.id] ? '' : 'locked'}" data-mech="${mech.id}" aria-pressed="${mech.id === m.id}" aria-label="预览${mech.name}，${meta.unlocked[mech.id] ? mech.id === selected.id ? '当前装备' : '已解锁' : '未解锁'}"><img src="assets/sprites/${mech.img}.webp" alt="" width="48" height="48"><b>${mech.name}</b><small>${mech.id === selected.id ? '已装备' : meta.unlocked[mech.id] ? '可装备' : '未解锁'}</small></button>`).join('');
+  $('#mechList').innerHTML = MECHS.map(mech => `<button type="button" class="mech-thumb ${mech.id === m.id ? 'preview' : ''} ${mech.id === selected.id ? 'equipped' : ''} ${meta.unlocked[mech.id] ? '' : `locked${meta.coins >= mech.cost ? ' affordable' : ''}`}" data-mech="${mech.id}" aria-pressed="${mech.id === m.id}" aria-label="预览${mech.name}，${meta.unlocked[mech.id] ? mech.id === selected.id ? '当前装备' : '已解锁' : `未解锁，${mech.cost} 金币`}"><img src="${mechSpriteURL(mech)}" alt="" width="48" height="48"><b>${mech.name}</b><small>${mech.id === selected.id ? '已装备' : meta.unlocked[mech.id] ? '可装备' : mech.cost + ' 金币'}</small></button>`).join('');
   $('#hgPreviewClass').textContent = m.cls;
   $('#hgPreviewName').textContent = m.name;
   $('#hgAvailability').textContent = equipped ? '当前出击机体' : unlocked ? '已解锁 · 可装备' : `${m.cost} 金币解锁`;
   $('#hgPreviewDescription').innerHTML = `${m.desc}<b>初始武器 · ${WDEF[m.weapon].name}</b>`;
+  $('#hgRecord').textContent = mechRecordText(m.id);
   $('#hgStats').innerHTML = [['生命', m.hp, ''], ['移速', m.speed, ''], ['装甲减伤', m.armor, '点'], ['冲刺冷却', m.dashCd, '秒']].map(([label, value, unit]) => `<div><dt>${label}</dt><dd>${value}${unit ? `<small>${unit}</small>` : ''}</dd></div>`).join('');
   const baseTraits = { assault: ['均衡底盘', '基础生命 100，移速 158，以持续火力拉开与虫群的距离。'], heavy: ['重型装甲', '每次命中由装甲减伤 2 点，基础生命 150。'], phantom: ['轻量推进', '基础冲刺冷却 0.95 秒，适合贴身切割后迅速脱离。'] };
   const passive = m.trait ? [m.trait.passiveName, m.trait.passiveDesc] : baseTraits[m.id];
@@ -3114,8 +3856,13 @@ function renderHangar() {
   $('#hgSelect').textContent = equipped ? '已装备 ' + m.name : '装备 ' + m.name;
   $('#hgUnlock').hidden = unlocked; $('#hgUnlock').disabled = meta.coins < m.cost;
   $('#hgUnlock').textContent = `解锁 ${m.name} · ${m.cost} 金币`;
+  const goal = nextGoal(meta), isGoal = goal?.kind === 'mech' && goal.id === m.id;
+  $('#hgGoal').hidden = unlocked; $('#hgGoal').disabled = isGoal;
+  $('#hgGoal').textContent = isGoal ? '已是下一个目标' : '设为下一个目标';
+  const upgradable = affordableUpgradeCount(meta);
+  $('#hgUpJump').hidden = !upgradable; $('#hgUpJump').textContent = `永久改装 · 可升级 ${upgradable} 项`;
   $('#hgSelectionStatus').textContent = equipped ? '出击将使用这台机体与下方协议。' : unlocked ? `当前预览 ${m.name}；出击机体仍是 ${selected.name}。` : meta.coins < m.cost ? `还差 ${m.cost - meta.coins} 金币；可以先预览能力与协议。` : '解锁后可装备；只有点击解锁按钮才会消耗金币。';
-  $('#talentList').innerHTML = getTalentOptions(m.id).map(option => `<button type="button" class="talent-choice ${option.id === talent.id ? 'selected' : ''}" data-talent="${option.id}" aria-pressed="${option.id === talent.id}" ${unlocked ? '' : 'disabled'}><b>${option.name}${option.id === talent.id ? ' · 已选' : ''}</b><span>${option.description}</span></button>`).join('');
+  $('#talentList').innerHTML = getTalentOptions(m.id).map(option => `<button type="button" class="talent-choice ${option.id === talent.id ? 'selected' : ''}" data-talent="${option.id}" aria-pressed="${option.id === talent.id}" ${unlocked ? '' : 'disabled'}><b>${option.name}${option.id === talent.id ? ' · 已选' : ''}</b><span>${option.description}</span>${meta.achievements?.['proto:' + option.id] ? '<em class="talent-medal">已突围</em>' : ''}</button>`).join('');
   $('#talentStatus').textContent = unlocked ? `${m.name}已选 ${talent.name}；每台机体分别保存。` : '解锁机体后可选择协议。';
   const launchTalent = getSelectedTalent(selected.id, meta.talents);
   $('#hgLaunchLabel').textContent = `出击配置：${selected.name} · ${launchTalent.name}`;
@@ -3124,35 +3871,64 @@ function renderHangar() {
     const lv = upLv(u.id), maxed = lv >= u.max, cost = maxed ? 0 : u.cost[lv];
     return `<div class="up cut"><div><div class="un">${u.name} <span class="upgrade-level">${lv}/${u.max}</span></div><div class="ud">${u.desc}</div><div class="pips" aria-hidden="true">${Array.from({ length: u.max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</div></div><button class="buy" data-up="${u.id}" ${maxed || meta.coins < cost ? 'disabled' : ''} aria-label="${u.name}${maxed ? '已满级' : `提升至${lv + 1}级，消耗${cost}金币${meta.coins < cost ? '，金币不足' : ''}`}">${maxed ? '已满级' : cost + ' 金币'}</button></div>`;
   }).join('');
+  renderSkins(m, unlocked);
+  renderAchievements();
   setHangarPreview($('#hgPreviewCanvas'), m);
   $('#hgDemo').disabled = false; $('#hgDemo').textContent = '演示能力'; $('#hgDemoStatus').textContent = '5 秒能力示意 · 不影响对局';
   if (focusMech) $('#mechList').querySelector(`[data-mech="${focusMech}"]`)?.focus({ preventScroll: true });
   if (focusTalent) $('#talentList').querySelector(`[data-talent="${focusTalent}"]`)?.focus({ preventScroll: true });
   if (focusUpgrade) $('#upList').querySelector(`[data-up="${focusUpgrade}"]:not([disabled])`)?.focus({ preventScroll: true });
 }
+// 涂装：成就解锁，每台机甲各自保存；锁定的写明哪条成就解锁
+function renderSkins(m, unlocked) {
+  const now = selectedSkin(meta, m.id), open = SKINS.filter(skin => skinUnlocked(skin, meta)).length;
+  $('#skinList').innerHTML = SKINS.map(skin => {
+    const free = skinUnlocked(skin, meta), on = skin.id === now.id;
+    const note = !free ? `${achievementById(skin.need).name}解锁` : on ? '使用中' : '';
+    return `<button type="button" class="skin-choice${on ? ' selected' : ''}${free ? '' : ' locked'}" data-skin="${skin.id}" aria-pressed="${on}" aria-label="${skin.name}涂装${note ? '，' + note : ''}" ${free && unlocked ? '' : 'disabled'}><i class="skin-dot${skin.h === undefined ? ' factory' : ''}"${skin.h === undefined ? '' : ` style="background:${skinSwatch(skin)}"`}></i><b>${skin.name}</b><small>${note}</small></button>`;
+  }).join('');
+  $('#skinStatus').textContent = unlocked ? `已解锁 ${open} / ${SKINS.length} 种 · 每台机体分别保存` : '解锁机体后可选涂装。';
+}
+$('#skinList').addEventListener('click', e => {
+  const b = e.target.closest('[data-skin]'); if (!b || b.disabled || !meta.unlocked[previewMechId]) return;
+  const skin = skinById(b.dataset.skin), m = MECHS.find(mech => mech.id === previewMechId); if (!skin || !m || !skinUnlocked(skin, meta)) return;
+  if (!meta.skins) meta.skins = {};
+  meta.skins[m.id] = skin.id; saveMeta(); applyMechSkin(m.id); SFX.click(); renderHangar();
+  $('#hgSelectionStatus').textContent = `${m.name}换上了${skin.name}涂装。`;
+});
 $('#mechList').addEventListener('click', e => {
   const b = e.target.closest('[data-mech]'); if (!b || !MECHS.some(m => m.id === b.dataset.mech)) return;
   previewMechId = b.dataset.mech; SFX.click(); renderHangar();
 });
 $('#hgSelect').addEventListener('click', () => {
+  reloadMeta();
   const m = MECHS.find(mech => mech.id === previewMechId); if (!m || !meta.unlocked[m.id] || meta.sel === m.id) return;
   meta.sel = m.id; saveMeta(); SFX.click(); renderHangar();
   $('#hgSelectionStatus').textContent = `${m.name}已装备，可直接出击。`;
   $('#hgStart').focus({ preventScroll: true });
 });
 $('#hgUnlock').addEventListener('click', () => {
+  reloadMeta();
   const m = MECHS.find(mech => mech.id === previewMechId); if (!m || meta.unlocked[m.id] || meta.coins < m.cost) return;
   meta.coins -= m.cost; meta.unlocked[m.id] = true; saveMeta(); SFX.evo(); renderHangar();
   $('#hgSelectionStatus').textContent = `${m.name}已解锁，消耗 ${m.cost} 金币。点击装备后可出击。`;
   $('#hgSelect').focus({ preventScroll: true });
 });
+$('#hgGoal').addEventListener('click', () => {
+  const m = MECHS.find(mech => mech.id === previewMechId); if (!m || meta.unlocked[m.id]) return;
+  meta.goal = m.id; saveMeta(); SFX.click(); renderHangar();
+  $('#hgSelectionStatus').textContent = `${m.name}已设为下一个目标，主菜单和结算页会显示进度。`;
+});
+$('#hgUpJump').addEventListener('click', () => { SFX.click(); $('#upgradeTitle').scrollIntoView?.({ block: 'start', behavior: 'smooth' }); });
 $('#talentList').addEventListener('click', e => {
+  reloadMeta();
   const b = e.target.closest('[data-talent]'); if (!b || b.disabled || !meta.unlocked[previewMechId]) return;
   const talent = getTalentOptions(previewMechId).find(option => option.id === b.dataset.talent); if (!talent) return;
   if (!meta.talents) meta.talents = {};
   meta.talents[previewMechId] = talent.id; saveMeta(); SFX.click(); renderHangar();
 });
 $('#upList').addEventListener('click', e => {
+  reloadMeta();
   const b = e.target.closest('[data-up]'); if (!b || b.disabled) return;
   const u = META_UPS.find(x => x.id === b.dataset.up); if (!u) return;
   const lv = upLv(u.id); if (lv >= u.max || meta.coins < u.cost[lv]) return;
@@ -3162,15 +3938,29 @@ $('#upList').addEventListener('click', e => {
 $('#hgDemo').addEventListener('click', () => {
   SFX.click(); playHangarDemo((playing, text) => { $('#hgDemo').disabled = playing; $('#hgDemo').textContent = playing ? '演示中' : '再次演示'; $('#hgDemoStatus').textContent = text; });
 });
-function startRun(options = {}) {
-  audioInit(); SFX.click(); newRun(options); show(null); musicStart(); MUS.intensity = 1;
+let assemblingRun = null;
+// 后台贴图还没到齐时先显示装配进度，到齐后自动开局
+function waitGameAssets() {
+  $('#lstat').textContent = '机甲装配中…'; $('#loading').hidden = false;
+  const off = onGameAssetProgress(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; });
+  return loadGameAssets().then(() => { off(); $('#loading').hidden = true; });
+}
+// 返回的 Promise 在真正开局（G 已建好）后完成；装配中重复出击只开一局，返回同一个 Promise
+function startRun(options = {}, deferred = false) {
+  if (!deferred) { audioInit(); SFX.click(); }
+  if (!gameAssetsReady()) return assemblingRun || (assemblingRun = waitGameAssets().then(() => { assemblingRun = null; startRun(options, true); }));
+  resetAdaptiveQualityRun();
+  if ($('#saveNotice')) $('#saveNotice').hidden = true;
+  newRun(options); show(null); musicStart(); MUS.intensity = 1;
   G.cam.x = 0; G.cam.y = 0;
   try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => { }); } catch (_) { }
+  return Promise.resolve();
 }
 $('#btnStart').addEventListener('click', () => startRun());
 $('#hgStart').addEventListener('click', () => startRun());
 $('#btnHangar').addEventListener('click', () => { audioInit(); SFX.click(); openHangar(); });
 $('#menuChangeMech').addEventListener('click', () => { audioInit(); SFX.click(); openHangar(); });
+$('#menuGoal').addEventListener('click', () => { audioInit(); SFX.click(); openHangar($('#menuGoal').dataset.target); });
 $('#hgBack').addEventListener('click', () => { SFX.click(); refreshMenu(); show('menu'); });
 
 // ---- src/ui/end.js ----
@@ -3196,8 +3986,13 @@ function renderEndReport(run, win) {
   $('#endDamageNote').textContent = run.practice ? '安全训练不计入战绩。' : report ? '有效伤害包含敌方护盾，不计过量伤害；保留换装前的输出。' : '本局没有可用的战斗记录。';
   const injuries = Object.entries(report?.damageTakenBySource || {}).filter(([, value]) => Number.isFinite(value) && value > 0).sort((a, b) => b[1] - a[1]);
   const taken = injuries.reduce((sum, [, value]) => sum + value, 0);
+  $('#endInjuries').innerHTML = `<div><dt>累计承受伤害</dt><dd>${endNumber(taken)}</dd></div><div><dt>主要受伤来源</dt><dd>${injuries.length ? reportCauseName(injuries[0][0]) : '无受伤记录'}</dd></div>`;
+  // 标题下面紧接「结束原因 + 一条建议」，失败时写明致命来源
+  const lost = !win && !run.practice && !run.abandoned;
   const fatal = run.practice ? '训练已结束' : run.abandoned ? '主动结束本局' : win ? '成功突围' : report?.fatalHit ? reportCauseName(report.fatalHit.cause) : '未记录';
-  $('#endInjuries').innerHTML = `<div><dt>累计承受伤害</dt><dd>${endNumber(taken)}</dd></div><div><dt>主要受伤来源</dt><dd>${injuries.length ? reportCauseName(injuries[0][0]) : '无受伤记录'}</dd></div><div class="fatal"><dt>${win || run.practice || run.abandoned ? '结束原因' : '致命来源'}</dt><dd>${fatal}</dd></div>`;
+  $('#endCause').className = 'end-cause ' + (lost ? 'lose' : 'win');
+  $('#endCauseLabel').textContent = lost ? '致命来源' : '结束原因';
+  $('#endCauseName').textContent = fatal;
   $('#endAdvice').textContent = run.practice ? '完成移动、冲刺和超载后，再尝试贴近敌弹触发极限闪避。训练场中的操作不会消耗金币或增加对局场次。' : buildRunAdvice(run);
   renderEndLoadout(run);
 }
@@ -3206,19 +4001,41 @@ function endRun(win) {
   const run = G; run.state = 'end'; musicStop();
   const practice = !!run.practice;
   const { killBonus, bossBonus, winBonus, earned } = runReward(run.coins, run.kills, run.bossKills, win);
-  const newBest = !practice && run.t > meta.best;
-  const fastest = !practice && win && run.t > 0 && (!meta.fastestWin || run.t < meta.fastestWin);
+  let newAchievements = [];
   if (!practice) {
-    meta.coins += earned; meta.best = Math.max(meta.best, run.t); meta.bestKills = Math.max(meta.bestKills, run.kills);
-    if (win) meta.wins++;
-    if (fastest) meta.fastestWin = run.t;
-    saveMeta();
+    // 先累计本机战绩，再判定成就（「全员突围」等要看累计战绩）；随下面的结算一次写盘
+    const summary = achievementSummary(run, win);
+    if (summary.mechId) { if (!meta.mechStats) meta.mechStats = {}; meta.mechStats[summary.mechId] = applyMechStats(meta.mechStats[summary.mechId], summary); }
+    newAchievements = evaluateAchievements(summary, meta);
+    if (!meta.achievements) meta.achievements = {};
+    for (const id of newAchievements) meta.achievements[id] = Date.now();
   }
+  // 金币、场次和纪录由 settleRunProgress 幂等结算（含中断恢复）
+  const settlement = practice ? null : settleRunProgress(run, win);
+  const newBest = !!settlement?.newBest, fastest = !!settlement?.fastest;
   const title = $('#endTitle'); title.textContent = practice ? '训练结束' : win ? '突围成功' : run.abandoned ? '行动结束' : '机体损毁'; title.className = 'end-title ' + (practice || win ? 'win' : 'lose');
   $('#endSub').textContent = practice ? '安全训练 · 不计金币、场次与战绩' : win ? `${run.mech.cls} · ${run.mech.name} 击破了深渊母巢` : run.abandoned ? '当前进度已结算，可调整配装再次出击' : run.boss ? `倒在了${run.boss.name}面前` : run.bossIdx < BOSS_TIMES.length ? `再撑 ${fmtTime(Math.max(0, BOSS_TIMES[run.bossIdx] - run.t))} 就能见到${BOSSES[run.bossIdx].name}` : '母巢还在，再来一次';
+  if (settlement?.previousPaid > 0) $('#endSub').textContent += ` · 已保存 ${settlement.previousPaid} 金币，本次新增 ${settlement.credited}`;
   const stat = (label, value, extra = '') => `<div class="stat"><small>${label}</small><b class="num">${value}</b>${extra}</div>`;
-  $('#endStats').innerHTML = stat(practice ? '训练时间' : '存活时间', fmtTime(run.t), newBest ? '<span class="rec">新纪录</span>' : '') + stat('击杀', run.kills) + stat('等级', run.player.level) + stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) +
-    (practice ? '<div class="stat gold"><small>训练模式</small><b>不计战绩</b></div>' : `<div class="stat gold"><small>获得金币（拾取 ${run.coins} + 击杀 ${killBonus} + 首领 ${bossBonus}${win ? ` + 突围 ${winBonus}` : ''}）</small><b class="num">+${earned}</b></div><div class="stat record"><small>最快突围${fastest ? ' · 新纪录' : ''}</small><b class="num">${meta.fastestWin ? fmtTime(meta.fastestWin) : '--'}</b></div>`);
+  // 首屏只留存活、击杀、等级和金币，其余收进「更多数据」
+  const records = (newBest ? '<span class="rec">新纪录</span>' : '') + (fastest ? '<span class="rec">最快突围</span>' : '');
+  $('#endStats').innerHTML = stat(practice ? '训练时间' : '存活时间', fmtTime(run.t), records) + stat('击杀', run.kills) + stat('等级', run.player.level) +
+    (practice ? '<div class="stat gold"><small>训练模式</small><b>不计战绩</b></div>' : `<div class="stat gold"><small>获得金币（拾取 ${run.coins} + 击杀 ${killBonus} + 首领 ${bossBonus}${win ? ` + 突围 ${winBonus}` : ''}）</small><b class="num">+${earned}</b></div>`);
+  $('#endMoreStats').innerHTML = stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) +
+    (!practice && meta.fastestWin ? `<div class="stat record"><small>最快突围${fastest ? ' · 新纪录' : ''}</small><b class="num">${fmtTime(meta.fastestWin)}</b></div>` : '');
+  $('#endMore').open = false;
+  // 金币卡片下面接「下一个目标」，进度条从结算前涨到结算后；金币够了直接去机库
+  const goal = practice ? null : nextGoal(meta);
+  $('#endGoal').hidden = !goal;
+  if (goal) {
+    $('#endGoalLine').innerHTML = goalLineHtml(goal, meta.coins - (settlement?.credited ?? earned));
+    $('#endGoalLine').className = 'goal-line' + (goal.ready ? ' ready' : '');
+    $('#endGoalGo').hidden = !goal.ready; $('#endGoalGo').dataset.target = goalTarget(goal);
+    $('#endGoalGo').textContent = goal.kind === 'mech' ? `去解锁${goal.name}` : '去改装';
+  }
+  setBadge($('#endHangar'), practice ? '' : hangarBadge(meta));
+  $('#endAch').hidden = !newAchievements.length;
+  $('#endAchList').innerHTML = newAchievements.map(id => { const skin = skinForAchievement(id); return `<span class="ach-chip ${id.startsWith('proto:') ? 'medal' : ''}">${id.startsWith('proto:') ? '协议勋章 · ' : ''}${achievementById(id).name}${skin ? ` · 解锁${skin.name}涂装` : ''}</span>`; }).join('');
   renderEndReport(run, win);
   $('#endAgain').textContent = practice ? '再次训练' : `驾驶 ${run.mech.name} 再战`;
   setTimeout(() => { if (G === run && run.state === 'end') show('end'); }, 50);
@@ -3226,6 +4043,7 @@ function endRun(win) {
 $('#endAgain').addEventListener('click', () => {
   if (!G || G.state !== 'end') return;
   const practice = !!G.practice;
+  reloadMeta();
   meta.sel = G.mech.id;
   if (G.talent) { if (!meta.talents) meta.talents = {}; meta.talents[G.mech.id] = G.talent.id; }
   if (practice) resetTutorial();
@@ -3234,12 +4052,14 @@ $('#endAgain').addEventListener('click', () => {
 });
 $('#endHangar').addEventListener('click', () => { SFX.click(); setG(null); openHangar(); });
 $('#endMenu').addEventListener('click', () => { SFX.click(); openMenu(); });
+$('#endGoalGo').addEventListener('click', () => { SFX.click(); setG(null); openHangar($('#endGoalGo').dataset.target); });
 
 // ---- src/ui/pause.js ----
 // 暂停界面：显示当前配装和真实进化进度，切到后台时自动暂停
 
 function pauseGame() {
-  if (!G || G.state !== 'playing') return; G.state = 'paused';
+  if (!G || G.state !== 'playing' || G.won || G.victoryT > 0 || G.endT > 0 || G.player.hp <= 0) return;
+  checkpointRun(); audioPause(); G.state = 'paused';
   const p = G.player;
   $('#psCoins').textContent = G.practice ? '训练不计' : G.coins;
   $('#psMech').textContent = G.mech ? `${G.mech.name}${G.talent ? ' · ' + G.talent.name : ''}${G.practice ? ' · 安全训练' : ''}` : '';
@@ -3259,10 +4079,22 @@ function pauseTrainingSummary(p) {
   const effects = { power: `全武器伤害 +${percent(stats.dmgMul - 1)}%`, guard: `最大生命 +${stats.hpBonus}`, mobility: `移速 +${percent(stats.speedMul - 1)}% · 冲刺冷却 −${percent(1 - stats.dashMul)}%` };
   return `<div class="training-summary"><h3>本局机体训练</h3>${Object.entries(TRAINING_DEF).map(([id, d]) => `<div class="training-row">${svgI(d.icon)}<div><b>${d.name} <span>${p.training?.[id] || 0} 阶</span></b><small>${effects[id]}</small></div></div>`).join('')}<p>满级后仍可选择训练。火力与机动收益逐阶递减，换装不会丢失机体训练。</p></div>`;
 }
-function resumeGame() { if (!G || G.state !== 'paused') return; G.state = 'playing'; show(null); }
+function resumeGame() { if (!G || G.state !== 'paused') return; audioResume(); G.state = 'playing'; show(null); }
 $('#psResume').addEventListener('click', () => { SFX.click(); resumeGame(); });
-$('#psQuit').addEventListener('click', () => { if (!G || G.state !== 'paused') return; G.abandoned = true; G.player.hp = 0; G.endT = 2; endRun(false); });
-document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
+$('#psQuit').addEventListener('click', () => {
+  if (!G || G.state !== 'paused') return;
+  if (G.won || G.victoryT > 0) return endRun(true);
+  if (G.endT > 0 || G.player.hp <= 0) return endRun(false);
+  G.abandoned = true; G.player.hp = 0; G.endT = 2; endRun(false);
+});
+function pauseForBackground() {
+  // 胜利或击毁演出不能进入暂停菜单，但后台音频与进度仍必须处理。
+  checkpointRun(); audioPause({ suspend: true }); pauseGame();
+}
+function resumeForegroundAudio() { if (!document.hidden) audioResume({ music: G?.state !== 'paused' }); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseForBackground(); else resumeForegroundAudio(); });
+window.addEventListener('pagehide', pauseForBackground);
+window.addEventListener('pageshow', resumeForegroundAudio);
 window.addEventListener('blur', () => pauseGame());
 
 // ---- src/core/input.js ----
@@ -3328,11 +4160,19 @@ function tutorialProgress() {
   if (!meta.tutorialProgress) meta.tutorialProgress = Object.fromEntries(TUTORIAL_STEPS.map(s => [s.id, !!meta.tutorial]));
   return meta.tutorialProgress;
 }
+function discardTutorialHint(text) {
+  if (G.toastQueue) G.toastQueue = G.toastQueue.filter(q => q.text !== text);
+  if (G.toast?.text === text) G.toast = null;
+}
 function recordTutorialAction(id) {
   const progress = tutorialProgress();
   if (progress[id] || !TUTORIAL_STEPS.some(s => s.id === id)) return false;
   progress[id] = true; meta.tutorial = TUTORIAL_STEPS.every(s => progress[s.id]); saveMeta();
-  if (G) { G.tutorialHintT = 0; if (meta.tutorial) toast('操作训练完成 · 现在可以出击了', 5); }
+  if (G) {
+    G.tutorialHintT = 0;
+    discardTutorialHint(TUTORIAL_STEPS.find(s => s.id === id).text);
+    if (meta.tutorial) toast({ text: G.practice ? '操作训练完成 · 现在可以出击了' : '操作要领已掌握', t: 5, priority: 1 });
+  }
   return true;
 }
 function resetTutorial() {
@@ -3340,6 +4180,15 @@ function resetTutorial() {
 }
 function skipTutorial() {
   meta.tutorialProgress = Object.fromEntries(TUTORIAL_STEPS.map(s => [s.id, true])); meta.tutorial = true; saveMeta();
+}
+function tutorialContextReady(step, p) {
+  if (G.practice) return true;
+  if (step.id === 'move') return G.t <= EXPERIENCE.tutorialMoveUntil && !(p.dashT > 0);
+  if (step.id === 'dash') return G.t <= EXPERIENCE.tutorialDashUntil && p.dashCd <= 0 && !(p.dashT > 0);
+  // 正式局超载复用玩家模块的满能量单次提示，不另行按周期播教学。
+  if (step.id === 'overload') return false;
+  return p.dashCd <= 0 && !(p.dashT > 0) && G.ebullets.some(b =>
+    !b.dead && b.life > 0 && Math.hypot(b.x - p.x, b.y - p.y) <= EXPERIENCE.tutorialThreatRadius);
 }
 function updateTutorial(dt) {
   if (!G || G.state !== 'playing' || G.player.hp <= 0 || G.endT > 0) return;
@@ -3355,7 +4204,16 @@ function updateTutorial(dt) {
   G.tutorialStep = step?.id || 'complete';
   if (!step) return;
   G.tutorialHintT = (G.tutorialHintT || 0) - dt;
-  if (G.tutorialHintT <= 0) { toast(step.text, 5); G.tutorialHintT = EXPERIENCE.tutorialHintEvery; }
+  const contextReady = tutorialContextReady(step, p);
+  if (!contextReady) discardTutorialHint(step.text);
+  const canRemind = G.practice || (G.tutorialHintCounts?.[step.id] || 0) < EXPERIENCE.tutorialHintCap;
+  if (G.tutorialHintT <= 0 && contextReady && canRemind) {
+    toast({ text: step.text, t: 5, priority: 1 }); G.tutorialHintT = EXPERIENCE.tutorialHintEvery;
+    if (!G.practice) {
+      G.tutorialHintCounts = G.tutorialHintCounts || {};
+      G.tutorialHintCounts[step.id] = (G.tutorialHintCounts[step.id] || 0) + 1;
+    }
+  }
   if (!G.practice) return;
   if (step.id === 'overload' && p.overT <= 0) p.overload = 100;
   if (step.id === 'perfect') {
@@ -4296,6 +5154,29 @@ function drawMechContour(R, p) {
   ctx.translate(tx, ty); ctx.rotate(p.angle + PI / 2); ctx.drawImage(worldContourImage(R.torsoG), -size / 2, -size / 2, size, size); ctx.restore();
 }
 
+// ---- src/ui/orientation.js ----
+// 手机横屏提示：横屏时盖上「请竖屏游玩」，战斗中自动暂停；转回竖屏后由玩家自己点继续
+
+// 只拦手机横屏：平板和桌面的横向窗口高度够用，不拦
+const LANDSCAPE_QUERY = '(orientation: landscape) and (max-height: 500px) and (pointer: coarse)';
+const landscapeMq = typeof matchMedia === 'function' ? matchMedia(LANDSCAPE_QUERY) : null;
+let landscapeNow = false;
+const isLandscapeBlocked = () => landscapeNow;
+// 主循环每帧调用：横屏期间战斗不跑，转屏前已在等待开局、用键盘继续等情况也会被拦下
+function holdForLandscape() {
+  if (landscapeNow && G && G.state === 'playing') pauseGame();
+}
+function syncLandscape() {
+  landscapeNow = !!(landscapeMq && landscapeMq.matches);
+  $('#rotate').hidden = !landscapeNow;
+  holdForLandscape();
+}
+if (landscapeMq) {
+  if (landscapeMq.addEventListener) landscapeMq.addEventListener('change', syncLandscape);
+  else if (landscapeMq.addListener) landscapeMq.addListener(syncLandscape);
+}
+syncLandscape();
+
 // ---- src/main.js ----
 // 入口：主循环、启动加载、调试钩子
 
@@ -4331,6 +5212,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   const frameMs = now - last, rdt = Math.min(.05, frameMs / 1000); last = now;
   if (G) G.effectBudget = Math.round(700 * getQualityBudget().particleScale);
+  holdForLandscape();
   const t0 = performance.now();
   for (let i = 0; i < SPEED && G && G.state === 'playing'; i++) update(rdt);
   if (G) {
@@ -4346,13 +5228,17 @@ $('#btnTraining').addEventListener('click', () => { resetTutorial(); startRun({ 
 $('#btnTutorialExit').addEventListener('click', () => openMenu());
 window.addEventListener('ir:tutorial-replay', event => { if (event.detail?.origin === 'pause') return; resetTutorial(); startRun({ practice: true }); });
 window.addEventListener('ir:tutorial-skip', () => { skipTutorial(); });
+subscribeMeta(() => refreshStoredViews());
+function refreshVisibleMeta() { if (!document.hidden && (!G || G.state === 'end')) reloadMeta(); }
+window.addEventListener('pageshow', refreshVisibleMeta);
+document.addEventListener('visibilitychange', refreshVisibleMeta);
 resize(); refreshHudLayout(); syncSoundLabels();
-loadAll(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).then(() => {
-  const go = () => { $('#loading').hidden = true; openMenu(); requestAnimationFrame(t => { last = t; frame(t); }); };
-  if (document.fonts && document.fonts.load) Promise.race([Promise.all([document.fonts.load('600 20px Teko'), document.fonts.load('20px "ZCOOL QingKe HuangYou"', '钢铁暴走连杀')]), new Promise(r => setTimeout(r, 1500))]).then(go, go);
-  else go();
+loadFonts();
+loadMenuAssets(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).then(() => waitFonts(600)).then(() => {
+  const recovered = recoverPendingRuns(); $('#loading').hidden = true; openMenu(); showRecoveryNotice(recovered); requestAnimationFrame(t => { last = t; frame(t); });
+  loadGameAssets();
 });
-window.__IR = { get G() { return G; }, meta, skip(t) { if (G) { G.t = t; G.nextElite = t + 5; while (G.swarmIdx < SWARM_TIMES.length && SWARM_TIMES[G.swarmIdx] < t) G.swarmIdx++; while (G.bossIdx < BOSS_TIMES.length && BOSS_TIMES[G.bossIdx] < t - 3) G.bossIdx++; } }, god() { if (G) { G.player.maxHp = G.player.hp = 99999; } }, set speed(v) { SPEED = v; }, PERF, IN, RIG, start(id) { if (id) { meta.unlocked[id] = true; meta.sel = id; } startRun(); }, screenPos() { const p = G.player; return { x: W / 2 + (p.x - G.cam.x) * ZOOM, y: H / 2 + (p.y - G.cam.y) * ZOOM }; } };
+window.__IR = { get G() { return G; }, meta, skip(t) { if (G) { G.t = t; G.nextElite = t + 5; while (G.swarmIdx < SWARM_TIMES.length && SWARM_TIMES[G.swarmIdx] < t) G.swarmIdx++; while (G.bossIdx < BOSS_TIMES.length && BOSS_TIMES[G.bossIdx] < t - 3) G.bossIdx++; } }, god() { if (G) G.debugGod = true; }, set speed(v) { SPEED = v; }, PERF, IN, RIG, start(id) { if (id) { meta.unlocked[id] = true; meta.sel = id; } return startRun(); }, screenPos() { const p = G.player; return { x: W / 2 + (p.x - G.cam.x) * ZOOM, y: H / 2 + (p.y - G.cam.y) * ZOOM }; } };
 })();
 </script>
 </body>
