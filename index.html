@@ -359,10 +359,8 @@ input.settings-control[type="range"]{width:100%;min-height:44px;margin:0;cursor:
 .report-empty{font-size:13px;line-height:1.7;color:#b3c5d2;margin:0}
 .injury-report{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0;padding:14px 0 0;border-top:1px solid #2c3d49}
 .injury-report>div{min-width:0}
-.injury-report .fatal{grid-column:1/-1}
 .injury-report dt{font-size:12px;color:#aebfcc;margin:0 0 6px}
 .injury-report dd{font-size:15px;margin:0;color:#e1e8ee;font-variant-numeric:tabular-nums;line-height:1.5}
-.injury-report .fatal dd{color:#edb2a6}
 #endProtocol{color:#d9bd95}
 #endBuild .build-training{grid-column:1/-1;font-size:12px;color:#c9b4dc;line-height:1.7;padding-top:8px}
 #scrEnd .btn-col{gap:8px}
@@ -425,6 +423,28 @@ button.goal-line{cursor:pointer}
 .ach span{display:block;margin-top:2px;font-size:11px;line-height:1.5;color:#9fb0bd}
 .ach-skin{display:inline-block;margin-top:4px;font-style:normal;font-size:11px;color:#c8d39c}
 .skin-section{margin-top:14px}
+.tier-section{margin-top:14px}
+.tier-section .sec{margin:0 0 8px}
+.tier-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tier-choice{display:grid;justify-items:center;gap:2px;min-height:52px;padding:7px 2px 5px;font:inherit;color:var(--fg);background:#101720;border:1px solid #26323d;cursor:pointer;touch-action:manipulation}
+.tier-choice b{font-size:13px;font-weight:600}
+.tier-choice small{min-height:14px;font-size:10px;color:#9fb0bd}
+.tier-choice.selected{border-color:#b98cff;background:#1b1626}
+.tier-choice.selected small{color:#d8c2ff}
+.tier-choice:disabled{cursor:default}
+.tier-choice.locked{opacity:.5}
+.menu-stats em{font-style:normal}
+.daily-line{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:9px 12px;text-align:left;color:var(--fg);font:inherit;background:rgba(14,20,34,.86);border:1px solid #3d5a78;cursor:pointer;touch-action:manipulation}
+.daily-line .daily-text{display:grid;gap:1px;min-width:0}
+.daily-line small{font-size:12px;color:#8fd8ff}
+.daily-line b{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.daily-line .daily-note{margin-left:auto;flex:none;font-size:12px;color:var(--gold)}
+.end-daily{display:grid;gap:6px;margin-top:10px;padding:10px 12px;background:var(--steel);border:1px solid #3d5a78}
+.end-daily small{font-size:12px;color:#8fd8ff}
+.end-daily p{margin:0;font-size:13px;color:var(--fg)}
+.daily-share{display:flex;gap:6px}
+.daily-share{align-items:stretch}
+.daily-share textarea{flex:1;min-width:0;padding:6px 8px;font:inherit;font-size:12px;line-height:1.5;color:#c9d6e0;background:#0b1117;border:1px solid #2c3a46;resize:none}
 .skin-section .sec{margin:0 0 8px}
 .skin-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .skin-choice{display:grid;justify-items:center;gap:3px;min-height:72px;padding:8px 2px 6px;font:inherit;color:var(--fg);background:#101720;border:1px solid #26323d;cursor:pointer;touch-action:manipulation}
@@ -476,7 +496,7 @@ input.settings-control[type="range"]{min-width:0}
     <div class="menu-bottom">
       <div class="menu-stats">
         <span class="gold">金币<b id="mCoins">0</b></span>
-        <span>最久存活<b id="mBest">--</b></span>
+        <span><em id="mBestLabel">最久存活</em><b id="mBest">--</b></span>
         <span>突围<b id="mWins">0</b></span>
       </div>
       <div class="deployment" aria-label="当前出击配置">
@@ -488,6 +508,7 @@ input.settings-control[type="range"]{min-width:0}
       <button id="btnStart" class="btn primary">出 击</button>
       <button id="btnRookie" class="btn primary rookie-start" hidden>新兵训练 · 约 30 秒</button>
       <div class="menu-actions"><button id="btnStartAlt" class="btn" hidden>直接出击</button><button id="btnHangar" class="btn">机库改装</button><button id="btnTraining" class="btn ghost">安全训练</button></div>
+      <button id="menuDaily" type="button" class="daily-line" hidden></button>
       <button id="menuGoal" type="button" class="goal-line" hidden></button>
       <p id="mFastest" class="menu-record">最快突围 · 等待首次胜利</p>
       <details class="howto-details"><summary>操作说明</summary><ul class="howto">
@@ -514,6 +535,7 @@ input.settings-control[type="range"]{min-width:0}
           <div class="demo-controls"><button id="hgDemo" class="chip">演示能力</button><p id="hgDemoStatus" aria-live="polite">展示机体武器与作战动作</p></div>
           <div id="mechList" class="mech-list" aria-label="预览机体"></div>
           <section class="skin-section" aria-labelledby="skinTitle"><h3 id="skinTitle" class="sec"><span>涂装</span></h3><div id="skinList" class="skin-list"></div><p id="skinStatus" class="section-note"></p></section>
+          <section class="tier-section" aria-labelledby="tierTitle"><h3 id="tierTitle" class="sec"><span>深渊层级</span></h3><div id="tierList" class="tier-list"></div><p id="tierStatus" class="section-note"></p></section>
         </div>
         <div class="hangar-specification">
           <p id="hgPreviewDescription" class="mech-description"></p>
@@ -623,6 +645,7 @@ input.settings-control[type="range"]{min-width:0}
       <div id="endCause" class="end-cause lose"><div class="end-cause-head"><small id="endCauseLabel">致命来源</small><b id="endCauseName"></b></div><p id="endAdvice" class="end-cause-advice"></p></div>
       <div id="endStats" class="stats end-stats"></div>
       <div id="endGoal" class="end-goal" hidden><div id="endGoalLine" class="goal-line"></div><button id="endGoalGo" type="button" class="chip goal-chip" hidden>去解锁</button></div>
+      <div id="endDaily" class="end-daily" hidden><small>每日挑战</small><p id="endDailyLine"></p><div class="daily-share"><textarea id="endDailyShare" rows="2" readonly aria-label="可复制的战绩"></textarea><button id="endDailyCopy" type="button" class="chip">复制战绩</button></div></div>
       <div id="endAch" class="end-ach" hidden><small>新成就</small><div id="endAchList" class="ach-chips"></div></div>
       <details id="endMore" class="end-more"><summary>更多数据</summary><div id="endMoreStats" class="stats"></div></details>
       <section class="report-section" aria-labelledby="endReportTitle"><h3 id="endReportTitle" class="sec"><span>战斗复盘</span></h3><div id="endDamage" class="damage-report"></div><p id="endDamageNote" class="section-note"></p><dl id="endInjuries" class="injury-report"></dl></section>
@@ -798,6 +821,13 @@ function saveRecord(value) { return value && typeof value === 'object' && !Array
 function saveIsRecord(value) { return value !== null && typeof value === 'object' && !Array.isArray(value); }
 function saveCopy(value) { return value === undefined ? undefined : JSON.parse(JSON.stringify(value)); }
 function saveEqual(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+function saveEntries(value, keep) { return Object.fromEntries(Object.entries(saveRecord(value)).filter(([, v]) => keep(v))); }
+const saveCount = v => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : 0);
+// 每日挑战纪录：date 是 YYYY-MM-DD，其余字段坏值按 0 / false
+function normalizeDaily(value) {
+  const d = saveRecord(value);
+  return { date: typeof d.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.date) ? d.date : '', bestT: saveCount(d.bestT), kills: saveCount(d.kills), win: d.win === true, rewarded: d.rewarded === true };
+}
 // 存档代号：恢复备份时换新。旧存档没有这个字段，按空串处理。
 function saveEpochOf(snapshot) { return typeof snapshot?.saveEpoch === 'string' ? snapshot.saveEpoch : ''; }
 function newSaveEpoch() {
@@ -808,7 +838,7 @@ function normalizeMeta(source) {
   source = saveRecord(source);
   let reducedMotion = false;
   try { reducedMotion = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; } catch (_) { }
-  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {}, goal: '', achievements: {}, mechStats: {}, skins: {} };
+  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {}, goal: '', achievements: {}, mechStats: {}, skins: {}, tierClear: {}, tierSel: {}, tierFastest: {}, daily: { date: '', bestT: 0, kills: 0, win: false, rewarded: false } };
   const settings = normalizeSettingsSnapshot(source.settings, reducedMotion);
   // 仅旧格式的总静音映射为双通道静音；新格式以已保存的独立音量为准。
   if (!Object.keys(saveRecord(source.settings)).length && source.sound === false) { settings.musicVolume = 0; settings.sfxVolume = 0; }
@@ -830,6 +860,10 @@ function normalizeMeta(source) {
     goal: typeof source.goal === 'string' ? source.goal : '',
     achievements: { ...saveRecord(source.achievements) }, mechStats: { ...saveRecord(source.mechStats) },
     skins: Object.fromEntries(Object.entries(saveRecord(source.skins)).filter(([, v]) => typeof v === 'string')),
+    // 深渊层级：通关层和所选层是非负整数，各层最快突围是正数；坏值丢弃
+    tierClear: saveEntries(source.tierClear, v => Number.isInteger(v) && v >= 0), tierSel: saveEntries(source.tierSel, v => Number.isInteger(v) && v >= 0),
+    tierFastest: saveEntries(source.tierFastest, v => typeof v === 'number' && Number.isFinite(v) && v > 0),
+    daily: normalizeDaily(source.daily),
   });
   for (const key of ['coins', 'runs', 'wins', 'best', 'bestKills']) {
     if (typeof normalized[key] !== 'number' || !Number.isFinite(normalized[key]) || normalized[key] < 0) normalized[key] = 0;
@@ -906,6 +940,17 @@ function mergeMetaSnapshots(base, local, fresh) {
     const n = v => (Number.isFinite(v) && v > 0 ? v : 0), fast = [f.fastest, l.fastest].map(n).filter(v => v > 0);
     merged.mechStats[id] = { runs: n(f.runs) + Math.max(0, n(l.runs) - n(b.runs)), wins: n(f.wins) + Math.max(0, n(l.wins) - n(b.wins)),
       fastest: fast.length ? Math.min(...fast) : 0, best: Math.max(n(f.best), n(l.best)), bestKills: Math.max(n(f.bestKills), n(l.bestKills)) };
+  }
+  // 深渊层级：每台机体的最高通关层取大，每层最快突围取更短的非零值
+  merged.tierClear = { ...saveRecord(fresh.tierClear) };
+  for (const [id, v] of Object.entries(saveRecord(local.tierClear))) if (Number.isInteger(v) && !(merged.tierClear[id] >= v)) merged.tierClear[id] = v;
+  merged.tierFastest = { ...saveRecord(fresh.tierFastest) };
+  for (const [tier, v] of Object.entries(saveRecord(local.tierFastest))) { const f = merged.tierFastest[tier]; if (v > 0 && !(f > 0 && f <= v)) merged.tierFastest[tier] = v; }
+  // 每日挑战：本页改过才合并；日期新的优先，同一天取更好的纪录，奖励标记取或（不会重复发奖）
+  if (!saveEqual(local.daily, base.daily)) {
+    const l = normalizeDaily(local.daily), f = normalizeDaily(fresh.daily);
+    merged.daily = l.date !== f.date ? (l.date > f.date ? l : f)
+      : { date: f.date, bestT: Math.max(l.bestT, f.bestT), kills: Math.max(l.kills, f.kills), win: l.win || f.win, rewarded: l.rewarded || f.rewarded };
   }
   merged.unlocked = { ...saveRecord(fresh.unlocked) };
   for (const [key, value] of Object.entries(saveRecord(local.unlocked))) {
@@ -1488,15 +1533,16 @@ function healingPhase(t) {
 function healDropChance(t) { const k = healingPhase(t); return .009 * (1 - k) + .0015 * k; }
 function healPickupFraction(t) { const k = healingPhase(t); return .3 * (1 - k) + .18 * k; }
 function eliteHealDropChance(t) { const k = healingPhase(t); return .5 * (1 - k) + .25 * k; }
-// 玩家受到的伤害：随时间增强，护甲减固定值（至少 1），超载时减半
+// 玩家受到的伤害：随时间增强（每 300 秒 +45%），护甲减固定值（至少 1），超载时减半
 function incomingDamage(dmg, t, armor, overload) {
-  const d = Math.max(1, dmg * (1 + t / 300 * .6) - armor);
+  const d = Math.max(1, dmg * (1 + t / 300 * .45) - armor);
   return overload ? d * .5 : d;
 }
-// 一局结束的金币：拾取 + 每 25 击杀 1 枚 + 每个首领 50 + 突围 200
-function runReward(coins, kills, bossKills, win) {
-  const killBonus = Math.floor(kills / 25), bossBonus = bossKills * 50, winBonus = win ? 200 : 0;
-  return { killBonus, bossBonus, winBonus, earned: coins + killBonus + bossBonus + winBonus };
+// 一局结束的金币：拾取 + 每 25 击杀 1 枚 + 每个首领 50 + 突围 200，深渊层级再乘 coinMul（四舍五入）
+function runReward(coins, kills, bossKills, win, coinMul = 1) {
+  const killBonus = Math.floor(kills / 25), bossBonus = bossKills * 50, winBonus = win ? 200 : 0, base = coins + killBonus + bossBonus + winBonus;
+  const earned = Math.round(base * coinMul);
+  return { killBonus, bossBonus, winBonus, tierBonus: earned - base, earned };
 }
 
 // ---- src/data/experience.js ----
@@ -1701,19 +1747,34 @@ function updateFx(dt) {
 // ---- src/game/grid.js ----
 // 空间网格：按格子索引敌人，加速范围查询
 
-const CELL = 64, grid = new Map();
+const CELL = 64, GRID_CELL_LIMIT = 2048, grid = new Map(), gridUsed = [];
+let gridUsedCount = 0;
 const gridQueryBuffers = [];
 let gridQueryDepth = 0;
 const gk = (cx, cy) => cx * 100003 + cy;
+// 每格是 { n, items }，跨帧复用：重建时把上一帧用过的格子清掉引用、计数归零，items 保留容量按计数覆盖写。
+// 不用 length = 0：V8 会因此丢掉数组的底层存储，下一帧 push 又得重新分配。长局走过的格子太多时整表清一次。
 function rebuildGrid() {
-  grid.clear();
+  for (let i = 0; i < gridUsedCount; i++) {
+    const cell = gridUsed[i];
+    for (let j = 0; j < cell.n; j++) cell.items[j] = null;
+    cell.n = 0; gridUsed[i] = null;
+  }
+  gridUsedCount = 0;
+  if (grid.size > GRID_CELL_LIMIT) grid.clear();
   for (const e of G.enemies) {
     if (e.dead) continue;
     const x0 = Math.floor((e.x - e.r) / CELL), x1 = Math.floor((e.x + e.r) / CELL), y0 = Math.floor((e.y - e.r) / CELL), y1 = Math.floor((e.y + e.r) / CELL);
-    for (let cx = x0; cx <= x1; cx++) for (let cy = y0; cy <= y1; cy++) { const k = gk(cx, cy); let a = grid.get(k); if (!a) { a = []; grid.set(k, a); } a.push(e); }
+    for (let cx = x0; cx <= x1; cx++) for (let cy = y0; cy <= y1; cy++) {
+      const k = gk(cx, cy); let cell = grid.get(k);
+      if (!cell) { cell = { n: 0, items: [] }; grid.set(k, cell); }
+      if (cell.n === 0) gridUsed[gridUsedCount++] = cell;
+      cell.items[cell.n++] = e;
+    }
   }
 }
-function query(x, y, r, fn) {
+// ctx 原样传给回调 fn(e, ctx)，热循环用模块级回调加 ctx，避免每次查询新建闭包。
+function query(x, y, r, fn, ctx) {
   const q = ++G.qid, x0 = Math.floor((x - r) / CELL), x1 = Math.floor((x + r) / CELL), y0 = Math.floor((y - r) / CELL), y1 = Math.floor((y + r) / CELL);
   const candidates = gridQueryBuffers[gridQueryDepth] || (gridQueryBuffers[gridQueryDepth] = []);
   let count = 0;
@@ -1721,10 +1782,11 @@ function query(x, y, r, fn) {
   try {
     // 先收齐候选，再允许回调触发嵌套查询，避免内层改写去重标记后外层重复命中。
     for (let cx = x0; cx <= x1; cx++) for (let cy = y0; cy <= y1; cy++) {
-      const a = grid.get(gk(cx, cy)); if (!a) continue;
-      for (const e of a) { if (e.q === q || e.dead) continue; e.q = q; candidates[count++] = e; }
+      const cell = grid.get(gk(cx, cy)); if (!cell) continue;
+      const items = cell.items;
+      for (let i = 0, n = cell.n; i < n; i++) { const e = items[i]; if (e.q === q || e.dead) continue; e.q = q; candidates[count++] = e; }
     }
-    for (let i = 0; i < count; i++) { const e = candidates[i]; if (!e.dead && fn(e) === false) return; }
+    for (let i = 0; i < count; i++) { const e = candidates[i]; if (!e.dead && fn(e, ctx) === false) return; }
   } finally {
     // 清引用但保留容量，复用各层缓冲区；提前结束或异常也释放深度。
     for (let i = 0; i < count; i++) candidates[i] = null;
@@ -2065,6 +2127,287 @@ function clearMechRailBullets(x, y, ex, ey, width) {
   return cleared;
 }
 
+// ---- src/data/daily.js ----
+// 每日挑战：本地日期决定当天的机体、协议、行动顺序和首领招式组，刷怪和掉落仍然随机
+
+const DAILY_REWARD = 150;
+// 本地日期串 YYYY-MM-DD，换日以玩家所在时区为准
+function dailyKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+const isDailyKey = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+const dailyLabel = key => `${Number(key.slice(5, 7))}月${Number(key.slice(8, 10))}日`;
+// FNV-1a 32 位哈希
+function dailyHash(text) {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+// mulberry32：给定种子的确定性随机数，返回 [0,1)
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+// 当天的挑战配置；行动顺序和首领招式各用独立的种子，互不牵连
+function dailySetup(key) {
+  const random = mulberry32(dailyHash('iron-rampage:' + key));
+  const mech = MECHS[Math.floor(random() * MECHS.length)], options = getTalentOptions(mech.id);
+  const talent = options[Math.floor(random() * options.length)];
+  return { key, mechId: mech.id, talentId: talent.id, relaySeed: Math.floor(random() * 4294967296), bossSeed: Math.floor(random() * 4294967296) };
+}
+// 结算页可复制的一行战绩
+function dailyShareText(key, mechName, talentName, run) {
+  return `钢铁暴走 每日挑战 ${key} · ${mechName}/${talentName} · ${run.win ? '突围' : '存活'} ${Math.floor(run.t / 60)}:${String(Math.floor(run.t % 60)).padStart(2, '0')} · 击杀 ${run.kills}`;
+}
+
+// ---- src/data/objectives.js ----
+// 可选军械中继：出现窗口、回收规则、守卫和定向奖励数值
+const RELAY_CONFIG = {
+  times: [55, 185, 345],
+  availableFor: 20, activeFor: 24, captureTime: 10,
+  activationTime: .6, activationRadius: 44, radius: 112, spawnDistance: 230,
+  hazardInterval: 3.5, hazardDelay: 1, hazardRadius: 45, hazardDamage: 18,
+  guardDistance: 190, guardTypes: ['crawler', 'crawler', 'crawler', 'crawler', 'gunner'],
+  bossWarning: 3, resultFor: 2.4,
+};
+const RELAY_REWARD_CONFIG = { healFraction: .3, charge: 25, coins: 40, rerollCoins: 10 };
+
+// ---- src/data/events.js ----
+// 战场行动变体：每局不重复抽取、移动路线、围猎和封锁区域规则
+
+const FIELD_EVENT_TYPES = ['relay', 'convoy', 'hunt', 'blackout'];
+const FIELD_EVENT_RULES = {
+  relay: { ...RELAY_CONFIG, title: '固定回收', required: RELAY_CONFIG.captureTime, startText: '回收启动 · 留在圈内，躲开红圈' },
+  convoy: { ...RELAY_CONFIG, title: '移动回收', required: 10, speed: 30, routeLeg: 360, routeTurn: Math.PI / 3, startText: '护送启动 · 跟随运输车完成回收' },
+  hunt: { ...RELAY_CONFIG, title: '限时围猎', required: 1, activeFor: 28, targetType: 'brute', targetDistance: 140, targetHp: 9, targetSize: 1.45, targetDamage: 1.4, targetSpeed: .9, targetXp: 6, startText: '围猎启动 · 限时击破标记精英' },
+  blackout: { ...RELAY_CONFIG, title: '区域封锁', required: 12, activeFor: 30, radius: 160, hazardInterval: 5, hazardDelay: .9, hazardDamage: 14, laneActiveFor: 1.8, laneCount: 2, laneWidth: 34, laneLength: 360, laneSpacing: 108, laneShifts: [0, -.5, .5], laneTurn: Math.PI / 3, startText: '封锁启动 · 留守区域，避开警戒带' },
+};
+
+function chooseFieldEvents(random = Math.random) {
+  const order = [...FIELD_EVENT_TYPES];
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.min(i, Math.max(0, Math.floor(random() * (i + 1))));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order.slice(0, RELAY_CONFIG.times.length);
+}
+
+// ---- src/data/tiers.js ----
+// 深渊层级：首次突围后可选的加难，每层叠加倍率；按机体记最高通关层，通关第 L 层解锁第 L+1 层
+const TIER_MAX = 10;
+// 第 L 层的倍率（L=0 为普通，全是 1）；数值用 simulate-balance.mjs --tier 校准，记录见 iron-rampage-plan.md 的平衡记录
+function tierMods(L) {
+  return { enemyHp: 1 + .12 * L, bossHp: 1 + .15 * L, dmgTaken: 1 + .08 * L, spawn: 1 + .05 * L, heal: Math.max(.2, 1 - .08 * L), coins: 1 + .15 * L };
+}
+const tierName = L => L > 0 ? `深渊 ${L}` : '普通';
+const tierPct = (label, k) => `${label} ${k >= 1 ? '+' : '-'}${Math.round(Math.abs(k - 1) * 100)}%`;
+function tierModsText(L) {
+  if (!L) return '标准难度，没有额外加成';
+  const m = tierMods(L);
+  return [tierPct('敌人血量', m.enemyHp), tierPct('首领血量', m.bossHp), tierPct('受到伤害', m.dmgTaken), tierPct('刷怪', m.spawn), tierPct('治疗掉率', m.heal), tierPct('结算金币', m.coins)].join(' · ');
+}
+// 这台机体的最高通关层，-1 表示还没突围过；D3 起按机体记过突围的视为通关普通层
+function tierCleared(meta, mechId) {
+  const v = meta.tierClear?.[mechId];
+  return Math.max(Number.isInteger(v) && v >= 0 ? Math.min(TIER_MAX, v) : -1, meta.mechStats?.[mechId]?.wins > 0 ? 0 : -1);
+}
+const tierMaxSelectable = (meta, mechId) => Math.min(TIER_MAX, tierCleared(meta, mechId) + 1);
+// 出击用的层级：存的选择超过可选上限时按上限算
+function selectedTier(meta, mechId) {
+  const v = meta.tierSel?.[mechId];
+  return Number.isInteger(v) && v > 0 ? Math.min(v, tierMaxSelectable(meta, mechId)) : 0;
+}
+// 所有机体里最高的通关层，-1 表示还没突围过
+const bestTierCleared = meta => Math.max(-1, ...Object.keys({ ...meta.tierClear, ...meta.mechStats }).map(id => tierCleared(meta, id)));
+
+// ---- src/data/enemies.js ----
+// 敌人、首领数据与出场时间表
+const ETYPES = {
+  crawler: { img: 'enemy_crawler', r: 13, size: 42, hp: 10, speed: 98, dmg: 8, xp: 1, col: '255,70,90', mass: 1 },
+  brute: { img: 'enemy_brute', r: 25, size: 70, hp: 85, speed: 54, dmg: 16, xp: 6, col: '255,140,60', mass: 4 },
+  gunner: { img: 'enemy_gunner', r: 16, size: 48, hp: 28, speed: 72, dmg: 10, xp: 3, col: '80,240,170', mass: 1.5 },
+  bomber: { img: 'enemy_bomber', r: 13, size: 44, hp: 12, speed: 150, dmg: 22, xp: 2, col: '255,200,60', mass: .8 },
+  charger: { img: 'enemy_charger', r: 20, size: 60, hp: 50, speed: 70, dmg: 18, xp: 4, col: '255,60,60', mass: 3 },
+};
+const BOSSES = [
+  { kind: 'scorpion', name: '毒蝎领主', img: 'boss_scorpion', r: 60, size: 220, hp: 7000, speed: 74, guard: { rate: .075, weakMul: 2, burst: .5 } },
+  { kind: 'queen', name: '深渊母巢', img: 'boss_queen', r: 74, size: 250, hp: 72000, speed: 50 },
+  { kind: 'queen', name: '深渊母巢 · 狂怒', img: 'boss_queen', r: 82, size: 285, hp: 220000, speed: 56, final: true },
+];
+// 冲锋运动与危险预警共用，位移严格等于 speed × duration。
+const ENEMY_CHARGE = {
+  normal: { speed: 500, duration: .55, aimTime: .75, lockTime: .45, cooldownMin: 1.4, cooldownMax: 2.4 },
+  boss: { speed: 640, duration: .6, aimTime: .8, lockTime: .5 },
+};
+const BOSS_TIMES = [120, 270, 420];
+const SWARM_TIMES = [45, 100, 165, 215, 330, 385];
+
+// 3 分钟后用不同组成施压，减少低威胁爬虫占比；同种词缀最多同时两只。
+// hpMul：180、240 两段敌人生命再乘这个倍率，补中期压力（只打屏内目标后中期敌人几乎一进屏就死）；330 秒后不加。
+// 330 秒后（含最终战）冲锋虫、枪手各让一份权重给爬虫：敌人在可视矩形外 60 处生成、只打屏内目标，这两类常在屏外起手；只减一类危险敌人，权重会分给另一类。
+const ENEMY_PHASES = [
+  { from: 180, weights: [{ k: 'crawler', w: 8 }, { k: 'bomber', w: 2 }, { k: 'gunner', w: 3 }, { k: 'brute', w: 2 }, { k: 'charger', w: 2 }], packChance: .15, eliteInterval: 28, eliteCap: 2, hpMul: 1.3 },
+  { from: 240, weights: [{ k: 'crawler', w: 6 }, { k: 'bomber', w: 2 }, { k: 'gunner', w: 3 }, { k: 'brute', w: 3 }, { k: 'charger', w: 3 }], packChance: .1, eliteInterval: 26, eliteCap: 3, hpMul: 1.2 },
+  { from: 330, weights: [{ k: 'crawler', w: 7 }, { k: 'bomber', w: 2 }, { k: 'gunner', w: 3 }, { k: 'brute', w: 3 }, { k: 'charger', w: 3 }], packChance: .1, eliteInterval: 24, eliteCap: 4 },
+];
+function enemyPhaseAt(t) {
+  for (let i = ENEMY_PHASES.length - 1; i >= 0; i--) if (t >= ENEMY_PHASES[i].from) return ENEMY_PHASES[i];
+  return null;
+}
+const ELITE_AFFIX_ORDER = ['shield', 'haste', 'barrage'];
+const ELITE_AFFIXES = {
+  shield: { name: '护盾', color: '#70d8ee', type: 'brute', hp: 7, size: 1.45, damage: 1.4, speed: .9, shieldHp: 2, shieldDelay: 4, shieldRecharge: 1.2, stagger: .45 },
+  haste: { name: '急速', color: '#f6b65e', type: 'charger', hp: 7, size: 1.3, damage: 1.15, speed: 1.35, cooldownMin: 1, cooldownMax: 1.4, recovery: .45 },
+  barrage: { name: '弹幕', color: '#d6a5ff', type: 'gunner', hp: 8, size: 1.35, damage: 1.2, speed: .9, aimTime: .8, lockTime: .3, interval: 2.8, lateInterval: 2.4, lateAt: 330, shots: 3, lateShots: 5, spread: .24, bulletSpeed: 240, leadTime: .8, leadFactor: .7, leadMax: 120, bulletRadius: 5.5, bulletDamage: 9, bulletLife: 3.5, minRange: 100, maxRange: 420 },
+};
+// 普通和精英共用220颗非首领预算，其中词缀弹幕最多60颗，为首领保留260颗。
+const ENEMY_PROJECTILE_LIMITS = { total: 480, normal: 220, affix: 60 };
+const ELITE_SPAWN_RULES = { sameAffixCap: 2, bossGrace: 15, retry: 5 };
+
+// 每种组合保留原有招式与单次伤害，只变化顺序，并留出明确的输出窗口。
+const BOSS_ATTACK_SEQUENCES = {
+  scorpion: [
+    ['charge', 'walk', 'fan', 'walk', 'ring', 'walk'],
+    ['charge', 'walk', 'ring', 'walk', 'fan', 'walk'],
+    ['fan', 'walk', 'charge', 'walk', 'ring', 'walk'],
+  ],
+  queen: [
+    ['spiral', 'walk', 'summon', 'burst', 'walk', 'ring'],
+    ['burst', 'walk', 'spiral', 'summon', 'walk', 'ring'],
+    ['summon', 'walk', 'burst', 'spiral', 'walk', 'ring'],
+  ],
+};
+const BOSS_WEAK_POINTS = {
+  scorpion: { duration: 2, damageMul: 1.35, trigger: 'charge' },
+  queen: { duration: 2, damageMul: 1.35, trigger: 'ring' },
+};
+
+// 普通虫群和包围波都在可视矩形外侧生成，避免贴身出现。
+const SPAWN_VIEWPORT = Object.freeze({ edgeMargin: 60 });
+
+// ---- src/data/boss-presentation.js ----
+// 首领演出参数：弱点提示、距离补偿与短暂入场镜头，不改变招式伤害
+const BOSS_PRESENTATION = {
+  weakExtraMax: 1.5, weakFlashDuration: .18,
+  weakTextSize: 28, weakTextLife: 1.1, textLift: 12,
+  enrageTextSize: 30, enrageTextLife: 1.3, enrageWaveRadius: 210, enrageWaveSpeed: 420,
+  weakColor: '255,219,128', weakPulseRate: 10, weakPulseAmount: .08, indicatorPulseAmount: .12,
+  cameraDuration: .6, cameraMaxOffset: 36, cameraBossPull: .12, cameraVelocityLead: .12,
+};
+// 首领血条右侧的阶段文字；带甲壳的首领标「甲壳」，破绽期间提示甲壳上限放宽
+function bossPhaseLabel(boss) {
+  if (boss.entering) return '正在接近';
+  if (boss.vulnerableT > 0) return `弱点 ${boss.vulnerableT.toFixed(1)}秒 · ×${boss.weakMul || 1}${boss.guard ? ' · 甲壳放宽' : ''}`;
+  return (boss.guard ? '甲壳 · ' : '') + (boss.hp < boss.maxHp * .5 ? '狂暴阶段' : '首领交战');
+}
+
+// ---- src/data/targeting.js ----
+// 自动武器的镜头缓冲与原有射程，供索敌和首领可达距离共用
+const AUTO_TARGETING = {
+  margin: 0,
+  ranges: { gatling: 480, missile: 560, tesla: 270, rail: 650, drone: 420, missileRetarget: 450, teslaChain: 165 },
+};
+
+// ---- src/game/boss-phases.js ----
+// 首领组合与破绽：本次登场固定招式顺序，破绽期间冻结下一招的计时
+
+function bossAttackSequence(e, random = Math.random) {
+  const choices = BOSS_ATTACK_SEQUENCES[e.kind];
+  if (!choices) return [];
+  if (!Number.isInteger(e.attackPattern) || !choices[e.attackPattern]) e.attackPattern = Math.min(choices.length - 1, Math.max(0, Math.floor(random() * choices.length)));
+  return choices[e.attackPattern];
+}
+function nextBossPhase(e) {
+  const sequence = bossAttackSequence(e);
+  e.seq = ((Number.isInteger(e.seq) ? e.seq : -1) + 1) % sequence.length;
+  e.st = sequence[e.seq]; e.stT = 0; e.sub = 0; e.n = 0;
+}
+// 只补走回当前武器可攻击范围所需的时间；落雷与连锁命中不当作无限射程。
+function bossWeakPointExtra(e, state, statsForWeapon) {
+  const p = state?.player, speed = state?.stats?.speed;
+  if (!p || !(speed > 0) || !Number.isFinite(speed)) return 0;
+  const distance = Math.hypot(e.x - p.x, e.y - p.y), bossRadius = Math.max(0, e.r || 0);
+  let approach = Infinity;
+  const weapons = [...(p.weapons || [])];
+  if (p.overT > 0 && state.mech?.trait?.kind === 'engineer' && state.mech.trait.extraDrones > 0 && p.supportWeapon) weapons.push(p.supportWeapon);
+  for (const w of weapons) {
+    if (w.id === 'saw') {
+      const stats = statsForWeapon?.(w);
+      if (!stats) continue;
+      const radius = stats.rad * (w.evo ? 1 + WDEF.saw.pulse.amplitude * Math.sin((state.t || 0) * WDEF.saw.pulse.rate) : 1) + stats.size;
+      if (Number.isFinite(radius)) approach = Math.min(approach, Math.max(0, distance - radius - bossRadius));
+    } else {
+      const range = AUTO_TARGETING.ranges[w.id];
+      if (!(range > 0)) continue;
+      if (w.id === 'drone' && w.drones?.length) {
+        for (const drone of w.drones) {
+          const remaining = Math.hypot(e.x - drone.x, e.y - drone.y) - range - bossRadius;
+          if (Number.isFinite(remaining)) approach = Math.min(approach, Math.max(0, remaining));
+        }
+      } else approach = Math.min(approach, Math.max(0, distance - range - bossRadius));
+    }
+  }
+  return Number.isFinite(approach) ? Math.min(BOSS_PRESENTATION.weakExtraMax, approach / speed) : 0;
+}
+function openBossWeakPoint(e, extraDuration = 0) {
+  const cfg = BOSS_WEAK_POINTS[e.kind];
+  if (!cfg || e.dead || e.hp <= 0 || e.vulnerableT > 0) return false;
+  nextBossPhase(e);
+  const extra = Number.isFinite(extraDuration) ? Math.max(0, Math.min(BOSS_PRESENTATION.weakExtraMax, extraDuration)) : 0;
+  e.vulnerableT = cfg.duration + extra; e.weakWindow = e.vulnerableT; e.weakMul = cfg.damageMul;
+  e.weakFlashT = BOSS_PRESENTATION.weakFlashDuration;
+  return true;
+}
+// 首领甲壳：每秒最多承受第 0 层血量（baseHp）的 rate 比例，破绽期间乘 weakMul；额度最多攒 burst 秒，超出的伤害被甲壳挡掉。
+// 高输出机体也要打满一段时间并吃到破绽，低输出机体不受影响。上限不随深渊层级放大，高层首领血量更多就要打更久。
+// t 为对局秒数，返回实际生效的伤害。
+function bossGuardAllowance(e, dmg, t) {
+  const guard = e.guard, baseHp = guard?.baseHp > 0 ? guard.baseHp : e.maxHp;
+  if (!guard || !(dmg > 0) || !(baseHp > 0)) return dmg;
+  const rate = baseHp * guard.rate * (e.vulnerableT > 0 ? guard.weakMul : 1), cap = rate * guard.burst;
+  const elapsed = Number.isFinite(e.guardT) ? Math.max(0, t - e.guardT) : 0;
+  e.guardBudget = Math.min(cap, (Number.isFinite(e.guardBudget) ? e.guardBudget : cap) + elapsed * rate);
+  e.guardT = t;
+  const allowed = Math.min(dmg, Math.max(0, e.guardBudget));
+  e.guardBudget -= allowed;
+  return allowed;
+}
+function updateBossWeakPoint(e, dt) {
+  if (e.dead || e.hp <= 0 || !(dt > 0) || !Number.isFinite(dt) || !(e.vulnerableT > 0)) return false;
+  e.vulnerableT = Math.max(0, e.vulnerableT - dt);
+  if (e.vulnerableT <= 0) e.weakMul = 1;
+  return true;
+}
+
+// ---- src/game/difficulty.js ----
+// 本局难度修正：深渊层级倍率与每日挑战的固定配置；刷怪、受伤、掉落各处只乘一个系数
+
+// 本局某项倍率；没有开局修正（测试里手搭的对局）时为 1
+const runMul = key => G?.mods?.[key] ?? 1;
+// 开局时调用：训练和每日挑战固定普通层；每日挑战的行动顺序按当天种子排好
+function initRunModifiers(daily = null) {
+  G.tier = G.practice || daily ? 0 : selectedTier(meta, G.mech.id);
+  G.mods = tierMods(G.tier);
+  G.daily = daily;
+  if (daily) {
+    G.relayOrder = chooseFieldEvents(mulberry32(daily.relaySeed));
+    G.banner = { kind: 'info', title: '每日挑战', sub: `${dailyLabel(daily.key)} · ${G.mech.name} · ${G.talent?.name || ''}`, t: 2.6, max: 2.6, col: '120,220,255' };
+  } else if (G.tier) {
+    G.banner = { kind: 'info', title: tierName(G.tier), sub: `敌人更强 · 结算金币 ×${G.mods.coins.toFixed(2).replace(/0$/, '')}`, t: 2.6, max: 2.6, col: '190,120,255' };
+  }
+}
+// 新敌人生成后调用：按层级放大血量；每日挑战的首领按当天种子固定招式组
+function applyRunModifiers(e) {
+  const k = runMul(e.boss ? 'bossHp' : 'enemyHp');
+  e.hp *= k; if (e.maxHp) e.maxHp *= k;
+  if (e.boss && G.daily) bossAttackSequence(e, mulberry32(G.daily.bossSeed ^ dailyHash(e.kind)));
+}
+
 // ---- src/game/player.js ----
 // 玩家：移动、步伐、冲刺与极限闪避、超载、受伤、经验
 
@@ -2184,7 +2527,7 @@ function hurtPlayer(dmg, sx, sy, cause = 'unknown') {
   if (G.debugGod) return true; // 调试无敌照常消耗敌弹，且不消耗机体护盾。
   const p = G.player; if (G.practice) return p.dashT <= 0; if (p.invuln > 0 || p.dashT > 0 || p.hp <= 0) return false;
   if (absorbMechHit()) return true; // 护盾命中也消耗敌弹，但不扣生命。
-  dmg = incomingDamage(dmg, G.t, G.stats.armor + talentArmorBonus(), p.overT > 0);
+  dmg = incomingDamage(dmg, G.t, G.stats.armor + talentArmorBonus(), p.overT > 0) * runMul('dmgTaken');
   const actual = Math.min(Math.max(0, p.hp), dmg); p.hp -= dmg; recordHurt(cause, actual); p.invuln = .7; p.hitT = .15; p.hurtAt = G.t; G.shake = Math.max(G.shake, .42); flash('255,40,60', .3); G.combo = 0; G.comboT = 0;
   p.overload = Math.min(100, p.overload + (p.overT > 0 ? 0 : 3));
   floatText(p.x, p.y - 30, '-' + Math.round(dmg), '255,90,100', 20, .8);
@@ -2256,10 +2599,14 @@ function validRunSnapshot(value, id) {
   if (!value || typeof value !== 'object' || typeof id !== 'string' || !id || ['__proto__', 'constructor', 'prototype'].includes(id)) return null;
   if (!Number.isFinite(value.t) || value.t < 0 || value.t > Number.MAX_SAFE_INTEGER) return null;
   if (!['coins', 'kills', 'bossKills'].every(key => Number.isSafeInteger(value[key]) && value[key] >= 0)) return null;
+  // 深渊层级和每日挑战日期随快照保存，恢复结算时金币倍率和每日奖励不丢
+  const daily = typeof value.daily === 'string' ? value.daily : value.daily?.key;
   return { id, mech: typeof value.mech === 'string' ? value.mech : value.mech?.id || '', t: value.t,
     coins: value.coins, kills: value.kills, bossKills: value.bossKills, won: value.won === true,
+    tier: Number.isInteger(value.tier) && value.tier >= 0 && value.tier <= TIER_MAX ? value.tier : 0, daily: isDailyKey(daily) ? daily : '',
     savedAt: Number.isFinite(value.savedAt) ? value.savedAt : Date.now() };
 }
+const snapshotEarned = snapshot => runReward(snapshot.coins, snapshot.kills, snapshot.bossKills, snapshot.won, tierMods(snapshot.tier).coins).earned;
 function snapshotRunProgress(run, win = run?.won) {
   if (!run || run.practice) return null;
   if (!run.runId) run.runId = createRunIdentity();
@@ -2272,7 +2619,7 @@ function checkpointRun() {
   meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
   meta.settledRuns = persistenceRecord(meta.settledRuns);
   const prior = persistenceRecord(meta.settledRuns[snapshot.id]);
-  const earned = runReward(snapshot.coins, snapshot.kills, snapshot.bossKills, snapshot.won).earned;
+  const earned = snapshotEarned(snapshot);
   if (prior.earned >= earned && prior.t >= snapshot.t && (!snapshot.won || prior.won)) return false;
   meta.pendingSettlements[snapshot.id] = snapshot;
   return saveMeta();
@@ -2282,23 +2629,42 @@ function settleRunSnapshot(snapshot) {
   meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
   meta.settledRuns = persistenceRecord(meta.settledRuns);
   const prior = persistenceRecord(meta.settledRuns[snapshot.id]);
-  const earned = runReward(snapshot.coins, snapshot.kills, snapshot.bossKills, snapshot.won).earned;
+  const earned = snapshotEarned(snapshot);
   const previousPaid = Number.isSafeInteger(prior.earned) && prior.earned >= 0 ? prior.earned : 0;
   const credited = Math.max(0, earned - previousPaid), newBest = snapshot.t > meta.best;
-  const fastest = snapshot.won && snapshot.t > 0 && (!meta.fastestWin || snapshot.t < meta.fastestWin);
+  // 最快突围按层级分开记：普通层沿用 fastestWin，深渊层记在 tierFastest
+  const tier = snapshot.tier, prevFastest = tier ? persistenceRecord(meta.tierFastest)[tier] : meta.fastestWin;
+  const fastest = snapshot.won && snapshot.t > 0 && (!prevFastest || snapshot.t < prevFastest);
   meta.coins += credited; meta.best = Math.max(meta.best, snapshot.t); meta.bestKills = Math.max(meta.bestKills, snapshot.kills);
   if (snapshot.won && !prior.won) meta.wins++;
-  if (fastest) meta.fastestWin = snapshot.t;
+  if (fastest) { if (tier) meta.tierFastest = { ...persistenceRecord(meta.tierFastest), [tier]: snapshot.t }; else meta.fastestWin = snapshot.t; }
+  // 突围记这台机体的最高通关层；第一次通关某层时告诉结算页解锁了下一层
+  let tierUnlocked = 0;
+  if (snapshot.won && snapshot.mech) {
+    meta.tierClear = persistenceRecord(meta.tierClear);
+    const cleared = meta.tierClear[snapshot.mech];
+    if (!(Number.isInteger(cleared) && cleared >= tier)) { meta.tierClear[snapshot.mech] = tier; if (tier < TIER_MAX) tierUnlocked = tier + 1; }
+  }
+  // 每日挑战：每天第一次结算发奖励；只更新当天或更新的日期，旧日期的中断局不覆盖今天的纪录
+  let dailyReward = 0;
+  if (snapshot.daily) {
+    const old = persistenceRecord(meta.daily), same = old.date === snapshot.daily;
+    if (same || !isDailyKey(old.date) || snapshot.daily > old.date) {
+      const day = same ? old : { date: snapshot.daily, bestT: 0, kills: 0, win: false, rewarded: false };
+      if (!day.rewarded) { day.rewarded = true; dailyReward = DAILY_REWARD; meta.coins += DAILY_REWARD; }
+      meta.daily = { ...day, bestT: Math.max(day.bestT || 0, snapshot.t), kills: Math.max(day.kills || 0, snapshot.kills), win: !!(day.win || snapshot.won) };
+    }
+  }
   meta.settledRuns[snapshot.id] = { earned: Math.max(previousPaid, earned), won: !!(snapshot.won || prior.won), t: Math.max(prior.t || 0, snapshot.t) };
   // 只清本局的记录；其他标签页的对局快照由三方存档合并保留。
   const pending = meta.pendingSettlements[snapshot.id];
   if (!pending || pending.savedAt <= snapshot.savedAt) delete meta.pendingSettlements[snapshot.id];
   const saved = saveMeta();
-  return { earned, credited, previousPaid, alreadyPaid: previousPaid >= earned, newBest, fastest, saved };
+  return { earned, credited, previousPaid, alreadyPaid: previousPaid >= earned, newBest, fastest, tierUnlocked, dailyReward, saved };
 }
 function settleRunProgress(run, win) {
   const snapshot = snapshotRunProgress(run, win);
-  return snapshot ? settleRunSnapshot(snapshot) : { earned: 0, credited: 0, previousPaid: 0, alreadyPaid: false, newBest: false, fastest: false, saved: false };
+  return snapshot ? settleRunSnapshot(snapshot) : { earned: 0, credited: 0, previousPaid: 0, alreadyPaid: false, newBest: false, fastest: false, tierUnlocked: 0, dailyReward: 0, saved: false };
 }
 function recoverPendingRuns() {
   reloadMeta();
@@ -2315,7 +2681,7 @@ function recoverPendingRuns() {
     const snapshot = validRunSnapshot(value, id);
     if (!snapshot) { delete meta.pendingSettlements[id]; continue; }
     const receipt = settleRunSnapshot(snapshot);
-    result.credited += receipt.credited; result.recovered++; result.saved = result.saved && receipt.saved;
+    result.credited += receipt.credited + receipt.dailyReward; result.recovered++; result.saved = result.saved && receipt.saved;
   }
   if (pending.length || legacy) result.saved = saveMeta() && result.saved;
   return result;
@@ -2386,7 +2752,8 @@ function requestPersistentStorage(nav = globalThis.navigator) {
 
 // s 是 achievementSummary 生成的本局快照，meta 是已经累计完本局战绩的存档
 const ACHIEVEMENTS = [
-  { id: 'first-win', name: '突出重围', desc: '第一次突围成功', test: s => s.win },
+  // 旧存档回填：做成就前就突围过的（meta.wins > 0），下一次结算补发
+  { id: 'first-win', name: '突出重围', desc: '第一次突围成功', test: (s, meta) => s.win || meta.wins > 0 },
   { id: 'scorpion', name: '蝎尾折断', desc: '击破毒蝎领主', test: s => s.bossKills >= 1 },
   { id: 'scorpion-clean', name: '毫发无伤', desc: '击破毒蝎领主，全程没被它打中', test: s => s.bossKills >= 1 && s.scorpionHurt === 0 },
   { id: 'queen', name: '母巢震颤', desc: '击破第二个首领深渊母巢', test: s => s.bossKills >= 2 },
@@ -2397,7 +2764,10 @@ const ACHIEVEMENTS = [
   { id: 'evo-2', name: '双重进化', desc: '一局里进化两把武器', test: s => s.evolved >= 2 },
   { id: 'full-loadout', name: '满编出击', desc: '一局里装满 4 把武器和 4 块芯片', test: s => s.weapons >= 4 && s.passives >= 4 },
   { id: 'all-mechs-win', name: '全员突围', desc: '六台机甲都突围过', test: (s, meta) => MECHS.every(m => meta.mechStats?.[m.id]?.wins > 0) },
-  { id: 'veteran-30', name: '久经沙场', desc: '累计打完 30 局', test: (s, meta) => MECHS.reduce((n, m) => n + (meta.mechStats?.[m.id]?.runs || 0), 0) >= 30 },
+  // 分机甲战绩是 D3 才开始记的，旧存档的局数看 meta.runs，两者取大
+  { id: 'veteran-30', name: '久经沙场', desc: '累计打完 30 局', test: (s, meta) => Math.max(meta.runs || 0, MECHS.reduce((n, m) => n + (meta.mechStats?.[m.id]?.runs || 0), 0)) >= 30 },
+  { id: 'tier-1', name: '坠入深渊', desc: '在深渊 1 层或更高层突围', test: s => s.win && s.tier >= 1 },
+  { id: 'tier-5', name: '深渊行者', desc: '在深渊 5 层或更高层突围', test: s => s.win && s.tier >= 5 },
 ];
 // 协议勋章墙：每个协议第一次突围点亮一格，六台机甲各三格
 const PROTOCOL_MEDALS = TALENTS.map(t => ({ id: 'proto:' + t.id, mechId: t.mechId, talentId: t.id, name: t.name }));
@@ -2407,7 +2777,7 @@ const ACHIEVEMENT_TOTAL = ACHIEVEMENTS.length + PROTOCOL_MEDALS.length;
 function achievementSummary(run, win) {
   const p = run.player || {};
   return {
-    win: !!win, mechId: run.mech?.id, talentId: run.talent?.id, t: run.t || 0,
+    win: !!win, mechId: run.mech?.id, talentId: run.talent?.id, t: run.t || 0, tier: run.tier || 0,
     kills: run.kills || 0, bestCombo: run.bestCombo || 0, perfects: run.perfects || 0, bossKills: run.bossKills || 0, relayClears: run.relayClears || 0,
     evolved: (p.weapons || []).filter(w => w.evo).length, weapons: (p.weapons || []).length, passives: (p.passives || []).length,
     scorpionHurt: run.report?.damageTakenBySource?.['boss:scorpion'] || 0,
@@ -2431,69 +2801,6 @@ function applyMechStats(stats, summary) {
   s.best = Math.max(s.best, summary.t); s.bestKills = Math.max(s.bestKills, summary.kills);
   return s;
 }
-
-// ---- src/data/enemies.js ----
-// 敌人、首领数据与出场时间表
-const ETYPES = {
-  crawler: { img: 'enemy_crawler', r: 13, size: 42, hp: 10, speed: 98, dmg: 8, xp: 1, col: '255,70,90', mass: 1 },
-  brute: { img: 'enemy_brute', r: 25, size: 70, hp: 85, speed: 54, dmg: 16, xp: 6, col: '255,140,60', mass: 4 },
-  gunner: { img: 'enemy_gunner', r: 16, size: 48, hp: 28, speed: 72, dmg: 10, xp: 3, col: '80,240,170', mass: 1.5 },
-  bomber: { img: 'enemy_bomber', r: 13, size: 44, hp: 12, speed: 150, dmg: 22, xp: 2, col: '255,200,60', mass: .8 },
-  charger: { img: 'enemy_charger', r: 20, size: 60, hp: 50, speed: 70, dmg: 18, xp: 4, col: '255,60,60', mass: 3 },
-};
-const BOSSES = [
-  { kind: 'scorpion', name: '毒蝎领主', img: 'boss_scorpion', r: 60, size: 220, hp: 12000, speed: 74 },
-  { kind: 'queen', name: '深渊母巢', img: 'boss_queen', r: 74, size: 250, hp: 72000, speed: 50 },
-  { kind: 'queen', name: '深渊母巢 · 狂怒', img: 'boss_queen', r: 82, size: 285, hp: 220000, speed: 56, final: true },
-];
-// 冲锋运动与危险预警共用，位移严格等于 speed × duration。
-const ENEMY_CHARGE = {
-  normal: { speed: 500, duration: .55, aimTime: .75, lockTime: .45, cooldownMin: 1.4, cooldownMax: 2.4 },
-  boss: { speed: 640, duration: .6, aimTime: .8, lockTime: .5 },
-};
-const BOSS_TIMES = [120, 270, 420];
-const SWARM_TIMES = [45, 100, 165, 215, 330, 385];
-
-// 3 分钟后用不同组成施压，减少低威胁爬虫占比；同种词缀最多同时两只。
-const ENEMY_PHASES = [
-  { from: 180, weights: [{ k: 'crawler', w: 8 }, { k: 'bomber', w: 2 }, { k: 'gunner', w: 3 }, { k: 'brute', w: 2 }, { k: 'charger', w: 2 }], packChance: .15, eliteInterval: 28, eliteCap: 2 },
-  { from: 240, weights: [{ k: 'crawler', w: 6 }, { k: 'bomber', w: 2 }, { k: 'gunner', w: 3 }, { k: 'brute', w: 3 }, { k: 'charger', w: 3 }], packChance: .1, eliteInterval: 26, eliteCap: 3 },
-  { from: 330, weights: [{ k: 'crawler', w: 5 }, { k: 'bomber', w: 2 }, { k: 'gunner', w: 4 }, { k: 'brute', w: 3 }, { k: 'charger', w: 4 }], packChance: .1, eliteInterval: 24, eliteCap: 4 },
-];
-function enemyPhaseAt(t) {
-  for (let i = ENEMY_PHASES.length - 1; i >= 0; i--) if (t >= ENEMY_PHASES[i].from) return ENEMY_PHASES[i];
-  return null;
-}
-const ELITE_AFFIX_ORDER = ['shield', 'haste', 'barrage'];
-const ELITE_AFFIXES = {
-  shield: { name: '护盾', color: '#70d8ee', type: 'brute', hp: 7, size: 1.45, damage: 1.4, speed: .9, shieldHp: 2, shieldDelay: 4, shieldRecharge: 1.2, stagger: .45 },
-  haste: { name: '急速', color: '#f6b65e', type: 'charger', hp: 7, size: 1.3, damage: 1.15, speed: 1.35, cooldownMin: 1, cooldownMax: 1.4, recovery: .45 },
-  barrage: { name: '弹幕', color: '#d6a5ff', type: 'gunner', hp: 8, size: 1.35, damage: 1.2, speed: .9, aimTime: .8, lockTime: .3, interval: 2.8, lateInterval: 2.4, lateAt: 330, shots: 3, lateShots: 5, spread: .24, bulletSpeed: 240, leadTime: .8, leadFactor: .7, leadMax: 120, bulletRadius: 5.5, bulletDamage: 9, bulletLife: 3.5, minRange: 100, maxRange: 420 },
-};
-// 普通和精英共用220颗非首领预算，其中词缀弹幕最多60颗，为首领保留260颗。
-const ENEMY_PROJECTILE_LIMITS = { total: 480, normal: 220, affix: 60 };
-const ELITE_SPAWN_RULES = { sameAffixCap: 2, bossGrace: 15, retry: 5 };
-
-// 每种组合保留原有招式与单次伤害，只变化顺序，并留出明确的输出窗口。
-const BOSS_ATTACK_SEQUENCES = {
-  scorpion: [
-    ['charge', 'walk', 'fan', 'walk', 'ring', 'walk'],
-    ['charge', 'walk', 'ring', 'walk', 'fan', 'walk'],
-    ['fan', 'walk', 'charge', 'walk', 'ring', 'walk'],
-  ],
-  queen: [
-    ['spiral', 'walk', 'summon', 'burst', 'walk', 'ring'],
-    ['burst', 'walk', 'spiral', 'summon', 'walk', 'ring'],
-    ['summon', 'walk', 'burst', 'spiral', 'walk', 'ring'],
-  ],
-};
-const BOSS_WEAK_POINTS = {
-  scorpion: { duration: 2, damageMul: 1.35, trigger: 'charge' },
-  queen: { duration: 2, damageMul: 1.35, trigger: 'ring' },
-};
-
-// 普通虫群和包围波都在可视矩形外侧生成，避免贴身出现。
-const SPAWN_VIEWPORT = Object.freeze({ edgeMargin: 60 });
 
 // ---- src/data/meta-upgrades.js ----
 // 机库永久改装项
@@ -2558,16 +2865,6 @@ const ICONS = {
   gold: '<circle cx="24" cy="24" r="16"/><path d="M28 17h-6a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8h-7M24 13v4M24 33v3"/>',
 };
 const svgI = k => `<svg class="i" viewBox="0 0 48 48" aria-hidden="true">${ICONS[k] || ''}</svg>`;
-
-// ---- src/data/boss-presentation.js ----
-// 首领演出参数：弱点提示、距离补偿与短暂入场镜头，不改变招式伤害
-const BOSS_PRESENTATION = {
-  weakExtraMax: 1.5, weakFlashDuration: .18,
-  weakTextSize: 28, weakTextLife: 1.1, textLift: 12,
-  enrageTextSize: 30, enrageTextLife: 1.3, enrageWaveRadius: 210, enrageWaveSpeed: 420,
-  weakColor: '255,219,128', weakPulseRate: 10, weakPulseAmount: .08, indicatorPulseAmount: .12,
-  cameraDuration: .6, cameraMaxOffset: 36, cameraBossPull: .12, cameraVelocityLead: .12,
-};
 
 // ---- src/game/elites.js ----
 // 单词缀精英：护盾吸收与恢复、急速恢复窗口、可锁定躲避的弹幕蓄力
@@ -2639,14 +2936,15 @@ function updateEliteBarrage(e, dt, player, distance, time, emitVolley) {
 
 function spawnEnemy(type, x, y, o = {}) {
   const d = ETYPES[type], t = G.t;
-  // 所有虫群、守卫和首领召唤都走这一入口；非首领时期留出一个首领位置。
+  // 所有虫群、守卫和首领召唤都走这一入口；非首领时期留出一个首领位置。生命再乘当前敌群阶段的 hpMul（只有中期两段有）。
   const cap = Math.floor(spawnCap(t)) - (G.boss ? 0 : 1);
   if (G.enemies.length >= cap) return null;
-  const e = { id: G.eid++, type, d, img: d.img, x, y, r: d.r, size: d.size, hp: d.hp * enemyHpMul(t), speed: d.speed * rand(.9, 1.1) * enemySpeedMul(t), dmg: d.dmg, xp: d.xp, col: d.col, kx: 0, ky: 0, flash: 0, ang: Math.atan2(G.player.y - y, G.player.x - x), st: 'walk', stT: 0, cd: rand(1, 2.6), elite: false, sawT: 0, q: 0, wob: Math.random() * TAU, fuse: 0 };
+  const e = { id: G.eid++, type, d, img: d.img, x, y, r: d.r, size: d.size, hp: d.hp * enemyHpMul(t) * (enemyPhaseAt(t)?.hpMul || 1), speed: d.speed * rand(.9, 1.1) * enemySpeedMul(t), dmg: d.dmg, xp: d.xp, col: d.col, kx: 0, ky: 0, flash: 0, ang: Math.atan2(G.player.y - y, G.player.x - x), st: 'walk', stT: 0, cd: rand(1, 2.6), elite: false, sawT: 0, q: 0, wob: Math.random() * TAU, fuse: 0 };
   if (o.elite) {
     e.elite = true; e.xp *= 6;
     if (!applyEliteAffix(e, o.affix)) { e.hp *= 9; e.r *= 1.45; e.size *= 1.45; e.dmg *= 1.4; e.speed *= .9; }
   }
+  applyRunModifiers(e);
   e.maxHp = e.hp; G.enemies.push(e); return e;
 }
 function ringPos(ang) {
@@ -2705,7 +3003,7 @@ function director(dt) {
       }
     }
   }
-  const rate = spawnRate(t, !!(G.boss || G.warn)), cap = spawnCap(t);
+  const rate = spawnRate(t, !!(G.boss || G.warn)) * runMul('spawn'), cap = spawnCap(t);
   G.spawnAcc += rate * dt;
   while (G.spawnAcc >= 1) {
     G.spawnAcc -= 1; if (G.enemies.length >= cap) continue;
@@ -2717,23 +3015,45 @@ function director(dt) {
 function spawnBoss(i) {
   if (G.enemies.length >= Math.floor(spawnCap(G.t))) return false;
   const b = BOSSES[i], p = G.player;
-  const e = { id: G.eid++, boss: true, kind: b.kind, final: !!b.final, name: b.name, img: b.img, x: p.x, y: p.y - VH / 2 - b.size * .6, r: b.r, size: b.size, hp: b.hp, maxHp: b.hp, speed: b.speed, dmg: 22, xp: 0, col: b.kind === 'scorpion' ? '255,40,80' : '190,90,255', kx: 0, ky: 0, flash: 0, ang: PI / 2, st: 'enter', stT: 0, seq: -1, sub: 0, n: 0, spA: 0, sumT: 6, q: 0, sawT: 0, entering: true };
+  const e = { id: G.eid++, boss: true, kind: b.kind, final: !!b.final, name: b.name, img: b.img, x: p.x, y: p.y - VH / 2 - b.size * .6, r: b.r, size: b.size, hp: b.hp, maxHp: b.hp, speed: b.speed, dmg: 22, xp: 0, col: b.kind === 'scorpion' ? '255,40,80' : '190,90,255', kx: 0, ky: 0, flash: 0, ang: PI / 2, st: 'enter', stT: 0, seq: -1, sub: 0, n: 0, spA: 0, sumT: 6, q: 0, sawT: 0, entering: true, guard: b.guard ? { ...b.guard, baseHp: b.hp } : null };
+  applyRunModifiers(e);
   G.enemies.push(e); G.boss = e; MUS.intensity = 2;
   G.banner = { kind: 'boss', title: b.name, sub: b.final ? '最终决战 · 击破它即可突围' : '击败首领获得补给箱', t: 2.4, max: 2.4, col: e.col };
   return true;
 }
 
-// ---- src/data/targeting.js ----
-// 自动武器的镜头缓冲与原有射程，供索敌和首领可达距离共用
-const AUTO_TARGETING = {
-  margin: 0,
-  ranges: { gatling: 480, missile: 560, tesla: 270, rail: 650, drone: 420, missileRetarget: 450, teslaChain: 165 },
-};
+// ---- src/game/targeting.js ----
+// 自动武器索敌：普通敌人限制在镜头矩形内，首领保留调用方原射程
+
+function isWeaponTarget(e) {
+  return !e.dead && !e.entering && (e.boss ||
+    Math.abs(e.x - G.cam.x) < VW / 2 + AUTO_TARGETING.margin &&
+    Math.abs(e.y - G.cam.y) < VH / 2 + AUTO_TARGETING.margin);
+}
+function nearestWeaponTarget(x, y, maxR, skip) {
+  let best = null, bestDistance = maxR * maxR;
+  for (const e of G.enemies) {
+    if (!isWeaponTarget(e) || skip?.has(e)) continue;
+    const distance = d2(x, y, e.x, e.y);
+    if (distance < bestDistance) { bestDistance = distance; best = e; }
+  }
+  return best;
+}
+function nearestWeaponTargets(x, y, maxR, n) {
+  const targets = [], radiusSquared = maxR * maxR;
+  for (const e of G.enemies) {
+    if (!isWeaponTarget(e)) continue;
+    const distance = d2(x, y, e.x, e.y);
+    if (distance < radiusSquared) targets.push([distance, e]);
+  }
+  targets.sort((a, b) => a[0] - b[0]);
+  return targets.slice(0, n).map(target => target[1]);
+}
 
 // ---- src/data/combat-visuals.js ----
 // 伤害聚合、数字字体和玩家曳光的集中视觉参数
 const COMBAT_VISUALS = Object.freeze({
-  damage: Object.freeze({ window: .2, life: .6, defaultCap: 30, crowdedBulletCount: 150, normalSize: 14, critSize: 19, pulseTime: .12, pulseScale: .13 }),
+  damage: Object.freeze({ window: .2, life: .6, defaultCap: 30, crowdedBulletCount: 150, normalSize: 14, critSize: 19, pulseTime: .12, pulseScale: .13, blockedColor: '150,162,176', blockedOffset: .9 }),
   bullet: Object.freeze({ lengthMin: 14, lengthMax: 20, velocityScale: .025, tracerLengthScale: 1.3, width: 2.4, droneWidth: 2.2, tracerWidth: 3, evolvedWidth: 3.5, evolvedColor: '255,205,71' }),
 });
 const DAMAGE_NUMBER_FONTS = Object.freeze({ normal: '600 14px Teko,"Arial Narrow",sans-serif', crit: '600 19px Teko,"Arial Narrow",sans-serif' });
@@ -2786,6 +3106,29 @@ function recordDamageNumber(enemy, effectiveDmg, crit = false, killed = false) {
     life: cfg.life, max: cfg.life, lastHitAt: now });
   return text;
 }
+// 首领甲壳挡下的伤害：同一首领 0.2 秒内合并成一条灰色「挡 N」，放在有效伤害数字旁边；优先级最低，数字满了不挤掉别的
+function recordBlockedDamage(enemy, blockedDmg) {
+  if (!G || !enemy || !Number.isFinite(blockedDmg) || blockedDmg <= 0) return null;
+  const cfg = COMBAT_VISUALS.damage, now = G.t || 0, cap = combatDamageTextCap(G.damageTextCap);
+  const batches = G.blockedNumberBatches || (G.blockedNumberBatches = new WeakMap());
+  let batch = batches.get(enemy);
+  if (!batch || now >= batch.until - 1e-9 || now < batch.startedAt) {
+    batch = { startedAt: now, until: now + cfg.window, damage: 0, text: null };
+    batches.set(enemy, batch);
+  }
+  batch.damage += blockedDmg;
+  const count = trimDamageNumbers(G.texts, cap);
+  if (!cap || !damageNumberIsVisible(batch, G.settings?.damageNumbers, G.ebullets?.length || 0)) return null;
+  let text = batch.text;
+  if (!text || text.life <= 0 || !G.texts.includes(text)) {
+    if (count >= cap) return null;
+    text = { x: enemy.x + (enemy.r || 0) * cfg.blockedOffset, y: enemy.y - (enemy.r || 0) * .2, vy: -55, damage: true, blocked: true };
+    G.texts.push(text); batch.text = text;
+  }
+  Object.assign(text, { value: batch.damage, str: '挡' + Math.round(batch.damage), crit: false, killed: false,
+    col: cfg.blockedColor, size: cfg.normalSize, life: cfg.life, max: cfg.life, lastHitAt: now });
+  return text;
+}
 
 // ---- src/game/combat.js ----
 // 伤害结算、击杀、首领死亡、掉落
@@ -2795,6 +3138,8 @@ function hitEnemy(e, dmg, o = {}) {
   const st = G.stats, crit = o.crit ?? (Math.random() < st.crit);
   if (crit) dmg *= st.critMul;
   dmg *= rand(.92, 1.08) * (e.vulnerableT > 0 ? e.weakMul || 1 : 1) * talentDamageMultiplier(e, o.source);
+  const rawDmg = dmg;
+  if (e.guard) { dmg = bossGuardAllowance(e, dmg, G.t); if (rawDmg > dmg) recordBlockedDamage(e, rawDmg - dmg); }
   const hpBefore = Math.max(0, e.hp), shieldBeforeHit = Math.max(0, e.shield || 0), angle = o.kx !== undefined ? Math.atan2(o.ky, o.kx) : Math.atan2(e.y - G.player.y, e.x - G.player.x);
   if (e.affix === 'shield') {
     const shieldBefore = e.shield;
@@ -2804,7 +3149,8 @@ function hitEnemy(e, dmg, o = {}) {
   const effectiveDamage = Math.max(0, hpBefore - Math.max(0, e.hp)) + Math.max(0, shieldBeforeHit - Math.max(0, e.shield || 0));
   recordDamage(o.source, effectiveDamage);
   recordDamageNumber(e, effectiveDamage, crit, e.hp <= 0);
-  if (dmg > 0) weaponImpact(o.source, e, angle, shieldBeforeHit > 0 ? 'shield' : e.boss || e.type === 'brute' ? 'armor' : 'shell');
+  // 被甲壳挡下的命中照样出火花
+  if (rawDmg > 0) weaponImpact(o.source, e, angle, shieldBeforeHit > 0 ? 'shield' : e.boss || e.type === 'brute' ? 'armor' : 'shell');
   e.flash = G.settings?.flashes === false ? 0 : .08;
   if (o.kx !== undefined && !e.boss) { const m = 1 / (e.d.mass * (e.elite ? 3 : 1)); e.kx += o.kx * m; e.ky += o.ky * m; }
   if (e.hp <= 0) killEnemy(e, o.source); else if (feedbackVisible(e.x, e.y)) SFX.hit();
@@ -2812,7 +3158,8 @@ function hitEnemy(e, dmg, o = {}) {
 function killEnemy(e, source) {
   recordKill(source);
   e.dead = true; G.kills++; G.combo++; G.comboT = 2.5; if (G.combo > G.bestCombo) G.bestCombo = G.combo;
-  const p = G.player, energyScale = killEnergyScale(G.t);
+  // 深渊刷怪倍率多出来的击杀不额外充能，和 killEnergyScale 按常态刷怪速率归一化一致
+  const p = G.player, energyScale = killEnergyScale(G.t) / runMul('spawn');
   if (p.overT <= 0) p.overload = Math.min(100, p.overload + (e.boss ? 40 : e.elite ? 6 : .55 * energyScale));
   if (G.combo % 50 === 0) { floatText(p.x, p.y - 70, `${G.combo} 连杀！`, '255,205,71', 26, 1); if (p.overT <= 0) p.overload = Math.min(100, p.overload + 8 * energyScale); }
   if (!e.boss) feedback(e.elite ? 'eliteKill' : 'kill', { x: e.x, y: e.y, combo: G.combo });
@@ -2822,11 +3169,11 @@ function killEnemy(e, source) {
   if (e.boss) return bossDeath(e);
   drop('xp', e.x, e.y, e.xp);
   if (Math.random() < .015) drop('coin', e.x + rand(-6, 6), e.y + rand(-6, 6), 1);
-  if (Math.random() < healDropChance(G.t)) drop('heal', e.x, e.y);
+  if (Math.random() < healDropChance(G.t) * runMul('heal')) drop('heal', e.x, e.y);
   if (Math.random() < .003) drop('magnet', e.x, e.y);
   if (e.elite) {
     if (!e.objectiveTarget) drop('chest', e.x, e.y); for (let i = 0; i < 5; i++) drop('coin', e.x + rand(-30, 30), e.y + rand(-30, 30), 1);
-    if (Math.random() < eliteHealDropChance(G.t)) drop('heal', e.x + 20, e.y);
+    if (Math.random() < eliteHealDropChance(G.t) * runMul('heal')) drop('heal', e.x + 20, e.y);
   }
   if (e.type === 'bomber') explode(e.x, e.y, 72, 40 * G.stats.dmg, '255,190,60', false, 0, source || 'chain'); // 打爆自爆蜂会连锁炸伤周围虫群
 }
@@ -2847,34 +3194,6 @@ function drop(kind, x, y, v = 1) {
     for (let i = G.pickups.length - 1; i >= 0; i--) { const o = G.pickups[i]; if (o.kind === 'xp' && !o.mag) { o.v += v; return; } }
   }
   G.pickups.push({ kind, x, y, v, mag: kind === 'chest' ? false : false, vx: rand(-40, 40), vy: rand(-40, 40), t: 0 });
-}
-
-// ---- src/game/targeting.js ----
-// 自动武器索敌：普通敌人限制在镜头矩形内，首领保留调用方原射程
-
-function isWeaponTarget(e) {
-  return !e.dead && !e.entering && (e.boss ||
-    Math.abs(e.x - G.cam.x) < VW / 2 + AUTO_TARGETING.margin &&
-    Math.abs(e.y - G.cam.y) < VH / 2 + AUTO_TARGETING.margin);
-}
-function nearestWeaponTarget(x, y, maxR, skip) {
-  let best = null, bestDistance = maxR * maxR;
-  for (const e of G.enemies) {
-    if (!isWeaponTarget(e) || skip?.has(e)) continue;
-    const distance = d2(x, y, e.x, e.y);
-    if (distance < bestDistance) { bestDistance = distance; best = e; }
-  }
-  return best;
-}
-function nearestWeaponTargets(x, y, maxR, n) {
-  const targets = [], radiusSquared = maxR * maxR;
-  for (const e of G.enemies) {
-    if (!isWeaponTarget(e)) continue;
-    const distance = d2(x, y, e.x, e.y);
-    if (distance < radiusSquared) targets.push([distance, e]);
-  }
-  targets.sort((a, b) => a[0] - b[0]);
-  return targets.slice(0, n).map(target => target[1]);
 }
 
 // ---- src/game/weapons.js ----
@@ -3045,63 +3364,6 @@ function explode(x, y, rad, dmg, col = '255,150,60', bigSnd = false, hurtsPlayer
   feedback(feedbackKind, { x, y, angle: Math.atan2(y - G.player.y, x - G.player.x), strength: Math.min(5, rad / 20), big: bigSnd });
 }
 
-// ---- src/game/boss-phases.js ----
-// 首领组合与破绽：本次登场固定招式顺序，破绽期间冻结下一招的计时
-
-function bossAttackSequence(e, random = Math.random) {
-  const choices = BOSS_ATTACK_SEQUENCES[e.kind];
-  if (!choices) return [];
-  if (!Number.isInteger(e.attackPattern) || !choices[e.attackPattern]) e.attackPattern = Math.min(choices.length - 1, Math.max(0, Math.floor(random() * choices.length)));
-  return choices[e.attackPattern];
-}
-function nextBossPhase(e) {
-  const sequence = bossAttackSequence(e);
-  e.seq = ((Number.isInteger(e.seq) ? e.seq : -1) + 1) % sequence.length;
-  e.st = sequence[e.seq]; e.stT = 0; e.sub = 0; e.n = 0;
-}
-// 只补走回当前武器可攻击范围所需的时间；落雷与连锁命中不当作无限射程。
-function bossWeakPointExtra(e, state, statsForWeapon) {
-  const p = state?.player, speed = state?.stats?.speed;
-  if (!p || !(speed > 0) || !Number.isFinite(speed)) return 0;
-  const distance = Math.hypot(e.x - p.x, e.y - p.y), bossRadius = Math.max(0, e.r || 0);
-  let approach = Infinity;
-  const weapons = [...(p.weapons || [])];
-  if (p.overT > 0 && state.mech?.trait?.kind === 'engineer' && state.mech.trait.extraDrones > 0 && p.supportWeapon) weapons.push(p.supportWeapon);
-  for (const w of weapons) {
-    if (w.id === 'saw') {
-      const stats = statsForWeapon?.(w);
-      if (!stats) continue;
-      const radius = stats.rad * (w.evo ? 1 + WDEF.saw.pulse.amplitude * Math.sin((state.t || 0) * WDEF.saw.pulse.rate) : 1) + stats.size;
-      if (Number.isFinite(radius)) approach = Math.min(approach, Math.max(0, distance - radius - bossRadius));
-    } else {
-      const range = AUTO_TARGETING.ranges[w.id];
-      if (!(range > 0)) continue;
-      if (w.id === 'drone' && w.drones?.length) {
-        for (const drone of w.drones) {
-          const remaining = Math.hypot(e.x - drone.x, e.y - drone.y) - range - bossRadius;
-          if (Number.isFinite(remaining)) approach = Math.min(approach, Math.max(0, remaining));
-        }
-      } else approach = Math.min(approach, Math.max(0, distance - range - bossRadius));
-    }
-  }
-  return Number.isFinite(approach) ? Math.min(BOSS_PRESENTATION.weakExtraMax, approach / speed) : 0;
-}
-function openBossWeakPoint(e, extraDuration = 0) {
-  const cfg = BOSS_WEAK_POINTS[e.kind];
-  if (!cfg || e.dead || e.hp <= 0 || e.vulnerableT > 0) return false;
-  nextBossPhase(e);
-  const extra = Number.isFinite(extraDuration) ? Math.max(0, Math.min(BOSS_PRESENTATION.weakExtraMax, extraDuration)) : 0;
-  e.vulnerableT = cfg.duration + extra; e.weakWindow = e.vulnerableT; e.weakMul = cfg.damageMul;
-  e.weakFlashT = BOSS_PRESENTATION.weakFlashDuration;
-  return true;
-}
-function updateBossWeakPoint(e, dt) {
-  if (e.dead || e.hp <= 0 || !(dt > 0) || !Number.isFinite(dt) || !(e.vulnerableT > 0)) return false;
-  e.vulnerableT = Math.max(0, e.vulnerableT - dt);
-  if (e.vulnerableT <= 0) e.weakMul = 1;
-  return true;
-}
-
 // ---- src/game/enemies.js ----
 // 敌人与首领 AI
 
@@ -3131,7 +3393,8 @@ function updateEnemies(dt) {
             break;
           }
           e.cd -= dt;
-          if (e.cd <= 0 && d < 420) {
+          // 只在玩家武器能锁定它（屏内）时开火：屏外枪手打不到也看不见，不让它放冷枪
+          if (e.cd <= 0 && d < 420 && isWeaponTarget(e)) {
             e.cd = Math.max(1.3, (e.elite ? 1.6 : 2.6) - G.t / 400);
             const n = e.elite ? 3 : 1;
             for (let i = 0; i < n; i++) fireEB(e.x + Math.cos(toA) * e.r, e.y + Math.sin(toA) * e.r, toA + (i - (n - 1) / 2) * .22, 175, { r: 6, col: '255,60,160', dmg: 10, cause: 'enemy:gunner' });
@@ -3173,16 +3436,18 @@ function updateEnemies(dt) {
       }
     }
     // 互相推挤，避免叠成一坨
-    if (!e.boss) query(e.x, e.y, e.r, o => {
-      if (o === e || o.boss) return; const dx = e.x - o.x, dy = e.y - o.y, rr = e.r + o.r, dd = dx * dx + dy * dy;
-      if (dd > 0 && dd < rr * rr) { const d = Math.sqrt(dd), push = (rr - d) * .5 / d; e.x += dx * push; e.y += dy * push; }
-    });
+    if (!e.boss) query(e.x, e.y, e.r, pushApart, e);
     const rr = e.r + p.r;
     if (!e.entering && !weakThisFrame && !(e.vulnerableT > 0) && d2(e.x, e.y, p.x, p.y) < rr * rr) {
       if (e.type === 'bomber' && !e.fuse) e.fuse = .2;
       hurtPlayer(e.dmg, e.x, e.y, e.boss ? 'boss:' + e.kind : 'enemy:' + e.type);
     }
   }
+}
+// 推挤回调放在模块级，当前敌人经 query 的 ctx 传入，热循环里不再每只敌人新建闭包。
+function pushApart(o, e) {
+  if (o === e || o.boss) return; const dx = e.x - o.x, dy = e.y - o.y, rr = e.r + o.r, dd = dx * dx + dy * dy;
+  if (dd > 0 && dd < rr * rr) { const d = Math.sqrt(dd), push = (rr - d) * .5 / d; e.x += dx * push; e.y += dy * push; }
 }
 let enemyBulletTotal = 0, enemyBulletNormal = 0, enemyBulletAffix = 0;
 function resetEnemyBulletBudget() {
@@ -3293,38 +3558,6 @@ function updateBoss(e, dt) {
 
 function fireBossEB(e, x, y, a, spd, o) {
   o.source = 'boss'; o.cause = 'boss:' + e.kind; return fireEB(x, y, a, spd, o);
-}
-
-// ---- src/data/objectives.js ----
-// 可选军械中继：出现窗口、回收规则、守卫和定向奖励数值
-const RELAY_CONFIG = {
-  times: [55, 185, 345],
-  availableFor: 20, activeFor: 24, captureTime: 10,
-  activationTime: .6, activationRadius: 44, radius: 112, spawnDistance: 230,
-  hazardInterval: 3.5, hazardDelay: 1, hazardRadius: 45, hazardDamage: 18,
-  guardDistance: 190, guardTypes: ['crawler', 'crawler', 'crawler', 'crawler', 'gunner'],
-  bossWarning: 3, resultFor: 2.4,
-};
-const RELAY_REWARD_CONFIG = { healFraction: .3, charge: 25, coins: 40, rerollCoins: 10 };
-
-// ---- src/data/events.js ----
-// 战场行动变体：每局不重复抽取、移动路线、围猎和封锁区域规则
-
-const FIELD_EVENT_TYPES = ['relay', 'convoy', 'hunt', 'blackout'];
-const FIELD_EVENT_RULES = {
-  relay: { ...RELAY_CONFIG, title: '固定回收', required: RELAY_CONFIG.captureTime, startText: '回收启动 · 留在圈内，躲开红圈' },
-  convoy: { ...RELAY_CONFIG, title: '移动回收', required: 10, speed: 30, routeLeg: 360, routeTurn: Math.PI / 3, startText: '护送启动 · 跟随运输车完成回收' },
-  hunt: { ...RELAY_CONFIG, title: '限时围猎', required: 1, activeFor: 28, targetType: 'brute', targetDistance: 140, targetHp: 9, targetSize: 1.45, targetDamage: 1.4, targetSpeed: .9, targetXp: 6, startText: '围猎启动 · 限时击破标记精英' },
-  blackout: { ...RELAY_CONFIG, title: '区域封锁', required: 12, activeFor: 30, radius: 160, hazardInterval: 5, hazardDelay: .9, hazardDamage: 14, laneActiveFor: 1.8, laneCount: 2, laneWidth: 34, laneLength: 360, laneSpacing: 108, laneShifts: [0, -.5, .5], laneTurn: Math.PI / 3, startText: '封锁启动 · 留守区域，避开警戒带' },
-};
-
-function chooseFieldEvents(random = Math.random) {
-  const order = [...FIELD_EVENT_TYPES];
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.min(i, Math.max(0, Math.floor(random() * (i + 1))));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  return order.slice(0, RELAY_CONFIG.times.length);
 }
 
 // ---- src/game/objectives.js ----
@@ -3511,13 +3744,7 @@ function updateBullets(dt) {
   for (const b of G.pbullets) {
     if (b.dead) continue;
     b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; if (b.life <= 0) { b.dead = true; continue; }
-    query(b.x, b.y, b.r, e => {
-      if (e.entering || b.hit.includes(e.id)) return;
-      const rr = b.r + e.r; if (d2(b.x, b.y, e.x, e.y) > rr * rr) return;
-      b.hit.push(e.id); hitEnemy(e, b.dmg, { source: b.source, kx: b.vx * .12, ky: b.vy * .12 });
-      part(b.x, b.y, -b.vx * .2 + rand(-60, 60), -b.vy * .2 + rand(-60, 60), .15, 5, b.col);
-      if (--b.pierce < 0) { b.dead = true; return false; }
-    });
+    query(b.x, b.y, b.r, bulletHit, b);
   }
   compact(G.pbullets, b => !b.dead);
   for (const m of G.missiles) {
@@ -3539,6 +3766,14 @@ function updateBullets(dt) {
     if (d2(b.x, b.y, p.x, p.y) < rr * rr && hurtPlayer(b.dmg, b.x, b.y, b.cause || 'unknown')) b.dead = true;
   }
   compact(G.ebullets, b => !b.dead);
+}
+// 子弹命中回调放在模块级，子弹经 query 的 ctx 传入，避免每颗子弹每帧新建闭包。
+function bulletHit(e, b) {
+  if (e.entering || b.hit.includes(e.id)) return;
+  const rr = b.r + e.r; if (d2(b.x, b.y, e.x, e.y) > rr * rr) return;
+  b.hit.push(e.id); hitEnemy(e, b.dmg, { source: b.source, kx: b.vx * .12, ky: b.vy * .12 });
+  part(b.x, b.y, -b.vx * .2 + rand(-60, 60), -b.vy * .2 + rand(-60, 60), .15, 5, b.col);
+  if (--b.pierce < 0) { b.dead = true; return false; }
 }
 function updateWaves(dt) {
   for (const w of G.waves) {
@@ -3973,9 +4208,10 @@ $('#btnStartAlt').addEventListener('click', () => startRun());
 // ---- src/game/run.js ----
 // 对局：开局、属性结算、每帧主更新
 
-function newRun({ practice = false } = {}) {
+// daily：每日挑战配置（data/daily.js 的 dailySetup），指定机体和协议，可以是未解锁的机体
+function newRun({ practice = false, daily = null } = {}) {
   reloadMeta();
-  const mech = MECHS.find(m => m.id === meta.sel && meta.unlocked[m.id]) || MECHS[0];
+  const mech = (daily && MECHS.find(m => m.id === daily.mechId)) || MECHS.find(m => m.id === meta.sel && meta.unlocked[m.id]) || MECHS[0];
   setG({
     state: 'playing', runId: createRunIdentity(), debugGod: false, practice, settings: meta.settings || {}, report: initRunReport(), t: 0, rt: 0, mech, kills: 0, coins: 0, combo: 0, comboT: 0, bestCombo: 0, perfects: 0, bossKills: 0,
     enemies: [], ebullets: [], pbullets: [], prints: [], missiles: [], beams: [], bolts: [], waves: [], pickups: [], parts: [], texts: [], decals: [], later: [],
@@ -3987,10 +4223,11 @@ function newRun({ practice = false } = {}) {
     cam: { x: 0, y: 0 }, stats: {},
     player: { training: { power: 0, guard: 0, mobility: 0 }, x: 0, y: 0, vx: 0, vy: 0, r: 13, hurtR: 9, angle: -PI / 2, hp: 1, maxHp: 0, level: 1, xp: 0, xpNext: xpFor(1), weapons: [], passives: [], invuln: 1, dashT: 0, dashCd: 0, ddx: 0, ddy: -1, perfectUsed: false, ghosts: [], overload: 0, overT: 0, aim: null, legA: -PI / 2, ph: 0, amp: 0, walkDir: 1, lastCs: 1, recoil: 0, mf: [0, 0, 0], gunI: 0, hitT: 0 },
   });
-  G.talent = initTalent(G.player, mech, getSelectedTalent(mech.id, meta.talents).id);
+  G.talent = initTalent(G.player, mech, daily?.talentId || getSelectedTalent(mech.id, meta.talents).id);
   initMechTraits(G.player, mech);
   G.player.weapons.push(newWeapon(mech.weapon));
   recalc(); G.player.hp = G.player.maxHp;
+  initRunModifiers(daily);
   if (!practice) { meta.runs++; saveMeta(); }
 }
 const newWeapon = id => ({ id, lv: 1, evo: false, mastery: 0, cd: .3, side: 1, ang: 0, drones: [] });
@@ -4426,7 +4663,8 @@ function selectedHangarMech() { return MECHS.find(m => m.id === meta.sel && meta
 function refreshStoredViews() {
   if (G && G.state !== 'end') return;
   if (!scr.menu.hidden) refreshMenu();
-  if (!scr.hangar.hidden) renderHangar();
+  // 别的页面结算可能新拿了成就，勋章墙跟着重画
+  if (!scr.hangar.hidden) { renderHangar(); renderAchievements(); }
 }
 function showRecoveryNotice(result) {
   const notice = $('#saveNotice'); if (!notice) return;
@@ -4442,13 +4680,18 @@ function refreshWhenAssetsArrive() {
 }
 function refreshMenu() {
   const mech = selectedHangarMech(), talent = getSelectedTalent(mech.id, meta.talents);
-  $('#mCoins').textContent = meta.coins; $('#mBest').textContent = meta.best ? fmtTime(meta.best) : '--'; $('#mWins').textContent = meta.wins;
+  // 突围过以后「最久存活」换成「最高层级」
+  const tier = selectedTier(meta, mech.id), topTier = bestTierCleared(meta);
+  $('#mCoins').textContent = meta.coins; $('#mWins').textContent = meta.wins;
+  $('#mBestLabel').textContent = topTier >= 0 ? '最高层级' : '最久存活';
+  $('#mBest').textContent = topTier >= 0 ? tierName(topTier) : meta.best ? fmtTime(meta.best) : '--';
   $('#menuMech').textContent = `${mech.name} · ${mech.cls}`;
-  $('#menuTalent').textContent = talent.name + '协议';
+  $('#menuTalent').textContent = talent.name + '协议' + (tier ? ` · ${tierName(tier)}` : '');
   $('#menuMechImage').src = mechSpriteURL(mech);
   refreshWhenAssetsArrive();
   $('#mFastest').textContent = meta.fastestWin ? `最快突围 · ${fmtTime(meta.fastestWin)}` : '最快突围 · 等待首次胜利';
   setBadge($('#btnHangar'), hangarBadge(meta));
+  renderDailyEntry();
   // 新玩家（没打过正式局、也没练完教学）先去训练：主按钮换成新兵训练，出击降为次级按钮；练完后恢复。
   const rookie = meta.runs === 0 && !meta.tutorial;
   $('#btnStart').hidden = rookie; $('#btnRookie').hidden = !rookie;
@@ -4456,6 +4699,13 @@ function refreshMenu() {
   const goal = nextGoal(meta), goalLine = $('#menuGoal');
   goalLine.hidden = !goal;
   if (goal) { goalLine.innerHTML = goalLineHtml(goal); goalLine.className = 'goal-line' + (goal.ready ? ' ready' : ''); goalLine.dataset.target = goalTarget(goal); }
+}
+// 主菜单的每日挑战入口：今天的机体和协议；没领奖励写奖励，领过写今日最佳。教学完成后才显示
+function renderDailyEntry() {
+  const key = dailyKey(), setup = dailySetup(key), mech = MECHS.find(m => m.id === setup.mechId);
+  const talent = getTalentOptions(mech.id).find(o => o.id === setup.talentId), today = meta.daily?.date === key ? meta.daily : null, entry = $('#menuDaily');
+  entry.hidden = !meta.tutorial;
+  entry.innerHTML = `<span class="daily-text"><small>每日挑战 · ${dailyLabel(key)}</small><b>${mech.name} · ${talent.name}</b></span><span class="daily-note">${today?.rewarded ? `今日最佳 ${fmtTime(today.bestT)}${today.win ? ' · 已突围' : ''}` : `首次完成 +${DAILY_REWARD} 金币`}</span>`;
 }
 // 按钮角标（如「可升级 3」），空串时移除
 function setBadge(button, text) { if (text) button.dataset.badge = text; else delete button.dataset.badge; }
@@ -4470,7 +4720,8 @@ function openMenu() { setG(null); musicStop(); refreshMenu(); show('menu'); }
 // target：机甲 id 时直接预览那台机甲，'upgrades' 时滚到永久改装
 function openHangar(target) {
   previewMechId = MECHS.some(m => m.id === target) ? target : selectedHangarMech().id;
-  show('hangar'); renderHangar(); refreshWhenAssetsArrive();
+  // 成就只在结算时变化，勋章墙和成就列表打开机库时画一次，选机体、协议、改装时不重建
+  show('hangar'); renderHangar(); renderAchievements(); refreshWhenAssetsArrive();
   if (target === 'upgrades') $('#upgradeTitle').scrollIntoView?.({ block: 'start' });
 }
 function renderHangar() {
@@ -4502,14 +4753,15 @@ function renderHangar() {
   $('#talentList').innerHTML = getTalentOptions(m.id).map(option => `<button type="button" class="talent-choice ${option.id === talent.id ? 'selected' : ''}" data-talent="${option.id}" aria-pressed="${option.id === talent.id}" ${unlocked ? '' : 'disabled'}><b>${option.name}${option.id === talent.id ? ' · 已选' : ''}</b><span>${option.description}</span>${meta.achievements?.['proto:' + option.id] ? '<em class="talent-medal">已突围</em>' : ''}</button>`).join('');
   $('#talentStatus').textContent = unlocked ? `${m.name}已选 ${talent.name}；每台机体分别保存。` : '解锁机体后可选择协议。';
   const launchTalent = getSelectedTalent(selected.id, meta.talents);
-  $('#hgLaunchLabel').textContent = `出击配置：${selected.name} · ${launchTalent.name}`;
+  const launchTier = selectedTier(meta, selected.id);
+  $('#hgLaunchLabel').textContent = `出击配置：${selected.name} · ${launchTalent.name}${launchTier ? ' · ' + tierName(launchTier) : ''}`;
   $('#hgStart').textContent = '驾驶 ' + selected.name + ' 出击';
   $('#upList').innerHTML = META_UPS.map(u => {
-    const lv = upLv(u.id), maxed = lv >= u.max, cost = maxed ? 0 : u.cost[lv];
+    const lv = upLv(u.id), maxed = lv >= u.max, cost = nextUpgradeCost(u, meta.up);
     return `<div class="up cut"><div><div class="un">${u.name} <span class="upgrade-level">${lv}/${u.max}</span></div><div class="ud">${u.desc}</div><div class="pips" aria-hidden="true">${Array.from({ length: u.max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</div></div><button class="buy" data-up="${u.id}" ${maxed || meta.coins < cost ? 'disabled' : ''} aria-label="${u.name}${maxed ? '已满级' : `提升至${lv + 1}级，消耗${cost}金币${meta.coins < cost ? '，金币不足' : ''}`}">${maxed ? '已满级' : cost + ' 金币'}</button></div>`;
   }).join('');
   renderSkins(m, unlocked);
-  renderAchievements();
+  renderTiers(m, unlocked);
   setHangarPreview($('#hgPreviewCanvas'), m);
   $('#hgDemo').disabled = false; $('#hgDemo').textContent = '演示能力'; $('#hgDemoStatus').textContent = '5 秒能力示意 · 不影响对局';
   if (focusMech) $('#mechList').querySelector(`[data-mech="${focusMech}"]`)?.focus({ preventScroll: true });
@@ -4527,11 +4779,31 @@ function renderSkins(m, unlocked) {
   $('#skinStatus').textContent = unlocked ? `已解锁 ${open} / ${SKINS.length} 种 · 每台机体分别保存` : '解锁机体后可选涂装。';
 }
 $('#skinList').addEventListener('click', e => {
-  const b = e.target.closest('[data-skin]'); if (!b || b.disabled || !meta.unlocked[previewMechId]) return;
+  const b = e.target.closest('[data-skin]'); if (!b || b.disabled) return;
+  reloadMeta(); if (!meta.unlocked[previewMechId]) return;
   const skin = skinById(b.dataset.skin), m = MECHS.find(mech => mech.id === previewMechId); if (!skin || !m || !skinUnlocked(skin, meta)) return;
   if (!meta.skins) meta.skins = {};
   meta.skins[m.id] = skin.id; saveMeta(); applyMechSkin(m.id); SFX.click(); renderHangar();
   $('#hgSelectionStatus').textContent = `${m.name}换上了${skin.name}涂装。`;
+});
+// 深渊层级：这台机体突围后才能选；通关第 L 层解锁第 L+1 层，每台机体分别保存
+function renderTiers(m, unlocked) {
+  const top = tierMaxSelectable(meta, m.id), now = selectedTier(meta, m.id), cleared = tierCleared(meta, m.id);
+  $('#tierList').innerHTML = Array.from({ length: Math.min(TIER_MAX, top + 1) + 1 }, (_, L) => {
+    const open = L <= top, on = L === now, note = !open ? (L === 1 ? '突围后解锁' : `通关${tierName(L - 1)}`) : on ? '已选' : '';
+    return `<button type="button" class="tier-choice${on ? ' selected' : ''}${open ? '' : ' locked'}" data-tier="${L}" aria-pressed="${on}" ${open && unlocked ? '' : 'disabled'}><b>${tierName(L)}</b><small>${note}</small></button>`;
+  }).join('');
+  $('#tierStatus').textContent = !unlocked ? '解锁机体后可选深渊层级。' : cleared < 0 ? `${m.name}突围一次后解锁深渊层级：敌人更强，金币更多。`
+    : `${m.name}最高通关：${tierName(cleared)}。${tierName(now)}：${tierModsText(now)}。`;
+}
+$('#tierList').addEventListener('click', e => {
+  const b = e.target.closest('[data-tier]'); if (!b || b.disabled) return;
+  reloadMeta();
+  const m = MECHS.find(mech => mech.id === previewMechId), L = Number(b.dataset.tier);
+  if (!m || !meta.unlocked[m.id] || !Number.isInteger(L) || L < 0 || L > tierMaxSelectable(meta, m.id)) return;
+  if (!meta.tierSel) meta.tierSel = {};
+  meta.tierSel[m.id] = L; saveMeta(); SFX.click(); renderHangar();
+  $('#hgSelectionStatus').textContent = `${m.name}出击层级改为${tierName(L)}。`;
 });
 $('#mechList').addEventListener('click', e => {
   const b = e.target.closest('[data-mech]'); if (!b || !MECHS.some(m => m.id === b.dataset.mech)) return;
@@ -4568,8 +4840,8 @@ $('#upList').addEventListener('click', e => {
   reloadMeta();
   const b = e.target.closest('[data-up]'); if (!b || b.disabled) return;
   const u = META_UPS.find(x => x.id === b.dataset.up); if (!u) return;
-  const lv = upLv(u.id); if (lv >= u.max || meta.coins < u.cost[lv]) return;
-  meta.coins -= u.cost[lv]; meta.up[u.id] = lv + 1; saveMeta(); SFX.level(); renderHangar();
+  const lv = upLv(u.id), cost = nextUpgradeCost(u, meta.up); if (!cost || meta.coins < cost) return;
+  meta.coins -= cost; meta.up[u.id] = lv + 1; saveMeta(); SFX.level(); renderHangar();
   $('#hgSelectionStatus').textContent = `${u.name}已提升至 ${lv + 1} 级，所有机体共享。`;
 });
 $('#hgDemo').addEventListener('click', () => {
@@ -4594,6 +4866,7 @@ function startRun(options = {}, deferred = false) {
   return Promise.resolve();
 }
 $('#btnStart').addEventListener('click', () => startRun());
+$('#menuDaily').addEventListener('click', () => startRun({ daily: dailySetup(dailyKey()) }));
 $('#hgStart').addEventListener('click', () => startRun());
 $('#btnHangar').addEventListener('click', () => { audioInit(); SFX.click(); openHangar(); });
 $('#menuChangeMech').addEventListener('click', () => { audioInit(); SFX.click(); openHangar(); });
@@ -4633,11 +4906,20 @@ function renderEndReport(run, win) {
   $('#endAdvice').textContent = run.practice ? '完成移动、冲刺和超载后，再尝试贴近敌弹触发极限闪避。训练场中的操作不会消耗金币或增加对局场次。' : buildRunAdvice(run);
   renderEndLoadout(run);
 }
+// 每日挑战：今日最佳、首次完成奖励和一行可复制的战绩
+function renderEndDaily(run, win, settlement) {
+  const show = !!run.daily && !run.practice; $('#endDaily').hidden = !show;
+  if (!show) return;
+  const day = meta.daily?.date === run.daily.key ? meta.daily : null;
+  $('#endDailyLine').textContent = `今日最佳 ${fmtTime(day?.bestT || run.t)}${day?.win ? ' · 已突围' : ''}${settlement?.dailyReward ? ` · 首次完成 +${settlement.dailyReward} 金币` : ''}`;
+  $('#endDailyShare').value = dailyShareText(run.daily.key, run.mech.name, run.talent?.name || '', { win, t: run.t, kills: run.kills });
+  $('#endDailyCopy').textContent = '复制战绩';
+}
 function endRun(win) {
   if (!G || G.state === 'end') return;
   const run = G; run.state = 'end'; musicStop();
   const practice = !!run.practice;
-  const { killBonus, bossBonus, winBonus, earned } = runReward(run.coins, run.kills, run.bossKills, win);
+  const { killBonus, bossBonus, winBonus, tierBonus, earned } = runReward(run.coins, run.kills, run.bossKills, win, run.mods?.coins ?? 1);
   let newAchievements = [];
   if (!practice) {
     // 先累计本机战绩，再判定成就（「全员突围」等要看累计战绩）；随下面的结算一次写盘
@@ -4655,19 +4937,24 @@ function endRun(win) {
   const title = $('#endTitle'); title.textContent = practice ? '训练结束' : win ? '突围成功' : run.abandoned ? '行动结束' : '机体损毁'; title.className = 'end-title ' + (practice || win ? 'win' : 'lose');
   $('#endSub').textContent = practice ? '安全训练 · 不计金币、场次与战绩' : win ? `${run.mech.cls} · ${run.mech.name} 击破了深渊母巢` : run.abandoned ? '当前进度已结算，可调整配装再次出击' : run.boss ? `倒在了${run.boss.name}面前` : run.bossIdx < BOSS_TIMES.length ? `再撑 ${fmtTime(Math.max(0, BOSS_TIMES[run.bossIdx] - run.t))} 就能见到${BOSSES[run.bossIdx].name}` : '母巢还在，再来一次';
   if (settlement?.previousPaid > 0) $('#endSub').textContent += ` · 已保存 ${settlement.previousPaid} 金币，本次新增 ${settlement.credited}`;
+  // 每日挑战、深渊层级和新解锁的层级接在副标题后面
+  const tags = [run.daily && `每日挑战 ${dailyLabel(run.daily.key)}`, run.tier && tierName(run.tier), settlement?.tierUnlocked && `解锁${tierName(settlement.tierUnlocked)}`].filter(Boolean);
+  if (tags.length) $('#endSub').textContent += ' · ' + tags.join(' · ');
   const stat = (label, value, extra = '') => `<div class="stat"><small>${label}</small><b class="num">${value}</b>${extra}</div>`;
   // 首屏只留存活、击杀、等级和金币，其余收进「更多数据」
   const records = (newBest ? '<span class="rec">新纪录</span>' : '') + (fastest ? '<span class="rec">最快突围</span>' : '');
   $('#endStats').innerHTML = stat(practice ? '训练时间' : '存活时间', fmtTime(run.t), records) + stat('击杀', run.kills) + stat('等级', run.player.level) +
-    (practice ? '<div class="stat gold"><small>训练模式</small><b>不计战绩</b></div>' : `<div class="stat gold"><small>获得金币（拾取 ${run.coins} + 击杀 ${killBonus} + 首领 ${bossBonus}${win ? ` + 突围 ${winBonus}` : ''}）</small><b class="num">+${earned}</b></div>`);
+    (practice ? '<div class="stat gold"><small>训练模式</small><b>不计战绩</b></div>' : `<div class="stat gold"><small>获得金币（拾取 ${run.coins} + 击杀 ${killBonus} + 首领 ${bossBonus}${win ? ` + 突围 ${winBonus}` : ''}${tierBonus ? ` + 深渊 ${tierBonus}` : ''}）</small><b class="num">+${earned}</b></div>`);
+  // 最快突围按层级分开记
+  const fastestRecord = run.tier ? meta.tierFastest?.[run.tier] : meta.fastestWin;
   $('#endMoreStats').innerHTML = stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) +
-    (!practice && meta.fastestWin ? `<div class="stat record"><small>最快突围${fastest ? ' · 新纪录' : ''}</small><b class="num">${fmtTime(meta.fastestWin)}</b></div>` : '');
+    (!practice && fastestRecord ? `<div class="stat record"><small>最快突围${run.tier ? `（${tierName(run.tier)}）` : ''}${fastest ? ' · 新纪录' : ''}</small><b class="num">${fmtTime(fastestRecord)}</b></div>` : '');
   $('#endMore').open = false;
   // 金币卡片下面接「下一个目标」，进度条从结算前涨到结算后；金币够了直接去机库
   const goal = practice ? null : nextGoal(meta);
   $('#endGoal').hidden = !goal;
   if (goal) {
-    $('#endGoalLine').innerHTML = goalLineHtml(goal, meta.coins - (settlement?.credited ?? earned));
+    $('#endGoalLine').innerHTML = goalLineHtml(goal, meta.coins - (settlement?.credited ?? earned) - (settlement?.dailyReward || 0));
     $('#endGoalLine').className = 'goal-line' + (goal.ready ? ' ready' : '');
     $('#endGoalGo').hidden = !goal.ready; $('#endGoalGo').dataset.target = goalTarget(goal);
     $('#endGoalGo').textContent = goal.kind === 'mech' ? `去解锁${goal.name}` : '去改装';
@@ -4675,13 +4962,16 @@ function endRun(win) {
   setBadge($('#endHangar'), practice ? '' : hangarBadge(meta));
   $('#endAch').hidden = !newAchievements.length;
   $('#endAchList').innerHTML = newAchievements.map(id => { const skin = skinForAchievement(id); return `<span class="ach-chip ${id.startsWith('proto:') ? 'medal' : ''}">${id.startsWith('proto:') ? '协议勋章 · ' : ''}${achievementById(id).name}${skin ? ` · 解锁${skin.name}涂装` : ''}</span>`; }).join('');
+  renderEndDaily(run, win, settlement);
   renderEndReport(run, win);
-  $('#endAgain').textContent = practice ? '再次训练' : `驾驶 ${run.mech.name} 再战`;
+  $('#endAgain').textContent = practice ? '再次训练' : run.daily ? '再战每日挑战' : `驾驶 ${run.mech.name} 再战`;
   setTimeout(() => { if (G === run && run.state === 'end') show('end'); }, 50);
 }
 $('#endAgain').addEventListener('click', () => {
   if (!G || G.state !== 'end') return;
   const practice = !!G.practice;
+  // 每日挑战再战按今天的配置开，不改菜单里的出击机体和协议
+  if (G.daily && !practice) { startRun({ daily: dailySetup(dailyKey()) }); return; }
   reloadMeta();
   meta.sel = G.mech.id;
   if (G.talent) { if (!meta.talents) meta.talents = {}; meta.talents[G.mech.id] = G.talent.id; }
@@ -4690,6 +4980,12 @@ $('#endAgain').addEventListener('click', () => {
   startRun({ practice });
 });
 $('#endHangar').addEventListener('click', () => { SFX.click(); setG(null); openHangar(); });
+// 复制战绩：先选中文本框，剪贴板不可用时提示手动复制
+$('#endDailyCopy').addEventListener('click', () => {
+  const box = $('#endDailyShare'), done = ok => { $('#endDailyCopy').textContent = ok ? '已复制' : '已选中，长按复制'; };
+  box.focus?.(); box.select?.();
+  try { navigator.clipboard.writeText(box.value).then(() => done(true), () => done(false)); } catch (_) { done(false); }
+});
 $('#endMenu').addEventListener('click', () => { SFX.click(); openMenu(); });
 $('#endGoalGo').addEventListener('click', () => { SFX.click(); setG(null); openHangar($('#endGoalGo').dataset.target); });
 
@@ -4908,21 +5204,53 @@ function drawFloatingTextGlyph(c, text, size, scale, options, shadowOnly) {
   c.save(); c.translate(text.x, y); c.scale(scale, scale); c.globalAlpha = Math.min(1, k * 2.5);
   if (shadowOnly) { c.fillStyle = 'rgba(0,0,0,.85)'; c.fillText(text.str, 1, 2); }
   else { c.lineWidth = text.big ? 5 : 3.5; c.strokeStyle = 'rgba(0,0,0,.75)'; c.strokeText(text.str, 0, 0); }
-  c.fillStyle = `rgb(${text.col})`; c.fillText(text.str, 0, 0); c.restore();
+  c.fillStyle = damageTextFill(text.col); c.fillText(text.str, 0, 0); c.restore();
 }
+// 颜色分量串和重要字字号只有少数几种，缓存拼好的样式串，绘制时不再每字新建字符串
+const damageTextFillCache = new Map(), importantTextFontCache = new Map();
+function damageTextFill(col) {
+  let style = damageTextFillCache.get(col);
+  if (style === undefined) { if (damageTextFillCache.size > 128) damageTextFillCache.clear(); style = 'rgb(' + col + ')'; damageTextFillCache.set(col, style); }
+  return style;
+}
+function importantTextFont(size) {
+  let font = importantTextFontCache.get(size);
+  if (font === undefined) { if (importantTextFontCache.size > 32) importantTextFontCache.clear(); font = size + 'px "ZCOOL QingKe HuangYou","PingFang SC",sans-serif'; importantTextFontCache.set(size, font); }
+  return font;
+}
+// 普通伤害数字超出预算时先删最早的非暴击，非暴击删完再从最早的暴击删起；原地压缩，返回保留的个数。
+function trimDrawnDamageTexts(numbers, count, cap) {
+  const excess = count - cap;
+  if (excess <= 0) return count;
+  let nonCrit = 0;
+  for (let i = 0; i < count; i++) if (!numbers[i].crit) nonCrit++;
+  let dropNonCrit = Math.min(excess, nonCrit), dropCrit = excess - dropNonCrit, kept = 0;
+  for (let i = 0; i < count; i++) {
+    const text = numbers[i];
+    if (!text.crit ? dropNonCrit-- > 0 : dropCrit-- > 0) continue;
+    numbers[kept++] = text;
+  }
+  return kept;
+}
+// 每帧复用的分组数组：按计数覆盖写（不用 length = 0，V8 会丢掉底层存储），绘制完清掉引用
+const drawnDamageTexts = [], drawnImportantTexts = [];
 function drawCombatTexts(c, texts, options = {}) {
-  const cap = combatDamageTextCap(options.textCap), numbers = [], important = [];
-  for (const text of texts) {
+  const cap = combatDamageTextCap(options.textCap), numbers = drawnDamageTexts, important = drawnImportantTexts;
+  let filled = 0, importantCount = 0;
+  for (let i = 0; i < texts.length; i++) {
+    const text = texts[i];
     if (!(text.life > 0) || !damageNumberIsVisible(text, options.mode, options.enemyBulletCount) || options.isVisible && !options.isVisible(text.x, text.y, 60)) continue;
-    (text.big ? important : numbers).push(text);
+    if (text.big) important[importantCount++] = text; else numbers[filled++] = text;
   }
   // 降画质立即收紧绘制量，关键提示不占伤害预算；优先留下暴击。
-  while (numbers.length > cap) { const index = numbers.findIndex(text => !text.crit); numbers.splice(index < 0 ? 0 : index, 1); }
+  const count = trimDrawnDamageTexts(numbers, filled, cap);
   const cfg = COMBAT_VISUALS.damage, shadowOnly = options.detail === 0 || cap <= 18;
   c.save(); c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
-  for (const crit of [false, true]) {
+  for (let pass = 0; pass < 2; pass++) {
+    const crit = pass === 1;
     c.font = crit ? DAMAGE_NUMBER_FONTS.crit : DAMAGE_NUMBER_FONTS.normal;
-    for (const text of numbers) {
+    for (let i = 0; i < count; i++) {
+      const text = numbers[i];
       if (!!text.crit !== crit) continue;
       const k = Math.max(0, Math.min(1, text.life / text.max));
       const age = Math.max(0, (options.now || 0) - (text.lastHitAt ?? -Infinity));
@@ -4931,11 +5259,14 @@ function drawCombatTexts(c, texts, options = {}) {
       drawFloatingTextGlyph(c, text, crit ? cfg.critSize : cfg.normalSize, scale, options, shadowOnly);
     }
   }
-  for (const text of important) {
-    c.font = `${text.size}px "ZCOOL QingKe HuangYou","PingFang SC",sans-serif`;
+  for (let i = 0; i < importantCount; i++) {
+    const text = important[i];
+    c.font = importantTextFont(text.size);
     drawFloatingTextGlyph(c, text, text.size, 1, options, shadowOnly);
   }
   c.restore();
+  for (let i = 0; i < filled; i++) numbers[i] = null;
+  for (let i = 0; i < importantCount; i++) important[i] = null;
 }
 
 // ---- src/data/battlefield.js ----
@@ -5067,7 +5398,7 @@ function drawHUD() {
     ctx.fillText(`${boss.hp > 0 ? Math.max(1, Math.ceil(bk * 100)) : 0}%`, W - left, statusY - 1);
     const pctW = ctx.measureText('100%').width + 8;
     ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillStyle = boss.vulnerableT > 0 ? '#ffe6a3' : '#e2cbd4';
-    const phase = boss.entering ? '正在接近' : boss.vulnerableT > 0 ? `弱点 ${boss.vulnerableT.toFixed(1)}秒 · ×${boss.weakMul || 1}` : boss.hp < boss.maxHp * .5 ? '狂暴阶段' : '首领交战';
+    const phase = bossPhaseLabel(boss);
     ctx.fillText(phase, W - left - pctW, statusY);
     ctx.fillStyle = '#3c2933'; ctx.fillRect(left, top + 77, W - left * 2, 6);
     ctx.fillStyle = `rgb(${boss.col})`; ctx.fillRect(left, top + 77, (W - left * 2) * bk, 6);
@@ -5615,15 +5946,28 @@ function drawBossWeakpoint(c, boss, visible, zoom, flashes = true) {
 // ---- src/render/world.js ----
 // 世界绘制：地面、敌人、机甲、子弹与特效，最后叠加屏幕空间的 HUD
 
+// 对象颜色字段是固定的几种分量串（如 '255,60,160'），按串缓存 'rgb(...)'，绘制时不再每帧拼新字符串
+const worldRgbCache = new Map();
+function worldRgb(col) {
+  let style = worldRgbCache.get(col);
+  if (style === undefined) {
+    if (worldRgbCache.size > 256) worldRgbCache.clear();
+    style = 'rgb(' + col + ')'; worldRgbCache.set(col, style);
+  }
+  return style;
+}
+// 经验晶体三档：小、中（≥5）、大（≥20）
+const PICKUP_XP_FILL = ['#4fe0ff', '#59ff8a', '#ff6a3d'], PICKUP_XP_SIZE = [7, 9, 11];
+const pickupXpTier = v => v >= 20 ? 2 : v >= 5 ? 1 : 0;
 function drawSprite(k, x, y, size, ang, flashA = 0, alpha = 1, tint, sx = 1, sy = 1) {
   const im = IMG[k], w = size * sx, h = size * sy;
   ctx.translate(x, y); ctx.rotate(ang + PI / 2);
+  ctx.globalAlpha = alpha;
   if (im) {
-    if (alpha !== 1) ctx.globalAlpha = alpha;
     ctx.drawImage(tint || im, -w / 2, -h / 2, w, h);
     if (flashA > 0 && FLASH[k]) { ctx.globalAlpha = Math.min(1, flashA) * alpha; ctx.drawImage(FLASH[k], -w / 2, -h / 2, w, h); }
-    ctx.globalAlpha = 1;
   } else { ctx.fillStyle = '#c33'; ctx.beginPath(); ctx.arc(0, 0, size * .35, 0, TAU); ctx.fill(); }
+  ctx.globalAlpha = 1;
   ctx.rotate(-ang - PI / 2); ctx.translate(-x, -y);
 }
 // 双层机甲：腿按移动方向迈步（左右半张交替前后、抬起的腿略放大），上身按瞄准方向转，带呼吸、晃动、后坐
@@ -5632,7 +5976,7 @@ function drawMech(R, x, y, legA, ang, ph, amp, o) {
   const ls = R.ls, ts = R.ts, sw = Math.sin(ph) * R.stride * amp, cs = Math.cos(ph), sil = o.sil, al = o.alpha ?? 1, fa = o.flash || 0;
   ctx.globalAlpha = al;
   ctx.translate(x, y); ctx.rotate(legA + PI / 2);
-  for (const side of [-1, 1]) {
+  for (let side = -1; side <= 1; side += 2) {
     const im = sil ? (side < 0 ? R.legLG : R.legRG) : side < 0 ? R.legL : R.legR, imF = side < 0 ? R.legLF : R.legRF;
     const k = 1 + .1 * Math.max(0, side < 0 ? cs : -cs) * amp, w = ls * k, dy = R.legY * ls + side * sw;
     const dx = side * R.spread - w / 2;
@@ -5650,8 +5994,8 @@ function drawMech(R, x, y, legA, ang, ph, amp, o) {
   if (!sil && o.detail !== 0) { // 背部推进器火焰，速度越快越长
     ctx.globalCompositeOperation = 'lighter';
     const th = o.thrust || 0;
-    for (const [mx, my] of R.thr) {
-      const fl = 8 + th * 22 + Math.random() * 5, fw = 9 + th * 4;
+    for (let i = 0; i < R.thr.length; i++) {
+      const mx = R.thr[i][0], my = R.thr[i][1], fl = 8 + th * 22 + Math.random() * 5, fw = 9 + th * 4;
       ctx.globalAlpha = .5 * al; ctx.drawImage(gl(R.flame), mx * ts - fw / 2, my * ts - 3, fw, fl);
       ctx.globalAlpha = .9 * al; ctx.drawImage(gl('255,255,255'), mx * ts - 2.5, my * ts - 1, 5, fl * .35);
     }
@@ -5691,11 +6035,11 @@ function render(rdt) {
   for (const d of G.decals) {
     if (!vis(d.x, d.y, d.r * 2)) continue; const fa = Math.min(1, d.life / 3), ds = d.r * 2.6;
     ctx.globalAlpha = fa * .5; ctx.drawImage(SHADOW, d.x - ds / 2, d.y - ds / 2, ds, ds);
-    ctx.globalAlpha = fa * .35; ctx.fillStyle = `rgb(${d.col})`; ctx.beginPath();
+    ctx.globalAlpha = fa * .35; ctx.fillStyle = worldRgb(d.col); ctx.beginPath();
     for (let i = 0; i < 4; i++) { const a = d.seed + i * 1.9, o = d.r * (.3 + (i % 2) * .5), rr = 1.5 + (i % 3); ctx.moveTo(d.x + Math.cos(a) * o + rr, d.y + Math.sin(a) * o); ctx.arc(d.x + Math.cos(a) * o, d.y + Math.sin(a) * o, rr, 0, TAU); }
-    ctx.fill(); ctx.globalAlpha = 1;
+    ctx.fill();
   }
-  ctx.fillStyle = '#000';
+  ctx.globalAlpha = 1; ctx.fillStyle = '#000';
   for (const d of G.prints) {
     if (!vis(d.x, d.y, 10)) continue; ctx.globalAlpha = Math.min(1, d.life / 2) * .32;
     ctx.beginPath(); ctx.ellipse(d.x, d.y, d.s, d.s * 1.35, d.a + PI / 2, 0, TAU); ctx.fill();
@@ -5708,17 +6052,30 @@ function render(rdt) {
   }
   // 区域外由方向箭头和顶部状态说明，避免世界标签与箭头重叠。
   drawRelayObjective(ctx, G.relay, p, vis, ZOOM, relayLabelVisible);
-  // 烟雾（普通混合）
-  for (const q of G.parts) {
-    if (q.k !== 1 || !budget.detail || !vis(q.x, q.y, q.size)) continue; const t = q.life / q.max;
-    ctx.globalAlpha = t * .24; ctx.fillStyle = '#3a3f47'; ctx.beginPath(); ctx.arc(q.x, q.y, q.size * (1.6 - t * .6), 0, TAU); ctx.fill();
+  // 烟雾（普通混合）：颜色固定，只在第一缕烟时设置
+  if (budget.detail) {
+    let smokeStyled = false;
+    for (const q of G.parts) {
+      if (q.k !== 1 || !vis(q.x, q.y, q.size)) continue; const t = q.life / q.max;
+      if (!smokeStyled) { ctx.fillStyle = '#3a3f47'; smokeStyled = true; }
+      ctx.globalAlpha = t * .24; ctx.beginPath(); ctx.arc(q.x, q.y, q.size * (1.6 - t * .6), 0, TAU); ctx.fill();
+    }
   }
   ctx.globalAlpha = 1;
-  // 拾取物
+  // 拾取物：经验晶体按三档颜色各合成一条路径、各填充一次，其余逐个绘制
+  for (let tier = 0; tier < 3; tier++) {
+    const s = PICKUP_XP_SIZE[tier];
+    let started = false;
+    for (const o of G.pickups) {
+      if (o.kind !== 'xp' || pickupXpTier(o.v) !== tier || !vis(o.x, o.y, 30)) continue;
+      if (!started) { ctx.beginPath(); started = true; }
+      ctx.moveTo(o.x, o.y - s); ctx.lineTo(o.x + s * .7, o.y); ctx.lineTo(o.x, o.y + s); ctx.lineTo(o.x - s * .7, o.y);
+    }
+    if (started) { ctx.fillStyle = PICKUP_XP_FILL[tier]; ctx.fill(); }
+  }
   for (const o of G.pickups) {
-    if (!vis(o.x, o.y, 30)) continue;
-    if (o.kind === 'xp') { const c = o.v >= 20 ? '#ff6a3d' : o.v >= 5 ? '#59ff8a' : '#4fe0ff', s = o.v >= 20 ? 11 : o.v >= 5 ? 9 : 7; ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(o.x, o.y - s); ctx.lineTo(o.x + s * .7, o.y); ctx.lineTo(o.x, o.y + s); ctx.lineTo(o.x - s * .7, o.y); ctx.fill(); }
-    else if (o.kind === 'coin') { ctx.fillStyle = '#ffcd47'; ctx.beginPath(); ctx.arc(o.x, o.y, 5.5, 0, TAU); ctx.fill(); ctx.fillStyle = '#a97a10'; ctx.fillRect(o.x - 1.2, o.y - 3, 2.4, 6); }
+    if (o.kind === 'xp' || !vis(o.x, o.y, 30)) continue;
+    if (o.kind === 'coin') { ctx.fillStyle = '#ffcd47'; ctx.beginPath(); ctx.arc(o.x, o.y, 5.5, 0, TAU); ctx.fill(); ctx.fillStyle = '#a97a10'; ctx.fillRect(o.x - 1.2, o.y - 3, 2.4, 6); }
     else if (o.kind === 'heal') { ctx.fillStyle = '#123'; ctx.fillRect(o.x - 10, o.y - 10, 20, 20); ctx.fillStyle = '#59ff8a'; ctx.fillRect(o.x - 7, o.y - 2.5, 14, 5); ctx.fillRect(o.x - 2.5, o.y - 7, 5, 14); }
     else if (o.kind === 'magnet') { ctx.strokeStyle = '#4fe0ff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(o.x, o.y, 8, 0, PI); ctx.stroke(); ctx.fillStyle = '#ff4060'; ctx.fillRect(o.x - 10, o.y - 6, 4, 6); ctx.fillRect(o.x + 6, o.y - 6, 4, 6); }
     else if (o.kind === 'chest') { const b = Math.sin(G.rt * 4) * 2; ctx.fillStyle = '#5a3a08'; ctx.fillRect(o.x - 15, o.y - 11 + b, 30, 22); ctx.fillStyle = '#ffcd47'; ctx.fillRect(o.x - 15, o.y - 11 + b, 30, 6); ctx.fillRect(o.x - 3, o.y - 6 + b, 6, 9); ctx.strokeStyle = '#ffe9a6'; ctx.lineWidth = 1.5; ctx.strokeRect(o.x - 15, o.y - 11 + b, 30, 22); }
@@ -5729,7 +6086,8 @@ function render(rdt) {
   for (const e of G.enemies) {
     if (e.dead || !vis(e.x, e.y, e.size)) continue;
     if (e.elite || e.boss) { ctx.globalCompositeOperation = 'lighter'; const gs = e.size * (e.boss ? 1.1 : 1.3); ctx.globalAlpha = .16 * budget.glowScale; ctx.drawImage(gl(e.boss ? e.col : '255,200,70'), e.x - gs / 2, e.y - gs / 2, gs, gs); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; }
-    const fly = e.type === 'bomber', ss = e.size * (fly ? .75 : 1.05); ctx.globalAlpha = fly ? .4 : .55; ctx.drawImage(SHADOW, e.x - ss / 2, e.y - ss / 2 + (fly ? 16 : 4), ss, ss); ctx.globalAlpha = 1;
+    // 阴影透明度由下面的 drawSprite 改回
+    const fly = e.type === 'bomber', ss = e.size * (fly ? .75 : 1.05); ctx.globalAlpha = fly ? .4 : .55; ctx.drawImage(SHADOW, e.x - ss / 2, e.y - ss / 2 + (fly ? 16 : 4), ss, ss);
     let size = e.size, fl = e.flash > 0 ? e.flash / .08 * (e.boss ? .3 : e.elite ? .6 : 1) : 0;
     if (e.weakFlashT > 0) fl = Math.max(fl, Math.min(1, e.weakFlashT / BOSS_PRESENTATION.weakFlashDuration));
     if (e.fuse > 0) { const k = 1 - Math.min(1, e.fuse / .45); fl = Math.max(fl, .2 + .35 * k); size *= 1 + .08 * k; }
@@ -5802,41 +6160,55 @@ function render(rdt) {
     else drawSprite(m.img, p.x, p.y, PS, p.angle, fl, blink ? .45 : 1);
   }
   if (!G.won && G.endT <= 0) drawMechTraitEffects(ctx, p, m, ZOOM, settings);
-  // 发光层（叠加混合）
+  // 发光层（叠加混合）：相加与顺序无关，同类元素集中绘制，只在需要时改透明度
   ctx.globalCompositeOperation = 'lighter';
-  if (budget.glowScale > .2) for (const o of G.pickups) {
-    if (o.kind === 'xp' && o.v >= 5 && vis(o.x, o.y, 20)) { const s = o.v >= 20 ? 26 : 18; ctx.globalAlpha = .15 * budget.glowScale; ctx.drawImage(gl(o.v >= 20 ? '255,150,90' : '110,220,150'), o.x - s / 2, o.y - s / 2, s, s); }
-    if (o.kind === 'chest' && vis(o.x, o.y, 45)) { ctx.globalAlpha = .3 * budget.glowScale; ctx.drawImage(gl('255,205,71'), o.x - 28, o.y - 28, 56, 56); }
+  if (budget.glowScale > .2) {
+    ctx.globalAlpha = .15 * budget.glowScale;
+    for (const o of G.pickups) if (o.kind === 'xp' && o.v >= 5 && vis(o.x, o.y, 20)) { const s = o.v >= 20 ? 26 : 18; ctx.drawImage(gl(o.v >= 20 ? '255,150,90' : '110,220,150'), o.x - s / 2, o.y - s / 2, s, s); }
+    ctx.globalAlpha = .3 * budget.glowScale;
+    for (const o of G.pickups) if (o.kind === 'chest' && vis(o.x, o.y, 45)) ctx.drawImage(gl('255,205,71'), o.x - 28, o.y - 28, 56, 56);
   }
   ctx.globalAlpha = 1;
-  for (const b of G.pbullets) { if (vis(b.x, b.y, 28)) drawPlayerBullet(ctx, b, budget.glowScale); }
-  ctx.globalAlpha = 1;
-  for (const mi of G.missiles) { ctx.globalAlpha = .6 * budget.glowScale; ctx.drawImage(gl('255,150,60'), mi.x - 9, mi.y - 9, 18, 18); ctx.globalAlpha = 1; ctx.fillStyle = '#ffe0a0'; ctx.beginPath(); ctx.arc(mi.x, mi.y, 2.5, 0, TAU); ctx.fill(); }
+  drawPlayerBullets(ctx, G.pbullets, budget.glowScale, vis);
+  if (G.missiles.length) {
+    const glow = gl('255,150,60');
+    ctx.globalAlpha = .6 * budget.glowScale;
+    for (const mi of G.missiles) ctx.drawImage(glow, mi.x - 9, mi.y - 9, 18, 18);
+    ctx.globalAlpha = 1; ctx.fillStyle = '#ffe0a0';
+    for (const mi of G.missiles) { ctx.beginPath(); ctx.arc(mi.x, mi.y, 2.5, 0, TAU); ctx.fill(); }
+  }
+  // 光束和电弧：透明度用 globalAlpha，颜色串固定
+  if (G.beams.length) ctx.lineCap = 'round';
   for (const b of G.beams) {
-    const t = b.life / b.max; ctx.lineCap = 'round';
-    ctx.strokeStyle = b.evo ? `rgba(255,205,71,${t * .32 * budget.glowScale})` : `rgba(63,230,255,${t * .28 * budget.glowScale})`; ctx.lineWidth = b.w * (1.6 - t * .4); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.ex, b.ey); ctx.stroke();
-    ctx.strokeStyle = `rgba(255,255,255,${t})`; ctx.lineWidth = b.w * .35 * t + 1; ctx.stroke();
+    const t = b.life / b.max;
+    ctx.globalAlpha = t * (b.evo ? .32 : .28) * budget.glowScale; ctx.strokeStyle = b.evo ? 'rgb(255,205,71)' : 'rgb(63,230,255)';
+    ctx.lineWidth = b.w * (1.6 - t * .4); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.ex, b.ey); ctx.stroke();
+    ctx.globalAlpha = t; ctx.strokeStyle = '#fff'; ctx.lineWidth = b.w * .35 * t + 1; ctx.stroke();
   }
+  if (G.bolts.length) ctx.lineJoin = 'round';
   for (const b of G.bolts) {
-    const t = b.life / b.max; ctx.lineJoin = 'round';
+    const t = b.life / b.max;
     ctx.beginPath(); ctx.moveTo(b.pts[0], b.pts[1]); for (let i = 2; i < b.pts.length; i += 2) ctx.lineTo(b.pts[i], b.pts[i + 1]);
-    ctx.strokeStyle = `rgba(90,200,255,${t * .3 * budget.glowScale})`; ctx.lineWidth = b.wide ? 6 : 4; ctx.stroke();
-    ctx.strokeStyle = `rgba(230,250,255,${t})`; ctx.lineWidth = b.wide ? 2.4 : 1.5; ctx.stroke();
+    ctx.globalAlpha = t * .3 * budget.glowScale; ctx.strokeStyle = 'rgb(90,200,255)'; ctx.lineWidth = b.wide ? 6 : 4; ctx.stroke();
+    ctx.globalAlpha = t; ctx.strokeStyle = 'rgb(230,250,255)'; ctx.lineWidth = b.wide ? 2.4 : 1.5; ctx.stroke();
   }
   for (const q of G.parts) { if (q.k !== 0 || (q.kind && q.kind !== 'glow') || !vis(q.x, q.y, q.size)) continue; const t = q.life / q.max, s = q.size * (.4 + t); ctx.globalAlpha = t * .65 * budget.glowScale; ctx.drawImage(gl(q.col), q.x - s, q.y - s, s * 2, s * 2); }
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   for (const q of G.parts) if (q.k === 0 && q.kind && q.kind !== 'glow' && vis(q.x, q.y, q.size * 3)) drawImpactFragment(ctx, q, ZOOM, settings.flashes);
-  for (const w of G.waves) { const t = 1 - w.r / w.maxR; ctx.strokeStyle = `rgba(${w.col},${t * .38})`; ctx.lineWidth = 2 + t * 4; ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, TAU); ctx.stroke(); }
+  for (const w of G.waves) { const t = 1 - w.r / w.maxR; ctx.globalAlpha = t * .38; ctx.strokeStyle = worldRgb(w.col); ctx.lineWidth = 2 + t * 4; ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, TAU); ctx.stroke(); }
+  ctx.globalAlpha = 1;
   if (p.hp > 0 && R && (p.overT > 0 || G.parts.length > 90 || G.beams.length + G.bolts.length > 12)) drawMechContour(R, p);
   // 已锁定/临近引爆的边界高于火力；只重描线，不增加危险填色。
   drawCombatTelegraphs(ctx, G.enemies, p, vis, ZOOM, true);
   drawRelayHazardTelegraphs(ctx, G.relay, p, vis, ZOOM, true);
   drawEliteThreatEdges(ctx, G.enemies, vis, ZOOM);
   if (G.boss) drawBossWeakpoint(ctx, G.boss, vis, ZOOM, settings.flashes);
-  // 敌弹使用真实半径的有色实芯和深色外缘，任何画质档都完整绘制。
+  // 敌弹使用真实半径的有色实芯和深色外缘，任何画质档都完整绘制；逐发保持描边、填色、高光的先后，外缘样式只设一次。
+  let ebulletStyled = false;
   for (const b of G.ebullets) {
     if (!vis(b.x, b.y, b.r + 4)) continue;
-    ctx.strokeStyle = '#130f19'; ctx.lineWidth = 2.8 / ZOOM; ctx.fillStyle = `rgb(${b.col})`;
+    if (!ebulletStyled) { ctx.strokeStyle = '#130f19'; ctx.lineWidth = 2.8 / ZOOM; ebulletStyled = true; }
+    ctx.fillStyle = worldRgb(b.col);
     ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, TAU); ctx.stroke(); ctx.fill();
     ctx.fillStyle = '#ffedf3'; ctx.beginPath(); ctx.arc(b.x - b.r * .18, b.y - b.r * .2, Math.max(1, b.r * .32), 0, TAU); ctx.fill();
   }
@@ -5857,28 +6229,69 @@ function render(rdt) {
 }
 
 // 曳光用三段稳定线芯表现头亮尾暗；画质只改变外层光晕，不削弱弹道。
-function drawPlayerBullet(c, bullet, glowScale = 1) {
-  const cfg = COMBAT_VISUALS.bullet, color = bullet.evo ? cfg.evolvedColor : bullet.col;
-  const speed = Math.hypot(bullet.vx || 0, bullet.vy || 0), radius = bullet.r || 3;
+// 整批绘制：叠加混合下先后顺序不影响结果，按光晕、外层、内层、线芯分层，同层只在样式变化时改状态。
+// 两层半透明曳光仍逐发描边，保留多发重叠处的亮度；不透明线芯按类型合并成一条路径。
+// 尾迹向量写进对象字段：模块级 let 存小数时每次赋值都会新装箱一个数，对象字段原地更新
+const bulletTrail = { dx: 0, dy: 0 };
+function measureBulletTrail(cfg, b) {
+  const speed = Math.hypot(b.vx || 0, b.vy || 0);
+  if (speed > 0) {
+    const length = Math.max(cfg.lengthMin, Math.min(cfg.lengthMax, speed * cfg.velocityScale)) * (b.tracer ? cfg.tracerLengthScale : 1);
+    bulletTrail.dx = b.vx / speed * length; bulletTrail.dy = b.vy / speed * length;
+  }
+  return speed;
+}
+// 类型决定线宽和线芯颜色：0 进化、1 曳光弹、2 僚机、3 普通
+const playerBulletKind = b => b.evo ? 0 : b.tracer ? 1 : b.source === 'drone' ? 2 : 3;
+function playerBulletWidth(cfg, kind) { return kind === 0 ? cfg.evolvedWidth : kind === 1 ? cfg.tracerWidth : kind === 2 ? cfg.droneWidth : cfg.width; }
+// 可见子弹按计数写进复用数组（不用 length = 0，V8 会丢掉底层存储），绘制完清掉引用
+const playerBulletBatch = [];
+function drawPlayerBullets(c, bullets, glowScale = 1, isVisible) {
+  const cfg = COMBAT_VISUALS.bullet, list = playerBulletBatch;
+  let n = 0;
+  for (let i = 0; i < bullets.length; i++) { const b = bullets[i]; if (!isVisible || isVisible(b.x, b.y, 28)) list[n++] = b; }
+  if (!n) return;
   c.save();
   if (glowScale > 0) {
-    const size = radius * (bullet.big ? 3.6 : 2.6);
-    c.globalAlpha = .4 * glowScale; c.drawImage(gl(color), bullet.x - size / 2, bullet.y - size / 2, size, size);
+    c.globalAlpha = .4 * glowScale;
+    for (let i = 0; i < n; i++) { const b = list[i], size = (b.r || 3) * (b.big ? 3.6 : 2.6); c.drawImage(gl(b.evo ? cfg.evolvedColor : b.col), b.x - size / 2, b.y - size / 2, size, size); }
   }
-  if (speed > 0) {
-    const length = Math.max(cfg.lengthMin, Math.min(cfg.lengthMax, speed * cfg.velocityScale)) * (bullet.tracer ? cfg.tracerLengthScale : 1);
-    const dx = bullet.vx / speed * length, dy = bullet.vy / speed * length;
-    const width = bullet.evo ? cfg.evolvedWidth : bullet.tracer ? cfg.tracerWidth : bullet.source === 'drone' ? cfg.droneWidth : cfg.width;
-    c.lineCap = 'round'; c.lineWidth = width; c.strokeStyle = `rgb(${color})`;
-    c.globalAlpha = bullet.tracer ? .38 : .26; c.beginPath(); c.moveTo(bullet.x - dx, bullet.y - dy); c.lineTo(bullet.x, bullet.y); c.stroke();
-    c.globalAlpha = bullet.tracer ? .9 : .72; c.beginPath(); c.moveTo(bullet.x - dx * .6, bullet.y - dy * .6); c.lineTo(bullet.x, bullet.y); c.stroke();
-    c.globalAlpha = 1; c.strokeStyle = bullet.evo ? '#fff3bc' : '#fff9e8'; c.lineWidth = Math.max(1.2, width * .45);
-    c.beginPath(); c.moveTo(bullet.x - dx * (bullet.tracer ? .4 : .25), bullet.y - dy * (bullet.tracer ? .4 : .25)); c.lineTo(bullet.x, bullet.y); c.stroke();
-  } else {
-    c.globalAlpha = .9; c.fillStyle = `rgb(${color})`; c.beginPath(); c.arc(bullet.x, bullet.y, Math.max(1.3, radius * .65), 0, TAU); c.fill();
+  c.lineCap = 'round';
+  let alpha = -1, style = '', width = -1;
+  for (let layer = 0; layer < 2; layer++) for (let tracer = 0; tracer < 2; tracer++) {
+    const a = layer ? (tracer ? .9 : .72) : (tracer ? .38 : .26), k = layer ? .6 : 1;
+    for (let i = 0; i < n; i++) {
+      const b = list[i];
+      if (!b.tracer !== !tracer || !(measureBulletTrail(cfg, b) > 0)) continue;
+      const s = worldRgb(b.evo ? cfg.evolvedColor : b.col), w = playerBulletWidth(cfg, playerBulletKind(b));
+      if (alpha !== a) c.globalAlpha = alpha = a;
+      if (style !== s) c.strokeStyle = style = s;
+      if (width !== w) c.lineWidth = width = w;
+      c.beginPath(); c.moveTo(b.x - bulletTrail.dx * k, b.y - bulletTrail.dy * k); c.lineTo(b.x, b.y); c.stroke();
+    }
+  }
+  c.globalAlpha = 1;
+  for (let kind = 0; kind < 4; kind++) {
+    let started = false;
+    for (let i = 0; i < n; i++) {
+      const b = list[i];
+      if (playerBulletKind(b) !== kind || !(measureBulletTrail(cfg, b) > 0)) continue;
+      if (!started) { c.beginPath(); started = true; }
+      const k = b.tracer ? .4 : .25;
+      c.moveTo(b.x - bulletTrail.dx * k, b.y - bulletTrail.dy * k); c.lineTo(b.x, b.y);
+    }
+    if (started) { c.strokeStyle = kind === 0 ? '#fff3bc' : '#fff9e8'; c.lineWidth = Math.max(1.2, playerBulletWidth(cfg, kind) * .45); c.stroke(); }
+  }
+  for (let i = 0; i < n; i++) {
+    const b = list[i];
+    if (Math.hypot(b.vx || 0, b.vy || 0) > 0) continue;
+    c.globalAlpha = .9; c.fillStyle = worldRgb(b.evo ? cfg.evolvedColor : b.col); c.beginPath(); c.arc(b.x, b.y, Math.max(1.3, (b.r || 3) * .65), 0, TAU); c.fill();
   }
   c.restore();
+  for (let i = 0; i < n; i++) list[i] = null;
 }
+// 单发绘制，供测试和零散调用
+function drawPlayerBullet(c, bullet, glowScale = 1) { drawPlayerBullets(c, [bullet], glowScale); }
 
 // 少量命中碎屑用短线、金属片和电灼描线区分武器，避免增加大面积光晕。
 function drawImpactFragment(c, q, zoom, flashes = true) {
@@ -5889,22 +6302,25 @@ function drawImpactFragment(c, q, zoom, flashes = true) {
     c.beginPath(); c.moveTo(-arm, 0); c.lineTo(arm, 0); c.moveTo(0, -arm); c.lineTo(0, arm); c.stroke(); c.restore();
     q.rendered = true; q.life = 0; return;
   }
-  const t = Math.max(0, Math.min(1, q.life / q.max)), s = Math.max(1, q.size), angle = q.angle ?? Math.atan2(q.vy || 0, q.vx || 0);
+  const t = Math.max(0, Math.min(1, q.life / q.max)), s = Math.max(1, q.size), angle = q.angle ?? Math.atan2(q.vy || 0, q.vx || 0), color = worldRgb(q.col);
   c.save(); c.translate(q.x, q.y); c.rotate(angle); c.globalAlpha = t; c.lineCap = 'round';
-  c.fillStyle = `rgb(${q.col})`; c.strokeStyle = `rgb(${q.col})`; c.lineWidth = 1.3 / zoom;
+  // 每类只设自己用到的填色和描边，被覆盖的设置不再先写一遍
   if (q.kind === 'chip') {
     c.fillStyle = '#1e2730'; c.fillRect(-s * .6, -s * .35, s * 1.4, s * .8);
-    c.fillStyle = `rgb(${q.col})`; c.beginPath(); c.moveTo(-s * .65, -s * .25); c.lineTo(s * .7, -s * .2); c.lineTo(s * .35, s * .35); c.lineTo(-s * .5, s * .2); c.closePath(); c.fill();
+    c.fillStyle = color; c.beginPath(); c.moveTo(-s * .65, -s * .25); c.lineTo(s * .7, -s * .2); c.lineTo(s * .35, s * .35); c.lineTo(-s * .5, s * .2); c.closePath(); c.fill();
     c.strokeStyle = '#d7d9d7'; c.lineWidth = .8 / zoom; c.beginPath(); c.moveTo(-s * .5, -s * .25); c.lineTo(s * .6, -s * .2); c.stroke();
-  } else if (q.kind === 'electric') {
-    c.beginPath(); c.moveTo(-s * 1.4, 0); c.lineTo(-s * .3, -s * .4); c.lineTo(s * .2, s * .4); c.lineTo(s * 1.2, 0); c.stroke();
-  } else if (q.kind === 'exit') {
-    c.beginPath(); c.moveTo(-s * 2, 0); c.lineTo(s * 1.8, 0); c.stroke();
-    c.strokeStyle = '#fff5d1'; c.lineWidth = .9 / zoom; c.beginPath(); c.moveTo(s * .3, -s * .6); c.lineTo(s * 1.2, 0); c.lineTo(s * .3, s * .6); c.stroke();
-  } else if (q.kind === 'ember') {
-    c.fillRect(-s * .35, -s * .35, s * .7, s * .7); c.globalAlpha = t * .5; c.beginPath(); c.moveTo(-s * 1.8, 0); c.lineTo(0, 0); c.stroke();
   } else {
-    c.beginPath(); c.moveTo(-s * (1 + t), 0); c.lineTo(s * .5, 0); c.stroke();
+    c.strokeStyle = color; c.lineWidth = 1.3 / zoom;
+    if (q.kind === 'electric') {
+      c.beginPath(); c.moveTo(-s * 1.4, 0); c.lineTo(-s * .3, -s * .4); c.lineTo(s * .2, s * .4); c.lineTo(s * 1.2, 0); c.stroke();
+    } else if (q.kind === 'exit') {
+      c.beginPath(); c.moveTo(-s * 2, 0); c.lineTo(s * 1.8, 0); c.stroke();
+      c.strokeStyle = '#fff5d1'; c.lineWidth = .9 / zoom; c.beginPath(); c.moveTo(s * .3, -s * .6); c.lineTo(s * 1.2, 0); c.lineTo(s * .3, s * .6); c.stroke();
+    } else if (q.kind === 'ember') {
+      c.fillStyle = color; c.fillRect(-s * .35, -s * .35, s * .7, s * .7); c.globalAlpha = t * .5; c.beginPath(); c.moveTo(-s * 1.8, 0); c.lineTo(0, 0); c.stroke();
+    } else {
+      c.beginPath(); c.moveTo(-s * (1 + t), 0); c.lineTo(s * .5, 0); c.stroke();
+    }
   }
   c.restore();
 }
@@ -5922,7 +6338,7 @@ function drawMechContour(R, p) {
   const cs = Math.cos(p.ph), sw = Math.sin(p.ph) * R.stride * p.amp;
   ctx.save(); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = p.overT > 0 ? .72 : .52;
   ctx.translate(p.x, p.y); ctx.rotate(p.legA + PI / 2);
-  for (const side of [-1, 1]) {
+  for (let side = -1; side <= 1; side += 2) {
     const k = 1 + .1 * Math.max(0, side < 0 ? cs : -cs) * p.amp, w = R.ls * k, dy = R.legY * R.ls + side * sw;
     ctx.drawImage(worldContourImage(side < 0 ? R.legLG : R.legRG), side * R.spread - w / 2, dy - w / 2, w, w);
   }
@@ -5988,6 +6404,27 @@ function paintSkill(control, view) {
   if (last.progress !== view.progress) { button.style.setProperty('--p', view.progress); last.progress = view.progress; }
 }
 
+// 静止画面的重绘闸门：暂停、选卡、补给、中继、结算和菜单时世界不更新，
+// 只在状态切换或画面条件变化后补画几帧（让震屏和镜头收尾），之后跳过绘制。阵亡爆炸期间仍是 playing。
+const IDLE_REDRAW_FRAMES = 3;
+const redrawGate = { frames: 0, run: undefined, state: undefined };
+function requestRedraw() { redrawGate.frames = IDLE_REDRAW_FRAMES; }
+function shouldRedraw() {
+  const state = G ? G.state : 'menu';
+  if (G !== redrawGate.run || state !== redrawGate.state) { redrawGate.run = G; redrawGate.state = state; requestRedraw(); }
+  if (state === 'playing') return true;
+  if (redrawGate.frames <= 0) return false;
+  redrawGate.frames--; return true;
+}
+// 画布尺寸、设置、画质、字体变化或页面回到前台后，静止画面也要补画；和主循环一起启动
+function watchRedrawTriggers() {
+  window.addEventListener('resize', requestRedraw);
+  window.addEventListener('pageshow', requestRedraw);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) requestRedraw(); });
+  cvs.addEventListener('contextrestored', requestRedraw);
+  subscribeSettings(requestRedraw); subscribeQuality(requestRedraw);
+  loadFonts().then(requestRedraw);
+}
 function frame(now) {
   requestAnimationFrame(frame);
   const frameMs = now - last, rdt = Math.min(.05, frameMs / 1000); last = now;
@@ -5998,14 +6435,20 @@ function frame(now) {
   holdForLandscape();
   const t0 = performance.now();
   for (let i = 0; i < SPEED && G && G.state === 'playing'; i++) update(rdt);
+  const draw = shouldRedraw();
   if (G) {
-    const t1 = performance.now(); render(rdt); const t2 = performance.now();
-    PERF.u = lerp(PERF.u, (t1 - t0) / SPEED, .05); PERF.r = lerp(PERF.r, t2 - t1, .05);
-    const p = G.player;
-    paintSkill(skillControls.dash, skillStatus('dash', p, G.stats, G.endT > 0));
-    paintSkill(skillControls.over, skillStatus('over', p, G.stats, G.endT > 0));
+    const t1 = performance.now();
+    let t2 = t1;
+    if (draw) {
+      render(rdt); t2 = performance.now();
+      PERF.u = lerp(PERF.u, (t1 - t0) / SPEED, .05); PERF.r = lerp(PERF.r, t2 - t1, .05);
+      const p = G.player;
+      paintSkill(skillControls.dash, skillStatus('dash', p, G.stats, G.endT > 0));
+      paintSkill(skillControls.over, skillStatus('over', p, G.stats, G.endT > 0));
+    }
+    // 非战斗帧照常上报为不活跃：只清空采样，不会因跳过绘制而误判升降档。
     updateAdaptiveQuality(frameMs, t2 - t0, G.state === 'playing' && !document.hidden && SPEED === 1);
-  } else render(rdt);
+  } else if (draw) render(rdt);
 }
 $('#btnTraining').addEventListener('click', () => { resetTutorial(); startRun({ practice: true }); });
 $('#btnTutorialExit').addEventListener('click', () => openMenu());
@@ -6018,7 +6461,8 @@ document.addEventListener('visibilitychange', refreshVisibleMeta);
 resize(); refreshHudLayout(); syncSoundLabels();
 loadFonts();
 loadMenuAssets(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).then(() => waitFonts(600)).then(() => {
-  const recovered = recoverPendingRuns(); $('#loading').hidden = true; openMenu(); showRecoveryNotice(recovered); requestAnimationFrame(t => { last = t; frame(t); });
+  const recovered = recoverPendingRuns(); $('#loading').hidden = true; openMenu(); showRecoveryNotice(recovered);
+  watchRedrawTriggers(); requestAnimationFrame(t => { last = t; frame(t); });
   loadGameAssets();
 });
 window.__IR = { get G() { return G; }, meta, skip(t) { if (G) { G.t = t; G.nextElite = t + 5; while (G.swarmIdx < SWARM_TIMES.length && SWARM_TIMES[G.swarmIdx] < t) G.swarmIdx++; while (G.bossIdx < BOSS_TIMES.length && BOSS_TIMES[G.bossIdx] < t - 3) G.bossIdx++; } }, god() { if (G) G.debugGod = true; }, set speed(v) { SPEED = v; }, PERF, IN, RIG, start(id) { if (id) { meta.unlocked[id] = true; meta.sel = id; } return startRun(); }, screenPos() { const p = G.player; return { x: W / 2 + (p.x - G.cam.x) * ZOOM, y: H / 2 + (p.y - G.cam.y) * ZOOM }; } };
