@@ -3183,6 +3183,7 @@ function propsHatch(prop) {
     if (liveElites.filter(e => e.affix === affix).length >= ELITE_SPAWN_RULES.sameAffixCap) continue;
     const enemy = withPropEffectRandom(() => spawnEnemy(ELITE_AFFIXES[affix].type, prop.x, prop.y, { elite: true, affix }));
     if (!enemy) return false;
+    enemy.fromCocoon = true; // 只取消补给箱，金币、经验和其它掉落沿用精英规则。
     G.propAffixIndex = (index + 1) % ELITE_AFFIX_ORDER.length;
     G.propStats.hatched++;
     prop.state = 'hatched'; prop.inactive = true; prop.img = PROPS_DEF.cocoon.openImg;
@@ -3525,7 +3526,7 @@ function killEnemy(e, source) {
   if (Math.random() < healDropChance(G.t) * runMul('heal')) drop('heal', e.x, e.y);
   if (Math.random() < .003) drop('magnet', e.x, e.y);
   if (e.elite) {
-    if (!e.objectiveTarget) drop('chest', e.x, e.y); for (let i = 0; i < 5; i++) drop('coin', e.x + rand(-30, 30), e.y + rand(-30, 30), 1);
+    if (!e.objectiveTarget && !e.fromCocoon) drop('chest', e.x, e.y); for (let i = 0; i < 5; i++) drop('coin', e.x + rand(-30, 30), e.y + rand(-30, 30), 1);
     if (Math.random() < eliteHealDropChance(G.t) * runMul('heal')) drop('heal', e.x + 20, e.y);
   }
   if (e.type === 'bomber') explode(e.x, e.y, 72, 40 * G.stats.dmg, '255,190,60', false, 0, source || 'chain'); // 打爆自爆蜂会连锁炸伤周围虫群
