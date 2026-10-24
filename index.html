@@ -697,13 +697,14 @@ const MECHS = [
     trait: { kind: 'engineer', passiveName: '协同防护', passiveDesc: '无人机武器额外1架僚机；护盾抵挡一次命中，18秒重充。', activeName: '蜂群增援', activeDesc: '超载增援2架独立僚机，换掉无人机武器也可召唤。', shieldCooldown: 18, shieldInvuln: .35, shieldFlashTime: .4, baseExtraDrones: 1, extraDrones: 2, supportLevelEvery: 8, supportMaxLevel: 5 } },
 ];
 // 机甲分两层：腿朝移动方向迈步，上身朝瞄准方向转动。坐标以贴图边长为单位，y 负方向是机体正前方
+// mount 是 4 个武器挂点，依次是右肩、左肩、右后背、左后背（分配规则见 data/weapon-mounts.js）
 const RIG_CFG = {
-  assault: { ts: 76, ls: 84, legY: .04, legX: .27, spread: 0, stride: 16, gun: [[-.38, -.37], [.38, -.37]], pod: [[-.38, -.2], [.38, -.2]], thr: [[-.07, .34], [.07, .34]], flame: '90,220,255', mass: .6 },
-  heavy: { ts: 84, ls: 90, legY: .03, legX: .27, spread: 0, stride: 13, gun: [[0, -.37]], pod: [[-.36, .02], [.36, .02]], thr: [[-.16, .33], [.16, .33]], flame: '255,180,70', mass: 1 },
-  phantom: { ts: 78, ls: 92, legY: -.04, legX: .1, spread: 5, stride: 17, gun: [[-.4, -.42], [.4, -.42]], pod: [[-.3, -.15], [.3, -.15]], thr: [[-.2, .36], [.2, .36]], flame: '235,90,255', mass: .35 },
-  storm: { ts: 80, ls: 86, legY: .025, legX: .18, spread: 0, stride: 16, gun: [[-.255, -.43], [.235, -.43]], pod: [[-.30, -.065], [.27, -.065]], thr: [[-.125, .385], [.115, .385]], flame: '90,225,255', mass: .55 },
-  lancer: { ts: 80, ls: 88, legY: .03, legX: .18, spread: 0, stride: 14, gun: [[0, -.45]], pod: [[-.28, .06], [.28, .06]], thr: [[-.10, .40], [.095, .40]], flame: '145,200,255', mass: .65 },
-  engineer: { ts: 86, ls: 88, legY: .035, legX: .18, spread: 0, stride: 13, gun: [[0, -.28]], pod: [[-.335, .015], [.325, .015]], thr: [[-.12, .30], [.12, .30]], flame: '255,210,105', mass: .85 },
+  assault: { ts: 76, ls: 84, legY: .04, legX: .27, spread: 0, stride: 16, gun: [[-.38, -.37], [.38, -.37]], pod: [[-.38, -.2], [.38, -.2]], thr: [[-.07, .34], [.07, .34]], mount: [[.36, .08], [-.36, .08], [.2, .3], [-.2, .3]], flame: '90,220,255', mass: .6 },
+  heavy: { ts: 84, ls: 90, legY: .03, legX: .27, spread: 0, stride: 13, gun: [[0, -.37]], pod: [[-.36, .02], [.36, .02]], thr: [[-.16, .33], [.16, .33]], mount: [[.2, -.17], [-.2, -.17], [.26, .24], [-.26, .24]], flame: '255,180,70', mass: 1 },
+  phantom: { ts: 78, ls: 92, legY: -.04, legX: .1, spread: 5, stride: 17, gun: [[-.4, -.42], [.4, -.42]], pod: [[-.3, -.15], [.3, -.15]], thr: [[-.2, .36], [.2, .36]], mount: [[.2, -.1], [-.2, -.1], [.15, .2], [-.15, .2]], flame: '235,90,255', mass: .35 },
+  storm: { ts: 80, ls: 86, legY: .025, legX: .18, spread: 0, stride: 16, gun: [[-.255, -.43], [.235, -.43]], pod: [[-.30, -.065], [.27, -.065]], thr: [[-.125, .385], [.115, .385]], mount: [[.32, .1], [-.32, .1], [.28, .3], [-.28, .3]], flame: '90,225,255', mass: .55 },
+  lancer: { ts: 80, ls: 88, legY: .03, legX: .18, spread: 0, stride: 14, gun: [[0, -.45]], pod: [[-.28, .06], [.28, .06]], thr: [[-.10, .40], [.095, .40]], mount: [[.18, -.1], [-.18, -.1], [.27, .24], [-.27, .24]], flame: '145,200,255', mass: .65 },
+  engineer: { ts: 86, ls: 88, legY: .035, legX: .18, spread: 0, stride: 13, gun: [[0, -.28]], pod: [[-.335, .015], [.325, .015]], thr: [[-.12, .30], [.12, .30]], mount: [[.33, -.3], [-.33, -.3], [.22, .3], [-.22, .3]], flame: '255,210,105', mass: .85 },
 };
 
 // ---- src/data/skins.js ----
@@ -783,6 +784,8 @@ const SPRITES = ['mech_assault', 'mech_heavy', 'mech_phantom', 'mech_storm', 'me
 const RIG_PARTS = ['rig_assault_torso', 'rig_assault_legs', 'rig_heavy_torso', 'rig_heavy_legs', 'rig_phantom_torso', 'rig_phantom_legs', 'rig_storm_torso', 'rig_storm_legs', 'rig_lancer_torso', 'rig_lancer_legs', 'rig_engineer_torso', 'rig_engineer_legs'];
 // 首领部件的模块图标、钳击臂、友军小虫和特效纹理：开局时随其余贴图一起加载，不做受击剪影
 const BOSS_PART_IMAGES = ['module_pincer_arm', 'module_hydraulic_legs', 'module_venom_stinger', 'module_parasite_nest', 'module_spore_ring', 'module_neural_link', 'pincer_arm', 'ally_parasite', 'fx_smoke', 'fx_venom', 'fx_spark'];
+// 武器挂件（7 种武器 × 普通、进化）：开局贴图到齐后再后台加载，没到的挂件先不画，不挡开局
+const MOUNT_IMAGES = ['mount_gatling', 'mount_gatling_evo', 'mount_missile', 'mount_missile_evo', 'mount_tesla', 'mount_tesla_evo', 'mount_saw', 'mount_saw_evo', 'mount_rail', 'mount_rail_evo', 'mount_drone', 'mount_drone_evo', 'mount_cord', 'mount_cord_evo'];
 // 战场物件沿用后台场景加载，受击亮边由物件绘制层处理
 const SCENE_IMAGES = ['ground', 'ground_industrial', 'ground_polluted', 'ground_hive', 'keyart', 'prop_oil_barrel', 'prop_ammo_crate', 'prop_toxic_pool', 'prop_cocoon', 'prop_cocoon_open'];
 // 进菜单前只等这些（菜单背景用 CSS 引用封面图，预载避免闪一下）；其余在菜单出现后后台加载
@@ -1104,13 +1107,13 @@ function loadImgList(list, onProg) {
 const loadMenuAssets = (onProg = () => { }) => loadImgList(MENU_IMAGES, onProg);
 let gameAssetLoad = null, gameAssetDone = false, gameAssetProgress = 0;
 const gameAssetListeners = new Set();
-// 开局需要的全部贴图；幕地面都到了就不再请求旧地面，只在缺图时兜底
+// 开局需要的全部贴图；幕地面都到了就不再请求旧地面，只在缺图时兜底；武器挂件等这批到齐后再后台加载，不算进开局进度
 function loadGameAssets() {
   if (gameAssetLoad) return gameAssetLoad;
   const list = [...SPRITES, ...RIG_PARTS, ...BOSS_PART_IMAGES, ...SCENE_IMAGES.filter(k => !MENU_IMAGES.includes(k) && k !== GROUND_FALLBACK)];
   gameAssetLoad = loadImgList(list, k => { gameAssetProgress = k; for (const fn of gameAssetListeners) fn(k); })
     .then(() => SCENE_IMAGES.some(k => k.startsWith(GROUND_FALLBACK + '_') && !IMG[k]) ? loadImg(GROUND_FALLBACK) : true)
-    .then(() => { gameAssetDone = true; });
+    .then(() => { gameAssetDone = true; for (const k of MOUNT_IMAGES) loadImg(k); });
   return gameAssetLoad;
 }
 const gameAssetsReady = () => gameAssetDone;
@@ -1344,7 +1347,7 @@ const FEEDBACK_VISUALS = Object.freeze({ hitCrossSize: 3, hitCrossLife: .06 });
 // ---- src/core/audio.js ----
 // 音频：全部用 WebAudio 实时合成的音效与背景音乐
 
-const AU = { ctx: null, master: null, sfx: null, music: null, duck: null, duckUntil: 0, duckAt: -Infinity, duckClock: null, duckTokens: null, pauseEpoch: 0, noise: null, last: {}, voices: new Set(), background: false, musicPaused: false };
+const AU = { ctx: null, master: null, sfx: null, music: null, muffle: null, muffled: false, duck: null, duckUntil: 0, duckAt: -Infinity, duckClock: null, duckTokens: null, pauseEpoch: 0, noise: null, last: {}, voices: new Set(), background: false, musicPaused: false };
 function audioInit() {
   if (AU.background) return;
   if (AU.ctx) { if (AU.ctx.state === 'suspended') AU.ctx.resume()?.catch(() => { }); return; }
@@ -1355,7 +1358,9 @@ function audioInit() {
     const comp = c.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 6; comp.connect(AU.master);
     AU.sfx = c.createGain(); AU.sfx.gain.value = getSettings().sfxVolume * AUDIO_SETTINGS.sfx; AU.sfx.connect(comp);
     AU.duck = c.createGain(); AU.duck.gain.value = 1; AU.duck.connect(comp);
-    AU.music = c.createGain(); AU.music.gain.value = getSettings().musicVolume * AUDIO_SETTINGS.music; AU.music.connect(AU.duck);
+    // 时停时音乐过这道低通变闷；平时截止频率开到最高，听不出区别
+    AU.muffle = c.createBiquadFilter(); AU.muffle.type = 'lowpass'; AU.muffle.Q.value = 0; AU.muffle.frequency.value = MUFFLE.open; AU.muffle.connect(AU.duck);
+    AU.music = c.createGain(); AU.music.gain.value = getSettings().musicVolume * AUDIO_SETTINGS.music; AU.music.connect(AU.muffle);
     const b = c.createBuffer(1, c.sampleRate, c.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     AU.noise = b;
@@ -1375,8 +1380,9 @@ function audioPause({ suspend = false } = {}) {
     AU.duck.gain.cancelScheduledValues(AU.ctx.currentTime);
     AU.duck.gain.setValueAtTime(1, AU.ctx.currentTime); AU.duckUntil = 0;
   }
-  const resume = MUS.on || MUS.resume;
-  musicStop(); MUS.resume = resume; AU.musicPaused = true;
+  // 暂停时记住音乐是否在放、是否正处在时停变闷中，恢复时照原样接上
+  const resume = MUS.on || MUS.resume, muffled = AU.muffled;
+  musicStop(); MUS.resume = resume; AU.muffled = muffled; AU.musicPaused = true;
   if (suspend) AU.background = true;
   syncAudioSettings(getSettings());
   // 清掉已提前安排的声音，避免时钟挂起后旧音符和恢复的新节拍叠播。
@@ -1400,6 +1406,14 @@ function audioResume({ music = true } = {}) {
 // 保留旧总开关接口，重新开启时恢复各自音量，而不是覆盖成最大音量。
 function setSound(on) {
   updateSettings({ musicVolume: on ? meta.audioRestore.musicVolume : 0, sfxVolume: on ? meta.audioRestore.sfxVolume : 0 });
+}
+// 时停：音乐闷下去；时间恢复、对局结束或回到菜单时打开
+const MUFFLE = { open: 20000, closed: 560, attack: .05, release: .12 };
+function musicMuffle(on) {
+  AU.muffled = !!on;
+  if (!AU.ctx || !AU.muffle) return;
+  const t = AU.ctx.currentTime, f = AU.muffle.frequency;
+  f.cancelScheduledValues(t); f.setValueAtTime(f.value, t); f.setTargetAtTime(on ? MUFFLE.closed : MUFFLE.open, t, on ? MUFFLE.attack : MUFFLE.release);
 }
 function duckMusic(duration = AUDIO_SETTINGS.duckDuration) {
   if (!AU.ctx || !AU.duck || AU.background || AU.musicPaused || AU.ctx.state !== 'running' || getSettings().musicVolume <= 0) return false;
@@ -1475,6 +1489,12 @@ const SFX = {
   step(m) { if (!okA('step', .1)) return; osc('sine', m >= 1 ? 70 : 120, 38, m >= 1 ? .16 : .08, m >= 1 ? .22 : .07); nz(.06, m >= 1 ? .1 : .04, 'lowpass', 500); },
   eshot() { if (!okA('eshot', .12)) return; osc('triangle', 520, 260, .12, .05); },
   click() { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return; osc('square', 900, 600, .04, .05); },
+  // 时停开始：一声往下沉的嗡加一段吸气，音乐变闷
+  timeStop() { musicMuffle(true); if (!okA('timeStop', .3)) return; osc('sine', 260, 52, .9, .45); osc('triangle', 1200, 140, .45, .1); nz(.55, .2, 'lowpass', 3200, 140); },
+  // 时停走秒：越接近恢复越高
+  timeTick(n = 1) { if (!okA('timeTick', .2)) return; const f = 1100 + Math.max(0, 4 - n) * 260; osc('square', f, f * .7, .04, .045); nz(.03, .04, 'highpass', 5200); },
+  // 时间恢复：一声爆响，音乐打开
+  timeResume() { musicMuffle(false); if (!okA('timeResume', .3)) return; nz(.5, .42, 'lowpass', 2400, 70); osc('sine', 64, 190, .22, .4); osc('sawtooth', 170, 40, .4, .12); },
   chest() { if (!AU.ctx || AU.background || getSettings().sfxVolume <= 0) return; const t = AU.ctx.currentTime; for (let i = 0; i < 10; i++) osc('square', 700 + i * 90, null, .05, .04, t + i * .09); },
 };
 // 背景音乐：132 BPM 的合成器循环，Boss 战时加码
@@ -1486,14 +1506,14 @@ function musicStart() {
   if (!AU.ctx || MUS.on) return;
   if (AU.background) { MUS.resume = true; return; }
   AU.musicPaused = false; syncAudioSettings(getSettings());
-  MUS.on = true; MUS.resume = false; MUS.step = 0; MUS.next = AU.ctx.currentTime + .1;
+  MUS.on = true; MUS.resume = false; MUS.step = 0; MUS.next = AU.ctx.currentTime + .1; musicMuffle(AU.muffled);
   MUS.timer = setInterval(() => {
     if (!AU.ctx || !MUS.on || AU.background || AU.musicPaused || AU.ctx.state !== 'running') return;
     if (MUS.next < AU.ctx.currentTime - STEP) MUS.next = AU.ctx.currentTime + .1;
     while (MUS.next < AU.ctx.currentTime + .15) { musicStep(MUS.step, MUS.next); MUS.next += STEP; MUS.step = (MUS.step + 1) % 64; }
   }, 30);
 }
-function musicStop() { MUS.on = false; MUS.resume = false; clearInterval(MUS.timer); MUS.timer = 0; }
+function musicStop() { MUS.on = false; MUS.resume = false; clearInterval(MUS.timer); MUS.timer = 0; if (AU.muffled) musicMuffle(false); }
 function musicStep(s, t) {
   if (AU.background || AU.musicPaused || getSettings().musicVolume <= 0) return;
   const i = s % 16, bar = (s / 16 | 0) % 4, M = AU.music, hi = MUS.intensity >= 2;
@@ -1759,7 +1779,8 @@ function weaponImpact(source, e, angle, material) {
   }
   SFX.material(material);
 }
-function updateFx(dt) {
+// laterDt 给延迟爆炸 G.later：时停中为 0，等时间恢复再炸；粒子、飘字、光束和电弧照常淡出
+function updateFx(dt, laterDt = dt) {
   for (const q of G.parts) { q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt; const f = Math.pow(.05, dt); q.vx *= f; q.vy *= f; }
   compact(G.parts, q => q.life > 0);
   for (const t of G.texts) { t.life -= dt; t.y += t.vy * dt; t.vy *= Math.pow(.1, dt); }
@@ -1768,7 +1789,9 @@ function updateFx(dt) {
   for (const b of G.bolts) b.life -= dt; compact(G.bolts, b => b.life > 0);
   for (const d of G.decals) d.life -= dt; compact(G.decals, d => d.life > 0);
   for (const d of G.prints) d.life -= dt; compact(G.prints, d => d.life > 0);
-  for (const l of G.later) { l.t -= dt; if (l.t <= 0) { l.done = true; l.fn(); } } compact(G.later, l => !l.done);
+  // 时停中 laterDt 为 0，延迟回调整个停住，排在当帧的第一下也等时间恢复
+  if (laterDt > 0) for (const l of G.later) { l.t -= laterDt; if (l.t <= 0) { l.done = true; l.fn(); } }
+  compact(G.later, l => !l.done);
 }
 
 // ---- src/game/grid.js ----
@@ -1858,6 +1881,10 @@ const WDEF = {
     lv: [{ n: 1, cd: .7, dmg: 10 }, { n: 1, cd: .55, dmg: 13 }, { n: 2, cd: .55, dmg: 14 }, { n: 2, cd: .45, dmg: 17 }, { n: 3, cd: .4, dmg: 20 }],
     evo: { n: 6, cd: .25, dmg: 22, pierce: 1 },
     ups: ['僚机跟随你自动索敌射击', '射速提升，伤害 +3', '僚机 +1', '射速提升，伤害 +3', '僚机 +1'] },
+  cord: { name: '导爆索', newOfferWeight: 1, icon: 'cord', evoWith: 'thruster', evoName: '烈焰绞索', evoDesc: '圈内燃起 2 秒火海，跨过燃烧的索也会受伤',
+    lv: [{ trailSeconds: 4, dmg: 30, cd: 1.6 }, { trailSeconds: 4, dmg: 38, cd: 1.6 }, { trailSeconds: 4.4, dmg: 46, cd: 1.6 }, { trailSeconds: 4.4, dmg: 56, cd: 1.3 }, { trailSeconds: 4.8, dmg: 68, cd: 1.3 }],
+    evo: { trailSeconds: 5.2, dmg: 90, cd: 1 },
+    ups: ['走过的路留下导爆索，绕一圈合拢就引爆圈内', '伤害 +8', '导爆索更长，圈得更大', '伤害提升，冷却缩短', '导爆索再加长，伤害提升'] },
 };
 const PDEF = {
   firectl: { name: '火控芯片', icon: 'firectl', desc: '全武器伤害 +12%' },
@@ -2885,6 +2912,7 @@ const MASTERY_DEF = {
   saw: { dmgStep: .03, sizeStep: 1, knockStep: 25 },
   rail: { dmgStep: .04, widthStep: 3 },
   drone: { dmgStep: .02, cooldownStep: .02 },
+  cord: { dmgStep: .03, trailStep: .2 },
 };
 const TRAINING_DEF = {
   power: { name: '火力训练', icon: 'firectl' },
@@ -2907,6 +2935,7 @@ function weaponStats(w) {
     if (spec.knockStep) stats.knock += spec.knockStep * mastery;
     if (spec.widthStep) stats.w += spec.widthStep * mastery;
     if (spec.cooldownStep) stats.cd *= 1 - spec.cooldownStep * mastery;
+    if (spec.trailStep) stats.trailSeconds += spec.trailStep * mastery;
     if (mastery === MASTERY_MAX && spec.pierceAtMax) stats.pierce = (stats.pierce || 0) + spec.pierceAtMax;
   }
   Object.freeze(stats); weaponStatCache.set(w, { key, stats });
@@ -3306,8 +3335,333 @@ function hitPropsCircle(x, y, radius, damage, owner = null, cooldown = 0) {
   return hitPropsSegment(x, y, x, y, radius, damage, owner, cooldown);
 }
 
+// ---- src/data/cord.js ----
+// 导爆索独立规则：距离采样、闭环门槛、引爆反馈与进化火海，不影响公共战斗数值
+const CORD_RULES = Object.freeze({
+  sampleDistance: 12,
+  maxPoints: 160,
+  minArea: Math.PI * 70 * 70,
+  overTrailMul: 1.5,
+  fadedDuration: .45,
+  flashDuration: .18,
+  fireDuration: 2,
+  fireTick: .25,
+  fireDamageMul: .1,
+  edgeWidth: 6,
+  maxEffects: 4,
+  knock: 220,
+  fireKnock: 0,
+  effectSeed: 0x434f5244,
+  epsilon: 1e-7,
+});
+
+// ---- src/game/cord.js ----
+// 导爆索：距离留索、闭环几何、圈内引爆和独立于装备的限时火海
+
+// 返回新段 a→b 上的交点及两段比例；共线重叠和零长段不构成一个新圈。
+function cordSegmentIntersection(a, b, c, d) {
+  const dx = b.x - a.x, dy = b.y - a.y, ex = d.x - c.x, ey = d.y - c.y;
+  const den = dx * ey - dy * ex, eps = CORD_RULES.epsilon;
+  if (Math.abs(den) <= eps) return null;
+  const cx = c.x - a.x, cy = c.y - a.y, t = (cx * ey - cy * ex) / den, u = (cx * dy - cy * dx) / den;
+  if (t < -eps || t > 1 + eps || u < -eps || u > 1 + eps) return null;
+  const clipped = Math.max(0, Math.min(1, t));
+  return { x: a.x + dx * clipped, y: a.y + dy * clipped, t: clipped, u: Math.max(0, Math.min(1, u)) };
+}
+function cordPolygonArea(points) {
+  if (points.length < 3) return 0;
+  let area = 0;
+  for (let i = 0, j = points.length - 1; i < points.length; j = i++) area += points[j].x * points[i].y - points[i].x * points[j].y;
+  return Math.abs(area) / 2;
+}
+function cordSegmentDistanceSq(p, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y, len = dx * dx + dy * dy;
+  const t = len > 0 ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len)) : 0;
+  return (p.x - a.x - t * dx) ** 2 + (p.y - a.y - t * dy) ** 2;
+}
+// 敌人中心落在边上也算圈内；射线法支持凹多边形，与绘制的奇偶填充一致。
+function cordPointInPolygon(p, points) {
+  if (points.length < 3) return false;
+  let inside = false;
+  for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+    const a = points[j], b = points[i];
+    if (cordSegmentDistanceSq(p, a, b) <= CORD_RULES.epsilon ** 2) return true;
+    if ((a.y > p.y) !== (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x) inside = !inside;
+  }
+  return inside;
+}
+function cordPolygonCenter(points) {
+  let area = 0, x = 0, y = 0;
+  for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+    const a = points[j], b = points[i], cross = a.x * b.y - b.x * a.y;
+    area += cross; x += (a.x + b.x) * cross; y += (a.y + b.y) * cross;
+  }
+  return Math.abs(area) > CORD_RULES.epsilon ? { x: x / (3 * area), y: y / (3 * area) } : { x: points[0].x, y: points[0].y };
+}
+function cordSamePoint(a, b) { return !!a && !!b && Math.hypot(a.x - b.x, a.y - b.y) <= CORD_RULES.epsilon; }
+// 面积只对不重复绕行的简单闭环有效；相切、重叠或自交候选保守保留为活动索。
+function cordSimplePolygon(points) {
+  const n = points.length, epsilonSq = CORD_RULES.epsilon ** 2;
+  if (n < 3) return false;
+  for (let i = 0; i < n; i++) {
+    const a = points[i], b = points[(i + 1) % n];
+    for (let j = i + 2; j < n; j++) {
+      if (i === 0 && j === n - 1) continue;
+      const c = points[j], d = points[(j + 1) % n];
+      if (cordSegmentIntersection(a, b, c, d) || cordSegmentDistanceSq(a, c, d) <= epsilonSq || cordSegmentDistanceSq(b, c, d) <= epsilonSq || cordSegmentDistanceSq(c, a, b) <= epsilonSq || cordSegmentDistanceSq(d, a, b) <= epsilonSq) return false;
+    }
+  }
+  return true;
+}
+function cordCanDamage() { return G?.state === 'playing' && G.player?.hp > 0 && !(G.endT > 0) && !G.won; }
+function cordRunEnded() { return !!G && (G.player?.hp <= 0 || G.endT > 0 || G.won || G.state === 'end'); }
+function initCordState() {
+  G.cordEffects = []; G.cordEffectId = 0; G.cordEffectRandom = mulberry32(CORD_RULES.effectSeed);
+  G.cordStats = { closures: 0, enemiesPerLoop: [], totalEnclosed: 0, maxEnclosed: 0 };
+  for (const w of G.player?.weapons || []) if (w.id === 'cord') w.cord = null;
+}
+function cordClearEnded() {
+  if (G.cordEffects) G.cordEffects.length = 0;
+  for (const w of G.player?.weapons || []) if (w.id === 'cord' && w.cord) { w.cord.points.length = 0; w.cord.head = null; }
+}
+function cordHit(e, damage, center, knock) {
+  // 与通用爆炸相同：爆心贴近首领中心时从玩家方向入射，否则从多边形重心入射。
+  const near = e.boss && (e.x - center.x) ** 2 + (e.y - center.y) ** 2 < (e.r * BOSS_PART_ZONES.centerBlast) ** 2;
+  const from = near ? G.player : center, angle = Math.atan2(e.y - from.y, e.x - from.x);
+  // 火海不推人；首领保留极小方向向量供部位分面读取，首领本就不吃击退。
+  const force = knock || (e.boss ? CORD_RULES.epsilon : 0);
+  hitEnemy(e, damage, { source: 'cord', kx: Math.cos(angle) * force, ky: Math.sin(angle) * force });
+}
+// 仅同步爆炸音效使用私有序列；伤害结算始终在恢复主随机入口后执行。
+function cordBlastFeedback(center, evolved) {
+  const previousRandom = Math.random;
+  try {
+    Math.random = G.cordEffectRandom;
+    feedback('explosion', { x: center.x, y: center.y, big: evolved, strength: 3 });
+  } finally { Math.random = previousRandom; }
+}
+function cordDetonate(w, points, L, dmgMul, cdMul) {
+  const cfg = CORD_RULES, center = cordPolygonCenter(points), area = cordPolygonArea(points);
+  const enemies = G.enemies.filter(e => !e.dead && !e.entering && cordPointInPolygon(e, points));
+  const stats = G.cordStats;
+  stats.closures++; stats.enemiesPerLoop.push(enemies.length); stats.totalEnclosed += enemies.length;
+  stats.maxEnclosed = Math.max(stats.maxEnclosed, enemies.length);
+  const life = w.evo ? cfg.fireDuration : cfg.fadedDuration;
+  const effect = { id: ++G.cordEffectId, points: points.map(p => ({ x: p.x, y: p.y })), ...center, area,
+    life, max: life, flashT: cfg.flashDuration, fire: !!w.evo, dmg: L.dmg * dmgMul * cfg.fireDamageMul, tickT: 0,
+    bounds: { minX: Math.min(...points.map(p => p.x)), maxX: Math.max(...points.map(p => p.x)), minY: Math.min(...points.map(p => p.y)), maxY: Math.max(...points.map(p => p.y)) },
+    previous: new Map(), pending: new Set() };
+  if (effect.fire) for (const e of G.enemies) if (!e.dead && !e.entering) effect.previous.set(e, { x: e.x, y: e.y });
+  G.cordEffects.push(effect);
+  if (G.cordEffects.length > cfg.maxEffects) G.cordEffects.shift();
+  w.cord.points.length = 0; w.cord.head = null; w.cord.distance = 0;
+  w.cd = Math.max(0, L.cd * cdMul);
+  cordBlastFeedback(center, !!w.evo);
+  floatText(center.x, center.y, `合围 ${enemies.length}`, '255,195,95', 19, .65);
+  for (const e of enemies) { if (!cordCanDamage()) break; if (!e.dead && !e.entering) cordHit(e, L.dmg * dmgMul, center, cfg.knock); }
+}
+function cordPrune(st) {
+  const cutoff = st.clock - st.trailSeconds;
+  while (st.points.length && st.points[0].t < cutoff) st.points.shift();
+  if (st.points.length > CORD_RULES.maxPoints) st.points.splice(0, st.points.length - CORD_RULES.maxPoints);
+}
+function updateCordWeapon(w, dt, L, dmgMul = 1, cdMul = 1) {
+  if (cordRunEnded()) { cordClearEnded(); return; }
+  if (!cordCanDamage() || !(dt > 0) || !Number.isFinite(dt)) return;
+  if (!G.cordStats) initCordState();
+  const p = G.player, cfg = CORD_RULES;
+  const st = w.cord || (w.cord = { points: [], head: null, clock: 0, distance: 0, trailSeconds: L.trailSeconds });
+  st.clock += dt; st.trailSeconds = L.trailSeconds * (p.overT > 0 ? cfg.overTrailMul : 1);
+  cordPrune(st);
+  const current = { x: p.x, y: p.y, t: st.clock };
+  if (w.cd > 0) { w.cd = Math.max(0, w.cd - dt); st.points.length = 0; st.head = current; st.distance = 0; return; }
+  if (!st.head || !st.points.length) { st.head = current; st.points.push(current); st.distance = 0; return; }
+  const previous = st.head, dx = current.x - previous.x, dy = current.y - previous.y, length = Math.hypot(dx, dy);
+  if (length <= cfg.epsilon) { st.head = current; return; }
+  // 先用完整的新移动段查交，再补距离采样点：冲刺跨过多条索时仍能命中第一个有效圈。
+  let closure = null; const seenCrossings = [];
+  for (let i = st.points.length - 2; i >= 0; i--) {
+    if (cordSamePoint(st.points[i + 1], previous)) continue;
+    const hit = cordSegmentIntersection(previous, current, st.points[i], st.points[i + 1]);
+    if (!hit || hit.t <= cfg.epsilon || (closure && hit.t >= closure.t - cfg.epsilon)) continue;
+    // 同一位置经过多次时只认最近的一段，不能把几个小圈累加成一个大圈。
+    if (seenCrossings.some(t => Math.abs(t - hit.t) <= cfg.epsilon)) continue;
+    seenCrossings.push(hit.t);
+    const polygon = [{ x: hit.x, y: hit.y }];
+    for (const q of st.points.slice(i + 1)) if (!cordSamePoint(polygon[polygon.length - 1], q)) polygon.push({ x: q.x, y: q.y });
+    if (!cordSamePoint(polygon[polygon.length - 1], previous)) polygon.push({ x: previous.x, y: previous.y });
+    if (cordSamePoint(polygon[polygon.length - 1], polygon[0])) polygon.pop();
+    if (cordPolygonArea(polygon) + cfg.epsilon < cfg.minArea || !cordSimplePolygon(polygon)) continue;
+    closure = { t: hit.t, points: polygon };
+  }
+  if (closure) { cordDetonate(w, closure.points, L, dmgMul, cdMul); return; }
+  let next = cfg.sampleDistance - st.distance;
+  // 单帧超长移动最多保留末尾 maxPoints 个采样，避免异常速度让循环无界。
+  const count = Math.max(0, Math.floor((length - next) / cfg.sampleDistance) + 1);
+  if (count > cfg.maxPoints) { next += (count - cfg.maxPoints) * cfg.sampleDistance; st.points.length = 0; }
+  for (let offset = next; offset <= length + cfg.epsilon; offset += cfg.sampleDistance) {
+    const f = Math.min(1, offset / length);
+    st.points.push({ x: previous.x + dx * f, y: previous.y + dy * f, t: previous.t + (current.t - previous.t) * f });
+  }
+  st.distance = (st.distance + length) % cfg.sampleDistance; st.head = current; cordPrune(st);
+}
+function cordTouchesFire(a, b, effect) {
+  const box = effect.bounds, width = CORD_RULES.edgeWidth;
+  if (Math.max(a.x, b.x) < box.minX - width || Math.min(a.x, b.x) > box.maxX + width || Math.max(a.y, b.y) < box.minY - width || Math.min(a.y, b.y) > box.maxY + width) return false;
+  if (cordPointInPolygon(a, effect.points) || cordPointInPolygon(b, effect.points)) return true;
+  for (let i = 0, j = effect.points.length - 1; i < effect.points.length; j = i++) {
+    const c = effect.points[j], d = effect.points[i];
+    if (cordSegmentIntersection(a, b, c, d) || cordSegmentDistanceSq(a, c, d) <= width * width || cordSegmentDistanceSq(b, c, d) <= width * width || cordSegmentDistanceSq(c, a, b) <= width * width || cordSegmentDistanceSq(d, a, b) <= width * width) return true;
+  }
+  return false;
+}
+function updateCordEffects(dt) {
+  if (cordRunEnded()) { cordClearEnded(); return; }
+  if (!cordCanDamage() || !(dt > 0) || !Number.isFinite(dt) || !G.cordEffects?.length) return;
+  const cfg = CORD_RULES;
+  for (const effect of G.cordEffects) {
+    const active = Math.min(dt, effect.life);
+    effect.flashT = Math.max(0, effect.flashT - dt);
+    if (effect.fire) {
+      const tracks = [];
+      for (const e of G.enemies) {
+        if (e.dead || e.entering) continue;
+        const previous = effect.previous.get(e) || { x: e.x, y: e.y };
+        tracks.push({ e, previous, current: { x: e.x, y: e.y } });
+      }
+      // 把长帧分到固定伤害时段；同一时段无论停在圈内或反复跨边，都只命中一次。
+      let elapsed = 0;
+      while (elapsed < active - cfg.epsilon && cordCanDamage()) {
+        const step = Math.min(active - elapsed, cfg.fireTick - effect.tickT), start = elapsed / dt, end = (elapsed + step) / dt;
+        for (const { e, previous, current } of tracks) {
+          const a = { x: previous.x + (current.x - previous.x) * start, y: previous.y + (current.y - previous.y) * start };
+          const b = { x: previous.x + (current.x - previous.x) * end, y: previous.y + (current.y - previous.y) * end };
+          if (cordTouchesFire(a, b, effect)) effect.pending.add(e);
+        }
+        elapsed += step; effect.tickT += step;
+        if (effect.tickT >= cfg.fireTick - cfg.epsilon) {
+          effect.tickT = 0;
+          for (const e of effect.pending) { if (!cordCanDamage()) break; if (!e.dead && !e.entering) cordHit(e, effect.dmg, effect, cfg.fireKnock); }
+          effect.pending.clear();
+        }
+      }
+      effect.previous.clear();
+      for (const { e, current } of tracks) if (!e.dead && !e.entering) effect.previous.set(e, current);
+    }
+    effect.life = Math.max(0, effect.life - dt);
+    if (!cordCanDamage()) break;
+  }
+  if (cordRunEnded()) { cordClearEnded(); return; }
+  G.cordEffects = G.cordEffects.filter(effect => effect.life > CORD_RULES.epsilon);
+}
+
+// ---- src/data/time-stop.js ----
+// 时停：连闪触发、时长、冷却、子弹悬停与画面参数；只在这里调整时停数值
+// 秒数都是真实时间（不受慢动作影响），只在对局进行时扣
+const TIME_STOP = Object.freeze({
+  chainWindow: 4, chainNeeded: 3, // 两次极限闪避间隔不超过 4 秒算连上，连到第 3 次触发
+  duration: 2, cooldown: 20, // 时停时长；结束后冷却，冷却中的极限闪避不计数
+  hoverAfter: .15, // 时停中玩家子弹、导弹先飞这么久再悬停
+  knockCap: 600, // 定住时累积的击退，恢复时限到这个速度
+  endGrace: .3, // 恢复瞬间的无敌，免得撞上贴脸的敌弹
+  tickEvery: .5, // 走秒间隔
+});
+const TIME_STOP_VISUAL = Object.freeze({
+  gray: .9, dim: 'rgba(12,16,24,.24)', lowDim: 'rgba(26,30,38,.5)', // 去色强度、压暗层；省电档只压暗
+  rippleTime: .35, rippleColor: '170,240,255', // 开始时灰色从机甲扩散出去的时间与波纹颜色
+  ringColor: '120,232,255', ringWidth: 3, // 机甲脚下倒计时环
+  bulletFill: 'rgb(196,200,208)', // 定住的敌弹填色
+  burstTime: .32, burstTrail: .09, // 恢复时子弹光尾的持续时间、长度（按速度乘秒数）
+  startFlash: .28, endFlash: .4, endShake: .55,
+  hudColor: '#8fe9ff',
+});
+
+// ---- src/game/time-stop.js ----
+// 时停：连闪计数、开始与恢复、每帧倒数、玩家子弹悬停，以及不受时停影响的动作时钟
+
+// 别的模块判断时停只用这个函数
+function timeStopActive() { return !!G && G.timeStopT > 0; }
+function initTimeStop() {
+  G.timeStopT = 0; G.timeStopCd = 0; G.timeStopChain = 0; G.timeStopChainT = 0;
+  G.timeStops = 0; G.timeStopSpent = 0; G.timeStopTick = 0; G.timeStopFxT = 0; G.timeStopAt = null;
+}
+// 锯刃命中间隔、僚机环绕这类机甲一侧的计时：平时和 G.t 同步，时停中（G.t 停住）照常往前走
+function actionClock() { return G ? (G.t || 0) + (G.timeStopSpent || 0) : 0; }
+
+// 每次极限闪避调用：时停中、冷却中不计数；离上一次不超过 chainWindow 秒就 +1，否则从 1 重新数，数到 chainNeeded 触发时停
+function timeStopOnPerfect() {
+  if (!G?.player || timeStopActive()) return 0;
+  const p = G.player;
+  if (G.timeStopCd > 0) { floatText(p.x, p.y - 74, `时停冷却 ${Math.ceil(G.timeStopCd)} 秒`, '150,172,188', 15, .9); return 0; }
+  const chain = G.timeStopChainT > 0 ? (G.timeStopChain || 0) + 1 : 1;
+  G.timeStopChain = chain; G.timeStopChainT = TIME_STOP.chainWindow;
+  if (chain >= TIME_STOP.chainNeeded) beginTimeStop();
+  else if (chain > 1) floatText(p.x, p.y - 74, `连闪 ${chain}/${TIME_STOP.chainNeeded}`, '150,235,255', 18, .9);
+  return chain;
+}
+function beginTimeStop() {
+  const p = G.player, v = TIME_STOP_VISUAL;
+  G.timeStopT = TIME_STOP.duration; G.timeStopChain = 0; G.timeStopChainT = 0; G.timeStopFxT = 0;
+  G.timeStopTick = TIME_STOP.duration - TIME_STOP.tickEvery; G.timeStopAt = { x: p.x, y: p.y };
+  G.timeStops = (G.timeStops || 0) + 1;
+  floatText(p.x, p.y - 82, '时停！', '150,235,255', 30, 1.2);
+  flash(v.rippleColor, v.startFlash); G.shake = Math.max(G.shake || 0, .3);
+  SFX.timeStop();
+}
+// 外部要求立即恢复（例如击破最终首领）；没在时停中返回 false
+function endTimeStop() {
+  if (!timeStopActive()) return false;
+  finishTimeStop(); return true;
+}
+// 时间恢复：悬停的子弹、导弹照原速度继续飞并拖出光尾，定住时累积的击退限幅，开始冷却
+function finishTimeStop() {
+  const p = G.player, v = TIME_STOP_VISUAL, cap = TIME_STOP.knockCap;
+  G.timeStopT = 0; G.timeStopCd = TIME_STOP.cooldown; G.timeStopFxT = v.burstTime;
+  for (const b of G.pbullets) timeStopRelease(b);
+  for (const m of G.missiles) timeStopRelease(m);
+  for (const e of G.enemies) {
+    const k = Math.hypot(e.kx || 0, e.ky || 0);
+    if (k > cap) { e.kx *= cap / k; e.ky *= cap / k; }
+  }
+  if (p.hp > 0) p.invuln = Math.max(p.invuln, TIME_STOP.endGrace);
+  flash('255,255,255', v.endFlash); G.shake = Math.max(G.shake || 0, v.endShake);
+  SFX.timeResume();
+}
+function timeStopRelease(o) {
+  if (!o.tsFly) return;
+  o.tsBurst = !!o.tsHover; o.tsFly = 0; o.tsHover = false;
+}
+// 主更新在顿帧之后每帧调用一次；暂停、选卡、补给箱、行动奖励打开时主循环不更新，自然不扣。
+// 倒数时停、连闪窗口和冷却，走秒，到点恢复。返回这一帧世界是否定住
+function updateTimeStop(rdt) {
+  if (!G || !(rdt > 0) || !Number.isFinite(rdt)) return timeStopActive();
+  if (G.timeStopFxT > 0) G.timeStopFxT = Math.max(0, G.timeStopFxT - rdt);
+  if (!(G.timeStopT > 0)) {
+    if (G.timeStopCd > 0) G.timeStopCd = Math.max(0, G.timeStopCd - rdt);
+    if (G.timeStopChainT > 0) { G.timeStopChainT = Math.max(0, G.timeStopChainT - rdt); if (G.timeStopChainT <= 0) G.timeStopChain = 0; }
+    return false;
+  }
+  // 已经击破最终首领（或机体离线）就不再定住世界，这一帧起照常走胜利流程
+  if (G.won || !(G.player.hp > 0) || G.endT > 0) { finishTimeStop(); return false; }
+  const left = G.timeStopT - rdt;
+  if (left <= 1e-9) { finishTimeStop(); return false; }
+  G.timeStopT = left; G.timeStopSpent = (G.timeStopSpent || 0) + rdt;
+  while (G.timeStopTick > 1e-9 && left <= G.timeStopTick + 1e-9) {
+    SFX.timeTick(Math.round(G.timeStopTick / TIME_STOP.tickEvery)); G.timeStopTick -= TIME_STOP.tickEvery;
+  }
+  // 敌人定住不更新，受击白闪按真实时间消退，连续命中才看得出来
+  for (const e of G.enemies) if (e.flash > 0) e.flash -= rdt;
+  return true;
+}
+// 时停中的玩家子弹、导弹：每颗先飞 hoverAfter 秒，之后悬停（不移动、不扣寿命、不判命中）。返回 true 表示这一帧悬停
+function timeStopHover(o, dt) {
+  const flown = o.tsFly || 0;
+  if (flown >= TIME_STOP.hoverAfter) { o.tsHover = true; return true; }
+  o.tsFly = flown + dt; return false;
+}
+
 // ---- src/game/weapons.js ----
-// 六种武器的开火逻辑，以及闪电、光束、爆炸等通用攻击
+// 武器开火入口，以及闪电、光束、爆炸等通用攻击
 
 const wp = w => talentWeaponStats(w, weaponStats(w));
 function updateWeapons(dt) {
@@ -3327,6 +3681,7 @@ function updateWeapons(dt) {
   for (const w of activeWeapons) {
     const L = wp(w);
     switch (w.id) {
+      case 'cord': updateCordWeapon(w, dt, L, dM, cdM); break;
       case 'gatling': {
         w.cd -= dt; if (w.cd > 0) break;
         if (!p.aim || p.aim.dead || p.aim.entering) p.aim = bossIn(AUTO_TARGETING.ranges.gatling) ? boss : nearestWeaponTarget(p.x, p.y, AUTO_TARGETING.ranges.gatling);
@@ -3369,16 +3724,17 @@ function updateWeapons(dt) {
         break;
       }
       case 'saw': {
-        const R = L.rad * (w.evo ? 1 + WDEF.saw.pulse.amplitude * Math.sin(G.t * WDEF.saw.pulse.rate) : 1); w.ang += L.spin * dt * (over ? 1.6 : 1);
+        // 命中间隔和进化脉动用动作时钟：时停中 G.t 停住，锯刃照样一下下磨定住的敌人
+        const now = actionClock(), R = L.rad * (w.evo ? 1 + WDEF.saw.pulse.amplitude * Math.sin(now * WDEF.saw.pulse.rate) : 1); w.ang += L.spin * dt * (over ? 1.6 : 1);
         const cd = Math.max(WDEF.saw.minHitInterval, WDEF.saw.hitInterval / L.n * cdM); w.pos = w.pos || [];
         w.pos.length = 0;
         for (let i = 0; i < L.n; i++) {
           const a = w.ang + i * TAU / L.n, bx = p.x + Math.cos(a) * R, by = p.y + Math.sin(a) * R; w.pos.push(bx, by);
           if (G.props?.length) hitPropsCircle(bx, by, L.size, L.dmg * dM, w, cd);
           query(bx, by, L.size + 30, e => {
-            if (e.sawT > G.t || e.entering) return;
+            if (e.sawT > now || e.entering) return;
             const rr = L.size + e.r; if (d2(bx, by, e.x, e.y) > rr * rr) return;
-            e.sawT = G.t + cd; const ka = Math.atan2(e.y - p.y, e.x - p.x);
+            e.sawT = now + cd; const ka = Math.atan2(e.y - p.y, e.x - p.x);
             hitEnemy(e, L.dmg * dM, { source: 'saw', kx: Math.cos(ka) * L.knock, ky: Math.sin(ka) * L.knock });
             part(bx, by, rand(-120, 120), rand(-120, 120), .2, 5, '255,190,120'); SFX.saw();
           });
@@ -3400,8 +3756,9 @@ function updateWeapons(dt) {
         const droneCount = w.support ? extraDrones : L.n + (G.mech.trait?.baseExtraDrones || 0);
         while (w.drones.length < droneCount) { const [dx, dy] = muzzle('pod', w.drones.length); w.drones.push({ x: dx, y: dy, cd: rand(0, L.cd) }); }
         w.drones.length = droneCount;
+        const orbitT = actionClock(); // 时停中僚机照常环绕
         w.drones.forEach((d, i) => {
-          const a = G.t * 1.4 + i * TAU / droneCount + (w.support ? PI / 2 : 0), radius = w.support ? 82 : 58, tx = p.x + Math.cos(a) * radius, ty = p.y + Math.sin(a) * radius;
+          const a = orbitT * 1.4 + i * TAU / droneCount + (w.support ? PI / 2 : 0), radius = w.support ? 82 : 58, tx = p.x + Math.cos(a) * radius, ty = p.y + Math.sin(a) * radius;
           d.x = lerp(d.x, tx, Math.min(1, dt * 8)); d.y = lerp(d.y, ty, Math.min(1, dt * 8));
           d.cd -= dt; if (d.cd > 0) return;
           const tg = bossIn(AUTO_TARGETING.ranges.drone, d.x, d.y) ? boss : nearestWeaponTarget(d.x, d.y, AUTO_TARGETING.ranges.drone); if (!tg) { d.cd = 0; return; }
@@ -3888,7 +4245,9 @@ function checkPerfect() {
 }
 function perfectDodge() {
   const p = G.player; p.perfectUsed = true; G.perfects++; recordAction('perfect'); recordTutorialAction('perfect');
-  G.slowT = .55; p.invuln = Math.max(p.invuln, .7);
+  // 时停中擦过定住的敌弹照样反弹、充能，但世界已经停了，不再放慢动作
+  if (!timeStopActive()) G.slowT = .55;
+  p.invuln = Math.max(p.invuln, .7);
   if (!(p.overT > 0)) p.overload = Math.min(100, p.overload + 22);
   let n = 0;
   for (const b of G.ebullets) { // 反弹附近的敌弹
@@ -3900,8 +4259,10 @@ function perfectDodge() {
   G.waves.push({ x: p.x, y: p.y, r: 8, maxR: 120, v: 600, dmg: 0, knock: 0, hit: new Set(), col: '90,240,255' });
   floatText(p.x, p.y - 46, n > 0 ? `极限闪避 · 反弹 ×${n}` : '极限闪避！', '120,240,255', 24, 1.1);
   flash('90,230,255', .25); feedback('perfect', { x: p.x, y: p.y, angle: Math.atan2(p.ddy, p.ddx) });
+  timeStopOnPerfect(); // 连闪计数，连到第三次触发时停（时停中、冷却中不计数）
 }
 function hurtPlayer(dmg, sx, sy, cause = 'unknown') {
+  if (timeStopActive()) return false; // 时停期间机甲无敌，也不消耗定住的敌弹
   if (G.debugGod) return true; // 调试无敌照常消耗敌弹，且不消耗机体护盾。
   const p = G.player; if (G.practice) return p.dashT <= 0; if (p.invuln > 0 || p.dashT > 0 || p.hp <= 0) return false;
   if (absorbMechHit()) return true; // 护盾命中也消耗敌弹，但不扣生命。
@@ -4151,7 +4512,7 @@ function updateBoss(e, dt) {
     e.enrageAnnounced = true;
     const cfg = BOSS_PRESENTATION;
     floatText(e.x, e.y - e.size / 2 - cfg.textLift, '狂暴！', e.col, cfg.enrageTextSize, cfg.enrageTextLife);
-    G.waves.push({ x: e.x, y: e.y, r: e.r, maxR: Math.max(e.r, cfg.enrageWaveRadius), v: cfg.enrageWaveSpeed, dmg: 0, knock: 0, hit: null, col: e.col });
+    G.waves.push({ x: e.x, y: e.y, r: e.r, maxR: Math.max(e.r, cfg.enrageWaveRadius), v: cfg.enrageWaveSpeed, dmg: 0, knock: 0, hit: null, col: e.col, foe: true });
     feedback('bossEnrage', { x: e.x, y: e.y, angle: Math.atan2(e.y - G.player.y, e.x - G.player.x) });
   }
   // 部位被打碎后的吃痛硬直：招式和计时都停下；破绽期间本来就不动，只走演出时间
@@ -4210,7 +4571,7 @@ function updateBoss(e, dt) {
           e.n = 1; const mul = bossPartBroken(e, 'sacs') ? BOSS_PART_WEAKEN.summonMul : 1, n = Math.max(1, Math.round((F ? 14 : 10) * mul));
           for (let i = 0; i < n; i++) { const a = i / n * TAU; spawnEnemy(i % 2 ? 'bomber' : 'crawler', e.x + Math.cos(a) * 130, e.y + Math.sin(a) * 130); }
           if (F) { const chargers = Math.max(1, Math.round(2 * mul)); for (let i = 0; i < chargers; i++) spawnEnemy('charger', e.x + (i ? -160 : 160), e.y); }
-          G.waves.push({ x: e.x, y: e.y, r: 20, maxR: 160, v: 500, dmg: 0, knock: 0, hit: null, col: '190,90,255' });
+          G.waves.push({ x: e.x, y: e.y, r: 20, maxR: 160, v: 500, dmg: 0, knock: 0, hit: null, col: '190,90,255', foe: true });
         }
         if (e.stT > 1.1) nextBossPhase(e); break;
       case 'burst':
@@ -4356,7 +4717,7 @@ function updateRelayHazards(relay, cfg, dt) {
     } else {
       hazard.t -= dt;
       if (hazard.t > 0) continue;
-      G.waves.push({ x: hazard.x, y: hazard.y, r: hazard.r * .3, maxR: hazard.r, v: hazard.r * 7, dmg: 0, knock: 0, hit: null, col: '255,90,55' });
+      G.waves.push({ x: hazard.x, y: hazard.y, r: hazard.r * .3, maxR: hazard.r, v: hazard.r * 7, dmg: 0, knock: 0, hit: null, col: '255,90,55', foe: true });
       SFX.boom(false);
       if (d2(p.x, p.y, hazard.x, hazard.y) <= (hazard.r + p.hurtR) ** 2) hurtPlayer(cfg.hazardDamage, hazard.x, hazard.y, 'hazard:' + (relay.type || 'relay'));
     }
@@ -4407,10 +4768,11 @@ function failRelay(reason) {
 // ---- src/game/projectiles.js ----
 // 子弹、导弹、冲击波、拾取物
 
-function updateBullets(dt) {
-  const p = G.player, hd = halfDiag() * 1.5;
+// dt 给玩家的子弹和导弹，enemyDt 给敌弹：时停中 enemyDt 为 0，敌弹整段不更新；玩家的飞一小段后悬停
+function updateBullets(dt, enemyDt = dt) {
+  const p = G.player, hd = halfDiag() * 1.5, frozen = timeStopActive();
   for (const b of G.pbullets) {
-    if (b.dead) continue;
+    if (b.dead || frozen && timeStopHover(b, dt)) continue;
     const previousX = b.x, previousY = b.y;
     b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; if (b.life <= 0) { b.dead = true; continue; }
     if (G.props?.length) hitPropsSegment(previousX, previousY, b.x, b.y, b.r, b.dmg, b);
@@ -4418,6 +4780,7 @@ function updateBullets(dt) {
   }
   compact(G.pbullets, b => !b.dead);
   for (const m of G.missiles) {
+    if (frozen && timeStopHover(m, dt)) continue;
     m.life += dt;
     if (!m.tg || m.tg.dead) m.tg = nearestWeaponTarget(m.x, m.y, AUTO_TARGETING.ranges.missileRetarget);
     if (m.tg) { const want = Math.atan2(m.tg.y - m.y, m.tg.x - m.x); m.ang = angLerp(m.ang, want, Math.min(1, dt * (3 + m.life * 9))); }
@@ -4428,9 +4791,9 @@ function updateBullets(dt) {
   }
   compact(G.missiles, m => !m.dead);
   for (const b of G.ebullets) {
-    if (b.dead) continue;
-    if (b.home > 0) { b.home -= dt; const want = Math.atan2(p.y - b.y, p.x - b.x), cur = Math.atan2(b.vy, b.vx), a = angLerp(cur, want, Math.min(1, dt * 1.6)); b.vx = Math.cos(a) * b.spd; b.vy = Math.sin(a) * b.spd; }
-    b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
+    if (b.dead || !(enemyDt > 0)) continue;
+    if (b.home > 0) { b.home -= enemyDt; const want = Math.atan2(p.y - b.y, p.x - b.x), cur = Math.atan2(b.vy, b.vx), a = angLerp(cur, want, Math.min(1, enemyDt * 1.6)); b.vx = Math.cos(a) * b.spd; b.vy = Math.sin(a) * b.spd; }
+    b.x += b.vx * enemyDt; b.y += b.vy * enemyDt; b.life -= enemyDt;
     if (b.life <= 0 || Math.abs(b.x - p.x) > hd || Math.abs(b.y - p.y) > hd) { b.dead = true; continue; }
     const rr = b.r + p.hurtR;
     if (d2(b.x, b.y, p.x, p.y) < rr * rr && hurtPlayer(b.dmg, b.x, b.y, b.cause || 'unknown')) b.dead = true;
@@ -4445,9 +4808,10 @@ function bulletHit(e, b) {
   part(b.x, b.y, -b.vx * .2 + rand(-60, 60), -b.vy * .2 + rand(-60, 60), .15, 5, b.col);
   if (--b.pierce < 0) { b.dead = true; return false; }
 }
-function updateWaves(dt) {
+// 首领、危险区放出的冲击波带 foe 标记，按 foeDt 扩散（时停中为 0）；玩家的冲击波照常
+function updateWaves(dt, foeDt = dt) {
   for (const w of G.waves) {
-    w.r += w.v * dt;
+    w.r += w.v * (w.foe ? foeDt : dt);
     if (w.dmg > 0 && G.props?.length) hitPropsCircle(w.x, w.y, w.r, w.dmg, w);
     if (w.dmg > 0 || w.knock > 0) query(w.x, w.y, w.r, e => {
       if (w.hit.has(e) || e.entering) return; const rr = w.r + e.r; if (d2(w.x, w.y, e.x, e.y) > rr * rr) return;
@@ -4497,6 +4861,7 @@ const ICONS = {
   saw: sawIcon(),
   rail: '<path d="M4 24h10"/><path d="M14 17h15l5 7-5 7H14z"/><path d="M34 24h10M39 19l5 5-5 5"/>',
   drone: '<circle cx="24" cy="24" r="6"/><path d="M19 19l-5-5M29 19l5-5M19 29l-5 5M29 29l5 5"/><circle cx="11" cy="11" r="5"/><circle cx="37" cy="11" r="5"/><circle cx="11" cy="37" r="5"/><circle cx="37" cy="37" r="5"/>',
+  cord: '<path d="M38 35H25a13 13 0 1 1 13-13c0 6-4 10-10 10a8 8 0 1 1 8-8"/><circle cx="24" cy="22" r="3"/><path d="M38 35l4-4M38 35l4 4M38 35v-6"/>',
   firectl: '<rect x="14" y="14" width="20" height="20" rx="2"/><rect x="20" y="20" width="8" height="8"/><path d="M19 8v6M24 8v6M29 8v6M19 34v6M24 34v6M29 34v6M8 19h6M8 24h6M8 29h6M34 19h6M34 24h6M34 29h6"/>',
   cooler: '<circle cx="24" cy="24" r="18"/><path d="M24 24c0-8 4-12 9-12M24 24c7 4 8 10 5 14M24 24c-7 4-13 2-15-3"/><circle cx="24" cy="24" r="3"/>',
   thruster: '<path d="M24 5c5 7 12 13 12 23a12 12 0 0 1-24 0c0-6 3-10 6-13 1 4 4 6 4 6s-1-9 2-16z"/>',
@@ -5394,7 +5759,7 @@ function endRun(win) {
     (practice ? '<div class="stat gold"><small>训练模式</small><b>不计战绩</b></div>' : `<div class="stat gold"><small>获得金币（拾取 ${run.coins} + 击杀 ${killBonus} + 首领 ${bossBonus}${win ? ` + 突围 ${winBonus}` : ''}${tierBonus ? ` + 深渊 ${tierBonus}` : ''}）</small><b class="num">+${earned}</b></div>`);
   // 最快突围按层级分开记
   const fastestRecord = run.tier ? meta.tierFastest?.[run.tier] : meta.fastestWin;
-  $('#endMoreStats').innerHTML = stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) +
+  $('#endMoreStats').innerHTML = stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('时停', run.timeStops || 0) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) +
     (!practice && fastestRecord ? `<div class="stat record"><small>最快突围${run.tier ? `（${tierName(run.tier)}）` : ''}${fastest ? ' · 新纪录' : ''}</small><b class="num">${fmtTime(fastestRecord)}</b></div>` : '');
   $('#endMore').open = false;
   // 金币卡片下面接「下一个目标」，进度条从结算前涨到结算后；金币够了直接去机库
@@ -5451,38 +5816,37 @@ function buildLoadoutSummary() {
 }
 function choicePairInfo(o) {
   const p = G.player;
-  let weaponId, weaponLv, passiveLv;
   const isWeaponChoice = ['wnew', 'wup', 'evo', 'wswap'].includes(o.kind), isSwap = o.kind === 'wswap' || o.kind === 'pswap';
-  if (isWeaponChoice) weaponId = o.id;
-  else if (o.kind === 'pnew' || o.kind === 'pup' || o.kind === 'pswap') weaponId = Object.keys(WDEF).find(id => WDEF[id].evoWith === o.id);
-  else return null;
-  const d = WDEF[weaponId]; if (!d) return null;
-  const w = p.weapons.find(x => x.id === weaponId), s = p.passives.find(x => x.id === d.evoWith);
-  weaponLv = w ? w.lv : 0; passiveLv = s ? s.lv : 0;
-  if (o.kind === 'evo') return { text: `${d.name} ${weaponLv}/5 · ${PDEF[d.evoWith].name} ${passiveLv}级，立即进化`, state: 'ready' };
-  if (isWeaponChoice && !s && p.passives.length >= 4) return { text: '芯片槽已满 · 可换入配套芯片继续进化', state: 'blocked' };
-  if (!isWeaponChoice && !w && p.weapons.length >= 4) return { text: `未装备${d.name} · 可换入武器完成配套`, state: 'blocked' };
-  if (w?.evo && !isWeaponChoice) return { text: `${d.evoName}已进化 · 本级继续提升芯片效果`, state: 'ready' };
-  const current = isWeaponChoice ? `${PDEF[d.evoWith].name} ${passiveLv ? passiveLv + '级' : '未装备'}` : `${d.name} ${weaponLv ? weaponLv + '/5级' : '未装备'}`;
-  const replaced = isSwap ? (isWeaponChoice ? p.weapons : p.passives).find(x => x.id === o.replaceId) : null;
-  const nextWeapon = isWeaponChoice ? (isSwap ? replaced.lv : weaponLv + 1) : weaponLv;
-  const nextPassive = isWeaponChoice ? passiveLv : (isSwap ? replaced.lv : passiveLv + 1);
-  const complete = nextWeapon >= 5 && nextPassive >= 3;
-  return { text: `${current} · ${complete ? '选择后条件齐备，下次选卡或补给可进化' : `选择后进化进度 ${nextWeapon}/5 + ${Math.min(3, nextPassive)}/3`}`, state: complete ? 'ready' : '' };
+  const ids = isWeaponChoice ? [o.id] : ['pnew', 'pup', 'pswap'].includes(o.kind) ? Object.keys(WDEF).filter(id => WDEF[id].evoWith === o.id) : [];
+  // 一枚芯片可能配多把武器，每条配方分别显示进度，避免未装备的一把遮住已满足的另一把。
+  return ids.map(weaponId => {
+    const d = WDEF[weaponId], w = p.weapons.find(x => x.id === weaponId), s = p.passives.find(x => x.id === d.evoWith);
+    const weaponLv = w ? w.lv : 0, passiveLv = s ? s.lv : 0;
+    if (o.kind === 'evo') return { text: `${d.name} ${weaponLv}/5 · ${PDEF[d.evoWith].name} ${passiveLv}级，立即进化`, state: 'ready' };
+    if (isWeaponChoice && !s && p.passives.length >= 4) return { text: '芯片槽已满 · 可换入配套芯片继续进化', state: 'blocked' };
+    if (!isWeaponChoice && !w && p.weapons.length >= 4) return { text: `未装备${d.name} · 可换入武器完成配套`, state: 'blocked' };
+    if (w?.evo && !isWeaponChoice) return { text: `${d.evoName}已进化 · 本级继续提升芯片效果`, state: 'ready' };
+    const current = isWeaponChoice ? `${PDEF[d.evoWith].name} ${passiveLv ? passiveLv + '级' : '未装备'}` : `${d.name} ${weaponLv ? weaponLv + '/5级' : '未装备'}`;
+    const replaced = isSwap ? (isWeaponChoice ? p.weapons : p.passives).find(x => x.id === o.replaceId) : null;
+    const nextWeapon = isWeaponChoice ? (isSwap ? replaced.lv : weaponLv + 1) : weaponLv;
+    const nextPassive = isWeaponChoice ? passiveLv : (isSwap ? replaced.lv : passiveLv + 1);
+    const complete = nextWeapon >= 5 && nextPassive >= 3;
+    return { text: `${current} · ${complete ? '选择后条件齐备，下次选卡或补给可进化' : `选择后进化进度 ${nextWeapon}/5 + ${Math.min(3, nextPassive)}/3`}`, state: complete ? 'ready' : '' };
+  });
 }
 function choiceWeaponBenefit(o, fallback) {
   if (o.kind === 'pswap') return `每级效果：${PDEF[o.id].desc}`;
   if (o.kind === 'wswap') {
     const old = G.player.weapons.find(x => x.id === o.replaceId), stats = weaponStats({ id: o.id, lv: old.lv, evo: false, mastery: 0 });
-    const count = stats.n ? `${o.id === 'saw' ? '锯刃' : o.id === 'drone' ? '僚机' : '弹数'} ${stats.n}` : stats.c ? `连锁 ${stats.c}` : `光束 ${stats.b}`;
-    return `基础伤害 ${stats.dmg} · ${count}${stats.cd ? ` · 间隔 ${stats.cd}秒` : ''}`;
+    const count = stats.n ? `${o.id === 'saw' ? '锯刃' : o.id === 'drone' ? '僚机' : '弹数'} ${stats.n}` : stats.c ? `连锁 ${stats.c}` : stats.trailSeconds ? `索长 ${stats.trailSeconds}秒` : `光束 ${stats.b}`;
+    return `基础伤害 ${stats.dmg} · ${count}${stats.cd ? ` · ${o.id === 'cord' ? '冷却' : '间隔'} ${stats.cd}秒` : ''}`;
   }
   if (o.kind !== 'wup') return fallback;
   const d = WDEF[o.id], w = G.player.weapons.find(x => x.id === o.id), before = d.lv[w.lv - 1], after = d.lv[w.lv];
   const countLabel = o.id === 'saw' ? '锯刃' : o.id === 'drone' ? '僚机' : '弹数';
-  const fields = [['n', countLabel], ['c', '连锁'], ['b', '光束'], ['dmg', '基础伤害'], ['cd', '间隔'], ['rad', '范围']];
+  const fields = [['n', countLabel], ['c', '连锁'], ['b', '光束'], ['trailSeconds', '索长'], ['dmg', '基础伤害'], ['cd', o.id === 'cord' ? '冷却' : '间隔'], ['rad', '范围']];
   const changes = fields.filter(([key]) => Number.isFinite(before[key]) && Number.isFinite(after[key]) && before[key] !== after[key]);
-  return changes.slice(0, 2).map(([key, name]) => `${name} ${before[key]}→${after[key]}${key === 'cd' ? '秒' : ''}`).join(' · ') || fallback;
+  return changes.slice(0, 2).map(([key, name]) => `${name} ${before[key]}→${after[key]}${key === 'cd' || key === 'trailSeconds' ? '秒' : ''}`).join(' · ') || fallback;
 }
 function choiceSwapImpact(o) {
   if (o.kind !== 'wswap' && o.kind !== 'pswap') return '';
@@ -5496,9 +5860,10 @@ function choiceSwapImpact(o) {
 function buildChoiceCard(o, index) {
   if (!isChoiceAvailable(o)) return '';
   const f = optInfo(o); if (!f) return '';
-  const pair = choicePairInfo(o), desc = choiceWeaponBenefit(o, f.desc), hint = pair ? pair.text : f.hint;
+  const pairs = choicePairInfo(o), desc = choiceWeaponBenefit(o, f.desc);
+  const hints = pairs.length ? pairs.map(pair => `<span class="ht pair ${pair.state}">${pair.text}</span>`).join('') : f.hint ? `<span class="ht pair">${f.hint}</span>` : '';
   const swap = o.kind === 'wswap' || o.kind === 'pswap';
-  return `<button class="card ${f.evo ? 'evo' : ''} ${f.pas ? 'pas' : ''} ${swap ? 'swap' : ''} ${o.kind === 'mastery' || o.kind === 'training' ? 'advanced' : ''}" data-i="${index}" data-kind="${o.kind}" data-id="${o.id || ''}"${swap ? ` data-replace-id="${o.replaceId}"` : ''}><span class="ic">${svgI(f.icon)}</span><span class="choice-copy"><span class="nm">${f.name}${(f.tag || '').replace(/Lv\s*/g, '等级 ')}</span><span class="ds benefit">${desc}</span>${choiceSwapImpact(o)}${hint ? `<span class="ht pair ${pair?.state || ''}">${hint}</span>` : ''}</span></button>`;
+  return `<button class="card ${f.evo ? 'evo' : ''} ${f.pas ? 'pas' : ''} ${swap ? 'swap' : ''} ${o.kind === 'mastery' || o.kind === 'training' ? 'advanced' : ''}" data-i="${index}" data-kind="${o.kind}" data-id="${o.id || ''}"${swap ? ` data-replace-id="${o.replaceId}"` : ''}><span class="ic">${svgI(f.icon)}</span><span class="choice-copy"><span class="nm">${f.name}${(f.tag || '').replace(/Lv\s*/g, '等级 ')}</span><span class="ds benefit">${desc}</span>${choiceSwapImpact(o)}${hints}</span></button>`;
 }
 // 必须在应用选项前读取，避免反馈把新等级再加一次。
 function choiceFeedback(o) {
@@ -5626,7 +5991,7 @@ function newRun({ practice = false, daily = null } = {}) {
   initMechTraits(G.player, mech);
   G.player.weapons.push(newWeapon(mech.weapon));
   recalc(); G.player.hp = G.player.maxHp;
-  initRunModifiers(daily); initProps();
+  initRunModifiers(daily); initProps(); initCordState(); initTimeStop();
   if (!practice) { meta.runs++; saveMeta(); }
 }
 const newWeapon = id => ({ id, lv: 1, evo: false, mastery: 0, cd: .3, side: 1, ang: 0, drones: [] });
@@ -5651,22 +6016,28 @@ function update(rdt) {
   updateToasts(rdt);
   G.flashA = Math.max(0, G.flashA - rdt * 2.2);
   if (G.hitStop > 0) { G.hitStop -= rdt; return; }
+  // 时停：世界 dt 为 0（本局时钟、敌人、敌弹、刷怪、物件、行动、延迟爆炸都停住），机甲和武器用不受慢动作影响的真实 dt
+  const frozen = updateTimeStop(rdt);
   if (G.slowT > 0) { G.slowT -= rdt; G.timeScale = .22; } else G.timeScale = Math.min(1, G.timeScale + rdt * 2.5);
-  const dt = rdt * G.timeScale; G.t += dt; G.rt += rdt;
-  if (!G.practice && p.hp > 0 && G.endT <= 0) director(dt);
-  if (G.props?.length) withPropMovementSlows(() => updateRunActors(dt, rdt));
-  else updateRunActors(dt, rdt);
+  const dt = frozen ? 0 : rdt * G.timeScale, pdt = frozen ? rdt : dt; G.t += dt; G.rt += rdt;
+  if (!frozen && !G.practice && p.hp > 0 && G.endT <= 0) director(dt);
+  if (G.props?.length) withPropMovementSlows(() => updateRunActors(dt, rdt, pdt));
+  else updateRunActors(dt, rdt, pdt);
   rebuildGrid();
-  if (p.hp > 0 && G.endT <= 0) updateWeapons(dt);
-  updateBossModules(dt);
-  updateBullets(dt);
-  updateWaves(dt);
+  if (p.hp > 0 && G.endT <= 0) updateWeapons(pdt);
+  // 导爆索的余焰、火海是玩家的伤害，和玩家的冲击波一样在时停中照常走
+  if (G.cordEffects) updateCordEffects(pdt);
+  updateBossModules(pdt);
+  updateBullets(pdt, dt);
+  updateWaves(pdt, dt);
   if (G.props?.length) updateProps(dt);
   if (!G.practice) updateRelay(dt); // 中继落点先结算伤害，再拾取，避免致命伤被治疗包绕过。
-  updatePickups(dt);
-  updateFx(dt); updateBossPartFx(dt);
+  updatePickups(pdt);
+  updateFx(pdt, dt); updateBossPartFx(dt);
   compact(G.enemies, e => !e.dead);
   if (G.comboT > 0) { G.comboT -= dt; if (G.comboT <= 0) G.combo = 0; }
+  // 时停中击破最终首领：同一帧恢复时间，照常走胜利流程
+  if (G.won && timeStopActive()) endTimeStop();
   if (G.victoryT > 0) { G.victoryT -= rdt; if (G.victoryT <= 0) return endRun(true); }
   // 最终首领已击破时以胜利为准；其余击毁一旦开始便不能被回血撤销。
   if (!G.won && (p.hp <= 0 || G.endT > 0)) {
@@ -5689,9 +6060,9 @@ function update(rdt) {
   else if (G.state === 'playing' && G.trainingDoneT > 0) { G.trainingDoneT -= rdt; if (G.trainingDoneT <= 0) openTrainingDone(); }
 }
 
-// 毒沼只临时降低常规移动速度，不改变冲刺/冲锋和攻击计时。
-function updateRunActors(dt, rdt) {
-  updatePlayer(dt, rdt);
+// 毒沼只临时降低常规移动速度，不改变冲刺/冲锋和攻击计时。pdt 是机甲一侧的 dt，时停中不为 0。
+function updateRunActors(dt, rdt, pdt = dt) {
+  updatePlayer(pdt, rdt);
   updateTutorial(dt);
   updateEnemies(dt);
 }
@@ -5732,7 +6103,7 @@ function growthOptions() {
     if (canApplyOpt({ kind: 'evo', id: w.id })) opts.push({ kind: 'evo', id: w.id, w: 50 });
     if (canApplyOpt({ kind: 'mastery', id: w.id })) opts.push({ kind: 'mastery', id: w.id, w: 2.6 });
   }
-  if (p.weapons.length < 4) for (const id in WDEF) if (!p.weapons.some(w => w.id === id)) opts.push({ kind: 'wnew', id, w: 2 });
+  if (p.weapons.length < 4) for (const id in WDEF) if (!p.weapons.some(w => w.id === id)) opts.push({ kind: 'wnew', id, w: WDEF[id].newOfferWeight ?? 2 });
   for (const s of p.passives) if (s.lv < 5) opts.push({ kind: 'pup', id: s.id, w: 2.4 });
   if (p.passives.length < 4) for (const id in PDEF) if (!passLv(id)) opts.push({ kind: 'pnew', id, w: 1.8 });
   return opts.filter(canApplyOpt);
@@ -5825,9 +6196,10 @@ function buildRelayOptions() {
 function progressionNumber(value) { return Number(value.toFixed(Math.abs(value) < .1 ? 3 : 1)); }
 function masteryBenefit(w) {
   const before = weaponStats(w), after = weaponStats({ ...w, mastery: (w.mastery || 0) + 1 });
-  const labels = [['rad', '爆炸范围'], ['c', '连锁'], ['size', '锯刃尺寸'], ['knock', '击退'], ['w', '束宽'], ['pierce', '穿透'], ['cd', '射击间隔'], ['dmg', '基础伤害']];
-  return labels.filter(([key]) => after[key] !== before[key] && Number.isFinite(after[key])).map(([key, label]) => `${label} ${progressionNumber(before[key] || 0)}→${progressionNumber(after[key])}${key === 'cd' ? '秒' : ''}`).join(' · ');
+  const labels = [['rad', '爆炸范围'], ['c', '连锁'], ['size', '锯刃尺寸'], ['knock', '击退'], ['w', '束宽'], ['pierce', '穿透'], ['trailSeconds', '索长'], ['cd', w.id === 'cord' ? '冷却' : '射击间隔'], ['dmg', '基础伤害']];
+  return labels.filter(([key]) => after[key] !== before[key] && Number.isFinite(after[key])).map(([key, label]) => `${label} ${progressionNumber(before[key] || 0)}→${progressionNumber(after[key])}${key === 'cd' || key === 'trailSeconds' ? '秒' : ''}`).join(' · ');
 }
+function passiveEvolveNames(id) { return Object.values(WDEF).filter(w => w.evoWith === id).map(w => w.name).join('、'); }
 function optInfo(o) {
   if (!o || !G) return null;
   const p = G.player;
@@ -5836,8 +6208,8 @@ function optInfo(o) {
     case 'wup': { const d = WDEF[o.id], w = p.weapons.find(x => x.id === o.id); return { icon: d.icon, name: d.name, tag: `<em>Lv ${w.lv} → ${w.lv + 1}</em>`, desc: d.ups[w.lv], hint: w.lv + 1 === 5 ? (passLv(d.evoWith) >= 3 ? '满级后即可进化！' : `进化还需：${PDEF[d.evoWith].name} Lv3`) : '' }; }
     case 'evo': { const d = WDEF[o.id]; return { icon: d.icon, name: d.evoName, tag: '<em>进化</em>', desc: d.evoDesc, hint: `${d.name} 满级 + ${PDEF[d.evoWith].name} Lv3`, evo: true }; }
     case 'mastery': { const d = WDEF[o.id], w = p.weapons.find(x => x.id === o.id), rank = w.mastery || 0; return { icon: d.icon, name: d.evoName, tag: `<em>专精 ${rank} → ${rank + 1}</em>`, desc: masteryBenefit(w), hint: `进化后继续强化 · 专精最多 ${MASTERY_MAX} 阶`, evo: true }; }
-    case 'pnew': { const d = PDEF[o.id], w = Object.values(WDEF).find(x => x.evoWith === o.id); return { icon: d.icon, name: d.name, tag: '<span class="new">新芯片</span>', desc: d.desc, hint: `Lv3 起可进化：${w.name}`, pas: true }; }
-    case 'pup': { const d = PDEF[o.id], s = p.passives.find(x => x.id === o.id), w = Object.values(WDEF).find(x => x.evoWith === o.id); return { icon: d.icon, name: d.name, tag: `<em>Lv ${s.lv} → ${s.lv + 1}</em>`, desc: d.desc, hint: s.lv + 1 === 3 ? `达到 Lv3：${w.name} 满级后可进化` : '', pas: true }; }
+    case 'pnew': { const d = PDEF[o.id]; return { icon: d.icon, name: d.name, tag: '<span class="new">新芯片</span>', desc: d.desc, hint: `Lv3 起可进化：${passiveEvolveNames(o.id)}`, pas: true }; }
+    case 'pup': { const d = PDEF[o.id], s = p.passives.find(x => x.id === o.id); return { icon: d.icon, name: d.name, tag: `<em>Lv ${s.lv} → ${s.lv + 1}</em>`, desc: d.desc, hint: s.lv + 1 === 3 ? `达到 Lv3：${passiveEvolveNames(o.id)} 满级后可进化` : '', pas: true }; }
     case 'wswap': { const d = WDEF[o.id], old = p.weapons.find(w => w.id === o.replaceId), oldDef = WDEF[old.id]; return { icon: d.icon, name: d.name, tag: '<span class="new">更换武器</span>', desc: `${old.evo ? oldDef.evoName : oldDef.name} → ${d.name}，保留 ${old.lv} 级`, hint: `占用原槽位，原进化和专精不继承；进化需${PDEF[d.evoWith].name}三级` }; }
     case 'pswap': { const d = PDEF[o.id], old = p.passives.find(s => s.id === o.replaceId); return { icon: d.icon, name: d.name, tag: '<span class="new">更换芯片</span>', desc: `${PDEF[old.id].name} → ${d.name}，保留 ${old.lv} 级 · ${d.desc}`, hint: '移除原芯片属性，保持生命比例；已完成的武器进化保留', pas: true }; }
     case 'training': {
@@ -6280,9 +6652,10 @@ function drawHUD() {
   ctx.fillStyle = hpk < .3 ? '#ff5061' : '#f5a665'; ctx.fillRect(left, top + 26, bw * hpk, 7);
   ctx.font = '600 13px Teko,"Arial Narrow",sans-serif'; ctx.fillStyle = '#eef2f6';
   ctx.fillText(`${Math.ceil(Math.max(0, p.hp))} / ${Math.round(p.maxHp)}`, left, top + 36);
-  const timeX = W * .56;
-  ctx.textAlign = 'center'; ctx.font = '600 32px Teko,"Arial Narrow",sans-serif'; ctx.fillStyle = '#f3f7fb'; ctx.fillText(fmtTime(G.t), timeX, top + 4);
+  const timeX = W * .56, frozen = timeStopActive();
+  ctx.textAlign = 'center'; ctx.font = '600 32px Teko,"Arial Narrow",sans-serif'; ctx.fillStyle = frozen ? TIME_STOP_VISUAL.hudColor : '#f3f7fb'; ctx.fillText(fmtTime(G.t), timeX, top + 4);
   ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillStyle = '#b6e3e9'; ctx.fillText(`等级 ${p.level}`, timeX, top + 37);
+  if (frozen) hudTimeStop(timeX, top);
   ctx.fillStyle = '#253741'; ctx.fillRect(left, top + 54, W - 2 * left, 2);
   ctx.fillStyle = '#75dce8'; ctx.fillRect(left, top + 54, (W - 2 * left) * clamp(p.xp / p.xpNext, 0, 1), 2);
   const statusY = top + 61, boss = G.boss && !G.boss.dead ? G.boss : null;
@@ -6322,6 +6695,14 @@ function drawHUD() {
   // 选卡、补给箱、行动奖励等覆盖层打开时提示被冻结，不能透过遮罩叠在按钮附近。
   if (G.toast && G.state === 'playing') hudToast(G.toast);
   ctx.textBaseline = 'alphabetic';
+}
+// 时停：计时停住变青，计时和暂停键之间写「时停」、剩余秒数，下面一条细进度条
+function hudTimeStop(timeX, top) {
+  const k = clamp(G.timeStopT / TIME_STOP.duration, 0, 1), x = (timeX + 30 + W - 56) / 2, color = TIME_STOP_VISUAL.hudColor;
+  ctx.textAlign = 'center'; ctx.fillStyle = color; ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillText('时停', x, top + 8);
+  ctx.font = '600 22px Teko,"Arial Narrow",sans-serif'; ctx.fillText(Math.max(0, G.timeStopT).toFixed(1), x, top + 24);
+  ctx.fillStyle = '#23414b'; ctx.fillRect(x - 20, top + 47, 40, 3);
+  ctx.fillStyle = color; ctx.fillRect(x - 20, top + 47, 40 * k, 3);
 }
 // 首领血条下的部位状态：每个部位一格，写明在哪一面，带累计进度；打碎后显示「已破坏」，破绽期间高亮最该打的那一处。
 // 窄屏放不下「哪一面·部位名」和最短 12 像素的进度条时只写部位名
@@ -6758,6 +7139,84 @@ function drawBattlefieldPropMarkers(c, props, player, options = {}) {
   c.restore();
 }
 
+// ---- src/render/cord.js ----
+// 导爆索绘制：渐隐路径、闭环瞬闪与限时火海，不消耗战斗随机数
+
+const CORD_PAINT = Object.freeze({
+  normal: '#ffc16d', evolved: '#ffe4a3', rim: '#ff8f36', dark: '#30180e',
+  fire: '#f36724', flash: '#ffe3a7', ashes: '#86664c',
+});
+function cordPaintPolygon(c, points) {
+  c.beginPath(); c.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i++) c.lineTo(points[i].x, points[i].y);
+  c.closePath();
+}
+function cordPaintSegment(c, a, b) { c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+function cordPaintVisible(a, b, visible, padding = 12) {
+  return visible((a.x + b.x) / 2, (a.y + b.y) / 2, Math.hypot(b.x - a.x, b.y - a.y) / 2 + padding);
+}
+function cordPaintSparks(c, effect, detail, zoom) {
+  if (!detail || !(effect.flashT > 0)) return;
+  const phase = 1 - effect.flashT / CORD_RULES.flashDuration, stride = Math.max(1, Math.ceil(effect.points.length / (detail > 1 ? 18 : 9)));
+  c.strokeStyle = CORD_PAINT.flash; c.lineWidth = 1.2 / zoom; c.globalAlpha = (1 - phase) * .8; c.beginPath();
+  for (let i = 0; i < effect.points.length; i += stride) {
+    const p = effect.points[i], next = effect.points[(i + 1) % effect.points.length];
+    const angle = Math.atan2(next.y - p.y, next.x - p.x) + Math.PI / 2 + Math.sin(i * 2.7 + effect.id) * .6;
+    const distance = 5 + phase * 17, x = p.x + Math.cos(angle) * distance, y = p.y + Math.sin(angle) * distance;
+    c.moveTo(x, y); c.lineTo(x + Math.cos(angle) * 5, y + Math.sin(angle) * 5);
+  }
+  c.stroke();
+}
+function cordPaintFire(c, effect, detail, glow, zoom) {
+  const left = Math.max(0, Math.min(1, effect.life / effect.max)), age = effect.max - effect.life;
+  cordPaintPolygon(c, effect.points); c.globalAlpha = .09 + left * .04; c.fillStyle = CORD_PAINT.fire; c.fill('evenodd');
+  c.globalAlpha = .2 + left * .1; c.strokeStyle = CORD_PAINT.rim; c.lineWidth = CORD_RULES.edgeWidth * 2; c.stroke();
+  c.globalAlpha = .45 + left * .3; c.lineWidth = 2 / zoom; c.strokeStyle = CORD_PAINT.normal; c.stroke();
+  if (detail > 0 && glow > 0) {
+    const stride = Math.max(1, Math.ceil(effect.points.length / (detail > 1 ? 24 : 12)));
+    c.strokeStyle = CORD_PAINT.evolved; c.lineWidth = 1.8 / zoom; c.globalAlpha = .45 * left; c.beginPath();
+    for (let i = 0; i < effect.points.length; i += stride) {
+      const p = effect.points[i], height = 4 + 4 * (1 + Math.sin(age * 14 + i * 2.3 + effect.id));
+      c.moveTo(p.x, p.y); c.lineTo(p.x + Math.sin(age * 9 + i) * 3, p.y - height);
+    }
+    c.stroke();
+  }
+}
+function drawCordEffects(c, game, options = {}) {
+  if (!game?.player) return;
+  const visible = options.visible || (() => true), zoom = options.zoom || 1, settings = options.settings || {};
+  const detail = options.budget?.detail ?? 2, glow = options.budget?.glowScale ?? 1;
+  c.save(); c.globalCompositeOperation = 'source-over'; c.lineCap = 'round'; c.lineJoin = 'round';
+  for (const effect of game.cordEffects || []) {
+    if (!(effect.life > 0) || effect.points.length < 3) continue;
+    const b = effect.bounds;
+    if (b && !visible((b.minX + b.maxX) / 2, (b.minY + b.maxY) / 2, Math.hypot(b.maxX - b.minX, b.maxY - b.minY) / 2 + 20)) continue;
+    if (effect.fire) cordPaintFire(c, effect, detail, glow, zoom);
+    else {
+      cordPaintPolygon(c, effect.points); c.strokeStyle = CORD_PAINT.ashes;
+      c.globalAlpha = .5 * effect.life / effect.max; c.lineWidth = 2 / zoom; c.stroke();
+    }
+    if (settings.flashes !== false && effect.flashT > 0) {
+      cordPaintPolygon(c, effect.points); c.globalAlpha = .2 * effect.flashT / CORD_RULES.flashDuration; c.fillStyle = CORD_PAINT.flash; c.fill('evenodd');
+      cordPaintSparks(c, effect, detail, zoom);
+    }
+  }
+  for (const weapon of game.player.weapons || []) {
+    const st = weapon.cord;
+    if (weapon.id !== 'cord' || !st?.points?.length || weapon.cd > 0) continue;
+    const points = st.points, count = points.length + (st.head ? 1 : 0), color = weapon.evo ? CORD_PAINT.evolved : CORD_PAINT.normal;
+    for (let i = 1; i < count; i++) {
+      const a = points[i - 1], b = i < points.length ? points[i] : st.head;
+      if (!a || !b || Math.hypot(b.x - a.x, b.y - a.y) < .01 || !cordPaintVisible(a, b, visible)) continue;
+      const age = Math.max(0, st.clock - (a.t + b.t) / 2), alpha = Math.max(.1, Math.min(1, 1 - age / Math.max(.001, st.trailSeconds)));
+      c.strokeStyle = CORD_PAINT.dark; c.lineWidth = 4.5 / zoom; c.globalAlpha = alpha * .8; cordPaintSegment(c, a, b);
+      if (detail > 0 && glow > .2) { c.strokeStyle = CORD_PAINT.rim; c.lineWidth = 7 / zoom; c.globalAlpha = alpha * .13 * glow; cordPaintSegment(c, a, b); }
+      c.strokeStyle = color; c.lineWidth = (weapon.evo ? 2.8 : 2) / zoom; c.globalAlpha = .2 + alpha * .8; cordPaintSegment(c, a, b);
+    }
+  }
+  c.restore();
+}
+
 // ---- src/render/mech-traits.js ----
 // 新机甲能力状态：单次护盾、磁轨装填与电磁超载的近身视觉反馈
 
@@ -6791,6 +7250,60 @@ function drawMechTraitEffects(c, p, mech, zoom, settings = { flashes: true }) {
     c.fillStyle = color; c.fillText(label, 0, 0);
   }
   c.restore();
+}
+
+// ---- src/data/weapon-mounts.js ----
+// 武器挂件：按机甲和当前武器算出每个挂件的贴图、挂点和大小（纯函数，绘制和测试共用）
+
+// 有挂件贴图的武器（含导爆索 cord），每种都有普通、进化两版
+const MOUNT_WEAPONS = ['gatling', 'missile', 'tesla', 'saw', 'rail', 'drone', 'cord'];
+// 挂件边长，单位和挂点坐标一样是上身贴图边长；贴图按长边补成正方形，偏瘦的加特林、电弧给大一点
+const MOUNT_SIZE = { gatling: .26, missile: .24, tesla: .25, saw: .25, rail: .24, drone: .25, cord: .25 };
+const mountImage = (id, evo) => `mount_${id}${evo ? '_evo' : ''}`;
+const mechStartWeapon = mechId => MECHS.find(m => m.id === mechId)?.weapon;
+
+// 武器槽位就是拿到的顺序，起始武器在 0 号槽，本来就画在机身上，不挂。
+// 1、2、3 号槽依次挂 0、1、2 号挂点；换装占用原槽位，新武器挂在被替掉的武器原来的挂点上；
+// 起始武器被换掉后，0 号槽的新武器挂 3 号挂点。
+function weaponMounts(mechId, weapons) {
+  const points = RIG_CFG[mechId]?.mount, start = mechStartWeapon(mechId), out = [];
+  if (!points || !weapons) return out;
+  for (let i = 0; i < weapons.length && i < points.length; i++) {
+    const w = weapons[i];
+    if (!w || w.id === start || !MOUNT_SIZE[w.id]) continue;
+    const [x, y] = points[(i + points.length - 1) % points.length];
+    out.push({ id: w.id, img: mountImage(w.id, w.evo), x, y, s: MOUNT_SIZE[w.id], slot: i });
+  }
+  return out;
+}
+// 起始武器进化后，机身上的炮口火光换成金色
+function startWeaponEvolved(mechId, weapons) {
+  const start = mechStartWeapon(mechId);
+  return !!weapons?.some(w => w && w.id === start && w.evo);
+}
+
+// ---- src/render/weapon-mounts.js ----
+// 武器挂件绘制：武器或进化状态变了才重算挂点，贴图没到的挂件先不画
+
+// 上次算挂件时的机甲和每把武器的 id、进化状态；都没变就复用上次的结果，每帧不新建对象
+const mountMemo = { mech: '', ids: [], evos: [], list: [], gold: false };
+function playerMounts(mechId, weapons) {
+  const m = mountMemo;
+  let same = m.mech === mechId && m.ids.length === weapons.length;
+  for (let i = 0; same && i < weapons.length; i++) same = m.ids[i] === weapons[i].id && m.evos[i] === !!weapons[i].evo;
+  if (!same) {
+    m.mech = mechId; m.ids = weapons.map(w => w.id); m.evos = weapons.map(w => !!w.evo);
+    m.list = weaponMounts(mechId, weapons); m.gold = startWeaponEvolved(mechId, weapons);
+  }
+  return m;
+}
+// 在上身坐标系里画（调用方已平移、旋转到上身中心），size 是上身当前边长
+function drawWeaponMounts(c, mounts, size) {
+  for (let i = 0; i < mounts.length; i++) {
+    const mt = mounts[i], im = IMG[mt.img]; if (!im) continue;
+    const s = mt.s * size;
+    c.drawImage(im, mt.x * size - s / 2, mt.y * size - s / 2, s, s);
+  }
 }
 
 // ---- src/render/elites.js ----
@@ -7282,6 +7795,61 @@ function drawBossModuleFx(c, p) {
   }
 }
 
+// ---- src/render/time-stop.js ----
+// 时停画面：世界去色变暗、开始时灰色从机甲向外扩散、机甲脚下的倒计时环，恢复时悬停过的子弹拖出光尾
+
+const TIME_STOP_RIPPLE_RGB = 'rgb(' + TIME_STOP_VISUAL.rippleColor + ')', TIME_STOP_RING_RGB = 'rgb(' + TIME_STOP_VISUAL.ringColor + ')';
+
+// 时停中敌弹、首领和危险区冲击波的填色；不在时停中返回 null，照原色画
+function timeStopFrozenFill() { return timeStopActive() ? TIME_STOP_VISUAL.bulletFill : null; }
+
+// 在画锯刃、僚机、机甲之前调用：去色层盖住此前画好的地面、物件、拾取物和敌人，之后画的机甲一侧保留颜色。
+// x0..y1 是这一帧可见的世界范围；省电档（detail 为 0）不做 saturation 合成，只压一层暗色
+function drawTimeStopWorld(c, p, x0, y0, x1, y1, ringR, detail, flashes) {
+  if (!timeStopActive()) return false;
+  const v = TIME_STOP_VISUAL, at = G.timeStopAt || p, w = x1 - x0, h = y1 - y0;
+  const k = Math.min(1, Math.max(0, (TIME_STOP.duration - G.timeStopT) / v.rippleTime));
+  // 开始的一小段时间里灰色从起点扩散（先快后慢），盖满可见范围后不再裁剪
+  const far = Math.hypot(Math.max(at.x - x0, x1 - at.x), Math.max(at.y - y0, y1 - at.y)), r = far * (1 - (1 - k) ** 3);
+  c.save();
+  if (k < 1) { c.beginPath(); c.arc(at.x, at.y, r, 0, TAU); c.clip(); }
+  if (detail > 0) {
+    c.globalCompositeOperation = 'saturation'; c.globalAlpha = v.gray; c.fillStyle = '#808080'; c.fillRect(x0, y0, w, h);
+    c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.fillStyle = v.dim;
+  } else c.fillStyle = v.lowDim;
+  c.fillRect(x0, y0, w, h);
+  c.restore();
+  c.save();
+  if (k < 1) {
+    c.globalAlpha = (1 - k) * (flashes ? .8 : .3); c.strokeStyle = TIME_STOP_RIPPLE_RGB; c.lineWidth = 2 + 6 * (1 - k);
+    c.beginPath(); c.arc(at.x, at.y, r, 0, TAU); c.stroke();
+  }
+  // 倒计时环：淡淡的底圈加剩余的一段，从正上方开始顺时针缩短
+  const left = Math.max(0, Math.min(1, G.timeStopT / TIME_STOP.duration));
+  c.strokeStyle = TIME_STOP_RING_RGB; c.lineWidth = v.ringWidth;
+  c.globalAlpha = .25; c.beginPath(); c.arc(p.x, p.y, ringR, 0, TAU); c.stroke();
+  c.globalAlpha = .9; c.beginPath(); c.arc(p.x, p.y, ringR, -Math.PI / 2, -Math.PI / 2 + TAU * left); c.stroke();
+  c.restore();
+  return true;
+}
+
+// 时间恢复后的一小段时间：悬停过的玩家子弹、导弹拖一段光尾射出，机甲处扩出一圈冲击环
+function drawTimeStopBursts(c, p, glowScale, flashes) {
+  const fx = G.timeStopFxT;
+  if (!(fx > 0)) return false;
+  const v = TIME_STOP_VISUAL, k = Math.min(1, fx / v.burstTime), trail = v.burstTrail;
+  c.save(); c.globalCompositeOperation = 'lighter'; c.lineCap = 'round';
+  c.globalAlpha = k * (.35 + .45 * glowScale); c.strokeStyle = TIME_STOP_RIPPLE_RGB; c.lineWidth = 2.5;
+  c.beginPath();
+  for (const b of G.pbullets) if (b.tsBurst && !b.dead) { c.moveTo(b.x - (b.vx || 0) * trail, b.y - (b.vy || 0) * trail); c.lineTo(b.x, b.y); }
+  for (const m of G.missiles) if (m.tsBurst) { const d = (m.spd || 0) * trail; c.moveTo(m.x - Math.cos(m.ang) * d, m.y - Math.sin(m.ang) * d); c.lineTo(m.x, m.y); }
+  c.stroke();
+  c.globalAlpha = k * (flashes ? .5 : .2); c.strokeStyle = '#ffffff'; c.lineWidth = 2 + 5 * k;
+  c.beginPath(); c.arc(p.x, p.y, 40 + (1 - k) * 320, 0, TAU); c.stroke();
+  c.restore();
+  return true;
+}
+
 // ---- src/render/world.js ----
 // 世界绘制：地面、敌人、机甲、子弹与特效，最后叠加屏幕空间的 HUD
 
@@ -7310,7 +7878,7 @@ function drawSprite(k, x, y, size, ang, flashA = 0, alpha = 1, tint, sx = 1, sy 
   ctx.rotate(-ang - PI / 2); ctx.translate(-x, -y);
 }
 // 双层机甲：腿按移动方向迈步（左右半张交替前后、抬起的腿略放大），上身按瞄准方向转，带呼吸、晃动、后坐
-// o: { alpha, flash, sil(只画白剪影，冲刺残影用), recoil, mf(炮口火光), thrust(0~1+) }
+// o: { alpha, flash, sil(只画白剪影，冲刺残影用), recoil, mf(炮口火光), gold(起始武器已进化，火光金色), mounts(武器挂件), thrust(0~1+) }
 function drawMech(R, x, y, legA, ang, ph, amp, o) {
   const ls = R.ls, ts = R.ts, sw = Math.sin(ph) * R.stride * amp, cs = Math.cos(ph), sil = o.sil, al = o.alpha ?? 1, fa = o.flash || 0;
   ctx.globalAlpha = al;
@@ -7342,13 +7910,14 @@ function drawMech(R, x, y, legA, ang, ph, amp, o) {
   }
   ctx.drawImage(sil ? R.torsoG : R.torso, -tw / 2, -tw / 2, tw, tw);
   if (fa > 0 && !sil) { ctx.globalAlpha = Math.min(1, fa) * al; ctx.drawImage(R.torsoF, -tw / 2, -tw / 2, tw, tw); }
+  if (o.mounts && !sil) { ctx.globalAlpha = al; drawWeaponMounts(ctx, o.mounts, tw); } // 挂件跟着上身转；受击白闪只闪机身
   if (o.mf && !sil && o.flashes !== false) { // 炮口火光：沿炮管方向拉长的光团
     ctx.globalCompositeOperation = 'lighter';
     for (let i = 0; i < R.gun.length; i++) {
       const f = o.mf[i]; if (!(f > 0)) continue;
       const [mx, my] = R.gun[i], a2 = Math.min(1, f / .06), fl = 26 + Math.random() * 12;
-      ctx.globalAlpha = a2; ctx.drawImage(gl('255,200,110'), mx * ts - 10, my * ts - fl + 4, 20, fl);
-      ctx.drawImage(gl('255,255,235'), mx * ts - 6, my * ts - 8, 12, 12);
+      ctx.globalAlpha = a2; ctx.drawImage(gl(o.gold ? '255,186,36' : '255,200,110'), mx * ts - 10, my * ts - fl + 4, 20, fl);
+      ctx.drawImage(gl(o.gold ? '255,236,150' : '255,255,235'), mx * ts - 6, my * ts - 8, 12, 12);
     }
     ctx.globalCompositeOperation = 'source-over';
   }
@@ -7385,6 +7954,7 @@ function render(rdt) {
   }
   ctx.globalAlpha = 1;
   // 首领部件：毒液喷溅、落地残骸、毒池贴在地面上
+  if (G.cordEffects?.length || p.weapons.some(w => w.id === 'cord' && w.cord)) drawCordEffects(ctx, G, { visible: vis, zoom: ZOOM, settings, budget });
   drawBossPartGround(ctx, vis);
   if (G.props?.length) drawBattlefieldProps(ctx, G.props, { visible: vis, time: G.t, detail: budget.detail });
   let relayLabelVisible = true;
@@ -7456,6 +8026,8 @@ function render(rdt) {
   }
   drawEliteEffects(ctx, G.enemies, vis, ZOOM, G.rt);
   drawBossPartAir(ctx, vis, budget.detail);
+  // 时停：去色层盖住到这里为止画的世界，之后画的锯刃、僚机、机甲和玩家子弹保留颜色
+  const tsRig = RIG[G.mech.id]; drawTimeStopWorld(ctx, p, x0, y0, x1, y1, (tsRig ? tsRig.ts : 66) * .62, budget.detail, settings.flashes);
   // 金属武器保留真实旋转与位置，阴影和切向残迹只提供运动方向。
   const drawnWeapons = p.hp > 0 && p.overT > 0 && p.supportWeapon ? [...p.weapons, p.supportWeapon] : p.weapons;
   for (const w of drawnWeapons) {
@@ -7501,7 +8073,8 @@ function render(rdt) {
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     const blink = settings.flashes && p.invuln > 0 && p.dashT <= 0 && G.slowT <= 0 && (G.rt * 18 | 0) % 2 === 0;
     const fl = settings.flashes && p.hitT > 0 ? p.hitT / .15 * .45 : 0;
-    if (R) drawMech(R, p.x, p.y, p.legA, p.angle, p.ph, p.amp, { alpha: blink ? .45 : 1, flash: fl, recoil: p.recoil, mf: p.mf, thrust: p.dashT > 0 ? 1.6 : p.amp, detail: budget.detail, flashes: settings.flashes });
+    const mounts = playerMounts(m.id, p.weapons);
+    if (R) drawMech(R, p.x, p.y, p.legA, p.angle, p.ph, p.amp, { alpha: blink ? .45 : 1, flash: fl, recoil: p.recoil, mf: p.mf, gold: mounts.gold, mounts: mounts.list, thrust: p.dashT > 0 ? 1.6 : p.amp, detail: budget.detail, flashes: settings.flashes });
     else drawSprite(m.img, p.x, p.y, PS, p.angle, fl, blink ? .45 : 1);
   }
   if (!G.won && G.endT <= 0) drawMechTraitEffects(ctx, p, m, ZOOM, settings);
@@ -7523,6 +8096,7 @@ function render(rdt) {
     ctx.globalAlpha = 1; ctx.fillStyle = '#ffe0a0';
     for (const mi of G.missiles) { ctx.beginPath(); ctx.arc(mi.x, mi.y, 2.5, 0, TAU); ctx.fill(); }
   }
+  drawTimeStopBursts(ctx, p, budget.glowScale, settings.flashes);
   // 光束和电弧：透明度用 globalAlpha，颜色串固定
   if (G.beams.length) ctx.lineCap = 'round';
   for (const b of G.beams) {
@@ -7541,7 +8115,9 @@ function render(rdt) {
   for (const q of G.parts) { if (q.k !== 0 || (q.kind && q.kind !== 'glow') || !vis(q.x, q.y, q.size)) continue; const t = q.life / q.max, s = q.size * (.4 + t); ctx.globalAlpha = t * .65 * budget.glowScale; ctx.drawImage(gl(q.col), q.x - s, q.y - s, s * 2, s * 2); }
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   for (const q of G.parts) if (q.k === 0 && q.kind && q.kind !== 'glow' && vis(q.x, q.y, q.size * 3)) drawImpactFragment(ctx, q, ZOOM, settings.flashes);
-  for (const w of G.waves) { const t = 1 - w.r / w.maxR; ctx.globalAlpha = t * .38; ctx.strokeStyle = worldRgb(w.col); ctx.lineWidth = 2 + t * 4; ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, TAU); ctx.stroke(); }
+  // 时停中首领、危险区的冲击波和敌弹换成浅灰（敌弹描边、高光不变）
+  const frozenFill = timeStopFrozenFill();
+  for (const w of G.waves) { const t = 1 - w.r / w.maxR; ctx.globalAlpha = t * .38; ctx.strokeStyle = w.foe && frozenFill || worldRgb(w.col); ctx.lineWidth = 2 + t * 4; ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, TAU); ctx.stroke(); }
   ctx.globalAlpha = 1;
   if (p.hp > 0 && R && (p.overT > 0 || G.parts.length > 90 || G.beams.length + G.bolts.length > 12)) drawMechContour(R, p);
   // 已锁定/临近引爆的边界高于火力；只重描线，不增加危险填色。
@@ -7555,7 +8131,7 @@ function render(rdt) {
   for (const b of G.ebullets) {
     if (!vis(b.x, b.y, b.r + 4)) continue;
     if (!ebulletStyled) { ctx.strokeStyle = '#130f19'; ctx.lineWidth = 2.8 / ZOOM; ebulletStyled = true; }
-    ctx.fillStyle = worldRgb(b.col);
+    ctx.fillStyle = frozenFill || worldRgb(b.col);
     ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, TAU); ctx.stroke(); ctx.fill();
     ctx.fillStyle = '#ffedf3'; ctx.beginPath(); ctx.arc(b.x - b.r * .18, b.y - b.r * .2, Math.max(1, b.r * .32), 0, TAU); ctx.fill();
   }
