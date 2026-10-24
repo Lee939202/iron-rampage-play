@@ -779,11 +779,12 @@ function recolorPixels(data, mechId, skin) {
 
 // ---- src/data/sprites.js ----
 // 需要加载的贴图清单（文件位于 assets/sprites/）
-const SPRITES = ['mech_assault', 'mech_heavy', 'mech_phantom', 'mech_storm', 'mech_lancer', 'mech_engineer', 'enemy_crawler', 'enemy_brute', 'enemy_gunner', 'enemy_bomber', 'enemy_charger', 'boss_scorpion', 'boss_scorpion_body', 'boss_scorpion_legs', 'boss_scorpion_claws', 'boss_scorpion_tail', 'boss_scorpion_legs_broken', 'boss_scorpion_claws_broken', 'boss_scorpion_tail_broken', 'boss_queen', 'saw_blade', 'drone_unit'];
+const SPRITES = ['mech_assault', 'mech_heavy', 'mech_phantom', 'mech_storm', 'mech_lancer', 'mech_engineer', 'enemy_crawler', 'enemy_brute', 'enemy_gunner', 'enemy_bomber', 'enemy_charger', 'boss_scorpion', 'boss_scorpion_body', 'boss_scorpion_legs', 'boss_scorpion_claws', 'boss_scorpion_tail', 'boss_scorpion_legs_broken', 'boss_scorpion_claws_broken', 'boss_scorpion_tail_broken', 'boss_queen', 'boss_queen_body', 'boss_queen_crown', 'boss_queen_sacs', 'boss_queen_vents', 'boss_queen_crown_broken', 'boss_queen_sacs_broken', 'boss_queen_vents_broken', 'saw_blade', 'drone_unit'];
 const RIG_PARTS = ['rig_assault_torso', 'rig_assault_legs', 'rig_heavy_torso', 'rig_heavy_legs', 'rig_phantom_torso', 'rig_phantom_legs', 'rig_storm_torso', 'rig_storm_legs', 'rig_lancer_torso', 'rig_lancer_legs', 'rig_engineer_torso', 'rig_engineer_legs'];
-// 首领部件的模块图标、钳击臂和特效纹理：开局时随其余贴图一起加载，不做受击剪影
-const BOSS_PART_IMAGES = ['module_pincer_arm', 'module_hydraulic_legs', 'module_venom_stinger', 'pincer_arm', 'fx_smoke', 'fx_venom', 'fx_spark'];
-const SCENE_IMAGES = ['ground', 'ground_industrial', 'ground_polluted', 'ground_hive', 'keyart'];
+// 首领部件的模块图标、钳击臂、友军小虫和特效纹理：开局时随其余贴图一起加载，不做受击剪影
+const BOSS_PART_IMAGES = ['module_pincer_arm', 'module_hydraulic_legs', 'module_venom_stinger', 'module_parasite_nest', 'module_spore_ring', 'module_neural_link', 'pincer_arm', 'ally_parasite', 'fx_smoke', 'fx_venom', 'fx_spark'];
+// 战场物件沿用后台场景加载，受击亮边由物件绘制层处理
+const SCENE_IMAGES = ['ground', 'ground_industrial', 'ground_polluted', 'ground_hive', 'keyart', 'prop_oil_barrel', 'prop_ammo_crate', 'prop_toxic_pool', 'prop_cocoon', 'prop_cocoon_open'];
 // 进菜单前只等这些（菜单背景用 CSS 引用封面图，预载避免闪一下）；其余在菜单出现后后台加载
 const MENU_IMAGES = ['keyart'];
 // 旧地面只在某一幕地面加载失败时兜底
@@ -1083,7 +1084,8 @@ function silhouette(im, color, alpha = 1) { const c = offscreen(im.naturalWidth 
 // 每张图到达时单独预处理，不必等整批加载完
 function prepareImg(k) {
   if (SPRITES.includes(k)) FLASH[k] = silhouette(IMG[k], '#fff');
-  if (k === 'boss_queen') TINT.boss_queen = silhouette(IMG[k], '#ff1030', .38);
+  // 最终首领狂怒：整图和每一层分层贴图都备一份红色版
+  if (k === 'boss_queen' || k.startsWith('boss_queen_')) TINT[k] = silhouette(IMG[k], '#ff1030', .38);
   if (RIG_PARTS.includes(k)) for (const m of MECHS) if (k.startsWith(`rig_${m.id}_`)) buildRig(m);
 }
 const imgLoads = {};
@@ -1879,12 +1881,29 @@ const BOSS_PARTS = Object.freeze({
     Object.freeze({ id: 'legs', name: '步足', zone: 'side', threshold: .6, module: 'hydraulic' }),
     Object.freeze({ id: 'tail', name: '尾刺', zone: 'back', threshold: .3, module: 'stinger' }),
   ]),
+  // 深渊母巢和最终首领狂怒共用；狂怒的宝箱不给模块（打完就突围）。母巢没有甲壳，原始伤害约等于血量，
+  // 而且一直转身面对机甲：模拟里约 94% 打在正面，两侧约 5%，背后几乎为 0。侧面、背后只有破绽和瘫痪时它转不过身才打得到，
+  // 阈值按「集中火力打几秒」对齐毒蝎：神经核心交战中段自然打碎，卵囊约 4 秒、喷口约 2 秒集中火力（毒蝎步足、尾刺相当）。
+  queen: Object.freeze([
+    Object.freeze({ id: 'crown', name: '神经核心', zone: 'front', threshold: .6, module: 'neural' }),
+    Object.freeze({ id: 'sacs', name: '卵囊', zone: 'side', threshold: .2, module: 'parasite' }),
+    Object.freeze({ id: 'vents', name: '孢子喷口', zone: 'back', threshold: .1, module: 'spore' }),
+  ]),
 });
-// 打碎部位后削弱对应招式：毒钳→扇形毒弹轮数，步足→冲锋速度和每轮次数（至少一次），尾刺→环形毒弹少一波。
-const BOSS_PART_WEAKEN = Object.freeze({ fanRounds: 1, chargeSpeedMul: .75, chargeFewer: 1, ringFewer: 1 });
-// 打碎演出：吃痛硬直、断口冒烟秒数、碎块数和残骸停留/淡出秒数、毒液喷溅停留秒数
+const BOSS_ZONE_NAMES = Object.freeze({ front: '正面', side: '两侧', back: '背后' });
+// 打碎部位后削弱对应招式：毒钳→扇形毒弹轮数，步足→冲锋速度和每轮次数（至少一次），尾刺→环形毒弹少一波；
+// 卵囊→召唤数量（含狂怒的冲锋虫）×summonMul 取整、至少一只，喷口→螺旋弹发射频率 ×spiralRate，神经核心→打碎后瘫痪 stun 秒。
+const BOSS_PART_WEAKEN = Object.freeze({ fanRounds: 1, chargeSpeedMul: .75, chargeFewer: 1, ringFewer: 1, summonMul: .5, spiralRate: .6, stun: 3 });
+// 第一次遇到某种首领时，破绽的金色指引改成提示打哪个部位（存档 meta.hints[key]，旧存档按没见过处理）。
+// 毒蝎冲锋后停在机甲身边，背后的伤害近九成打在破绽期间，所以提示绕后；母巢破绽前站着放环形弹，机甲在它正前方，
+// 2 秒破绽里绕到侧面最现实（正面的神经核心不用提示也会打碎）。
+const BOSS_PART_HINTS = Object.freeze({
+  scorpion: Object.freeze({ key: 'scorpionTail', part: 'tail', text: '绕到背后打尾刺', toast: '破绽：绕到背后打尾刺，拆下的部位能换首领模块' }),
+  queen: Object.freeze({ key: 'queenSacs', part: 'sacs', text: '绕到侧面打卵囊', toast: '破绽：母巢转不过身，绕到侧面打卵囊，拆下的部位能换首领模块' }),
+});
+// 打碎演出：吃痛硬直、断口冒烟秒数、碎块数和残骸停留/淡出秒数、体液喷溅停留秒数、神经核心瘫痪时电火花间隔
 const BOSS_PART_BREAK = Object.freeze({
-  flinch: .45, smoke: 4, smokeEvery: .12, debris: 5, wreckLife: 4, wreckFade: 1, splashLife: 5, fxCap: 80,
+  flinch: .45, smoke: 4, smokeEvery: .12, debris: 5, wreckLife: 4, wreckFade: 1, splashLife: 5, fxCap: 80, arcEvery: .07,
   textSize: 24, textLife: 1.4, color: '255,226,140', flash: .35,
 });
 const BOSS_MODULE_SLOTS = 2;
@@ -1896,6 +1915,13 @@ const BOSS_MODULES = Object.freeze({
   hydraulic: Object.freeze({ name: '液压腿', part: 'legs', icon: 'module_hydraulic_legs', dashMul: 1.35, ramDmg: 60, ramRadius: 26, knock: 420 }),
   stinger: Object.freeze({ name: '毒刺炮', part: 'tail', icon: 'module_venom_stinger', interval: 2.5, range: 420, lane: 18, dmg: 50, speed: 560, life: .7, pierce: 6, radius: 7,
     poolLife: 3, poolRadius: 52, poolTick: .5, poolDmg: 14 }),
+  // 友军小虫：range 是离机甲多远的敌人会去咬，leash 是目标跑出这个距离就放开；小虫不会被打
+  parasite: Object.freeze({ name: '寄生虫巢', part: 'sacs', icon: 'module_parasite_nest', interval: 4, cap: 3, life: 10, speed: 280, range: 320, leash: 380,
+    biteEvery: .5, dmg: 10, orbit: 46, size: 30 }),
+  // 孢子环从放出的位置扩散，grow 秒扩到 radius；每个敌人只吃一次，首领不减速
+  spore: Object.freeze({ name: '孢子环', part: 'vents', icon: 'module_spore_ring', interval: 3.5, radius: 190, grow: .45, fade: .35, dmg: 45, slowMul: .6, slowT: 2 }),
+  // 超载期间每 refresh 秒给屏幕内（武器能锁定）的敌人续上标记，标记在 markLinger 秒后消失
+  neural: Object.freeze({ name: '神经链接', part: 'crown', icon: 'module_neural_link', markMul: 1.2, markLinger: 1, refresh: .25, pulse: .6 }),
 });
 // 模块说明按数值生成，改数值不用再改文案
 function bossModuleDesc(id) {
@@ -1903,6 +1929,9 @@ function bossModuleDesc(id) {
   if (!m) return '';
   if (id === 'pincer') return `每 ${m.interval} 秒夹击身边最近的敌人，伤害 ${m.dmg}，对精英和首领 ×${m.eliteMul}`;
   if (id === 'hydraulic') return `冲刺距离 +${Math.round((m.dashMul - 1) * 100)}%，冲刺时撞开路上的敌人，伤害 ${m.ramDmg}；冲刺冷却不变`;
+  if (id === 'parasite') return `每 ${m.interval} 秒孵出一只友军小虫（最多 ${m.cap} 只，各活 ${m.life} 秒），咬住敌人每 ${m.biteEvery} 秒造成 ${m.dmg} 伤害`;
+  if (id === 'spore') return `每 ${m.interval} 秒向四周扩散孢子环，伤害 ${m.dmg}，减速 ${Math.round((1 - m.slowMul) * 100)}%、持续 ${m.slowT} 秒；首领不减速`;
+  if (id === 'neural') return `超载期间给屏幕内的敌人打上标记，被标记的多受 ${Math.round((m.markMul - 1) * 100)}% 伤害`;
   return `每 ${m.interval} 秒朝敌人最密处射出穿透毒刺，伤害 ${m.dmg}，落点留下 ${m.poolLife} 秒毒池`;
 }
 // 毒蝎分层贴图的叠画参数（以首领贴图尺寸为 1，原点在首领中心，x 向右、y 向尾部）；叠画顺序：腿、尾、钳、身体，身体压住各关节。
@@ -1917,6 +1946,8 @@ const SCORPION_RIG = Object.freeze({
   }),
   order: Object.freeze(['legs', 'tail', 'claw', 'body']),
   tailSway: .1, tailRate: 3, clawOpen: .08, clawRate: 2.3, attackOpen: .18,
+  // 断口喷出的毒液颜色（粒子）、裂纹发亮的芯
+  ichor: '150,255,110', crackGlow: '255,120,170',
   // 裂纹起点：每个部位几条，随部位累计伤害逐段长出来
   cracks: Object.freeze({
     claw: Object.freeze([[-.3, -.36], [.3, -.36], [-.22, -.2], [.22, -.2]]),
@@ -1936,6 +1967,37 @@ const SCORPION_RIG = Object.freeze({
     tail: Object.freeze([[0, .26]]),
   }),
 });
+// 母巢分层贴图的叠画参数（坐标约定同 SCORPION_RIG）；叠画顺序：身体、喷口、卵囊、骨刺冠，三个部位叠在身体上。
+// sacPulse/sacSwell 是卵囊呼吸和召唤前鼓起的缩放幅度，sacRate 是呼吸相位（弧度/秒）；gem 是神经晶体的位置，gemGlow 是辉光直径。
+const QUEEN_RIG = Object.freeze({
+  layers: Object.freeze({
+    body: Object.freeze({ img: 'boss_queen_body', size: .86, x: 0, y: 0 }),
+    vents: Object.freeze({ img: 'boss_queen_vents', broken: 'boss_queen_vents_broken', size: .3, x: 0, y: .35, brokenSize: .25, brokenX: 0, brokenY: .34 }),
+    sacs: Object.freeze({ img: 'boss_queen_sacs', broken: 'boss_queen_sacs_broken', size: .71, x: 0, y: .05, brokenSize: .67, brokenX: 0, brokenY: .06 }),
+    crown: Object.freeze({ img: 'boss_queen_crown', broken: 'boss_queen_crown_broken', size: .26, x: 0, y: -.29, brokenSize: .24, brokenX: 0, brokenY: -.28 }),
+  }),
+  order: Object.freeze(['body', 'vents', 'sacs', 'crown']),
+  sacPulse: .03, sacSwell: .08, sacRate: 2.4, ventPulse: .05, gem: Object.freeze([0, -.31]), gemGlow: .13, gemRate: 3.2,
+  // 断口喷出的体液颜色（粒子）和体液贴图的染色、裂纹发亮的芯
+  ichor: '200,110,255', ichorTint: '150,60,255', crackGlow: '220,150,255',
+  cracks: Object.freeze({
+    crown: Object.freeze([[-.05, -.34], [.05, -.34], [0, -.25], [-.08, -.28]]),
+    sacs: Object.freeze([[-.27, 0], [.27, 0], [-.22, .12], [.22, .12]]),
+    vents: Object.freeze([[-.08, .32], [.08, .32], [0, .38], [-.04, .42]]),
+  }),
+  debris: Object.freeze({
+    crown: Object.freeze([[.12, .1, .26, .36], [.62, .1, .26, .36], [.38, .02, .24, .36], [.3, .5, .4, .32], [.18, .55, .22, .3]]),
+    sacs: Object.freeze([[.04, .25, .2, .28], [.76, .25, .2, .28], [.1, .5, .2, .26], [.7, .5, .2, .26], [.2, .35, .14, .2]]),
+    vents: Object.freeze([[.06, .35, .24, .4], [.7, .35, .24, .4], [.38, .4, .24, .45], [.15, .15, .3, .25], [.55, .15, .3, .25]]),
+  }),
+  // 断口位置，同时是喷口放孢子的出口
+  stumps: Object.freeze({
+    crown: Object.freeze([[0, -.31], [-.06, -.33], [.06, -.33]]),
+    sacs: Object.freeze([[-.25, .02], [.25, .02], [-.22, .12], [.22, .12]]),
+    vents: Object.freeze([[-.09, .43], [0, .45], [.09, .43]]),
+  }),
+});
+const BOSS_RIGS = Object.freeze({ scorpion: SCORPION_RIG, queen: QUEEN_RIG });
 
 // ---- src/game/report.js ----
 // 战斗复盘：记录有效伤害、归因及基于实际表现的一条建议
@@ -1966,6 +2028,7 @@ function reportSourceName(source) {
   if (WDEF[source]) return WDEF[source].name;
   if (source?.startsWith('mech:')) return '机体能力';
   if (source?.startsWith('module:')) return BOSS_MODULES[source.slice(7)]?.name || '首领模块';
+  if (source?.startsWith('prop:')) return { oil: '油桶连爆', ammo: '弹药箱殉爆', toxic: '毒沼侵蚀' }[source.slice(5)] || '战场物件';
   if (source?.startsWith('enemy:')) return reportCauseName(source) + '波及';
   return { overload: '超载冲击', perfect: '极限反弹', chain: '连锁爆炸', reboot: '紧急重启', unknown: '其他伤害' }[source] || '其他伤害';
 }
@@ -2396,9 +2459,10 @@ const BOSS_PRESENTATION = {
   weakColor: '255,219,128', weakPulseRate: 10, weakPulseAmount: .08, indicatorPulseAmount: .12,
   cameraDuration: .6, cameraMaxOffset: 36, cameraBossPull: .12, cameraVelocityLead: .12,
 };
-// 首领血条右侧的阶段文字；带甲壳的首领标「甲壳」，破绽期间提示甲壳上限放宽
+// 首领血条右侧的阶段文字；带甲壳的首领标「甲壳」，破绽期间提示甲壳上限放宽，神经核心被打碎后显示瘫痪倒计时
 function bossPhaseLabel(boss) {
   if (boss.entering) return '正在接近';
+  if (boss.stunT > 0 && !(boss.vulnerableT > 0)) return `瘫痪 ${boss.stunT.toFixed(1)}秒`;
   if (boss.vulnerableT > 0) return `弱点 ${boss.vulnerableT.toFixed(1)}秒 · ×${boss.weakMul || 1}${boss.guard ? ' · 甲壳放宽' : ''}`;
   return (boss.guard ? '甲壳 · ' : '') + (boss.hp < boss.maxHp * .5 ? '狂暴阶段' : '首领交战');
 }
@@ -2543,6 +2607,8 @@ function breakBossPart(e, q) {
   const cfg = BOSS_PART_BREAK, def = bossPartDef(e, q.id);
   q.broken = true; q.brokenAt = G.t; q.smokeT = cfg.smoke; q.smokeAcc = 0;
   if (e.kind === 'scorpion' && q.id === 'legs') e.chargeSpeedMul = BOSS_PART_WEAKEN.chargeSpeedMul;
+  // 神经核心：母巢瘫痪；破绽期间打碎的，等破绽结束再瘫（见 game/enemies.js）
+  if (e.kind === 'queen' && q.id === 'crown') { e.stunT = Math.max(e.stunT || 0, BOSS_PART_WEAKEN.stun); e.stunMax = BOSS_PART_WEAKEN.stun; }
   // 吃痛硬直：破绽期间本来就不动，只播演出
   if (!(e.vulnerableT > 0)) e.flinchT = Math.max(e.flinchT || 0, cfg.flinch);
   e.flinchMax = cfg.flinch; e.flash = G.settings?.flashes === false ? 0 : .08;
@@ -2550,11 +2616,12 @@ function breakBossPart(e, q) {
   feedback('partBreak', { x: e.x, y: e.y, angle });
   flash('255,255,255', cfg.flash); G.shake = Math.max(G.shake || 0, .5);
   floatText(e.x, e.y - e.size * .45, `部位破坏 · ${def?.name || ''}`, cfg.color, cfg.textSize, cfg.textLife);
-  if (e.kind === 'scorpion') spawnScorpionBreakFx(e, q.id);
+  if (BOSS_RIGS[e.kind]) spawnRigBreakFx(e, BOSS_RIGS[e.kind], q.id);
 }
-// 碎块拆成几块抛出、落地留残骸；断口喷出毒液落在地上
-function spawnScorpionBreakFx(e, id) {
-  const layer = SCORPION_RIG.layers[id], pieces = SCORPION_RIG.debris[id] || [], cfg = BOSS_PART_BREAK;
+// 碎块拆成几块抛出、落地留残骸；断口喷出体液（毒蝎绿、母巢紫）落在地上
+function spawnRigBreakFx(e, rig, id) {
+  const layer = rig.layers[id], pieces = rig.debris[id] || [], cfg = BOSS_PART_BREAK;
+  if (!layer) return;
   const a = (e.ang || 0) + PI / 2, layerSize = layer.size * e.size;
   for (const [sx, sy, sw, sh] of pieces.slice(0, cfg.debris)) {
     const lx = layer.x + (sx + sw / 2 - .5) * layer.size, ly = layer.y + (sy + sh / 2 - .5) * layer.size;
@@ -2562,26 +2629,45 @@ function spawnScorpionBreakFx(e, id) {
     pushPartFx({ kind: 'debris', img: layer.img, sx, sy, sw, sh, size: layerSize, x, y, z: 6, vx: Math.cos(out) * speed, vy: Math.sin(out) * speed, vz: rand(170, 260),
       rot: a, vr: rand(-7, 7), life: cfg.wreckLife + cfg.wreckFade, fade: cfg.wreckFade, landed: false, jag: [rand(.05, .25), rand(.05, .25), rand(.05, .25), rand(.05, .25)] });
   }
-  for (const [lx, ly] of SCORPION_RIG.stumps[id] || []) {
+  for (const [lx, ly] of rig.stumps[id] || []) {
     const [x, y] = bossLocalPoint(e, lx, ly);
-    pushPartFx({ kind: 'venom', ground: true, x: x + rand(-8, 8), y: y + rand(-8, 8), size: rand(46, 64), rot: rand(0, TAU), life: cfg.splashLife, max: cfg.splashLife });
-    for (let i = 0; i < 6; i++) { const d = rand(0, TAU), s = rand(80, 200); part(x, y, Math.cos(d) * s, Math.sin(d) * s, rand(.3, .55), rand(4, 7), '150,255,110'); }
+    pushPartFx({ kind: 'venom', ground: true, tint: rig.ichorTint || null, x: x + rand(-8, 8), y: y + rand(-8, 8), size: rand(46, 64), rot: rand(0, TAU), life: cfg.splashLife, max: cfg.splashLife });
+    for (let i = 0; i < 6; i++) { const d = rand(0, TAU), s = rand(80, 200); part(x, y, Math.cos(d) * s, Math.sin(d) * s, rand(.3, .55), rand(4, 7), rig.ichor); }
   }
 }
-// 断口冒烟、冒火花，碎块抛物线落地后停留再淡出；每帧在主更新里调用
+// 断口冒烟、冒火花，碎块抛物线落地后停留再淡出；神经核心打碎后瘫痪期间头上冒电火花。每帧在主更新里调用
 function updateBossPartFx(dt) {
   if (!G || !(dt > 0)) return;
-  const e = G.boss, cfg = BOSS_PART_BREAK;
-  if (e?.parts && !e.dead && e.kind === 'scorpion') {
+  const e = G.boss, cfg = BOSS_PART_BREAK, rig = BOSS_RIGS[e?.kind];
+  if (e?.parts && !e.dead && rig) {
     for (const q of e.parts) {
-      if (!q.broken || !(q.smokeT > 0)) continue;
+      if (!q.broken) continue;
+      const stumps = rig.stumps[q.id] || [];
+      if (q.id === 'crown' && e.stunT > 0) {
+        q.arcAcc = (q.arcAcc || 0) + dt;
+        while (q.arcAcc >= cfg.arcEvery) {
+          q.arcAcc -= cfg.arcEvery;
+          const [lx, ly] = stumps[Math.random() * stumps.length | 0] || [0, 0], [x, y] = bossLocalPoint(e, lx, ly), d = rand(0, TAU), len = rand(14, 30);
+          pushPartFx({ kind: 'arc', x, y, x2: x + Math.cos(d) * len, y2: y + Math.sin(d) * len, seed: Math.random() * 100, life: .12, max: .12 });
+        }
+      }
+      if (!(q.smokeT > 0)) continue;
       q.smokeT -= dt; q.smokeAcc += dt;
       while (q.smokeAcc >= cfg.smokeEvery) {
         q.smokeAcc -= cfg.smokeEvery;
-        const stumps = SCORPION_RIG.stumps[q.id] || [], [lx, ly] = stumps[Math.random() * stumps.length | 0] || [0, 0], [x, y] = bossLocalPoint(e, lx, ly);
+        const [lx, ly] = stumps[Math.random() * stumps.length | 0] || [0, 0], [x, y] = bossLocalPoint(e, lx, ly);
         const fade = Math.max(.25, q.smokeT / cfg.smoke);
         pushPartFx({ kind: 'smoke', x, y, vx: rand(-14, 14), vy: rand(-30, -12), size: rand(16, 26) * (.6 + fade * .4), rot: rand(0, TAU), vr: rand(-1, 1), life: 1.1, max: 1.1, alpha: .5 * fade });
         if (Math.random() < .45) pushPartFx({ kind: 'spark', x, y, vx: rand(-60, 60), vy: rand(-60, 60), size: rand(10, 18), rot: rand(0, TAU), vr: 0, life: .22, max: .22 });
+      }
+    }
+    // 母巢放螺旋弹时，完好的孢子喷口往后喷孢子；纯演出，用固定的伪随机，不动对局随机数
+    if (e.kind === 'queen' && e.st === 'spiral' && !(e.vulnerableT > 0) && !(e.stunT > 0) && !bossPartBroken(e, 'vents')) {
+      e.sporeAcc = (e.sporeAcc || 0) + dt;
+      while (e.sporeAcc >= .05) {
+        e.sporeAcc -= .05; const n = e.sporeN = (e.sporeN || 0) + 1, h = k => { const s = Math.sin(n * 91.7 + k * 47.3) * 43758.5453; return s - Math.floor(s); };
+        const vents = rig.stumps.vents, [lx, ly] = vents[n % vents.length], [x, y] = bossLocalPoint(e, lx, ly), d = (e.ang || 0) + PI + (h(1) - .5) * 1.1, s = 40 + h(2) * 60;
+        part(x, y, Math.cos(d) * s, Math.sin(d) * s, .35 + h(3) * .3, 3 + h(4) * 3, h(5) < .7 ? '210,130,255' : '255,120,200');
       }
     }
   }
@@ -2598,20 +2684,23 @@ function updateBossPartFx(dt) {
   }
   compact(list, f => f.life > 0);
 }
-// 第一次遇到毒蝎时，破绽的金色指引改成提示绕后打尾刺；返回要显示的文字，没有就返回 null
+// 第一次遇到某种首领时，破绽的金色指引改成提示打哪个部位；返回要显示的文字，没有就返回 null
 function bossPartWeakHint(e) {
-  if (!e?.parts || e.kind !== 'scorpion' || G.practice || bossPartBroken(e, 'tail')) return null;
+  const hint = BOSS_PART_HINTS[e?.kind];
+  if (!e?.parts || !hint || G.practice || bossPartBroken(e, hint.part)) return null;
   const hints = meta.hints && typeof meta.hints === 'object' ? meta.hints : (meta.hints = {});
-  if (hints.scorpionTail === true) return null;
-  hints.scorpionTail = true; saveMeta();
-  toast({ text: '破绽：绕到背后打尾刺，拆下的部位能换首领模块', t: 4.5, priority: 3 });
-  return '绕到背后打尾刺';
+  if (hints[hint.key] === true) return null;
+  hints[hint.key] = true; saveMeta();
+  toast({ text: hint.toast, t: 4.5, priority: 3 });
+  return hint.text;
 }
-// 首领死后的拆解战利品：本场打碎的部位
+// 首领死后的拆解战利品：本场打碎的部位。最终首领打完就突围，宝箱不给模块（第三期改成永久战利品）
 function bossSalvage(e) {
-  if (!e?.parts) return null;
+  if (!e?.parts || e.final) return null;
   return { kind: e.kind, parts: e.parts.filter(q => q.broken).map(q => q.id) };
 }
+// 神经链接的标记：被标记的敌人多受伤害（在 hitEnemy 里乘）
+const bossMarkMul = e => e.markUntil > G.t ? BOSS_MODULES.neural.markMul : 1;
 const bossModules = () => G?.player?.modules || [];
 const hasBossModule = id => bossModules().some(m => m.id === id);
 function canInstallBossModule(id) {
@@ -2857,6 +2946,365 @@ function nearestWeaponTargets(x, y, maxR, n) {
   return targets.slice(0, n).map(target => target[1]);
 }
 
+// ---- src/data/battlefield.js ----
+// 三幕地表的时间、材质与缓存混合规则，不改变战斗碰撞和生成规则
+const BATTLEFIELD_ACTS = [
+  { id: 'industrial', name: '工业废墟', image: 'ground_industrial', start: 0, base: '#171f26', wash: '#101a23', tint: '#50616a' },
+  { id: 'polluted', name: '污染区', image: 'ground_polluted', start: 150, base: '#1b2422', wash: '#14201c', tint: '#647257' },
+  { id: 'hive', name: '母巢边界', image: 'ground_hive', start: 300, base: '#282125', wash: '#21191f', tint: '#795352' },
+];
+const BATTLEFIELD_FADE_SECONDS = 20;
+function battlefieldMixAt(time = 0) {
+  const t = Number.isFinite(time) ? Math.max(0, time) : 0;
+  let index = 0;
+  for (let i = 1; i < BATTLEFIELD_ACTS.length; i++) if (t >= BATTLEFIELD_ACTS[i].start) index = i;
+  const act = BATTLEFIELD_ACTS[index];
+  const amount = index ? Math.min(1, (t - act.start) / BATTLEFIELD_FADE_SECONDS) : 1;
+  // 平滑变化每段只合成32次，暂停或同一阶段不重新处理纹理。
+  const blend = Math.round(amount * amount * (3 - 2 * amount) * 32) / 32;
+  return { from: index && blend < 1 ? BATTLEFIELD_ACTS[index - 1] : act, to: act, blend, index };
+}
+
+// ---- src/data/props.js ----
+// 三幕战场物件的密度、范围、伤害与时限；只在这里调整物件数值
+const PROP_RULES = {
+  globalCap: 8, visibleCap: 5, safeDistance: 110, minGap: 18,
+  edgePadding: 24, innerRing: .72, outerRing: .96, placementAttempts: 12,
+  recycleMargin: 280, maxStep: .25, spawnRetry: 2, hatchRetry: 2,
+  maxSpawnPerUpdate: 2, maxHatchesPerUpdate: 1, poisonInterval: .5, hatchedTtl: 4,
+  acts: {
+    industrial: { kinds: ['oil', 'ammo'], firstDelay: 4, interval: [14, 19], cap: 5, visibleCap: 4, pairChance: .28, pairDistance: [50, 68] },
+    polluted: { kinds: ['toxic'], firstDelay: 4, interval: [20, 25], cap: 2, visibleCap: 2, pairChance: 0 },
+    hive: { kinds: ['cocoon'], firstDelay: 5, interval: [27, 33], cap: 2, visibleCap: 2, pairChance: 0 },
+  },
+};
+const PROPS_DEF = {
+  oil: { name: '油桶', img: 'prop_oil_barrel', col: '255,153,65', r: 13, size: 44, hp: 12, ttl: 46, blastRadius: 84, damage: 24 },
+  ammo: { name: '弹药箱', img: 'prop_ammo_crate', col: '255,205,100', r: 15, size: 46, hp: 10, ttl: 44, blastRadius: 76, damage: 18 },
+  toxic: { name: '毒沼', img: 'prop_toxic_pool', col: '124,200,87', r: 46, size: 104, hp: 0, ttl: 22, slow: .74, damagePerSecond: 1.2 },
+  cocoon: { name: '虫茧', img: 'prop_cocoon', openImg: 'prop_cocoon_open', col: '190,139,202', r: 19, size: 58, hp: 22, ttl: 42, hatchTime: 14 },
+};
+
+// ---- src/game/spawn.js ----
+// 刷怪导演：普通刷怪、虫群包围、精英、首领登场、新手提示
+
+function spawnEnemy(type, x, y, o = {}) {
+  const d = ETYPES[type], t = G.t;
+  // 所有虫群、守卫和首领召唤都走这一入口；非首领时期留出一个首领位置。生命再乘当前敌群阶段的 hpMul（只有中期两段有）。
+  const cap = Math.floor(spawnCap(t)) - (G.boss ? 0 : 1);
+  if (G.enemies.length >= cap) return null;
+  const e = { id: G.eid++, type, d, img: d.img, x, y, r: d.r, size: d.size, hp: d.hp * enemyHpMul(t) * (enemyPhaseAt(t)?.hpMul || 1), speed: d.speed * rand(.9, 1.1) * enemySpeedMul(t), dmg: d.dmg, xp: d.xp, col: d.col, kx: 0, ky: 0, flash: 0, ang: Math.atan2(G.player.y - y, G.player.x - x), st: 'walk', stT: 0, cd: rand(1, 2.6), elite: false, sawT: 0, q: 0, wob: Math.random() * TAU, fuse: 0 };
+  if (o.elite) {
+    e.elite = true; e.xp *= 6;
+    if (!applyEliteAffix(e, o.affix)) { e.hp *= 9; e.r *= 1.45; e.size *= 1.45; e.dmg *= 1.4; e.speed *= .9; }
+  }
+  applyRunModifiers(e);
+  e.maxHp = e.hp; G.enemies.push(e); return e;
+}
+function ringPos(ang) {
+  const center = G.cam || G.player, dx = Math.cos(ang), dy = Math.sin(ang);
+  const rx = VW / 2 + SPAWN_VIEWPORT.edgeMargin, ry = VH / 2 + SPAWN_VIEWPORT.edgeMargin;
+  const distance = 1 / Math.max(Math.abs(dx) / rx, Math.abs(dy) / ry);
+  return [center.x + dx * distance, center.y + dy * distance];
+}
+function spawnAround(type, o) {
+  const p = G.player, mv = Math.hypot(p.vx, p.vy);
+  const ang = (mv > 30 && Math.random() < .5) ? Math.atan2(p.vy, p.vx) + rand(-.9, .9) : Math.random() * TAU;
+  const [x, y] = ringPos(ang); return spawnEnemy(type, x, y, o);
+}
+function pickType() {
+  const t = G.t, phase = enemyPhaseAt(t);
+  if (phase) return weighted(phase.weights).k;
+  const w = [{ k: 'crawler', w: 10 }];
+  if (t > 25) w.push({ k: 'bomber', w: t > 200 ? 3 : 2 });
+  if (t > 50) w.push({ k: 'gunner', w: t > 240 ? 3 : 2 });
+  if (t > 80) w.push({ k: 'brute', w: t > 300 ? 3 : 1.6 });
+  if (t > 105) w.push({ k: 'charger', w: t > 260 ? 2.6 : 1.5 });
+  return weighted(w).k;
+}
+function director(dt) {
+  const t = G.t, p = G.player, phase = enemyPhaseAt(t);
+  if (G.bossIdx < BOSS_TIMES.length && !G.warn && !G.boss && t >= BOSS_TIMES[G.bossIdx] - 3) {
+    const b = BOSSES[G.bossIdx]; G.warn = { t: 3, idx: G.bossIdx };
+    G.banner = { kind: 'warn', title: 'WARNING', sub: b.name + ' 正在接近', t: 3, max: 3 }; SFX.warn();
+  }
+  if (G.warn) { G.warn.t -= dt; if (G.warn.t <= 0 && spawnBoss(G.warn.idx)) { G.bossIdx++; G.warn = null; } }
+  if (G.swarmIdx < SWARM_TIMES.length && t >= SWARM_TIMES[G.swarmIdx]) {
+    G.swarmIdx++; const n = Math.min(64, 22 + Math.floor(t / 10));
+    for (let i = 0; i < n; i++) { const a = i / n * TAU, [x, y] = ringPos(a); spawnEnemy(t > 200 && i % 5 === 0 ? 'bomber' : 'crawler', x, y); }
+    G.banner = { kind: 'info', title: '虫群包围！', sub: '找准缺口冲刺突破', t: 2.2, max: 2.2, col: '255,80,90' };
+  }
+  if (t >= G.nextElite && !G.boss && !G.warn) {
+    const nextBoss = BOSS_TIMES[G.bossIdx] ?? Infinity;
+    const liveElites = G.enemies.filter(e => e.elite && !e.dead);
+    if ((phase && (liveElites.length >= phase.eliteCap || nextBoss - t < ELITE_SPAWN_RULES.bossGrace))) G.nextElite = t + ELITE_SPAWN_RULES.retry;
+    else {
+      let id = null;
+      if (phase) {
+        const index = G.eliteAffixIndex || 0;
+        for (let i = 0; i < ELITE_AFFIX_ORDER.length; i++) {
+          const candidate = ELITE_AFFIX_ORDER[(index + i) % ELITE_AFFIX_ORDER.length];
+          if (liveElites.filter(e => e.affix === candidate).length < ELITE_SPAWN_RULES.sameAffixCap) { id = candidate; break; }
+        }
+      }
+      const type = id ? ELITE_AFFIXES[id].type : pick(t > 100 ? ['brute', 'charger', 'gunner'] : ['brute', 'gunner']);
+      const elite = spawnAround(type, { elite: true, affix: id });
+      // 总量已满时短暂重试；成功后从当前时间排下一次，不补发首领战积压。
+      G.nextElite = t + (elite ? phase ? phase.eliteInterval : 35 : ELITE_SPAWN_RULES.retry);
+      if (elite) {
+        if (id) G.eliteAffixIndex = (ELITE_AFFIX_ORDER.indexOf(id) + 1) % ELITE_AFFIX_ORDER.length;
+        toast({ text: id ? `${ELITE_AFFIXES[id].name}精英出现 · 击败可得补给箱` : '精英出现！击败它掉落补给箱', priority: 3 });
+      }
+    }
+  }
+  const rate = spawnRate(t, !!(G.boss || G.warn)) * runMul('spawn'), cap = spawnCap(t);
+  G.spawnAcc += rate * dt;
+  while (G.spawnAcc >= 1) {
+    G.spawnAcc -= 1; if (G.enemies.length >= cap) continue;
+    const ty = pickType();
+    if (ty === 'crawler' && Math.random() < (phase ? phase.packChance : .25)) { const e0 = spawnAround('crawler'); if (e0) for (let i = 0; i < 2; i++) spawnEnemy('crawler', e0.x + rand(-30, 30), e0.y + rand(-30, 30)); }
+    else spawnAround(ty);
+  }
+  if (G.props) spawnProps(dt);
+}
+function spawnBoss(i) {
+  if (G.enemies.length >= Math.floor(spawnCap(G.t))) return false;
+  const b = BOSSES[i], p = G.player;
+  const e = { id: G.eid++, boss: true, kind: b.kind, final: !!b.final, name: b.name, img: b.img, x: p.x, y: p.y - VH / 2 - b.size * .6, r: b.r, size: b.size, hp: b.hp, maxHp: b.hp, speed: b.speed, dmg: 22, xp: 0, col: b.kind === 'scorpion' ? '255,40,80' : '190,90,255', kx: 0, ky: 0, flash: 0, ang: PI / 2, st: 'enter', stT: 0, seq: -1, sub: 0, n: 0, spA: 0, sumT: 6, q: 0, sawT: 0, entering: true, guard: b.guard ? { ...b.guard, baseHp: b.hp } : null };
+  applyRunModifiers(e); initBossParts(e, b.hp);
+  G.enemies.push(e); G.boss = e; MUS.intensity = 2;
+  G.banner = { kind: 'boss', title: b.name, sub: b.final ? '最终决战 · 击破它即可突围' : '击败首领获得补给箱', t: 2.4, max: 2.4, col: e.col };
+  return true;
+}
+
+// ---- src/game/props.js ----
+// 独立战场物件：顺路受击、连锁爆炸、步行毒沼与受预算约束的虫茧孵化
+
+function initProps() {
+  G.props = [];
+  G.propStats = { spawned: 0, destroyed: 0, explosions: 0, hatched: 0, expired: 0, damage: 0 };
+  G.propNextId = 1; G.propAct = propsActId(); G.propSpawnT = PROP_RULES.acts[G.propAct].firstDelay;
+  G.propPoisonT = 0; G.propAffixIndex = 0; G.propBlastQueue = []; G.propBlasting = false; G.propMovementWrapped = false;
+  // 不读取时钟和对局编号，不消费主随机序列；每日挑战沿用配置种子。
+  const propSeed = `battlefield-props:${G.mech?.id || 'assault'}:${G.tier || 0}:${G.daily?.relaySeed ?? 'normal'}`;
+  G.propRandom = mulberry32(dailyHash(propSeed));
+  G.propEffectRandom = mulberry32(dailyHash(propSeed + ':effects'));
+}
+function propsActId() {
+  for (let i = BATTLEFIELD_ACTS.length - 1; i >= 0; i--) if (G.t >= BATTLEFIELD_ACTS[i].start) return BATTLEFIELD_ACTS[i].id;
+  return BATTLEFIELD_ACTS[0].id;
+}
+function propsRunActive() {
+  return !!(G && G.state === 'playing' && !G.practice && G.player?.hp > 0 && !(G.endT > 0) && !G.won && !(G.victoryT > 0));
+}
+function propsCanSpawn() { return propsRunActive() && !G.boss && !G.warn; }
+function propsIsActive(prop) { return !prop.dead && !prop.inactive; }
+function propsScale() { return enemyHpMul(Math.max(0, G.t || 0)) * runMul('enemyHp'); }
+function propsRandomRange(min, max) { return min + G.propRandom() * (max - min); }
+// 只包住物件拥有的同步调用链；不接异步回调，也不跨帧占用全局随机入口。
+function withPropEffectRandom(callback) {
+  const previousRandom = Math.random;
+  try { Math.random = G.propEffectRandom; return callback(); }
+  finally { Math.random = previousRandom; }
+}
+function propsOnScreen(prop) {
+  const center = G.cam || G.player;
+  return Math.abs(prop.x - center.x) <= VW / 2 + prop.r && Math.abs(prop.y - center.y) <= VH / 2 + prop.r;
+}
+function propsWithinBudget(act) {
+  const alive = G.props.filter(propsIsActive);
+  return alive.length < PROP_RULES.globalCap && alive.filter(p => act.kinds.includes(p.kind)).length < act.cap
+    && alive.filter(propsOnScreen).length < Math.min(PROP_RULES.visibleCap, act.visibleCap);
+}
+function propsPositionSafe(kind, x, y) {
+  const cfg = PROPS_DEF[kind], safe = PROP_RULES.safeDistance + cfg.r;
+  if (d2(x, y, G.player.x, G.player.y) < safe * safe) return false;
+  return !G.props.some(p => propsIsActive(p) && d2(x, y, p.x, p.y) < (p.r + cfg.r + PROP_RULES.minGap) ** 2);
+}
+function propsPosition(kind, anchor = null) {
+  const center = G.cam || G.player, act = PROP_RULES.acts[G.propAct];
+  for (let i = 0; i < PROP_RULES.placementAttempts; i++) {
+    const angle = G.propRandom() * TAU, dx = Math.cos(angle), dy = Math.sin(angle);
+    let x, y;
+    if (anchor) {
+      const distance = propsRandomRange(...act.pairDistance);
+      x = anchor.x + dx * distance; y = anchor.y + dy * distance;
+    } else {
+      const rx = Math.max(1, VW / 2 + PROP_RULES.edgePadding), ry = Math.max(1, VH / 2 + PROP_RULES.edgePadding);
+      const distance = propsRandomRange(PROP_RULES.innerRing, PROP_RULES.outerRing) / Math.max(Math.abs(dx) / rx, Math.abs(dy) / ry);
+      x = center.x + dx * distance; y = center.y + dy * distance;
+    }
+    if (propsPositionSafe(kind, x, y)) return { x, y };
+  }
+  return null;
+}
+function propsCreate(kind, point) {
+  const cfg = PROPS_DEF[kind], hp = cfg.hp * propsScale();
+  const prop = { id: G.propNextId++, kind, x: point.x, y: point.y, r: cfg.r, size: cfg.size, img: cfg.img, col: cfg.col,
+    hp, maxHp: hp, age: 0, ttl: cfg.ttl, flash: 0, angle: G.propRandom() * TAU, seed: G.propRandom() * 1000,
+    state: kind === 'cocoon' ? 'growing' : 'active', inactive: false, dead: false,
+    hatchT: cfg.hatchTime || 0, hatchMax: cfg.hatchTime || 0, hatchRetryT: 0 };
+  G.props.push(prop); G.propStats.spawned++;
+  return prop;
+}
+function spawnProps(dt) {
+  if (!G?.props || !Number.isFinite(dt) || dt <= 0) return;
+  const actId = propsActId(), act = PROP_RULES.acts[actId];
+  if (G.propAct !== actId) { G.propAct = actId; G.propSpawnT = act.firstDelay; }
+  // 首领与收尾期间不积压刷新，快进或大步长每次也最多处理一次小组。
+  if (!propsCanSpawn()) { G.propSpawnT = Math.max(G.propSpawnT, act.firstDelay); return; }
+  G.propSpawnT -= Math.min(dt, PROP_RULES.maxStep);
+  if (G.propSpawnT > 0) return;
+  G.propSpawnT = PROP_RULES.spawnRetry;
+  if (!propsWithinBudget(act)) return;
+  const kind = act.kinds[Math.floor(G.propRandom() * act.kinds.length)];
+  const nextBoss = BOSS_TIMES[G.bossIdx] ?? Infinity;
+  if (kind === 'cocoon' && nextBoss - G.t <= PROPS_DEF.cocoon.hatchTime + ELITE_SPAWN_RULES.bossGrace) return;
+  const point = propsPosition(kind);
+  if (!point) return;
+  const first = propsCreate(kind, point);
+  G.propSpawnT = propsRandomRange(...act.interval);
+  if (PROP_RULES.maxSpawnPerUpdate > 1 && act.pairChance > 0 && G.propRandom() < act.pairChance && propsWithinBudget(act)) {
+    const secondKind = act.kinds[Math.floor(G.propRandom() * act.kinds.length)], secondPoint = propsPosition(secondKind, first);
+    if (secondPoint) propsCreate(secondKind, secondPoint);
+  }
+}
+function propsUpdateDamageStats() {
+  const damage = G.report?.damageByWeapon || {};
+  G.propStats.damage = (damage['prop:oil'] || 0) + (damage['prop:ammo'] || 0) + (damage['prop:toxic'] || 0);
+}
+function propsHatch(prop) {
+  if (!propsCanSpawn()) return false;
+  const phase = enemyPhaseAt(G.t), liveElites = G.enemies.filter(e => e.elite && !e.dead);
+  const nextBoss = BOSS_TIMES[G.bossIdx] ?? Infinity;
+  if (!phase || liveElites.length >= phase.eliteCap || nextBoss - G.t < ELITE_SPAWN_RULES.bossGrace) return false;
+  for (let i = 0; i < ELITE_AFFIX_ORDER.length; i++) {
+    const index = (G.propAffixIndex + i) % ELITE_AFFIX_ORDER.length, affix = ELITE_AFFIX_ORDER[index];
+    if (liveElites.filter(e => e.affix === affix).length >= ELITE_SPAWN_RULES.sameAffixCap) continue;
+    const enemy = withPropEffectRandom(() => spawnEnemy(ELITE_AFFIXES[affix].type, prop.x, prop.y, { elite: true, affix }));
+    if (!enemy) return false;
+    G.propAffixIndex = (index + 1) % ELITE_AFFIX_ORDER.length;
+    G.propStats.hatched++;
+    prop.state = 'hatched'; prop.inactive = true; prop.img = PROPS_DEF.cocoon.openImg;
+    prop.hp = 0; prop.age = 0; prop.ttl = PROP_RULES.hatchedTtl;
+    return true;
+  }
+  return false;
+}
+function propsToxicSlow(x, y) {
+  let slow = 1;
+  for (const prop of G.props) if (propsIsActive(prop) && prop.kind === 'toxic' && d2(x, y, prop.x, prop.y) <= prop.r * prop.r) slow = Math.min(slow, PROPS_DEF.toxic.slow);
+  return slow;
+}
+function withPropMovementSlows(callback) {
+  const state = G;
+  if (!state?.props || state.propMovementWrapped || !propsRunActive()) return callback();
+  const stats = state.stats, speed = stats.speed, changed = [];
+  state.propMovementWrapped = true;
+  try {
+    // 冲刺与冲锋有固定的预警距离，只改变使用常规 speed 的步行分支。
+    if (!(state.player.dashT > 0)) stats.speed *= propsToxicSlow(state.player.x, state.player.y);
+    for (const enemy of state.enemies) {
+      if (enemy.dead || enemy.entering || enemy.st === 'dash' || (enemy.boss && enemy.st === 'charge' && enemy.sub === 1)) continue;
+      const slow = propsToxicSlow(enemy.x, enemy.y);
+      if (slow < 1) { changed.push([enemy, enemy.speed]); enemy.speed *= slow; }
+    }
+    return callback();
+  } finally {
+    stats.speed = speed;
+    for (const [enemy, originalSpeed] of changed) enemy.speed = originalSpeed;
+    state.propMovementWrapped = false;
+  }
+}
+function updateProps(dt) {
+  if (!G?.props || !Number.isFinite(dt) || dt <= 0 || G.state !== 'playing') return;
+  const step = Math.min(dt, PROP_RULES.maxStep), center = G.cam || G.player;
+  let hatches = 0;
+  for (const prop of G.props) {
+    if (prop.dead) continue;
+    prop.age += dt; prop.flash = Math.max(0, prop.flash - step);
+    const far = Math.abs(prop.x - center.x) > VW / 2 + PROP_RULES.recycleMargin + prop.r || Math.abs(prop.y - center.y) > VH / 2 + PROP_RULES.recycleMargin + prop.r;
+    const waitingCocoon = !prop.inactive && prop.kind === 'cocoon' && prop.hatchT <= 0;
+    // 已成熟的茧等待精英预算，不能用普通寿命吞掉孵化；仍受远处回收和数量上限约束。
+    if ((prop.age >= prop.ttl && !waitingCocoon) || far) { prop.dead = true; if (!prop.inactive) G.propStats.expired++; continue; }
+    if (prop.inactive || prop.kind !== 'cocoon' || !propsRunActive()) continue;
+    prop.hatchT = Math.max(0, prop.hatchT - step); prop.hatchRetryT = Math.max(0, prop.hatchRetryT - step);
+    if (prop.hatchT > 0 || prop.hatchRetryT > 0 || hatches >= PROP_RULES.maxHatchesPerUpdate) continue;
+    if (propsHatch(prop)) hatches++;
+    else prop.hatchRetryT = PROP_RULES.hatchRetry;
+  }
+  if (propsRunActive()) {
+    G.propPoisonT += step;
+    if (G.propPoisonT >= PROP_RULES.poisonInterval) {
+      G.propPoisonT %= PROP_RULES.poisonInterval;
+      const damage = PROPS_DEF.toxic.damagePerSecond * PROP_RULES.poisonInterval * propsScale();
+      withPropEffectRandom(() => {
+        for (const enemy of G.enemies) if (!enemy.dead && !enemy.entering && propsToxicSlow(enemy.x, enemy.y) < 1) hitEnemy(enemy, damage, { crit: false, source: 'prop:toxic' });
+      });
+    }
+  }
+  let write = 0;
+  for (const prop of G.props) if (!prop.dead) G.props[write++] = prop;
+  G.props.length = write;
+  propsUpdateDamageStats();
+}
+function propsRegisterHit(prop, owner, cooldown) {
+  if (!owner) return true;
+  if (cooldown > 0) {
+    const times = owner.propHitTimes ||= new Map();
+    for (const [id, until] of times) if (until <= G.t) times.delete(id);
+    if (times.has(prop.id)) return false;
+    times.set(prop.id, G.t + cooldown);
+  } else {
+    const hits = owner.propHits ||= new Set();
+    if (hits.has(prop.id)) return false;
+    hits.add(prop.id);
+  }
+  return true;
+}
+function propsBreak(prop) {
+  if (!propsIsActive(prop)) return;
+  prop.dead = true; prop.hp = 0; G.propStats.destroyed++;
+  if (PROPS_DEF[prop.kind].blastRadius) G.propBlastQueue.push(prop);
+}
+function propsTakeHit(prop, damage, owner, cooldown) {
+  if (!propsIsActive(prop) || prop.kind === 'toxic' || !propsRegisterHit(prop, owner, cooldown)) return false;
+  prop.hp -= damage; prop.flash = .12;
+  if (prop.hp <= 0) propsBreak(prop);
+  return true;
+}
+function propsDrainBlasts() {
+  if (G.propBlasting || !G.propBlastQueue.length) return;
+  G.propBlasting = true;
+  try {
+    withPropEffectRandom(() => {
+      while (G.propBlastQueue.length) {
+        const prop = G.propBlastQueue.shift(), cfg = PROPS_DEF[prop.kind];
+        // 在爆炸回调前标记整条新链，避免自爆蜂与物件爆炸相互递归时重复结算。
+        for (const next of G.props) if (propsIsActive(next) && PROPS_DEF[next.kind].blastRadius && d2(prop.x, prop.y, next.x, next.y) <= (cfg.blastRadius + next.r) ** 2) propsBreak(next);
+        G.propStats.explosions++;
+        explode(prop.x, prop.y, cfg.blastRadius, cfg.damage * propsScale(), cfg.col, false, 0, 'prop:' + prop.kind);
+      }
+    });
+  } finally { G.propBlasting = false; }
+  propsUpdateDamageStats();
+}
+function hitPropsSegment(x, y, ex, ey, radius, damage, owner = null, cooldown = 0) {
+  if (!G?.props || !(damage > 0) || ![x, y, ex, ey, radius, damage].every(Number.isFinite)) return 0;
+  const dx = ex - x, dy = ey - y, lengthSquared = dx * dx + dy * dy;
+  let hits = 0;
+  for (const prop of G.props) {
+    if (!propsIsActive(prop) || prop.kind === 'toxic') continue;
+    const t = lengthSquared > 0 ? clamp(((prop.x - x) * dx + (prop.y - y) * dy) / lengthSquared, 0, 1) : 0;
+    if (d2(x + dx * t, y + dy * t, prop.x, prop.y) <= (Math.max(0, radius) + prop.r) ** 2 && propsTakeHit(prop, damage, owner, cooldown)) hits++;
+  }
+  propsDrainBlasts();
+  return hits;
+}
+function hitPropsCircle(x, y, radius, damage, owner = null, cooldown = 0) {
+  return hitPropsSegment(x, y, x, y, radius, damage, owner, cooldown);
+}
+
 // ---- src/game/weapons.js ----
 // 六种武器的开火逻辑，以及闪电、光束、爆炸等通用攻击
 
@@ -2925,6 +3373,7 @@ function updateWeapons(dt) {
         w.pos.length = 0;
         for (let i = 0; i < L.n; i++) {
           const a = w.ang + i * TAU / L.n, bx = p.x + Math.cos(a) * R, by = p.y + Math.sin(a) * R; w.pos.push(bx, by);
+          if (G.props?.length) hitPropsCircle(bx, by, L.size, L.dmg * dM, w, cd);
           query(bx, by, L.size + 30, e => {
             if (e.sawT > G.t || e.entering) return;
             const rr = L.size + e.r; if (d2(bx, by, e.x, e.y) > rr * rr) return;
@@ -3009,6 +3458,7 @@ function railBeam(x, y, a, len, w, dmg, evo) {
     if (e.dead || e.entering) continue;
     if (railIntersectsEnemy(x, y, dx, dy, L2, w, e)) hitEnemy(e, dmg, { source: 'rail', crit: evo ? true : undefined, kx: Math.cos(a) * 160, ky: Math.sin(a) * 160 });
   }
+  if (G.props?.length) hitPropsSegment(x, y, ex, ey, w / 2, dmg);
   clearMechRailBullets(x, y, ex, ey, w);
   G.beams.push({ x, y, ex, ey, w, life: .3, max: .3, evo });
   for (let i = 0; i < 8; i++) part(x + Math.cos(a) * 24, y + Math.sin(a) * 24, Math.cos(a + rand(-.6, .6)) * rand(100, 300), Math.sin(a + rand(-.6, .6)) * rand(100, 300), .25, 6, '150,240,255');
@@ -3018,8 +3468,9 @@ function explode(x, y, rad, dmg, col = '255,150,60', bigSnd = false, hurtsPlayer
     if (e.entering) return; const rr = rad + e.r; if (d2(x, y, e.x, e.y) > rr * rr) return;
     // 爆心几乎压在首领中心时分不出打在哪一面，按玩家方向算（首领不吃击退，方向只用于部位分区和火花）
     const center = e.boss && d2(x, y, e.x, e.y) < (e.r * BOSS_PART_ZONES.centerBlast) ** 2, a = center ? Math.atan2(e.y - G.player.y, e.x - G.player.x) : Math.atan2(e.y - y, e.x - x);
-    hitEnemy(e, dmg, { source, kx: Math.cos(a) * 220, ky: Math.sin(a) * 220 });
+    hitEnemy(e, dmg, { source, crit: source?.startsWith('prop:') ? false : undefined, kx: Math.cos(a) * 220, ky: Math.sin(a) * 220 });
   });
+  if (dmg > 0 && G.props?.length) hitPropsCircle(x, y, rad, dmg);
   if (hurtsPlayer) { const p = G.player; if (d2(x, y, p.x, p.y) < (rad + p.hurtR) ** 2) hurtPlayer(hurtsPlayer, x, y, source); }
   G.waves.push({ x, y, r: rad * .3, maxR: rad, v: rad * 7, dmg: 0, knock: 0, hit: null, col });
   for (let i = 0; i < 14; i++) { const a = Math.random() * TAU, s = rand(60, 260); part(x, y, Math.cos(a) * s, Math.sin(a) * s, rand(.25, .5), rand(6, 14), col); }
@@ -3034,7 +3485,8 @@ function hitEnemy(e, dmg, o = {}) {
   if (e.dead || !Number.isFinite(dmg) || dmg < 0) return;
   const st = G.stats, crit = o.crit ?? (Math.random() < st.crit);
   if (crit) dmg *= st.critMul;
-  dmg *= rand(.92, 1.08) * (e.vulnerableT > 0 ? e.weakMul || 1 : 1) * talentDamageMultiplier(e, o.source);
+  const mark = bossMarkMul(e);
+  dmg *= rand(.92, 1.08) * (e.vulnerableT > 0 ? e.weakMul || 1 : 1) * talentDamageMultiplier(e, o.source) * mark;
   const rawDmg = dmg;
   if (e.guard) { dmg = bossGuardAllowance(e, dmg, G.t); if (rawDmg > dmg) recordBlockedDamage(e, rawDmg - dmg); }
   const hpBefore = Math.max(0, e.hp), shieldBeforeHit = Math.max(0, e.shield || 0), angle = o.kx !== undefined ? Math.atan2(o.ky, o.kx) : Math.atan2(e.y - G.player.y, e.x - G.player.x);
@@ -3044,10 +3496,12 @@ function hitEnemy(e, dmg, o = {}) {
     if (shieldBefore > 0 && e.shield <= 0) { floatText(e.x, e.y - e.r - 16, '破盾！', '112,216,238', 18, .7); feedback('shieldBreak', { x: e.x, y: e.y, angle }); }
   } else e.hp -= dmg;
   const effectiveDamage = Math.max(0, hpBefore - Math.max(0, e.hp)) + Math.max(0, shieldBeforeHit - Math.max(0, e.shield || 0));
-  recordDamage(o.source, effectiveDamage);
+  // 神经链接标记多出来的那部分伤害记在模块名下，复盘里看得到它的贡献
+  if (mark > 1) { const bonus = effectiveDamage * (1 - 1 / mark); recordDamage(o.source, effectiveDamage - bonus); recordDamage('module:neural', bonus); }
+  else recordDamage(o.source, effectiveDamage);
   recordDamageNumber(e, effectiveDamage, crit, e.hp <= 0);
   // 被甲壳挡下的命中照样出火花
-  if (rawDmg > 0) weaponImpact(o.source, e, angle, shieldBeforeHit > 0 ? 'shield' : e.boss || e.type === 'brute' ? 'armor' : 'shell');
+  if (rawDmg > 0 && !o.source?.startsWith('prop:')) weaponImpact(o.source, e, angle, shieldBeforeHit > 0 ? 'shield' : e.boss || e.type === 'brute' ? 'armor' : 'shell');
   // 部位按甲壳之前的伤害累计，首领被这一击打死时也先记上，宝箱里才拿得到
   if (e.parts) recordBossPartHit(e, rawDmg, angle);
   e.flash = G.settings?.flashes === false ? 0 : .08;
@@ -3098,7 +3552,8 @@ function drop(kind, x, y, v = 1, salvage = null) {
 }
 
 // ---- src/game/boss-modules.js ----
-// 首领模块运行：钳击臂夹击最近的敌人、液压腿冲刺撞开敌人、毒刺炮穿透毒刺和落地毒池
+// 首领模块运行：钳击臂夹击最近的敌人、液压腿冲刺撞开敌人、毒刺炮穿透毒刺和落地毒池；
+// 母巢的寄生虫巢孵友军小虫、孢子环扩散减速、神经链接超载时给屏内敌人打标记
 
 // 模块和武器吃同一套伤害、冷却加成（芯片、训练、超载）
 function moduleMultipliers() {
@@ -3113,10 +3568,14 @@ function updateBossModules(dt) {
     for (const m of p.modules) {
       if (m.id === 'pincer') updatePincer(m, dt, mul);
       else if (m.id === 'stinger') updateStinger(m, dt, mul);
+      else if (m.id === 'parasite') updateParasiteNest(m, dt, mul);
+      else if (m.id === 'spore') updateSporeEmitter(m, dt, mul);
+      else if (m.id === 'neural') updateNeuralLink(m, dt);
     }
   }
-  updateModuleShots(dt); updateVenomPools(dt);
+  updateModuleShots(dt); updateVenomPools(dt); updateParasites(dt); updateSporeRings(dt);
   if (G.pincerFx) { G.pincerFx.t -= dt; if (G.pincerFx.t <= 0) G.pincerFx = null; }
+  if (G.neuralPulse) { G.neuralPulse.t += dt; if (G.neuralPulse.t >= G.neuralPulse.max) G.neuralPulse = null; }
 }
 // 离机身边缘最近的目标：首领个头大，按边缘距离比
 function nearestByEdge(range) {
@@ -3222,6 +3681,105 @@ function hydraulicRam() {
     hitEnemy(e, dmg, { source: 'module:hydraulic', kx, ky });
     part(e.x, e.y, kx * .3, ky * .3, .25, 6, '120,230,255');
   });
+}
+// 寄生虫巢：定时孵一只友军小虫，场上最多 cap 只
+function updateParasiteNest(m, dt, mul) {
+  const cfg = BOSS_MODULES.parasite, p = G.player, list = G.parasites || (G.parasites = []);
+  m.cd -= dt; if (m.cd > 0) return;
+  if (list.length >= cfg.cap) { m.cd = 0; return; }
+  m.cd = cfg.interval * mul.cd;
+  const a = rand(0, TAU);
+  list.push({ x: p.x + Math.cos(a) * 18, y: p.y + Math.sin(a) * 18, a, orbit: a, life: cfg.life, max: cfg.life, target: null, bite: 0, latched: false });
+  for (let i = 0; i < 5; i++) { const d = rand(0, TAU), s = rand(40, 120); part(p.x + Math.cos(a) * 18, p.y + Math.sin(a) * 18, Math.cos(d) * s, Math.sin(d) * s, .3, 4, '190,110,255'); }
+  SFX.pickup();
+}
+// 离小虫最近、又在机甲附近的目标
+function parasiteTarget(b) {
+  const cfg = BOSS_MODULES.parasite, p = G.player, range2 = cfg.range * cfg.range;
+  let best = null, bestD = Infinity;
+  for (const e of G.enemies) {
+    if (!isWeaponTarget(e) || d2(p.x, p.y, e.x, e.y) > range2) continue;
+    const d = d2(b.x, b.y, e.x, e.y);
+    if (d < bestD) { best = e; bestD = d; }
+  }
+  return best;
+}
+// 小虫：冲过去咬住目标，每 biteEvery 秒咬一口；目标死了、跑远了就换下一个，没有目标时绕着机甲转
+function updateParasites(dt) {
+  const list = G.parasites;
+  if (!list?.length) return;
+  const cfg = BOSS_MODULES.parasite, p = G.player, leash2 = cfg.leash * cfg.leash;
+  for (const b of list) {
+    b.life -= dt;
+    if (b.life <= 0 || !(p.hp > 0)) continue;
+    let tg = b.target;
+    if (tg && (tg.dead || !(tg.hp > 0) || !isWeaponTarget(tg) || d2(p.x, p.y, tg.x, tg.y) > leash2)) tg = b.target = null;
+    // 换了新目标：咬住后立刻咬第一口
+    if (!tg) { tg = b.target = parasiteTarget(b); b.latched = false; b.bite = 0; }
+    if (tg) {
+      const dx = tg.x - b.x, dy = tg.y - b.y, d = Math.hypot(dx, dy) || 1, reach = tg.r * .85, step = cfg.speed * dt;
+      b.a = Math.atan2(dy, dx);
+      // 这一帧追得上就直接咬住；先停在咬合距离上、下一帧再判断的话，往外退的目标（被击退、首领被推开）永远咬不上
+      if (d - reach > step) { b.x += dx / d * step; b.y += dy / d * step; b.latched = false; }
+      else {
+        // 咬住：贴在目标边缘跟着走；被甩开再咬回同一个目标，咬的节奏接着走，不白多咬一口
+        if (!b.latched) { b.latched = true; b.ox = -dx / d * reach; b.oy = -dy / d * reach; }
+        b.x = tg.x + b.ox; b.y = tg.y + b.oy;
+        b.bite -= dt;
+        if (b.bite <= 0) {
+          b.bite = cfg.biteEvery;
+          // 带上咬的方向：首领按小虫所在的一面累计部位，普通敌人轻微击退
+          hitEnemy(tg, cfg.dmg * moduleMultipliers().dmg, { source: 'module:parasite', kx: dx / d * 30, ky: dy / d * 30 });
+          part(b.x, b.y, rand(-50, 50), rand(-50, 50), .18, 4, '190,110,255');
+        }
+      }
+    } else {
+      // 绕着机甲转圈等目标
+      b.orbit += dt * 2.2;
+      const ox = p.x + Math.cos(b.orbit) * cfg.orbit, oy = p.y + Math.sin(b.orbit) * cfg.orbit, dx = ox - b.x, dy = oy - b.y, d = Math.hypot(dx, dy) || 1;
+      const step = Math.min(d, cfg.speed * dt); b.x += dx / d * step; b.y += dy / d * step; b.a = Math.atan2(dy, dx);
+    }
+  }
+  compact(list, b => b.life > 0 && p.hp > 0);
+}
+// 孢子环：附近有敌人才放，从机甲当前位置向外扩散
+function updateSporeEmitter(m, dt, mul) {
+  const cfg = BOSS_MODULES.spore, p = G.player;
+  m.cd -= dt; if (m.cd > 0) return;
+  if (!nearestByEdge(cfg.radius)) { m.cd = 0; return; }
+  m.cd = cfg.interval * mul.cd;
+  (G.sporeRings ||= []).push({ x: p.x, y: p.y, r: 0, t: 0, hit: new Set(), dmg: cfg.dmg * mul.dmg, rot: rand(0, TAU) });
+  SFX.dash();
+}
+function sporeHit(e, s) {
+  if (e.entering || s.hit.has(e.id)) return;
+  const rr = s.r + e.r * .5; if (d2(s.x, s.y, e.x, e.y) > rr * rr) return;
+  s.hit.add(e.id);
+  const cfg = BOSS_MODULES.spore, a = Math.atan2(e.y - s.y, e.x - s.x);
+  hitEnemy(e, s.dmg, { source: 'module:spore', kx: Math.cos(a) * 60, ky: Math.sin(a) * 60 });
+  if (!e.boss) { e.slowUntil = G.t + cfg.slowT; e.slowMul = cfg.slowMul; }
+}
+function updateSporeRings(dt) {
+  const list = G.sporeRings;
+  if (!list?.length) return;
+  const cfg = BOSS_MODULES.spore;
+  for (const s of list) {
+    s.t += dt;
+    if (s.t > cfg.grow) continue;
+    // 先快后慢地扩到最大半径
+    const k = s.t / cfg.grow; s.r = cfg.radius * (1 - (1 - k) * (1 - k));
+    query(s.x, s.y, s.r + 40, sporeHit, s);
+  }
+  compact(list, s => s.t < cfg.grow + cfg.fade);
+}
+// 神经链接：超载开始时放一圈神经脉冲，超载期间不断给屏内的敌人续上标记
+function updateNeuralLink(m, dt) {
+  const cfg = BOSS_MODULES.neural, p = G.player;
+  if (!(p.overT > 0)) { m.on = false; return; }
+  if (!m.on) { m.on = true; m.cd = 0; G.neuralPulse = { x: p.x, y: p.y, t: 0, max: cfg.pulse }; SFX.zap(); }
+  m.cd -= dt; if (m.cd > 0) return;
+  m.cd = cfg.refresh;
+  for (const e of G.enemies) if (isWeaponTarget(e)) e.markUntil = G.t + cfg.markLinger;
 }
 
 // ---- src/game/player.js ----
@@ -3462,97 +4020,6 @@ function recoverPendingRuns() {
   return result;
 }
 
-// ---- src/game/spawn.js ----
-// 刷怪导演：普通刷怪、虫群包围、精英、首领登场、新手提示
-
-function spawnEnemy(type, x, y, o = {}) {
-  const d = ETYPES[type], t = G.t;
-  // 所有虫群、守卫和首领召唤都走这一入口；非首领时期留出一个首领位置。生命再乘当前敌群阶段的 hpMul（只有中期两段有）。
-  const cap = Math.floor(spawnCap(t)) - (G.boss ? 0 : 1);
-  if (G.enemies.length >= cap) return null;
-  const e = { id: G.eid++, type, d, img: d.img, x, y, r: d.r, size: d.size, hp: d.hp * enemyHpMul(t) * (enemyPhaseAt(t)?.hpMul || 1), speed: d.speed * rand(.9, 1.1) * enemySpeedMul(t), dmg: d.dmg, xp: d.xp, col: d.col, kx: 0, ky: 0, flash: 0, ang: Math.atan2(G.player.y - y, G.player.x - x), st: 'walk', stT: 0, cd: rand(1, 2.6), elite: false, sawT: 0, q: 0, wob: Math.random() * TAU, fuse: 0 };
-  if (o.elite) {
-    e.elite = true; e.xp *= 6;
-    if (!applyEliteAffix(e, o.affix)) { e.hp *= 9; e.r *= 1.45; e.size *= 1.45; e.dmg *= 1.4; e.speed *= .9; }
-  }
-  applyRunModifiers(e);
-  e.maxHp = e.hp; G.enemies.push(e); return e;
-}
-function ringPos(ang) {
-  const center = G.cam || G.player, dx = Math.cos(ang), dy = Math.sin(ang);
-  const rx = VW / 2 + SPAWN_VIEWPORT.edgeMargin, ry = VH / 2 + SPAWN_VIEWPORT.edgeMargin;
-  const distance = 1 / Math.max(Math.abs(dx) / rx, Math.abs(dy) / ry);
-  return [center.x + dx * distance, center.y + dy * distance];
-}
-function spawnAround(type, o) {
-  const p = G.player, mv = Math.hypot(p.vx, p.vy);
-  const ang = (mv > 30 && Math.random() < .5) ? Math.atan2(p.vy, p.vx) + rand(-.9, .9) : Math.random() * TAU;
-  const [x, y] = ringPos(ang); return spawnEnemy(type, x, y, o);
-}
-function pickType() {
-  const t = G.t, phase = enemyPhaseAt(t);
-  if (phase) return weighted(phase.weights).k;
-  const w = [{ k: 'crawler', w: 10 }];
-  if (t > 25) w.push({ k: 'bomber', w: t > 200 ? 3 : 2 });
-  if (t > 50) w.push({ k: 'gunner', w: t > 240 ? 3 : 2 });
-  if (t > 80) w.push({ k: 'brute', w: t > 300 ? 3 : 1.6 });
-  if (t > 105) w.push({ k: 'charger', w: t > 260 ? 2.6 : 1.5 });
-  return weighted(w).k;
-}
-function director(dt) {
-  const t = G.t, p = G.player, phase = enemyPhaseAt(t);
-  if (G.bossIdx < BOSS_TIMES.length && !G.warn && !G.boss && t >= BOSS_TIMES[G.bossIdx] - 3) {
-    const b = BOSSES[G.bossIdx]; G.warn = { t: 3, idx: G.bossIdx };
-    G.banner = { kind: 'warn', title: 'WARNING', sub: b.name + ' 正在接近', t: 3, max: 3 }; SFX.warn();
-  }
-  if (G.warn) { G.warn.t -= dt; if (G.warn.t <= 0 && spawnBoss(G.warn.idx)) { G.bossIdx++; G.warn = null; } }
-  if (G.swarmIdx < SWARM_TIMES.length && t >= SWARM_TIMES[G.swarmIdx]) {
-    G.swarmIdx++; const n = Math.min(64, 22 + Math.floor(t / 10));
-    for (let i = 0; i < n; i++) { const a = i / n * TAU, [x, y] = ringPos(a); spawnEnemy(t > 200 && i % 5 === 0 ? 'bomber' : 'crawler', x, y); }
-    G.banner = { kind: 'info', title: '虫群包围！', sub: '找准缺口冲刺突破', t: 2.2, max: 2.2, col: '255,80,90' };
-  }
-  if (t >= G.nextElite && !G.boss && !G.warn) {
-    const nextBoss = BOSS_TIMES[G.bossIdx] ?? Infinity;
-    const liveElites = G.enemies.filter(e => e.elite && !e.dead);
-    if ((phase && (liveElites.length >= phase.eliteCap || nextBoss - t < ELITE_SPAWN_RULES.bossGrace))) G.nextElite = t + ELITE_SPAWN_RULES.retry;
-    else {
-      let id = null;
-      if (phase) {
-        const index = G.eliteAffixIndex || 0;
-        for (let i = 0; i < ELITE_AFFIX_ORDER.length; i++) {
-          const candidate = ELITE_AFFIX_ORDER[(index + i) % ELITE_AFFIX_ORDER.length];
-          if (liveElites.filter(e => e.affix === candidate).length < ELITE_SPAWN_RULES.sameAffixCap) { id = candidate; break; }
-        }
-      }
-      const type = id ? ELITE_AFFIXES[id].type : pick(t > 100 ? ['brute', 'charger', 'gunner'] : ['brute', 'gunner']);
-      const elite = spawnAround(type, { elite: true, affix: id });
-      // 总量已满时短暂重试；成功后从当前时间排下一次，不补发首领战积压。
-      G.nextElite = t + (elite ? phase ? phase.eliteInterval : 35 : ELITE_SPAWN_RULES.retry);
-      if (elite) {
-        if (id) G.eliteAffixIndex = (ELITE_AFFIX_ORDER.indexOf(id) + 1) % ELITE_AFFIX_ORDER.length;
-        toast({ text: id ? `${ELITE_AFFIXES[id].name}精英出现 · 击败可得补给箱` : '精英出现！击败它掉落补给箱', priority: 3 });
-      }
-    }
-  }
-  const rate = spawnRate(t, !!(G.boss || G.warn)) * runMul('spawn'), cap = spawnCap(t);
-  G.spawnAcc += rate * dt;
-  while (G.spawnAcc >= 1) {
-    G.spawnAcc -= 1; if (G.enemies.length >= cap) continue;
-    const ty = pickType();
-    if (ty === 'crawler' && Math.random() < (phase ? phase.packChance : .25)) { const e0 = spawnAround('crawler'); if (e0) for (let i = 0; i < 2; i++) spawnEnemy('crawler', e0.x + rand(-30, 30), e0.y + rand(-30, 30)); }
-    else spawnAround(ty);
-  }
-}
-function spawnBoss(i) {
-  if (G.enemies.length >= Math.floor(spawnCap(G.t))) return false;
-  const b = BOSSES[i], p = G.player;
-  const e = { id: G.eid++, boss: true, kind: b.kind, final: !!b.final, name: b.name, img: b.img, x: p.x, y: p.y - VH / 2 - b.size * .6, r: b.r, size: b.size, hp: b.hp, maxHp: b.hp, speed: b.speed, dmg: 22, xp: 0, col: b.kind === 'scorpion' ? '255,40,80' : '190,90,255', kx: 0, ky: 0, flash: 0, ang: PI / 2, st: 'enter', stT: 0, seq: -1, sub: 0, n: 0, spA: 0, sumT: 6, q: 0, sawT: 0, entering: true, guard: b.guard ? { ...b.guard, baseHp: b.hp } : null };
-  applyRunModifiers(e); initBossParts(e, b.hp);
-  G.enemies.push(e); G.boss = e; MUS.intensity = 2;
-  G.banner = { kind: 'boss', title: b.name, sub: b.final ? '最终决战 · 击破它即可突围' : '击败首领获得补给箱', t: 2.4, max: 2.4, col: e.col };
-  return true;
-}
-
 // ---- src/game/enemies.js ----
 // 敌人与首领 AI
 
@@ -3617,6 +4084,8 @@ function updateEnemies(dt) {
         }
       }
       if (e.eliteStagger > 0 || (e.eliteRecovery > 0 && !chargedThisFrame)) { vx = 0; vy = 0; }
+      // 减速（孢子环）：冲锋不减，免得冲不到预警终点
+      else if (e.slowUntil > G.t && !chargedThisFrame) { vx *= e.slowMul; vy *= e.slowMul; }
       e.x += vx * moveDt + e.kx * dt; e.y += vy * moveDt + e.ky * dt;
       const fr = Math.pow(.004, dt); e.kx *= fr; e.ky *= fr;
       e.ang = angLerp(e.ang, face, Math.min(1, dt * (e.type === 'charger' && e.st === 'aim' ? 14 : 7)));
@@ -3627,7 +4096,8 @@ function updateEnemies(dt) {
     // 互相推挤，避免叠成一坨
     if (!e.boss) query(e.x, e.y, e.r, pushApart, e);
     const rr = e.r + p.r;
-    if (!e.entering && !weakThisFrame && !(e.vulnerableT > 0) && d2(e.x, e.y, p.x, p.y) < rr * rr) {
+    // 破绽和瘫痪（神经核心被打碎）期间首领碰到机甲不伤人
+    if (!e.entering && !weakThisFrame && !(e.vulnerableT > 0) && !(e.stunT > 0) && d2(e.x, e.y, p.x, p.y) < rr * rr) {
       if (e.type === 'bomber' && !e.fuse) e.fuse = .2;
       hurtPlayer(e.dmg, e.x, e.y, e.boss ? 'boss:' + e.kind : 'enemy:' + e.type);
     }
@@ -3685,6 +4155,8 @@ function updateBoss(e, dt) {
   }
   // 部位被打碎后的吃痛硬直：招式和计时都停下；破绽期间本来就不动，只走演出时间
   if (e.flinchT > 0) { e.flinchT = Math.max(0, e.flinchT - dt); if (!(e.vulnerableT > 0)) return; }
+  // 神经核心被打碎：瘫痪几秒，不动、不出招；破绽期间先走完破绽再瘫
+  if (e.stunT > 0 && !(e.vulnerableT > 0)) { e.stunT = Math.max(0, e.stunT - dt); return; }
   if (updateBossWeakPoint(e, dt)) return;
   e.stT += dt;
   const p = G.player, dx = p.x - e.x, dy = p.y - e.y, d = Math.hypot(dx, dy) || 1, toA = Math.atan2(dy, dx);
@@ -3724,7 +4196,8 @@ function updateBoss(e, dt) {
       case 'spiral':
         walk(.35); e.sub -= dt;
         if (e.sub <= 0) {
-          e.sub = F ? .075 : .09; e.spA += .19; const arms = F ? 5 : 4;
+          // 孢子喷口被打碎：发射频率降低，螺旋弹少约四成
+          e.sub = (F ? .075 : .09) / (bossPartBroken(e, 'vents') ? BOSS_PART_WEAKEN.spiralRate : 1); e.spA += .19; const arms = F ? 5 : 4;
           for (let k = 0; k < arms; k++) fireBossEB(e, e.x, e.y, e.spA + k * TAU / arms, 150, { r: 6, col: '200,90,255', dmg: 12 });
           if (F || enr) for (let k = 0; k < 3; k++) fireBossEB(e, e.x, e.y, -e.spA * 1.3 + k * TAU / 3, 115, { r: 6, col: '255,80,160', dmg: 12 });
           SFX.eshot();
@@ -3732,9 +4205,10 @@ function updateBoss(e, dt) {
         if (e.stT > (F ? 4 : 3.2)) nextBossPhase(e); break;
       case 'summon':
         if (e.n === 0) {
-          e.n = 1; const n = F ? 14 : 10;
+          // 卵囊被打碎：召唤减半（至少一只）
+          e.n = 1; const mul = bossPartBroken(e, 'sacs') ? BOSS_PART_WEAKEN.summonMul : 1, n = Math.max(1, Math.round((F ? 14 : 10) * mul));
           for (let i = 0; i < n; i++) { const a = i / n * TAU; spawnEnemy(i % 2 ? 'bomber' : 'crawler', e.x + Math.cos(a) * 130, e.y + Math.sin(a) * 130); }
-          if (F) { spawnEnemy('charger', e.x + 160, e.y); spawnEnemy('charger', e.x - 160, e.y); }
+          if (F) { const chargers = Math.max(1, Math.round(2 * mul)); for (let i = 0; i < chargers; i++) spawnEnemy('charger', e.x + (i ? -160 : 160), e.y); }
           G.waves.push({ x: e.x, y: e.y, r: 20, maxR: 160, v: 500, dmg: 0, knock: 0, hit: null, col: '190,90,255' });
         }
         if (e.stT > 1.1) nextBossPhase(e); break;
@@ -3936,7 +4410,9 @@ function updateBullets(dt) {
   const p = G.player, hd = halfDiag() * 1.5;
   for (const b of G.pbullets) {
     if (b.dead) continue;
+    const previousX = b.x, previousY = b.y;
     b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; if (b.life <= 0) { b.dead = true; continue; }
+    if (G.props?.length) hitPropsSegment(previousX, previousY, b.x, b.y, b.r, b.dmg, b);
     query(b.x, b.y, b.r, bulletHit, b);
   }
   compact(G.pbullets, b => !b.dead);
@@ -3971,6 +4447,7 @@ function bulletHit(e, b) {
 function updateWaves(dt) {
   for (const w of G.waves) {
     w.r += w.v * dt;
+    if (w.dmg > 0 && G.props?.length) hitPropsCircle(w.x, w.y, w.r, w.dmg, w);
     if (w.dmg > 0 || w.knock > 0) query(w.x, w.y, w.r, e => {
       if (w.hit.has(e) || e.entering) return; const rr = w.r + e.r; if (d2(w.x, w.y, e.x, e.y) > rr * rr) return;
       w.hit.add(e); const a = Math.atan2(e.y - w.y, e.x - w.x); hitEnemy(e, w.dmg, { source: w.source || 'overload', kx: Math.cos(a) * w.knock, ky: Math.sin(a) * w.knock });
@@ -5148,7 +5625,7 @@ function newRun({ practice = false, daily = null } = {}) {
   initMechTraits(G.player, mech);
   G.player.weapons.push(newWeapon(mech.weapon));
   recalc(); G.player.hp = G.player.maxHp;
-  initRunModifiers(daily);
+  initRunModifiers(daily); initProps();
   if (!practice) { meta.runs++; saveMeta(); }
 }
 const newWeapon = id => ({ id, lv: 1, evo: false, mastery: 0, cd: .3, side: 1, ang: 0, drones: [] });
@@ -5176,14 +5653,14 @@ function update(rdt) {
   if (G.slowT > 0) { G.slowT -= rdt; G.timeScale = .22; } else G.timeScale = Math.min(1, G.timeScale + rdt * 2.5);
   const dt = rdt * G.timeScale; G.t += dt; G.rt += rdt;
   if (!G.practice && p.hp > 0 && G.endT <= 0) director(dt);
-  updatePlayer(dt, rdt);
-  updateTutorial(dt);
-  updateEnemies(dt);
+  if (G.props?.length) withPropMovementSlows(() => updateRunActors(dt, rdt));
+  else updateRunActors(dt, rdt);
   rebuildGrid();
   if (p.hp > 0 && G.endT <= 0) updateWeapons(dt);
   updateBossModules(dt);
   updateBullets(dt);
   updateWaves(dt);
+  if (G.props?.length) updateProps(dt);
   if (!G.practice) updateRelay(dt); // 中继落点先结算伤害，再拾取，避免致命伤被治疗包绕过。
   updatePickups(dt);
   updateFx(dt); updateBossPartFx(dt);
@@ -5209,6 +5686,13 @@ function update(rdt) {
   else if (G.state === 'playing' && G.pendingChest > 0) { feedbackDiscardKills(); openChest(); }
   // 安全训练练完四步：按真实时间倒数（慢动作不拖慢），到点弹出出击面板。
   else if (G.state === 'playing' && G.trainingDoneT > 0) { G.trainingDoneT -= rdt; if (G.trainingDoneT <= 0) openTrainingDone(); }
+}
+
+// 毒沼只临时降低常规移动速度，不改变冲刺/冲锋和攻击计时。
+function updateRunActors(dt, rdt) {
+  updatePlayer(dt, rdt);
+  updateTutorial(dt);
+  updateEnemies(dt);
 }
 
 // ---- src/game/upgrades.js ----
@@ -5700,27 +6184,8 @@ function drawCombatTexts(c, texts, options = {}) {
   for (let i = 0; i < importantCount; i++) important[i] = null;
 }
 
-// ---- src/data/battlefield.js ----
-// 三幕地表的时间、材质与缓存混合规则，不改变战斗碰撞和生成规则
-const BATTLEFIELD_ACTS = [
-  { id: 'industrial', name: '工业废墟', image: 'ground_industrial', start: 0, base: '#171f26', wash: '#101a23', tint: '#50616a' },
-  { id: 'polluted', name: '污染区', image: 'ground_polluted', start: 150, base: '#1b2422', wash: '#14201c', tint: '#647257' },
-  { id: 'hive', name: '母巢边界', image: 'ground_hive', start: 300, base: '#282125', wash: '#21191f', tint: '#795352' },
-];
-const BATTLEFIELD_FADE_SECONDS = 20;
-function battlefieldMixAt(time = 0) {
-  const t = Number.isFinite(time) ? Math.max(0, time) : 0;
-  let index = 0;
-  for (let i = 1; i < BATTLEFIELD_ACTS.length; i++) if (t >= BATTLEFIELD_ACTS[i].start) index = i;
-  const act = BATTLEFIELD_ACTS[index];
-  const amount = index ? Math.min(1, (t - act.start) / BATTLEFIELD_FADE_SECONDS) : 1;
-  // 平滑变化每段只合成32次，暂停或同一阶段不重新处理纹理。
-  const blend = Math.round(amount * amount * (3 - 2 * amount) * 32) / 32;
-  return { from: index && blend < 1 ? BATTLEFIELD_ACTS[index - 1] : act, to: act, blend, index };
-}
-
 // ---- src/render/hud.js ----
-// 屏幕空间 HUD：血条、计时、首领血条、连杀、提示、摇杆、横幅
+// 屏幕空间 HUD：血条、计时、首领血条和部位状态、连杀、提示、摇杆、横幅
 
 let vRed = null, vRedKey = '';
 function vignetteRed() {
@@ -5731,6 +6196,9 @@ function vignetteRed() {
 const HUD_PRACTICE_STEPS = { move: '1/4 移动', dash: '2/4 冲刺', overload: '3/4 超载', perfect: '4/4 极限闪避', complete: '训练完成' };
 // 提示条最多两行（2×20+14）；「退出训练」按钮在安全区下 102px、高 44px（styles.css .training-exit）。
 const HUD_TOAST_MAX_H = 54, HUD_TRAINING_EXIT_BOTTOM = 146;
+// 带部位的首领在场时，顶部仪表在血条下多一行部位状态
+const HUD_PART_ROW = 16;
+const hudPartRow = () => G?.boss && !G.boss.dead && !G.practice && G.boss.parts?.length ? HUD_PART_ROW : 0;
 // 机身血条顶边在机甲中心下方 42 世界单位（腿部贴图之外）；机体特性标签让到它下方（render/mech-traits.js）。
 const HUD_MECH_BAR_Y = 42;
 let hudSafeTop = 0, hudSafeBottom = 0;
@@ -5745,7 +6213,7 @@ function hudBattleBounds() {
   // 技能区：底边距 24 + 冲刺按钮 84（随按钮大小设置缩放）+ 上方留白 24。
   const size = Number(G?.settings?.skillSize), scale = [100, 115, 130].includes(size) ? size / 100 : 1;
   return { left: 24, right: W - 24,
-    top: Math.min(H / 2 - 32, hudSafeTop + (relayVisible ? 124 : 94)),
+    top: Math.min(H / 2 - 32, hudSafeTop + (relayVisible ? 124 : 94) + hudPartRow()),
     bottom: Math.max(H / 2 + 32, H - hudSafeBottom - 48 - 84 * scale) };
 }
 // 提示条放在顶部仪表（含中继状态条）下方，避开单手拖摇杆时拇指盖住的下半屏；训练时再让开退出按钮。
@@ -5802,7 +6270,8 @@ function drawHUD() {
   const p = G.player, top = hudSafeTop, left = 14, hpk = clamp(p.hp / p.maxHp, 0, 1);
   hudMechHealth();
   // 装甲、计时、当前威胁总计84像素；完整配装和金币在暂停详情查看。
-  ctx.fillStyle = 'rgba(7,12,18,.9)'; ctx.fillRect(0, 0, W, top + 84);
+  const partRow = hudPartRow();
+  ctx.fillStyle = 'rgba(7,12,18,.9)'; ctx.fillRect(0, 0, W, top + 84 + partRow);
   ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillStyle = hpk < .3 ? '#ff9c9e' : '#bdcbd5';
   ctx.fillText(hpk < .3 ? '装甲危急' : '机体装甲', left, top + 8);
   const bw = Math.min(120, W * .34);
@@ -5834,13 +6303,14 @@ function drawHUD() {
     ctx.fillStyle = '#3c2933'; ctx.fillRect(left, top + 77, W - left * 2, 6);
     ctx.fillStyle = `rgb(${boss.col})`; ctx.fillRect(left, top + 77, (W - left * 2) * bk, 6);
     ctx.fillStyle = '#cf9bab'; ctx.fillRect(W / 2, top + 77, 1, 6);
+    if (partRow) hudBossParts(boss, left, top + 87);
   } else {
     const next = BOSS_TIMES[G.bossIdx], act = battlefieldMixAt(G.t).to;
     ctx.fillStyle = G.won ? '#ffdb7e' : '#cad5dd';
     ctx.fillText(G.won ? '母巢击破 · 突围成功' : G.warn ? '首领正在接近' : `${act.name} · ${next === undefined ? '击破母巢' : '下一首领'}`, left, statusY);
     if (!G.won && next !== undefined) { ctx.textAlign = 'right'; ctx.fillStyle = G.warn ? '#ffac96' : '#e9eef3'; ctx.fillText(fmtTime(Math.ceil(Math.max(0, next - G.t))), W - left, statusY); }
   }
-  hudRelayStatus(top + 89);
+  hudRelayStatus(top + 89 + partRow);
   if (G.combo >= 10) {
     // 连杀固定在两行提示条的下方，提示出现时两者都看得到，也不会跳位。
     const k = clamp(G.comboT / 2.5, 0, 1), cy = Math.max(hudToastTop() + HUD_TOAST_MAX_H + 8, H * .19);
@@ -5851,6 +6321,24 @@ function drawHUD() {
   // 选卡、补给箱、行动奖励等覆盖层打开时提示被冻结，不能透过遮罩叠在按钮附近。
   if (G.toast && G.state === 'playing') hudToast(G.toast);
   ctx.textBaseline = 'alphabetic';
+}
+// 首领血条下的部位状态：每个部位一格，写明在哪一面，带累计进度；打碎后显示「已破坏」，破绽期间高亮最该打的那一处。
+// 窄屏放不下「哪一面·部位名」和最短 12 像素的进度条时只写部位名
+function hudBossParts(boss, left, y) {
+  const defs = BOSS_PARTS[boss.kind] || [], n = boss.parts.length, gap = 8, w = (W - left * 2 - gap * (n - 1)) / n;
+  const hint = boss.vulnerableT > 0 ? BOSS_PART_HINTS[boss.kind]?.part : null, glow = .6 + .4 * Math.sin(G.rt * 10);
+  ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+  boss.parts.forEach((q, i) => {
+    const x = left + i * (w + gap), name = defs.find(d => d.id === q.id)?.name || q.id;
+    if (q.broken) { ctx.fillStyle = '#ffd98a'; ctx.fillText(`${name} 已破坏`, x, y); return; }
+    let label = `${BOSS_ZONE_NAMES[q.zone] || ''}·${name}`;
+    if (ctx.measureText(label).width + 17 > w) label = name;
+    const k = q.max > 0 ? clamp(q.acc / q.max, 0, 1) : 0, lit = q.id === hint;
+    ctx.globalAlpha = lit ? glow : 1; ctx.fillStyle = lit ? '#ffe6a3' : '#d4c3cb'; ctx.fillText(label, x, y); ctx.globalAlpha = 1;
+    const tw = ctx.measureText(label).width + 5, bw = Math.max(12, w - tw);
+    ctx.fillStyle = '#3c2933'; ctx.fillRect(x + tw, y + 5, bw, 3);
+    ctx.fillStyle = lit ? '#ffe6a3' : '#e0a95c'; ctx.fillRect(x + tw, y + 5, bw * k, 3);
+  });
 }
 function hudRelayStatus(y) {
   const r = G.relay; if (!r || (r.status !== 'available' && r.status !== 'active')) return;
@@ -6186,6 +6674,89 @@ function drawRelayObjective(c, relay, player, visible, zoom, labelVisible = true
   drawRelayHazardTelegraphs(c, relay, player, visible, zoom); c.restore();
 }
 
+// ---- src/render/props.js ----
+// 战场物件绘制：透明贴图贴地，危险边界与虫茧倒计时独立于装饰画质
+
+const BF_PROP_MARKER_FONT = '600 12px "PingFang SC",sans-serif';
+function renderPropCircle(c, x, y, radius) { c.beginPath(); c.arc(x, y, radius, 0, TAU); }
+function renderPropSurface(c, prop, image, alpha, time, detail) {
+  c.save(); c.translate(prop.x, prop.y); c.rotate(prop.angle || 0); c.globalAlpha = alpha;
+  if (image) c.drawImage(image, -prop.size / 2, -prop.size / 2, prop.size, prop.size);
+  else {
+    // 资源加载失败仍保留物件位置和实际占地，避免有规则却看不见。
+    c.fillStyle = prop.kind === 'toxic' ? '#426d38' : prop.kind === 'cocoon' ? '#796277' : prop.kind === 'ammo' ? '#7c8861' : '#a65e37';
+    if (prop.kind === 'ammo') c.fillRect(-prop.r, -prop.r * .8, prop.r * 2, prop.r * 1.6);
+    else { renderPropCircle(c, 0, 0, prop.r); c.fill(); }
+  }
+  if (!prop.inactive && prop.kind === 'toxic' && detail > 0) {
+    // 小气泡只靠位置与时间变化，不消耗战斗随机数。
+    c.strokeStyle = '#c0d97e'; c.lineWidth = 1; c.globalAlpha = alpha * .42;
+    for (let i = 0; i < 3; i++) {
+      const phase = time * .7 + (prop.seed || 0) + i * 2.1, radius = prop.r * (.26 + i * .18);
+      renderPropCircle(c, Math.cos(i * 2.4) * radius, Math.sin(i * 2.4) * radius, 1.5 + (Math.sin(phase) + 1) * 1.2); c.stroke();
+    }
+  }
+  c.restore();
+}
+function drawBattlefieldProps(c, props, options = {}) {
+  if (!props?.length) return;
+  const visible = options.visible || (() => true), images = options.images || IMG, time = options.time || 0;
+  c.save(); c.globalCompositeOperation = 'source-over';
+  // 毒沼在底层，桶箱和虫茧在上；所有物件仍在玩家与敌人下方，不伪装为障碍。
+  for (const ground of [true, false]) for (const prop of props) {
+    if (prop.dead || (prop.kind === 'toxic') !== ground || !visible(prop.x, prop.y, prop.size / 2)) continue;
+    const waiting = prop.kind === 'cocoon' && prop.state === 'growing' && prop.hatchT <= 0;
+    const fade = waiting ? 1 : Math.min(1, Math.max(0, (prop.ttl || 0) - (prop.age || 0)));
+    const alpha = (prop.kind === 'toxic' ? .82 : prop.inactive ? .7 : 1) * fade;
+    renderPropSurface(c, prop, images[prop.img], alpha, time, options.detail ?? 1);
+  }
+  c.restore();
+}
+function renderPropLabel(c, prop, text, color, zoom, options) {
+  const y = prop.y - prop.size * .5 - 12 / zoom;
+  if (options.camera && options.bounds) {
+    const sx = (prop.x - options.camera.x) * zoom + options.width / 2;
+    const sy = (y - options.camera.y) * zoom + options.height / 2;
+    const half = text.length * 6 + 7;
+    if (sx - half < options.bounds.left || sx + half > options.bounds.right || sy - 9 < options.bounds.top || sy + 9 > options.bounds.bottom) return;
+  }
+  c.save(); c.translate(prop.x, y); c.scale(1 / zoom, 1 / zoom); c.font = BF_PROP_MARKER_FONT;
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  const width = c.measureText(text).width + 12;
+  c.globalAlpha = .92; c.fillStyle = '#0c1418'; c.fillRect(-width / 2, -9, width, 18);
+  c.globalAlpha = 1; c.fillStyle = color; c.fillText(text, 0, 0); c.restore();
+}
+function drawBattlefieldPropMarkers(c, props, player, options = {}) {
+  if (!props?.length) return;
+  const visible = options.visible || (() => true), zoom = options.zoom || 1;
+  c.save(); c.globalCompositeOperation = 'source-over'; c.lineCap = 'round';
+  for (const prop of props) {
+    if (prop.dead || prop.inactive || !visible(prop.x, prop.y, prop.r + 32)) continue;
+    if (prop.kind === 'toxic') {
+      const inside = player && (player.x - prop.x) ** 2 + (player.y - prop.y) ** 2 <= prop.r ** 2;
+      c.globalAlpha = inside ? .85 : .5; c.strokeStyle = '#b0cd72'; c.lineWidth = (inside ? 1.8 : 1.2) / zoom;
+      renderPropCircle(c, prop.x, prop.y, prop.r); c.stroke();
+      if (inside && options.playing) renderPropLabel(c, prop, '毒沼 · 步行减速', '#d0e99d', zoom, options);
+    } else if (prop.kind === 'cocoon' && prop.state === 'growing') {
+      const remaining = Math.max(0, prop.hatchT || 0), fraction = Math.max(0, Math.min(1, remaining / (prop.hatchMax || 1)));
+      const color = remaining <= 3 ? '#f29b68' : '#d6b4d6';
+      c.globalAlpha = .55; c.strokeStyle = '#655569'; c.lineWidth = 2 / zoom; renderPropCircle(c, prop.x, prop.y, prop.r + 5); c.stroke();
+      c.globalAlpha = .95; c.strokeStyle = color; c.beginPath(); c.arc(prop.x, prop.y, prop.r + 5, -Math.PI / 2, -Math.PI / 2 + TAU * fraction); c.stroke();
+      if (options.playing) renderPropLabel(c, prop, remaining > 0 ? `孵化 ${Math.ceil(remaining)}秒` : '待孵化', color, zoom, options);
+    }
+    if (prop.maxHp > 0 && prop.hp < prop.maxHp && prop.hp > 0) {
+      const width = 30 / zoom, height = 3 / zoom, y = prop.y + prop.size * .45;
+      c.globalAlpha = .85; c.fillStyle = '#0b1014'; c.fillRect(prop.x - width / 2 - 1 / zoom, y - 1 / zoom, width + 2 / zoom, height + 2 / zoom);
+      c.fillStyle = prop.kind === 'cocoon' ? '#cfb4d4' : '#efbd75'; c.fillRect(prop.x - width / 2, y, width * Math.max(0, Math.min(1, prop.hp / prop.maxHp)), height);
+    }
+    if (options.flashes !== false && prop.flash > 0) {
+      c.globalAlpha = Math.min(.8, prop.flash * 7); c.strokeStyle = '#ffecbf'; c.lineWidth = 2 / zoom;
+      renderPropCircle(c, prop.x, prop.y, prop.r + 1); c.stroke();
+    }
+  }
+  c.restore();
+}
+
 // ---- src/render/mech-traits.js ----
 // 新机甲能力状态：单次护盾、磁轨装填与电磁超载的近身视觉反馈
 
@@ -6376,10 +6947,11 @@ function drawBossWeakpoint(c, boss, visible, zoom, flashes = true) {
 }
 
 // ---- src/render/boss-parts.js ----
-// 首领部件绘制：毒蝎分层贴图（尾巴摆动、钳子开合、裂纹、断口、吃痛抖动），碎块残骸、毒液、断口烟和火花，首领模块的钳击臂、毒刺和毒池
+// 首领部件绘制：毒蝎和母巢的分层贴图（尾巴摆动、钳子开合、卵囊呼吸、神经晶体发光、裂纹、断口、吃痛抖动），碎块残骸、体液、断口烟和电火花，
+// 首领模块的钳击臂、毒刺和毒池、友军小虫、孢子环、神经标记
 
-const SCORPION_RIG_IMAGES = Object.values(SCORPION_RIG.layers).flatMap(L => L.broken ? [L.img, L.broken] : [L.img]);
-const scorpionRigReady = () => SCORPION_RIG_IMAGES.every(k => IMG[k]);
+const BOSS_RIG_IMAGES = Object.fromEntries(Object.entries(BOSS_RIGS).map(([kind, rig]) => [kind, Object.values(rig.layers).flatMap(L => L.broken ? [L.img, L.broken] : [L.img])]));
+const bossRigReady = kind => !!BOSS_RIG_IMAGES[kind]?.every(k => IMG[k]);
 // 动画相位按游戏时间累计：暂停、顿帧时跟着停，招式切换时摆幅平滑过渡
 const scorpionMotion = { boss: null, t: 0, tail: 0, tailAmp: 1, claw: 0 };
 function scorpionPose(e) {
@@ -6396,7 +6968,19 @@ function scorpionPose(e) {
   m.claw += (target - m.claw) * Math.min(1, dt * 10);
   return { sway: rig.tailSway * m.tailAmp * Math.sin(m.tail), open: m.claw };
 }
-// base 是这一层实际要画的图（带裂纹的副本或原图），闪白仍用原图的剪影
+const queenMotion = { boss: null, t: 0, sac: 0, swell: 0 };
+function queenPose(e) {
+  const rig = QUEEN_RIG, m = queenMotion;
+  if (m.boss !== e) { m.boss = e; m.t = G.t; m.sac = 0; m.swell = 0; }
+  const dt = Math.min(.1, Math.max(0, G.t - m.t)), calm = e.vulnerableT > 0 || e.stunT > 0, summon = e.st === 'summon' && !calm;
+  m.t = G.t;
+  // 卵囊随呼吸鼓缩，召唤时鼓起来；破绽、瘫痪时呼吸放慢，晶体熄灭
+  m.sac += dt * rig.sacRate * (calm ? .4 : summon ? 2.5 : 1);
+  m.swell += ((summon ? 1 : 0) - m.swell) * Math.min(1, dt * 8);
+  const spiral = e.st === 'spiral' && !calm;
+  return { sac: 1 + rig.sacPulse * Math.sin(m.sac) + rig.sacSwell * m.swell, vent: 1 + (spiral ? rig.ventPulse * Math.abs(Math.sin(G.t * 14)) : 0), gem: e.stunT > 0 ? 0 : .6 + .4 * Math.sin(G.t * rig.gemRate) };
+}
+// base 是这一层实际要画的图（带裂纹的副本、狂怒的红色版或原图），闪白仍用原图的剪影
 function rigImage(c, k, size, x, y, flashA, alpha, base = IMG[k]) {
   if (!base) return;
   c.drawImage(base, x - size / 2, y - size / 2, size, size);
@@ -6415,19 +6999,19 @@ function rigHalf(c, k, side, size, x, y, flashA, alpha, base = IMG[k]) {
 // 裂纹：固定伪随机折线，累计伤害越多出现的条数越多、长得越长
 const crackHash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
 const crackCache = {};
-function crackLines(id) {
-  if (crackCache[id]) return crackCache[id];
+function crackLines(rig, key, id) {
+  if (crackCache[key]) return crackCache[key];
   const seed = id.charCodeAt(0);
-  return crackCache[id] = (SCORPION_RIG.cracks[id] || []).map(([x, y], i) => {
+  return crackCache[key] = (rig.cracks[id] || []).map(([x, y], i) => {
     let a = Math.atan2(y, x) + (crackHash(i * 7 + seed) - .5) * 1.6, px = x, py = y;
     const pts = [[x, y]];
     for (let k = 0; k < 6; k++) { a += (crackHash(i * 31 + k * 5 + seed * 3) - .5) * 1.4; px += Math.cos(a) * .026; py += Math.sin(a) * .026; pts.push([px, py]); }
     return pts;
   });
 }
-function crackPath(x, id, progress) {
+function crackPath(x, lines, progress) {
   x.beginPath();
-  crackLines(id).forEach((pts, i) => {
+  lines.forEach((pts, i) => {
     const grow = Math.min(1, (progress - .12 - i * .16) / .35);
     if (grow <= 0) return;
     const n = grow * (pts.length - 1), whole = Math.floor(n);
@@ -6438,12 +7022,12 @@ function crackPath(x, id, progress) {
 }
 // 裂纹画进这一层贴图的副本：source-atop 只留在不透明处，不伸出部位轮廓；累计伤害每涨 5% 重画一次
 const CRACK_STEPS = 20, crackBake = {};
-function crackedLayer(id, q, size) {
-  const l = SCORPION_RIG.layers[id], im = IMG[l.img], progress = q.max > 0 ? Math.min(1, q.acc / q.max) : 0;
+function crackedLayer(rig, kind, id, q, size, im) {
+  const l = rig.layers[id], progress = q.max > 0 ? Math.min(1, q.acc / q.max) : 0;
   if (!im || progress < .12) return im;
-  const step = Math.round(progress * CRACK_STEPS), key = `${step}|${size}`, iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
-  let b = crackBake[id];
-  if (!b || b.im !== im) b = crackBake[id] = { im, key: '', cv: offscreen(iw, ih) };
+  const step = Math.round(progress * CRACK_STEPS), key = `${step}|${size}`, iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height, bakeKey = `${kind}:${id}`;
+  let b = crackBake[bakeKey];
+  if (!b || b.im !== im) b = crackBake[bakeKey] = { im, key: '', cv: offscreen(iw, ih) };
   if (b.key === key) return b.cv;
   b.key = key;
   const x = b.cv.getContext('2d'), p = step / CRACK_STEPS;
@@ -6451,37 +7035,48 @@ function crackedLayer(id, q, size) {
   // 裂纹坐标以首领贴图尺寸为 1、原点在首领中心，换算到这一层贴图的像素；线宽仍按世界坐标算
   x.setTransform(iw / l.size, 0, 0, ih / l.size, (l.size / 2 - l.x) * iw / l.size, (l.size / 2 - l.y) * ih / l.size);
   x.globalCompositeOperation = 'source-atop'; x.lineCap = 'round'; x.lineJoin = 'round';
-  crackPath(x, id, p);
+  crackPath(x, crackLines(rig, bakeKey, id), p);
   // 先描深色裂口，再叠一条发亮的芯
   x.strokeStyle = 'rgba(18,6,10,.85)'; x.lineWidth = 3.2 / size; x.stroke();
-  x.strokeStyle = `rgba(255,120,170,${.45 + .5 * p})`; x.lineWidth = 1.2 / size; x.stroke();
+  x.strokeStyle = `rgba(${rig.crackGlow},${.45 + .5 * p})`; x.lineWidth = 1.2 / size; x.stroke();
   x.globalCompositeOperation = 'source-over'; x.setTransform(1, 0, 0, 1, 0, 0);
   return b.cv;
 }
-// 分层画毒蝎；贴图没到齐时返回 false，由调用方画整图
-function drawScorpionRig(c, e, size, ang, flashA = 0, alpha = 1, sx = 1, sy = 1) {
-  if (!scorpionRigReady()) return false;
-  const rig = SCORPION_RIG, L = rig.layers, pose = scorpionPose(e), parts = e.parts || [];
-  const broken = id => parts.some(q => q.id === id && q.broken), partOf = id => parts.find(q => q.id === id);
+// 分层画首领（毒蝎、母巢）；没有分层或贴图没到齐时返回 false，由调用方画整图。狂怒每层换成红色版
+function drawBossRig(c, e, size, ang, flashA = 0, alpha = 1, sx = 1, sy = 1) {
+  const rig = BOSS_RIGS[e.kind];
+  if (!rig || !bossRigReady(e.kind)) return false;
+  const L = rig.layers, parts = e.parts || [], partOf = id => parts.find(q => q.id === id), src = k => (e.final && TINT[k]) || IMG[k];
+  const scorpion = e.kind === 'scorpion', pose = scorpion ? scorpionPose(e) : queenPose(e);
   let x = e.x, y = e.y, a = ang;
-  // 吃痛硬直：短促抖动，按游戏时间算，暂停时不抖
+  // 吃痛硬直：短促抖动，按游戏时间算，暂停时不抖；瘫痪时慢慢晃
   if (e.flinchT > 0) { const k = e.flinchT / (e.flinchMax || .45); x += Math.sin(G.t * 97) * 3.2 * k; y += Math.cos(G.t * 83) * 3.2 * k; a += Math.sin(G.t * 71) * .05 * k; }
+  if (e.stunT > 0 && !(e.vulnerableT > 0)) a += Math.sin(G.t * 5) * .035;
   c.save(); c.translate(x, y); c.rotate(a + PI / 2); c.scale(sx, sy); c.globalAlpha = alpha;
   for (const id of rig.order) {
     const l = L[id], q = partOf(id);
-    if (l.broken && broken(id)) { rigImage(c, l.broken, l.brokenSize * size, l.brokenX * size, l.brokenY * size, flashA, alpha); continue; }
-    const base = q ? crackedLayer(id, q, size) : IMG[l.img];
-    if (id === 'tail') {
+    if (l.broken && q?.broken) { rigImage(c, l.broken, l.brokenSize * size, l.brokenX * size, l.brokenY * size, flashA, alpha, src(l.broken)); continue; }
+    const base = q ? crackedLayer(rig, e.kind, id, q, size, src(l.img)) : src(l.img);
+    if (scorpion && id === 'tail') {
       c.save(); c.translate(l.pivotX * size, l.pivotY * size); c.rotate(pose.sway); c.translate(-l.pivotX * size, -l.pivotY * size);
       rigImage(c, l.img, l.size * size, l.x * size, l.y * size, flashA, alpha, base);
       c.restore();
-    } else if (id === 'claw') {
+    } else if (scorpion && id === 'claw') {
       for (const side of [-1, 1]) {
         c.save(); c.translate(side * l.pivotX * size, l.pivotY * size); c.rotate(side * pose.open); c.translate(-side * l.pivotX * size, -l.pivotY * size);
         rigHalf(c, l.img, side, l.size * size, l.x * size, l.y * size, flashA, alpha, base);
         c.restore();
       }
-    } else rigImage(c, l.img, l.size * size, l.x * size, l.y * size, flashA, alpha, base);
+    } else {
+      const k = scorpion ? 1 : id === 'sacs' ? pose.sac : id === 'vents' ? pose.vent : 1;
+      rigImage(c, l.img, l.size * size * k, l.x * size, l.y * size, flashA, alpha, base);
+      // 神经晶体一明一暗
+      if (!scorpion && id === 'crown' && pose.gem > 0) {
+        const [gx, gy] = rig.gem, gs = rig.gemGlow * size * (1 + .25 * pose.gem);
+        c.globalCompositeOperation = 'lighter'; c.globalAlpha = alpha * .55 * pose.gem; c.drawImage(gl('210,120,255'), gx * size - gs / 2, gy * size - gs / 2, gs, gs);
+        c.globalCompositeOperation = 'source-over'; c.globalAlpha = alpha;
+      }
+    }
   }
   c.restore(); c.globalAlpha = 1;
   return true;
@@ -6497,17 +7092,29 @@ function drawDebris(c, f) {
   c.drawImage(im, f.sx * iw, f.sy * ih, f.sw * iw, f.sh * ih, -w / 2, -h / 2, w, h);
   c.restore();
 }
-function drawVenomSplat(c, x, y, size, rot, alpha) {
-  if (IMG.fx_venom) { c.save(); c.translate(x, y); c.rotate(rot); c.globalAlpha = alpha; c.drawImage(IMG.fx_venom, -size / 2, -size / 2, size, size); c.restore(); }
-  else { c.globalAlpha = alpha * .6; c.fillStyle = '#6fdc4a'; c.beginPath(); c.arc(x, y, size * .4, 0, TAU); c.fill(); }
+// 体液贴图按颜色染一次后缓存（母巢的紫色体液）
+const venomTints = {};
+function venomTex(tint) {
+  const im = IMG.fx_venom;
+  if (!tint || !im) return im;
+  if (venomTints[tint]?.im === im) return venomTints[tint].cv;
+  const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height, cv = offscreen(w, h), x = cv.getContext('2d');
+  x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-atop'; x.fillStyle = `rgba(${tint},.7)`; x.fillRect(0, 0, w, h);
+  venomTints[tint] = { im, cv };
+  return cv;
 }
-// 地面层：毒液喷溅、落地的残骸、毒刺炮的毒池；在拾取物和敌人之前画
+function drawVenomSplat(c, x, y, size, rot, alpha, tint = null) {
+  const tex = venomTex(tint);
+  if (tex) { c.save(); c.translate(x, y); c.rotate(rot); c.globalAlpha = alpha; c.drawImage(tex, -size / 2, -size / 2, size, size); c.restore(); }
+  else { c.globalAlpha = alpha * .6; c.fillStyle = tint ? `rgb(${tint})` : '#6fdc4a'; c.beginPath(); c.arc(x, y, size * .4, 0, TAU); c.fill(); }
+}
+// 地面层：体液喷溅、落地的残骸、毒刺炮的毒池、孢子环和被孢子减速的敌人脚下的孢子；在拾取物和敌人之前画
 function drawBossPartGround(c, vis) {
   const list = G.partFx, pools = G.venomPools;
   if (list?.length) for (const f of list) {
     if (f.kind === 'venom' && vis(f.x, f.y, f.size)) {
       const age = f.max - f.life, grow = Math.min(1, age / .2);
-      drawVenomSplat(c, f.x, f.y, f.size * (.5 + .5 * grow), f.rot, Math.min(1, f.life / 1.5) * .85);
+      drawVenomSplat(c, f.x, f.y, f.size * (.5 + .5 * grow), f.rot, Math.min(1, f.life / 1.5) * .85, f.tint);
     } else if (f.kind === 'debris' && f.landed && vis(f.x, f.y, f.size * .3)) drawDebris(c, f);
   }
   if (pools?.length) for (const pool of pools) {
@@ -6515,7 +7122,35 @@ function drawBossPartGround(c, vis) {
     const age = pool.max - pool.life, a = Math.min(1, age / .2, pool.life / .6);
     drawVenomSplat(c, pool.x, pool.y, pool.r * 2.3 * (.7 + .3 * Math.min(1, age / .2)), pool.rot + G.t * .25, a * .8);
   }
+  drawSporeRings(c, vis);
   c.globalAlpha = 1;
+}
+function drawSporeRings(c, vis) {
+  const rings = G.sporeRings, cfg = BOSS_MODULES.spore;
+  if (G.player?.modules?.some(m => m.id === 'spore')) {
+    // 被减速的敌人脚下绕一圈淡绿的孢子
+    c.globalCompositeOperation = 'lighter';
+    for (const e of G.enemies) {
+      if (!(e.slowUntil > G.t) || e.dead || !vis(e.x, e.y, e.r * 2)) continue;
+      const k = Math.min(1, (e.slowUntil - G.t) / .4), s = e.r * 2.6;
+      c.globalAlpha = .28 * k; c.drawImage(gl('170,255,140'), e.x - s / 2, e.y - s / 2, s, s);
+    }
+    c.globalCompositeOperation = 'source-over';
+  }
+  if (!rings?.length) return;
+  for (const s of rings) {
+    if (!vis(s.x, s.y, cfg.radius)) continue;
+    const fade = s.t <= cfg.grow ? 1 : Math.max(0, 1 - (s.t - cfg.grow) / cfg.fade), k = Math.min(1, s.t / cfg.grow);
+    c.globalAlpha = .14 * fade; c.fillStyle = '#9fe08a'; c.beginPath(); c.arc(s.x, s.y, s.r, 0, TAU); c.fill();
+    c.globalAlpha = .75 * fade; c.strokeStyle = 'rgba(190,255,160,.9)'; c.lineWidth = 2 + 9 * (1 - k); c.beginPath(); c.arc(s.x, s.y, s.r, 0, TAU); c.stroke();
+    // 环上一圈发亮的孢子团
+    c.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 12; i++) {
+      const a = s.rot + i * TAU / 12 + k * .6, gs = 16 + 10 * (1 - k);
+      c.globalAlpha = .6 * fade; c.drawImage(gl(i % 3 ? '170,255,140' : '200,140,255'), s.x + Math.cos(a) * s.r - gs / 2, s.y + Math.sin(a) * s.r - gs / 2, gs, gs);
+    }
+    c.globalCompositeOperation = 'source-over';
+  }
 }
 // 断口的烟用中性灰贴图压暗一次后缓存
 let partSmokeTex = null;
@@ -6541,6 +7176,7 @@ function drawBossPartAir(c, vis, detail = 1) {
     }
     c.globalCompositeOperation = 'lighter';
     for (const f of list) {
+      if (f.kind === 'arc' && vis(f.x, f.y, 40)) { drawArc(c, f); continue; }
       if (f.kind !== 'spark' || !vis(f.x, f.y, f.size)) continue;
       const t = f.life / f.max, s = f.size * (.5 + t * .7);
       c.globalAlpha = t; c.drawImage(IMG.fx_spark || gl('255,120,200'), f.x - s / 2, f.y - s / 2, s, s);
@@ -6548,6 +7184,59 @@ function drawBossPartAir(c, vis, detail = 1) {
     c.globalCompositeOperation = 'source-over';
   }
   drawStingerShots(c, vis);
+  drawParasites(c, vis);
+  drawNeuralMarks(c, vis);
+  c.globalAlpha = 1;
+}
+// 神经核心断口的电火花：两点之间一条抖动的折线
+function drawArc(c, f) {
+  const t = f.life / f.max, n = 5;
+  c.globalAlpha = t; c.strokeStyle = 'rgba(215,150,255,.95)'; c.lineWidth = 1.6; c.beginPath(); c.moveTo(f.x, f.y);
+  for (let i = 1; i < n; i++) {
+    const k = i / n, j = (Math.sin(f.seed * 13 + i * 7.3 + G.t * 40) * 6);
+    c.lineTo(f.x + (f.x2 - f.x) * k - (f.y2 - f.y) / 30 * j, f.y + (f.y2 - f.y) * k + (f.x2 - f.x) / 30 * j);
+  }
+  c.lineTo(f.x2, f.y2); c.stroke();
+}
+// 友军小虫：咬住目标时身下发青光
+function drawParasites(c, vis) {
+  const list = G.parasites, cfg = BOSS_MODULES.parasite;
+  if (!list?.length) return;
+  for (const b of list) {
+    if (!vis(b.x, b.y, cfg.size)) continue;
+    const a = Math.min(1, b.life / 1, (b.max - b.life) / .25), s = cfg.size * (b.latched ? 1 + .08 * Math.sin(G.t * 30) : 1);
+    c.globalCompositeOperation = 'lighter'; c.globalAlpha = (b.latched ? .55 : .3) * a; c.drawImage(gl('110,235,255'), b.x - s * .7, b.y - s * .7, s * 1.4, s * 1.4);
+    c.globalCompositeOperation = 'source-over'; c.globalAlpha = a;
+    if (IMG.ally_parasite) { c.save(); c.translate(b.x, b.y); c.rotate(b.a + PI / 2); c.drawImage(IMG.ally_parasite, -s / 2, -s / 2, s, s); c.restore(); }
+    else { c.fillStyle = '#6fe6ff'; c.beginPath(); c.arc(b.x, b.y, s * .3, 0, TAU); c.fill(); }
+  }
+  c.globalAlpha = 1;
+}
+// 神经链接：超载开始时从机甲扩散一圈脉冲，被标记的敌人头上一个紫青色菱形准星；
+// 超载时屏内可能上百只，普通敌人的准星合成一条路径一次描完，标记快到期时一起淡出
+function drawNeuralMarks(c, vis) {
+  const pulse = G.neuralPulse, p = G.player;
+  if (pulse) {
+    const k = pulse.t / pulse.max, r = 40 + k * 560;
+    c.globalAlpha = .6 * (1 - k); c.strokeStyle = 'rgba(150,230,255,.95)'; c.lineWidth = 3 + 6 * (1 - k); c.beginPath(); c.arc(pulse.x, pulse.y, r, 0, TAU); c.stroke();
+    c.strokeStyle = 'rgba(200,120,255,.8)'; c.lineWidth = 2; c.beginPath(); c.arc(pulse.x, pulse.y, r * .92, 0, TAU); c.stroke();
+  }
+  if (!p?.modules?.some(m => m.id === 'neural')) { c.globalAlpha = 1; return; }
+  const spin = G.t * 3, diamond = (e, s) => {
+    const y = e.y - e.size * .42 - 8;
+    for (let i = 0; i < 4; i++) { const a = spin + i * PI / 2; c[i ? 'lineTo' : 'moveTo'](e.x + Math.cos(a) * s, y + Math.sin(a) * s); }
+    c.closePath();
+  };
+  let boss = null, swarm = false, fade = 0;
+  c.lineWidth = 1.6; c.strokeStyle = 'rgba(200,140,255,.95)'; c.beginPath();
+  for (const e of G.enemies) {
+    if (!(e.markUntil > G.t) || e.dead || !vis(e.x, e.y, e.size)) continue;
+    fade = Math.max(fade, Math.min(1, (e.markUntil - G.t) / .3));
+    if (e.boss) boss = e; else { diamond(e, 5.5); swarm = true; }
+  }
+  c.globalAlpha = .9 * fade;
+  if (swarm) c.stroke();
+  if (boss) { c.strokeStyle = 'rgba(150,230,255,.95)'; c.beginPath(); diamond(boss, 9); c.stroke(); }
   c.globalAlpha = 1;
 }
 function drawStingerShots(c, vis) {
@@ -6696,6 +7385,7 @@ function render(rdt) {
   ctx.globalAlpha = 1;
   // 首领部件：毒液喷溅、落地残骸、毒池贴在地面上
   drawBossPartGround(ctx, vis);
+  if (G.props?.length) drawBattlefieldProps(ctx, G.props, { visible: vis, time: G.t, detail: budget.detail });
   let relayLabelVisible = true;
   if (G.relay) {
     const bounds = hudBattleBounds(), rx = (G.relay.x - G.cam.x) * ZOOM + W / 2, ry = (G.relay.y - G.cam.y) * ZOOM + H / 2;
@@ -6758,9 +7448,9 @@ function render(rdt) {
     }
     if (e.boss) { const s = Math.sin(G.t * 2.4); sx = 1 + .02 * s; sy = 1 - .015 * s; }
     if (e.flash > 0) { const k = 1 - e.flash / .08 * (e.boss ? .03 : .12); sx *= k; sy *= k; }
-    // 毒蝎分层画（尾巴、钳子会动，部位打碎换断口），分层贴图没到齐时画整图
+    // 首领分层画（毒蝎尾巴、钳子会动，母巢卵囊会鼓缩，部位打碎换断口），分层贴图没到齐时画整图
     const enemyAlpha = e.entering ? Math.min(1, e.stT) : 1;
-    if (!(e.kind === 'scorpion' && drawScorpionRig(ctx, e, size, ang, settings.flashes ? fl : 0, enemyAlpha, sx, sy))) drawSprite(e.img, e.x, e.y, size, ang, settings.flashes ? fl : 0, enemyAlpha, e.final ? TINT.boss_queen : null, sx, sy);
+    if (!(e.boss && drawBossRig(ctx, e, size, ang, settings.flashes ? fl : 0, enemyAlpha, sx, sy))) drawSprite(e.img, e.x, e.y, size, ang, settings.flashes ? fl : 0, enemyAlpha, e.final ? TINT.boss_queen : null, sx, sy);
     if (e.elite && e.hp < e.maxHp) { ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(e.x - 22, e.y - e.size / 2 - 8, 44, 5); ctx.fillStyle = '#ffcd47'; ctx.fillRect(e.x - 22, e.y - e.size / 2 - 8, 44 * e.hp / e.maxHp, 5); }
   }
   drawEliteEffects(ctx, G.enemies, vis, ZOOM, G.rt);
@@ -6859,6 +7549,7 @@ function render(rdt) {
   drawEliteThreatEdges(ctx, G.enemies, vis, ZOOM);
   if (G.boss) drawBossWeakpoint(ctx, G.boss, vis, ZOOM, settings.flashes);
   // 敌弹使用真实半径的有色实芯和深色外缘，任何画质档都完整绘制；逐发保持描边、填色、高光的先后，外缘样式只设一次。
+  if (G.props?.length) drawBattlefieldPropMarkers(ctx, G.props, p, { visible: vis, zoom: ZOOM, camera: G.cam, width: W, height: H, bounds: hudBattleBounds(), playing: G.state === 'playing', flashes: settings.flashes });
   let ebulletStyled = false;
   for (const b of G.ebullets) {
     if (!vis(b.x, b.y, b.r + 4)) continue;
