@@ -512,6 +512,37 @@ input.settings-control[type="range"]{min-width:0}
 
 /* 中断收益恢复状态，使用现有菜单宽度且不盖住出击按钮。 */
 .save-notice { margin: 8px 0; padding: 10px 12px; color: var(--text); background: #102d30; border: 1px solid #326367; font-size: 14px; line-height: 1.5; }
+
+/* 配装读数：换装卡的得失清单（失红、得绿、注意黄、不变灰），选卡页的配装小图标行 */
+.swap-impact.heavy{border-left:3px solid #ff5c6f;padding-left:8px}
+.swap-impact>.swap-line{display:grid;grid-template-columns:30px minmax(0,1fr);gap:6px;align-items:start;margin-top:3px;font-size:12px;line-height:1.45}
+.swap-line>i{font-style:normal;font-size:11px;font-weight:600;text-align:center;border-radius:2px;line-height:17px}
+.swap-line.loss>i{background:#55202a;color:#ffadb7}.swap-line.loss>span{color:#ffc7cd}
+.swap-line.gain>i{background:#1f4a2e;color:#9ef0b0}.swap-line.gain>span{color:#c8f2d2}
+.swap-line.warn>i{background:#4d3a12;color:#ffd979}.swap-line.warn>span{color:#f3d9a0}
+.swap-line.keep>i{background:#2a3440;color:#c5d0da}.swap-line.keep>span{color:#aebccb}
+.swap-line.more>span{grid-column:2;color:#9aa8b6}
+.loadout-mini{flex-basis:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:2px}
+.loadout-tile{position:relative;display:grid;place-items:center;width:28px;height:28px;background:rgba(8,12,18,.62);border:1px solid #3d4b58;color:var(--amber-hi)}
+.loadout-tile svg.i{width:19px;height:19px}.loadout-tile img{width:20px;height:20px;object-fit:contain}
+.loadout-tile.evo{border-color:var(--gold);color:var(--gold)}.loadout-tile.fused{border-color:#9b6bd0}
+.loadout-tile.p{border-color:#2f5866;color:var(--cyan)}.loadout-tile.m{border-color:#a0566a}
+.loadout-mini .loadout-tile b{position:absolute;right:1px;bottom:-2px;margin:0;font:600 12px var(--f-num);color:#eef2f6;text-shadow:0 0 2px #000,0 0 2px #000}
+.loadout-mini .loadout-tile.evo b{color:var(--gold)}
+/* 暂停页「技能一览」：每节一个小标题，每行图标、名字和等级、实际数值、最多三行小字，右边本局伤害占比 */
+.sheet-note{grid-column:1/-1;margin:0;font-size:11.5px;line-height:1.5;color:#9dafbf}
+.loadout-sheet{grid-column:1/-1;display:grid;gap:6px}
+.loadout-sheet h4{margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:.08em;color:#9dafbf}
+.sheet-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:start;padding:8px;background:var(--steel);border:1px solid var(--line);color:var(--amber-hi)}
+.sheet-row svg.i,.sheet-row img{width:26px;height:26px;object-fit:contain}
+.sheet-row.evo{border-color:var(--gold);color:var(--gold)}.sheet-row.p{color:var(--cyan)}.sheet-row.m{color:#ff9db0}.sheet-row.proto{grid-template-columns:minmax(0,1fr)}
+.sheet-main{min-width:0}.sheet-main b{display:block;font-size:13px;font-weight:600;color:var(--fg)}.sheet-main b em{margin-left:6px;font-style:normal;font-weight:500;font-size:12px;color:currentColor;font-variant-numeric:tabular-nums}
+.sheet-stats{display:block;margin-top:2px;font-size:12px;line-height:1.5;color:#d6dde5;font-variant-numeric:tabular-nums}
+.sheet-main small{display:block;margin-top:2px;font-size:11.5px;line-height:1.5;color:#9dafbf}.sheet-main small.on{color:#e8cb76}
+.sheet-share{text-align:right;font-size:11px;color:#9dafbf}.sheet-share b{display:block;font:600 18px var(--f-num);color:var(--fg)}
+.sheet-badge{display:grid;place-items:center;width:26px;height:26px;border:1px solid currentColor;font-size:13px;font-weight:600}
+.sheet-row.sheet-skill.dash{color:#83e9fb}.sheet-row.sheet-skill.over{color:#ffc47f}.sheet-row.sheet-skill.stop{color:#8fe9ff}.sheet-row.sheet-skill.trait{color:#d8aff2}
+.loadout-sheet .training-summary{margin-top:0;border-top:0;padding-top:4px}.loadout-sheet .bi.skillmod{grid-column:auto}
 </style>
 </head>
 <body>
@@ -666,7 +697,7 @@ input.settings-control[type="range"]{min-width:0}
   <section id="scrPause" class="screen panel-screen" hidden>
     <header class="bar"><h2>暂停</h2><div class="coins">本局金币<b id="psCoins">0</b></div></header>
     <div class="scroll"><div class="scroll-in">
-      <p id="psMech" class="pause-mech"></p><h3 class="sec"><span>当前配装</span></h3>
+      <p id="psMech" class="pause-mech"></p><h3 class="sec"><span>技能一览</span></h3>
       <div id="psBuild" class="build"></div>
       <h3 class="sec"><span>进化配方与进度</span></h3>
       <div id="psRecipes" class="recipes"></div>
@@ -830,7 +861,8 @@ const GROUND_FALLBACK = 'ground';
 // 设置默认值、可选项、音量参数与自适应画质预算
 // 操作：controlLayout 为技能按钮所在一侧，skillSize 为按钮缩放百分比，flickDash 为摇杆甩动冲刺开关。
 // 画面：cinema 为镜头演出开关（高光推近、黑边、速度线、超载全屏切入），系统减少动态效果时默认关。
-const SETTINGS_DEFAULT = Object.freeze({ musicVolume: .7, sfxVolume: .9, shake: true, flashes: true, damageNumbers: 'all', haptics: true, quality: 'auto', controlLayout: 'right', skillSize: '100', flickDash: false, cinema: true, styleRank: true });
+// loadoutStrip 为战斗技能条（底部已装武器、首领模块、等级和冷却）开关。
+const SETTINGS_DEFAULT = Object.freeze({ musicVolume: .7, sfxVolume: .9, shake: true, flashes: true, damageNumbers: 'all', haptics: true, quality: 'auto', controlLayout: 'right', skillSize: '100', flickDash: false, cinema: true, styleRank: true, loadoutStrip: true });
 const SETTINGS_OPTIONS = Object.freeze({ damageNumbers: ['all', 'important', 'off'], quality: ['auto', 'low', 'medium', 'high'], controlLayout: ['right', 'left'], skillSize: ['100', '115', '130'] });
 const SETTINGS_VOLUME_STEP = .05;
 const QUALITY_LEVELS = [
@@ -7485,8 +7517,8 @@ function optInfo(o) {
     case 'mastery': { const d = WDEF[o.id], w = p.weapons.find(x => x.id === o.id), rank = w.mastery || 0; return { icon: d.icon, name: d.evoName, tag: `<em>专精 ${rank} → ${rank + 1}</em>`, desc: masteryBenefit(w), hint: `进化后继续强化 · 专精最多 ${MASTERY_MAX} 阶`, evo: true }; }
     case 'pnew': { const d = PDEF[o.id]; return { icon: d.icon, name: d.name, tag: '<span class="new">新芯片</span>', desc: d.desc, hint: `Lv3 起可进化：${passiveEvolveNames(o.id)}`, pas: true }; }
     case 'pup': { const d = PDEF[o.id], s = p.passives.find(x => x.id === o.id); return { icon: d.icon, name: d.name, tag: `<em>Lv ${s.lv} → ${s.lv + 1}</em>`, desc: d.desc, hint: s.lv + 1 === 3 ? `达到 Lv3：${passiveEvolveNames(o.id)} 满级后可进化` : '', pas: true }; }
-    case 'wswap': { const d = WDEF[o.id], old = p.weapons.find(w => w.id === o.replaceId), oldDef = WDEF[old.id]; return { icon: d.icon, name: d.name, tag: '<span class="new">更换武器</span>', desc: `${old.evo ? oldDef.evoName : oldDef.name} → ${d.name}，保留 ${old.lv} 级`, hint: `占用原槽位，原进化和专精不继承；进化需${PDEF[d.evoWith].name}三级` }; }
-    case 'pswap': { const d = PDEF[o.id], old = p.passives.find(s => s.id === o.replaceId); return { icon: d.icon, name: d.name, tag: '<span class="new">更换芯片</span>', desc: `${PDEF[old.id].name} → ${d.name}，保留 ${old.lv} 级 · ${d.desc}`, hint: '移除原芯片属性，保持生命比例；已完成的武器进化保留', pas: true }; }
+    case 'wswap': { const d = WDEF[o.id], old = p.weapons.find(w => w.id === o.replaceId), oldDef = WDEF[old.id]; return { icon: d.icon, name: d.name, tag: '<span class="new">更换武器</span>', desc: `${old.evo ? oldDef.evoName : oldDef.name} → ${d.name}，保留 ${old.lv} 级`, hint: '' }; } // 得失见选卡页的换装清单（game/loadout-info.js）
+    case 'pswap': { const d = PDEF[o.id], old = p.passives.find(s => s.id === o.replaceId); return { icon: d.icon, name: d.name, tag: '<span class="new">更换芯片</span>', desc: `${PDEF[old.id].name} → ${d.name}，保留 ${old.lv} 级 · ${d.desc}`, hint: '', pas: true }; } // 得失见选卡页的换装清单（game/loadout-info.js）
     case 'training': {
       const d = TRAINING_DEF[o.id], rank = p.training?.[o.id] || 0, before = trainingStats(p), after = trainingStats({ training: { ...p.training, [o.id]: rank + 1 } });
       let desc;
@@ -7992,6 +8024,7 @@ const settingsFields = [
   { key: 'flashes', label: '强光闪烁', description: '关闭后弱化全屏闪光与命中亮闪', type: 'checkbox', group: '战斗舒适度' },
   { key: 'cinema', label: '镜头演出', description: '高光时刻镜头推近，超载放全屏切入；关闭后只放小号切入', type: 'checkbox', group: '战斗舒适度' },
   { key: 'styleRank', label: '暴走评级', description: '显示技能评级与进度，关闭不影响经验、充能和结算奖励', type: 'checkbox', group: '战斗舒适度' },
+  { key: 'loadoutStrip', label: '技能条', description: '战斗画面底部显示已装武器、首领模块的等级和冷却；只看不点', type: 'checkbox', group: '战斗舒适度' },
   { key: 'damageNumbers', label: '伤害数字', description: '精简数字仍保留危险预警与状态提示', type: 'select', options: [['all', '全部显示'], ['important', '仅关键伤害'], ['off', '关闭']], group: '战斗舒适度' },
   { key: 'haptics', label: '设备振动', description: '设备支持时提供短促触觉反馈', type: 'checkbox', group: '战斗舒适度' },
   { key: 'quality', label: '画质', description: '自动档先减少装饰，流畅后恢复；各档都保留敌弹和预警', type: 'select', options: [['auto', '自动调整'], ['low', '省电'], ['medium', '均衡'], ['high', '精细']], group: '画面性能' },
@@ -8514,6 +8547,259 @@ $('#endDailyCopy').addEventListener('click', () => {
 $('#endMenu').addEventListener('click', () => { SFX.click(); openMenu(); });
 $('#endGoalGo').addEventListener('click', () => { SFX.click(); setG(null); openHangar($('#endGoalGo').dataset.target); });
 
+// ---- src/data/loadout-info.js ----
+// 配装读数的数据：芯片每级效果系数、换装得失的行数上限、战斗技能条的尺寸和显示阈值
+// 芯片系数和 game/run.js 的 recalc 是同一套（mul 是倍率 1 + per × 等级，add 是增量 per × 等级），test/loadout-info.test.js 逐级比对
+const PASSIVE_EFFECTS = Object.freeze({
+  firectl: Object.freeze([{ stat: 'dmg', label: '全武器伤害', per: .12, kind: 'mul' }]),
+  cooler: Object.freeze([{ stat: 'cd', label: '武器冷却', per: -.08, kind: 'mul', min: .4 }]),
+  thruster: Object.freeze([{ stat: 'speed', label: '移速', per: .08, kind: 'mul' }, { stat: 'dashCd', label: '冲刺冷却', per: -.08, kind: 'mul' }]),
+  plating: Object.freeze([{ stat: 'maxHp', label: '最大生命', per: 25, kind: 'add' }, { stat: 'regen', label: '每秒回复', per: .4, kind: 'add' }]),
+  magnet: Object.freeze([{ stat: 'pickR', label: '拾取范围', per: .35, kind: 'mul' }, { stat: 'xpMul', label: '经验', per: .08, kind: 'mul' }]),
+  crit: Object.freeze([{ stat: 'crit', label: '暴击率', per: .08, kind: 'add', pct: true }]),
+});
+// 换装卡最多列几行得失，超出时最后一行写「另有 n 条变化」
+const SWAP_DIFF = Object.freeze({ maxLines: 5 });
+// 战斗技能条：格子边长按顺序试，放不下再缩小；sweepMin 秒以上的间隔才画冷却转圈（加特林、僚机太快，转圈只会闪）
+// 摇杆起点离技能条 thumbRange 以内时淡到 thumbAlpha；hintRuns 局以内开局 hintAt 秒提示一次
+// buttons 是 styles.css 里 #btnDash、#btnOver 的位置（屏边距、冲刺和超载按钮边长、两个按钮右边的间距，都按按钮大小缩放），技能条让开它们 buttonGap
+const LOADOUT_STRIP = Object.freeze({
+  tiles: Object.freeze([28, 24, 20]), gap: 5, edge: 16, buttonGap: 12, bottom: 24,
+  buttons: Object.freeze({ edge: 18, dash: 84, over: 72, step: 94 }),
+  sweepMin: .6, alpha: .8, thumbAlpha: .25, thumbRange: 70, fadeRate: 6, flashT: .6,
+  hintRuns: 3, hintAt: 4,
+});
+
+// ---- src/game/loadout-info.js ----
+// 配装读数：芯片按等级的合计效果、武器的实际数值和本局伤害占比、换装卡的得失清单
+// 数字都按游戏里真实的公式算（芯片系数见 data/loadout-info.js，武器走 wp() 再乘 G.stats），只读不改对局
+
+// 去掉多余的 0：1.50 → 1.5，0.710 → 0.71；单发伤害 10 以下留一位小数
+const fmtNum = (v, digits = 2) => String(Number(v.toFixed(digits)));
+const signedPct = v => `${v < 0 ? '−' : '+'}${Math.round(Math.abs(v) * 100)}%`;
+const hitText = v => fmtNum(v, v < 10 ? 1 : 0);
+// 一种芯片效果在某个等级的数值：倍率类返回倍率，增量类返回增量
+function passiveFactor(effect, lv) {
+  return effect.kind === 'mul' ? Math.max(effect.min ?? 0, 1 + effect.per * lv) : effect.per * lv;
+}
+function effectText(effect, lv) {
+  const v = passiveFactor(effect, lv);
+  if (effect.kind === 'mul') return `${effect.label} ${signedPct(v - 1)}`;
+  return `${effect.label} ${effect.pct ? signedPct(v) : '+' + fmtNum(v, 1)}`;
+}
+// 芯片在这个等级的合计效果，例如「全武器伤害 +48%」「移速 +24%，冲刺冷却 −24%」
+function passiveTotalText(id, lv) {
+  return (PASSIVE_EFFECTS[id] || []).map(e => effectText(e, lv)).join('，');
+}
+// 芯片升一级前后的合计效果，例如「全武器伤害 +36% → +48%」
+function passiveStepText(id, from, to) {
+  return (PASSIVE_EFFECTS[id] || []).map(e => `${e.label} ${effectText(e, from).slice(e.label.length + 1)} → ${effectText(e, to).slice(e.label.length + 1)}`).join('，');
+}
+const loadoutWeaponName = w => w.evo ? WDEF[w.id].evoName : WDEF[w.id].name;
+// 本局这把武器（按伤害来源）打出的有效伤害占全部的百分比；没数据时返回 null
+function weaponDamageShare(id) {
+  const map = G?.report?.damageByWeapon; if (!map) return null;
+  let total = 0; for (const k in map) total += map[k];
+  return total >= 1 && map[id] > 0 ? Math.round(map[id] / total * 100) : null;
+}
+// 一把武器的实际数值：单发伤害含火控、训练、协议、永久改装；间隔含冷却核心，不含超载和突击余热这类临时加成
+function weaponReadout(w, stats = G?.stats) {
+  const L = wp(w), st = stats || {};
+  const interval = w.id === 'saw' || !Number.isFinite(L.cd) ? null : L.cd * (st.cd ?? 1);
+  const count = w.id === 'cord' ? `留索 ${fmtNum(L.trailSeconds, 1)} 秒` : ({ gatling: `${L.n} 发`, missile: `每轮 ${L.n} 枚`, tesla: `连锁 ${L.c} 次`, saw: `锯刃 ${L.n} 片`, rail: `${L.b} 道光束`, drone: `僚机 ${L.n} 架` }[w.id] || '');
+  return { dmg: L.dmg * (st.dmg ?? 1), interval, intervalLabel: w.id === 'cord' ? '冷却' : '间隔', count, pierce: L.pierce || 0 };
+}
+// 换装例子用的武器：伤害例子挑本局打得最多的，冷却例子挑间隔最长的
+function exampleWeapon(p, byInterval) {
+  let best = null, score = -Infinity;
+  for (const w of p.weapons) {
+    const s = byInterval ? weaponReadout(w).interval : weaponDamageShare(w.id) ?? -1;
+    if (s === null) continue;
+    if (s > score) { best = w; score = s; }
+  }
+  return best;
+}
+// 一枚芯片在换装里的那一行；dir 为 'loss'（换下）或 'gain'（换上），例子按当前数值算前后
+function chipEffectLine(p, id, lv, dir) {
+  // 例子一律写「现在 → 换装后」
+  const st = G.stats || {}, effects = PASSIVE_EFFECTS[id] || [], f = e => passiveFactor(e, lv), loss = dir === 'loss';
+  if (id === 'firectl') {
+    const w = exampleWeapon(p, false), text = effectText(effects[0], lv);
+    if (!w) return text;
+    const now = weaponReadout(w).dmg, other = loss ? now / f(effects[0]) : now * f(effects[0]);
+    return `${text}（${loadoutWeaponName(w)}单发 ${hitText(now)} → ${hitText(other)}）`;
+  }
+  if (id === 'cooler') {
+    const w = exampleWeapon(p, true), text = effectText(effects[0], lv);
+    if (!w) return text;
+    const now = weaponReadout(w).interval, other = loss ? now / f(effects[0]) : now * f(effects[0]);
+    return `${text}（${loadoutWeaponName(w)}${weaponReadout(w).intervalLabel} ${fmtNum(now)} → ${fmtNum(other)} 秒）`;
+  }
+  if (id === 'thruster') {
+    const now = st.dashCd, other = Number.isFinite(now) ? (loss ? now / f(effects[1]) : now * f(effects[1])) : null;
+    return `${effectText(effects[0], lv)}，${other === null ? effectText(effects[1], lv) : `冲刺冷却 ${fmtNum(now)} → ${fmtNum(other)} 秒`}`;
+  }
+  if (id === 'plating') {
+    const ratio = p.maxHp > 0 ? Math.max(0, Math.min(1, p.hp / p.maxHp)) : 1, max = loss ? p.maxHp - f(effects[0]) : p.maxHp + f(effects[0]);
+    const regen = Number.isFinite(st.regen) ? `，每秒回复 ${fmtNum(st.regen, 1)} → ${fmtNum(loss ? st.regen - f(effects[1]) : st.regen + f(effects[1]), 1)}` : '';
+    return `最大生命 ${Math.round(p.maxHp)} → ${Math.round(max)}（当前 ${Math.ceil(p.hp)} → ${Math.ceil(max * ratio)}）${regen}`;
+  }
+  if (id === 'crit' && Number.isFinite(st.crit)) {
+    const pct = v => `${Math.round(v * 100)}%`;
+    return `暴击率 ${pct(st.crit)} → ${pct(loss ? st.crit - f(effects[0]) : st.crit + f(effects[0]))}`;
+  }
+  return passiveTotalText(id, lv);
+}
+// 冲刺实际冷却和来源拆分：基础（机体）、推进器、机动训练、协议，乘起来就是 recalc 算的 G.stats.dashCd
+function dashReadout(p = G?.player, mech = G?.mech) {
+  if (!p || !mech) return null;
+  const lv = p.passives.find(s => s.id === 'thruster')?.lv || 0, thruster = passiveFactor(PASSIVE_EFFECTS.thruster[1], lv);
+  const training = trainingStats(p).dashMul, talent = talentStatModifiers(p, mech).dashMul ?? 1, parts = [`基础 ${fmtNum(mech.dashCd)}`];
+  if (thruster !== 1) parts.push(`推进器 ${signedPct(thruster - 1)}`);
+  if (training !== 1) parts.push(`机动训练 ${signedPct(training - 1)}`);
+  if (talent !== 1) parts.push(`协议 ${signedPct(talent - 1)}`);
+  return { cd: mech.dashCd * thruster * training * talent, parts };
+}
+// 协议只作用于某把武器时返回那把武器的 id（穿透弹链、破片覆盖、弱点狙杀……），否则 null
+function talentBoundWeapon(p) {
+  const t = p.talent; if (!t || (G.mech && t.mechId !== G.mech.id)) return null;
+  return t.effects?.weapon || t.effects?.weakpointWeapon || null;
+}
+// 换芯片：失去旧芯片合计效果和它配套、还没进化的武器路线；得到新芯片效果和凑齐的配方；已进化的照常保留
+function chipSwapLines(p, o, add) {
+  const old = p.passives.find(s => s.id === o.replaceId), lv = old.lv, after = { weapons: p.weapons, passives: p.passives.map(s => s === old ? { id: o.id, lv } : s) };
+  add('loss', chipEffectLine(p, old.id, lv, 'loss'));
+  for (const w of p.weapons) {
+    const d = WDEF[w.id];
+    if (d.evoWith === old.id) {
+      if (w.evo) add('keep', `${d.evoName}已进化，照常保留`);
+      else add('loss', `${d.evoName}进化中断：${d.name} ${w.lv}/5，要重新凑${PDEF[old.id].name} 3 级`, w.lv >= 4);
+    }
+  }
+  add('gain', chipEffectLine(p, o.id, lv, 'gain'));
+  for (const w of p.weapons) {
+    const d = WDEF[w.id];
+    if (w.evo || d.evoWith !== o.id) continue;
+    if (canEvolve(after, w.id)) add('gain', `${d.evoName}凑齐：下次选卡或补给可进化`);
+    else add('gain', `${d.evoName}进度：${d.name} ${w.lv}/5 · ${PDEF[o.id].name} ${Math.min(3, lv)}/3 级`);
+  }
+}
+// 换武器：失去旧武器（进化、专精、本局占比）、它的共鸣、绑定的协议和合体配方；得到新武器的实际数值和新的搭配
+function weaponSwapLines(p, o, add) {
+  const old = p.weapons.find(w => w.id === o.replaceId), lv = old.lv, oldDef = WDEF[old.id], newDef = WDEF[o.id];
+  const share = weaponDamageShare(old.id), bound = talentBoundWeapon(p);
+  if (old.evo) add('loss', `${oldDef.evoName}（已进化${old.mastery ? ` · 专精 ${old.mastery} 阶` : ''}${share ? `，本局伤害 ${share}%` : ''}）的进化和专精不继承`, true);
+  else add('loss', `${oldDef.name} ${lv} 级${share ? `（本局伤害 ${share}%）` : ''}`);
+  if (!old.evo && canEvolve(p, old.id)) add('loss', `${oldDef.evoName}本来下次选卡就能进化`, true);
+  for (const m of p.modules || []) {
+    const r = RESONANCE[m.id], name = BOSS_MODULES[m.id]?.name; if (!r || !name) continue;
+    if (r.weapon === old.id) add('loss', `共鸣 · ${name}失效：${resonanceDesc(m.id)}`, true);
+    if (r.weapon === o.id) add('gain', `共鸣 · ${name}：${resonanceDesc(m.id)}`);
+  }
+  if (bound === old.id) add('loss', `协议「${p.talent.name}」作用在${loadoutWeaponName(old)}上的效果失效`, true);
+  if (bound === o.id) add('gain', `协议「${p.talent.name}」作用到${newDef.name}上`);
+  if (FUSION_RULES.enabled) {
+    const fusedPairs = p.weapons.filter(w => w.fusion).length / 2;
+    for (const f of Object.values(FUSIONS)) {
+      const owned = id => p.weapons.some(w => w !== old && w.id === id && !w.fusion);
+      if (f.weapons.includes(old.id) && owned(f.weapons.find(id => id !== old.id))) add('loss', `合体「${f.name}」配方断了`, true);
+      if (f.weapons.includes(o.id) && owned(f.weapons.find(id => id !== o.id)) && fusedPairs < FUSION_RULES.maxPerRun) add('gain', `合体「${f.name}」凑齐两把，都满级就能合体`);
+    }
+  }
+  const r = weaponReadout({ id: o.id, lv, evo: false, mastery: 0 });
+  add('gain', `${newDef.name} ${lv} 级：实际单发 ${hitText(r.dmg)}${r.interval === null ? '' : `、${r.intervalLabel} ${fmtNum(r.interval)} 秒`}`);
+  const partner = p.passives.find(s => s.id === newDef.evoWith);
+  if (partner && partner.lv >= 3 && lv === 5) add('gain', `${newDef.evoName}凑齐：下次选卡或补给可进化`);
+  else if (!partner && p.passives.length >= 4) add('warn', `${newDef.evoName}要${PDEF[newDef.evoWith].name} 3 级，芯片槽已满`);
+  if (old.id === 'rail' && G.mech?.id === 'lancer') add('warn', '苍隼须重新装备磁轨炮，才能使用强化首发和超载清弹。', true);
+}
+// 换装卡的得失清单：lines 按「重大损失 → 损失 → 得到 → 注意 → 不变」排好、截到上限；heavy 表示有比属性更重的损失
+function swapDiff(o) {
+  const p = G?.player; if (!p || (o?.kind !== 'pswap' && o?.kind !== 'wswap')) return null;
+  const weapon = o.kind === 'wswap', list = weapon ? p.weapons : p.passives, old = list.find(x => x.id === o.replaceId);
+  if (!old) return null;
+  const lines = [], rank = { loss: 1, gain: 2, warn: 3, keep: 4 };
+  const add = (kind, text, heavy = false) => { if (text) lines.push({ kind, text, heavy, order: heavy ? 0 : rank[kind] }); };
+  if (weapon) weaponSwapLines(p, o, add); else chipSwapLines(p, o, add);
+  lines.sort((a, b) => a.order - b.order);
+  const max = SWAP_DIFF.maxLines, shown = lines.length > max ? lines.slice(0, max - 1) : lines;
+  if (lines.length > max) shown.push({ kind: 'more', text: `另有 ${lines.length - shown.length} 条变化`, heavy: false });
+  return { from: weapon ? loadoutWeaponName(old) : PDEF[old.id].name, to: weapon ? WDEF[o.id].name : PDEF[o.id].name, lv: old.lv, lines: shown, heavy: lines.some(l => l.heavy) };
+}
+
+// ---- src/ui/loadout-sheet.js ----
+// 配装读数的界面：选卡页、中继奖励页的配装小图标行，暂停页的「技能一览」
+
+// 选卡页、中继奖励页「武器 n/4 · 芯片 n/4」下面的一排：武器、芯片、首领模块各一格，角上是等级
+
+function loadoutMiniRow(p) {
+  if (!p) return '';
+  const tile = (cls, inner, mark) => `<i class="loadout-tile ${cls}">${inner}${mark === '' ? '' : `<b>${mark}</b>`}</i>`;
+  const weapons = p.weapons.map(w => tile(`w${w.evo ? ' evo' : ''}${w.fusion ? ' fused' : ''}`, svgI(WDEF[w.id].icon), w.evo ? '★' : w.lv));
+  const chips = p.passives.map(s => tile('p', svgI(PDEF[s.id].icon), s.lv));
+  const modules = (p.modules || []).map(m => BOSS_MODULES[m.id]).filter(Boolean)
+    .map(d => tile('m', `<img src="assets/sprites/${d.icon}.webp" alt="" width="20" height="20">`, ''));
+  // 读屏读一句完整的配装
+  const label = [...p.weapons.map(w => `${w.evo ? WDEF[w.id].evoName : WDEF[w.id].name}${w.evo ? '已进化' : ` ${w.lv} 级`}`),
+    ...p.passives.map(s => `${PDEF[s.id].name} ${s.lv} 级`), ...(p.modules || []).map(m => BOSS_MODULES[m.id]?.name).filter(Boolean)].join('、');
+  return `<span class="loadout-mini" role="img" aria-label="已装：${label}">${[...weapons, ...chips, ...modules].join('')}</span>`;
+}
+
+// 暂停页「技能一览」：武器（实际数值、本局占比、进化差什么、共鸣、协议）、技能（冲刺、超载、时停、机体技能，后面接觉醒和改装）、芯片、首领模块、协议
+// skillExtras 是暂停页自己生成的觉醒、改装几行，放进「技能」一节末尾
+const sheetPct = v => `${Math.round(v * 100)}%`;
+const sheetSection = (title, rows) => rows ? `<section class="loadout-sheet"><h4>${title}</h4>${rows}</section>` : '';
+const sheetNotes = notes => notes.filter(Boolean).slice(0, 3).map(n => `<small>${n}</small>`).join('');
+function sheetEvolveNeed(p, w) {
+  const d = WDEF[w.id], s = p.passives.find(x => x.id === d.evoWith), chip = PDEF[d.evoWith].name;
+  if (canEvolve(p, w.id)) return `进化「${d.evoName}」条件齐备：下次选卡或补给箱可进化`;
+  const need = [];
+  if (w.lv < 5) need.push(`武器 5 级（现在 ${w.lv} 级）`);
+  if (!s) need.push(`${chip} 3 级（未装备${p.passives.length >= 4 ? '，芯片槽满，可在升级里换入' : ''}）`);
+  else if (s.lv < 3) need.push(`${chip} 3 级（现在 ${s.lv} 级）`);
+  return `进化「${d.evoName}」还差：${need.join('、')}`;
+}
+function sheetWeaponRow(p, w) {
+  const d = WDEF[w.id], r = weaponReadout(w), share = weaponDamageShare(w.id), bound = talentBoundWeapon(p) === w.id;
+  const stats = [`单发 ${hitText(r.dmg)}`, r.count, r.interval === null ? '常驻环绕' : `${r.intervalLabel} ${fmtNum(r.interval)} 秒`].filter(Boolean).join(' · ');
+  const resonance = (p.modules || []).filter(m => RESONANCE[m.id]?.weapon === w.id && BOSS_MODULES[m.id]).map(m => `共鸣 · ${BOSS_MODULES[m.id].name}：${resonanceDesc(m.id)}`);
+  const notes = [w.fusion && FUSIONS[w.fusion] ? `合体技：${FUSIONS[w.fusion].name}` : '', w.evo ? '' : sheetEvolveNeed(p, w), ...resonance, bound ? `协议「${p.talent.name}」：${p.talent.description}` : ''];
+  return `<div class="sheet-row w${w.evo ? ' evo' : ''}">${svgI(d.icon)}<div class="sheet-main"><b>${w.evo ? d.evoName : d.name}<em>${w.evo ? `已进化 · 专精 ${w.mastery || 0} / ${MASTERY_MAX} 阶` : `${w.lv} / 5 级`}</em></b><span class="sheet-stats">${stats}</span>${sheetNotes(notes)}</div>${share ? `<span class="sheet-share">本局<b>${share}%</b></span>` : ''}</div>`;
+}
+function sheetChipRow(p, s) {
+  const d = PDEF[s.id], notes = Object.entries(WDEF).filter(([, wd]) => wd.evoWith === s.id).map(([id, wd]) => {
+    const w = p.weapons.find(x => x.id === id);
+    return !w ? `配套${wd.name}：未装备` : w.evo ? `配套${wd.name}：已进化` : `配套${wd.name}：武器 ${w.lv}/5 级 · 芯片 ${Math.min(3, s.lv)}/3 级`;
+  });
+  return `<div class="sheet-row p">${svgI(d.icon)}<div class="sheet-main"><b>${d.name}<em>${s.lv} / 5 级</em></b><span class="sheet-stats">${passiveTotalText(s.id, s.lv)}</span>${sheetNotes(notes)}</div></div>`;
+}
+function sheetModuleRow(p, m) {
+  const d = BOSS_MODULES[m.id]; if (!d) return '';
+  const r = RESONANCE[m.id], on = r && p.weapons.some(w => w.id === r.weapon);
+  const note = r ? `<small class="${on ? 'on' : ''}">${on ? '共鸣生效' : `装上${WDEF[r.weapon].name}后共鸣`}：${resonanceDesc(m.id)}</small>` : '';
+  return `<div class="sheet-row m"><img src="assets/sprites/${d.icon}.webp" alt="" width="28" height="28"><div class="sheet-main"><b>${d.name}<em>首领模块</em></b><span class="sheet-stats">${bossModuleDesc(m.id)}</span>${note}</div></div>`;
+}
+const sheetSkillRow = (cls, name, text) => `<div class="sheet-row sheet-skill ${cls}"><span class="sheet-badge" aria-hidden="true">${name.slice(0, 1)}</span><div class="sheet-main"><b>${name}</b><span class="sheet-stats">${text}</span></div></div>`;
+function sheetSkills(p, mech) {
+  if (!mech) return '';
+  const dash = dashReadout(p, mech), trait = mech.trait, rows = [];
+  if (dash) rows.push(sheetSkillRow('dash', '冲刺', `冷却 ${fmtNum(dash.cd)} 秒 · ${dash.parts.join('，')}`));
+  rows.push(sheetSkillRow('over', '超载', `能量 ${Math.floor(p.overload || 0)}/100 · 满了按下：${OVERLOAD.duration} 秒内射击间隔减半、伤害 +${sheetPct(OVERLOAD.dmgMul - 1)}、移速 +${sheetPct(OVERLOAD.speedMul - 1)}、受伤减半`));
+  rows.push(sheetSkillRow('stop', '时停', `${TIME_STOP.chainWindow} 秒内连续 ${TIME_STOP.chainNeeded} 次极限闪避触发，停 ${TIME_STOP.duration} 秒，冷却 ${TIME_STOP.cooldown} 秒${G.timeStopCd > 0 ? ` · 冷却还剩 ${Math.ceil(G.timeStopCd)} 秒` : ''}`));
+  if (trait) rows.push(sheetSkillRow('trait', `被动 · ${trait.passiveName}`, trait.passiveDesc), sheetSkillRow('trait', `超载技 · ${trait.activeName}`, trait.activeDesc));
+  return rows.join('');
+}
+function loadoutSheet(p, skillExtras = '') {
+  if (!p) return '';
+  const mech = G?.mech, talent = p.talent && (!mech || p.talent.mechId === mech.id) ? p.talent : null;
+  return `<p class="sheet-note">数值已算上芯片、训练和协议；超载中射击间隔再减半</p>`
+    + sheetSection('武器', p.weapons.map(w => sheetWeaponRow(p, w)).join(''))
+    + sheetSection('技能', sheetSkills(p, mech) + skillExtras)
+    + sheetSection('芯片', p.passives.map(s => sheetChipRow(p, s)).join(''))
+    + sheetSection('首领模块', (p.modules || []).map(m => sheetModuleRow(p, m)).join(''))
+    + sheetSection('协议', talent ? `<div class="sheet-row proto"><div class="sheet-main"><b>${talent.name}</b><span class="sheet-stats">${talent.description}</span></div></div>` : '');
+}
+
 // ---- src/ui/levelup.js ----
 // 升级选卡与构筑反馈：复用真实装备等级、槽位和进化条件
 
@@ -8526,12 +8812,14 @@ function buildLoadoutSummary() {
   // 首领模块装上之后才显示，没装时摘要保持三项
   const modules = p.modules?.length ? `<span class="${p.modules.length >= BOSS_MODULE_SLOTS ? 'full' : ''}">模块 <b>${p.modules.length}/${BOSS_MODULE_SLOTS}</b></span>` : '';
   const slots = weaponSlotsUsed(p);
-  return `<span class="${slots === 4 ? 'full' : ''}">武器 <b>${slots}/4</b></span><span class="${p.passives.length === 4 ? 'full' : ''}">芯片 <b>${p.passives.length}/4</b></span>${modules}${ready ? `<span class="ready">可进化 <b>${ready}</b></span>` : growth}`;
+  return `<span class="${slots === 4 ? 'full' : ''}">武器 <b>${slots}/4</b></span><span class="${p.passives.length === 4 ? 'full' : ''}">芯片 <b>${p.passives.length}/4</b></span>${modules}${ready ? `<span class="ready">可进化 <b>${ready}</b></span>` : growth}${loadoutMiniRow(p)}`;
 }
 function choicePairInfo(o) {
   const p = G.player;
-  const isWeaponChoice = ['wnew', 'wup', 'evo', 'wswap'].includes(o.kind), isSwap = o.kind === 'wswap' || o.kind === 'pswap';
-  const ids = isWeaponChoice ? [o.id] : ['pnew', 'pup', 'pswap'].includes(o.kind) ? Object.keys(WDEF).filter(id => WDEF[id].evoWith === o.id) : [];
+  // 换装卡的配方变化（凑齐、中断、保留）并进得失清单，见 choiceSwapImpact
+  if (o.kind === 'wswap' || o.kind === 'pswap') return [];
+  const isWeaponChoice = ['wnew', 'wup', 'evo'].includes(o.kind);
+  const ids = isWeaponChoice ? [o.id] : ['pnew', 'pup'].includes(o.kind) ? Object.keys(WDEF).filter(id => WDEF[id].evoWith === o.id) : [];
   // 一枚芯片可能配多把武器，每条配方分别显示进度，避免未装备的一把遮住已满足的另一把。
   return ids.map(weaponId => {
     const d = WDEF[weaponId], w = p.weapons.find(x => x.id === weaponId), s = p.passives.find(x => x.id === d.evoWith);
@@ -8541,15 +8829,16 @@ function choicePairInfo(o) {
     if (!isWeaponChoice && !w && weaponSlotsUsed(p) >= 4) return { text: `未装备${d.name} · 可换入武器完成配套`, state: 'blocked' };
     if (w?.evo && !isWeaponChoice) return { text: `${d.evoName}已进化 · 本级继续提升芯片效果`, state: 'ready' };
     const current = isWeaponChoice ? `${PDEF[d.evoWith].name} ${passiveLv ? passiveLv + '级' : '未装备'}` : `${d.name} ${weaponLv ? weaponLv + '/5级' : '未装备'}`;
-    const replaced = isSwap ? (isWeaponChoice ? p.weapons : p.passives).find(x => x.id === o.replaceId) : null;
-    const nextWeapon = isWeaponChoice ? (isSwap ? replaced.lv : weaponLv + 1) : weaponLv;
-    const nextPassive = isWeaponChoice ? passiveLv : (isSwap ? replaced.lv : passiveLv + 1);
+    const nextWeapon = isWeaponChoice ? weaponLv + 1 : weaponLv;
+    const nextPassive = isWeaponChoice ? passiveLv : passiveLv + 1;
     const complete = nextWeapon >= 5 && nextPassive >= 3;
     return { text: `${current} · ${complete ? '选择后条件齐备，下次选卡或补给可进化' : `选择后进化进度 ${nextWeapon}/5 + ${Math.min(3, nextPassive)}/3`}`, state: complete ? 'ready' : '' };
   });
 }
 function choiceWeaponBenefit(o, fallback) {
-  if (o.kind === 'pswap') return `每级效果：${PDEF[o.id].desc}`;
+  // 芯片按等级写合计效果：换装写保留等级的合计，升级写升级前后
+  if (o.kind === 'pswap') { const lv = G.player.passives.find(x => x.id === o.replaceId).lv; return `${lv} 级：${passiveTotalText(o.id, lv)}`; }
+  if (o.kind === 'pup') { const lv = G.player.passives.find(x => x.id === o.id).lv; return passiveStepText(o.id, lv, lv + 1) || fallback; }
   if (o.kind === 'wswap') {
     const old = G.player.weapons.find(x => x.id === o.replaceId), stats = weaponStats({ id: o.id, lv: old.lv, evo: false, mastery: 0 });
     const count = stats.n ? `${o.id === 'saw' ? '锯刃' : o.id === 'drone' ? '僚机' : '弹数'} ${stats.n}` : stats.c ? `连锁 ${stats.c}` : stats.trailSeconds ? `索长 ${stats.trailSeconds}秒` : `光束 ${stats.b}`;
@@ -8562,14 +8851,12 @@ function choiceWeaponBenefit(o, fallback) {
   const changes = fields.filter(([key]) => Number.isFinite(before[key]) && Number.isFinite(after[key]) && before[key] !== after[key]);
   return changes.slice(0, 2).map(([key, name]) => `${name} ${before[key]}→${after[key]}${key === 'cd' || key === 'trailSeconds' ? '秒' : ''}`).join(' · ') || fallback;
 }
+// 换装卡的得失清单：失（红）、得（绿）、注意（黄）、不变（灰），数字按当前配装实算；有比属性更重的损失时左边一条红边
+const SWAP_LINE_TAGS = { loss: '失', gain: '得', warn: '注意', keep: '不变', more: '' };
 function choiceSwapImpact(o) {
-  if (o.kind !== 'wswap' && o.kind !== 'pswap') return '';
-  const weapon = o.kind === 'wswap', defs = weapon ? WDEF : PDEF;
-  const old = (weapon ? G.player.weapons : G.player.passives).find(x => x.id === o.replaceId);
-  const oldName = old.evo ? defs[old.id].evoName : defs[old.id].name;
-  const consequence = weapon ? '原武器的进化与专精不继承' : '原芯片效果移除，生命按当前比例重算';
-  const mechWarning = weapon && o.replaceId === 'rail' && G.mech?.id === 'lancer' ? '<span>苍隼须重新装备磁轨炮，才能使用强化首发和超载清弹。</span>' : '';
-  return `<span class="swap-impact"><b>${oldName} → ${defs[o.id].name}</b><span>保留 ${old.lv} 级 · ${consequence}</span>${mechWarning}</span>`;
+  const diff = swapDiff(o); if (!diff) return '';
+  const lines = diff.lines.map(l => `<span class="swap-line ${l.kind}">${SWAP_LINE_TAGS[l.kind] ? `<i>${SWAP_LINE_TAGS[l.kind]}</i>` : ''}<span>${l.text}</span></span>`).join('');
+  return `<span class="swap-impact${diff.heavy ? ' heavy' : ''}"><b>${diff.from} → ${diff.to}</b><span>保留 ${diff.lv} 级</span>${lines}</span>`;
 }
 function buildChoiceCard(o, index) {
   if (!isChoiceAvailable(o)) return '';
@@ -9124,7 +9411,7 @@ function gainXp(v) {
 }
 
 // ---- src/ui/pause.js ----
-// 暂停界面：显示当前配装和真实进化进度，切到后台时自动暂停
+// 暂停界面：显示技能一览和真实进化进度，切到后台时自动暂停
 
 function pauseGame() {
   if (!G || G.state !== 'playing' || G.won || G.victoryT > 0 || G.endT > 0 || G.player.hp <= 0) return;
@@ -9134,9 +9421,8 @@ function pauseGame() {
   $('#psMech').textContent = G.mech ? `${G.mech.name}${G.talent ? ' · ' + G.talent.name : ''}${G.practice ? ' · 安全训练' : ''}` : '';
   $('#psQuit').textContent = G.practice ? '结束训练' : '结束并结算';
   const modules = p.modules || [];
-  $('#psBuild').innerHTML = `<div class="loadout-summary" style="grid-column:1/-1"><span>武器 <b>${weaponSlotsUsed(p)}/4</b></span><span>芯片 <b>${p.passives.length}/4</b></span>${modules.length ? `<span>模块 <b>${modules.length}/${BOSS_MODULE_SLOTS}</b></span>` : ''}</div>` + [...p.weapons.map(w => `<div class="bi ${w.evo ? 'evo' : ''}" style="color:${w.evo ? 'var(--gold)' : 'var(--amber-hi)'}">${svgI(WDEF[w.id].icon)}<div><div class="bn">${w.evo ? WDEF[w.id].evoName : WDEF[w.id].name}</div><div class="bl num">${w.evo ? '已进化' : w.lv + ' / 5 级'}</div>${w.fusion ? `<div class="fusion-detail">合体技：${FUSIONS[w.fusion].name}</div>` : ''}${w.evo ? `<div class="mastery-detail">专精 ${w.mastery || 0} / ${MASTERY_MAX} 阶${w.mastery ? ` · 基础伤害 ${Math.round(weaponStats(w).dmg * 10) / 10}` : ''}</div>` : ''}</div></div>`),
-  ...p.passives.map(s => `<div class="bi p">${svgI(PDEF[s.id].icon)}<div><div class="bn">${PDEF[s.id].name}</div><div class="bl num">${s.lv} / 5 级</div></div></div>`),
-  ...modules.map(m => BOSS_MODULES[m.id]).filter(Boolean).map(d => `<div class="bi m"><img src="assets/sprites/${d.icon}.webp" alt="" width="28" height="28"><div><div class="bn">${d.name}</div><div class="bl">首领模块</div></div></div>`)].join('') + pauseMechAwakenSummary(p) + pauseSkillMods(p) + pauseTrainingSummary(p);
+  // 「技能一览」：武器、技能（觉醒和改装接在后面）、芯片、首领模块、协议，见 ui/loadout-sheet.js
+  $('#psBuild').innerHTML = `<div class="loadout-summary" style="grid-column:1/-1"><span>武器 <b>${weaponSlotsUsed(p)}/4</b></span><span>芯片 <b>${p.passives.length}/4</b></span>${modules.length ? `<span>模块 <b>${modules.length}/${BOSS_MODULE_SLOTS}</b></span>` : ''}</div>` + loadoutSheet(p, pauseMechAwakenSummary(p) + pauseSkillMods(p)) + pauseTrainingSummary(p);
   $('#psRecipes').innerHTML = Object.entries(WDEF).sort(([a], [b]) => Number(p.weapons.some(w => w.id === b)) - Number(p.weapons.some(w => w.id === a))).map(([id, d]) => {
     const w = p.weapons.find(x => x.id === id), s = p.passives.find(x => x.id === d.evoWith), ready = canEvolve(p, id);
     const blocked = !w && weaponSlotsUsed(p) >= 4 || !s && p.passives.length >= 4;
@@ -9693,6 +9979,213 @@ function drawBanner() {
     ctx.font = '600 14px "PingFang SC",sans-serif'; ctx.fillStyle = '#d6dde5'; ctx.fillText(b.sub, W / 2, y + 22);
   }
   ctx.globalAlpha = 1; ctx.textBaseline = 'alphabetic';
+}
+
+// ---- src/render/loadout-strip.js ----
+// 战斗技能条：技能按钮另一侧（右手布局在左下、左手布局在右下）一排半透明小格，只看不点
+// 按武器槽顺序画已装武器（合体的两把画成一格），后面跟首领模块；角上是等级，进化金框加星，专精画小圆点；
+// 实际间隔不短于 LOADOUT_STRIP.sweepMin 秒的武器和模块画冷却转圈。格子和整条都预渲染成位图，配装变了才重画，每帧一次贴图加转圈
+
+// 技能条的位置：width、height 是画布尺寸，safeBottom 是底部安全区，scale 是按钮缩放；weapons、modules 是两类格子数（合体的两把算一格）
+// 先试一排（最小那档格子除外），放不下就武器一排、模块一排往上叠，再放不下按最小格子折行；返回每格的位置和整条的外框
+function loadoutStripLayout({ width, height, safeBottom = 0, layout = 'right', scale = 1, weapons = 0, modules = 0 }) {
+  const cfg = LOADOUT_STRIP, b = cfg.buttons, n = weapons + modules; if (!n) return null;
+  const cluster = b.edge + (b.step + b.over) * scale, lefty = layout === 'left';
+  const left = lefty ? cluster + cfg.buttonGap : cfg.edge, right = lefty ? width - cfg.edge : width - cluster - cfg.buttonGap, avail = right - left;
+  const rowW = (k, s) => k * s + (k - 1) * cfg.gap, fits = (k, s) => rowW(k, s) <= avail;
+  let size = cfg.tiles.slice(0, -1).find(s => fits(n, s)), rows = size ? [n] : null;
+  if (!rows && weapons && modules) { size = cfg.tiles.find(s => fits(Math.max(weapons, modules), s)); if (size) rows = [weapons, modules]; }
+  if (!rows) {
+    size = cfg.tiles.at(-1); rows = [];
+    const per = Math.max(1, Math.floor((avail + cfg.gap) / (size + cfg.gap)));
+    for (let i = 0; i < n; i += per) rows.push(Math.min(per, n - i));
+  }
+  // 第一排贴着冲刺按钮的底边，后面的排往上叠；左手布局靠右对齐
+  const tiles = [], bottom = height - safeBottom - cfg.bottom;
+  rows.forEach((k, r) => {
+    const y = bottom - size - r * (size + cfg.gap), x0 = lefty ? right - rowW(k, size) : left;
+    for (let i = 0; i < k; i++) tiles.push({ x: x0 + i * (size + cfg.gap), y, s: size });
+  });
+  const x = Math.min(...tiles.map(t => t.x)), y = Math.min(...tiles.map(t => t.y));
+  return { size, rows: rows.length, tiles, x, y, w: Math.max(...tiles.map(t => t.x + t.s)) - x, h: bottom - y };
+}
+
+// 底部安全区和 render/hud.js 一样读 CSS 变量，窗口变化时重读
+let stripSafeBottom = null;
+const readStripSafeBottom = () => { stripSafeBottom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom')) || 0; };
+window.addEventListener('resize', readStripSafeBottom);
+
+// 武器图标：ui/icons.js 的线框 SVG 转成图片，加载完之前格子里先只画框和等级
+const stripIcons = {};
+function stripIcon(id) {
+  let entry = stripIcons[id];
+  if (!entry) {
+    const im = new Image(); entry = stripIcons[id] = { im, ready: false };
+    im.onload = () => { entry.ready = true; };
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96" fill="none" stroke="#e6eef6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${ICONS[id] || ''}</svg>`);
+  }
+  return entry.ready ? entry.im : null;
+}
+const stripModuleIcon = def => { const im = IMG[def.icon]; return im && (im.complete !== false) ? im : null; };
+
+// 格子：kind 为 w（武器）、f（合体的两把）、m（首领模块）；key 变了说明那一格升级、进化或换了，闪一下
+let stripItems = [], stripSnap = [], stripGen = null;
+function stripSnapshotMatches(p) {
+  const s = stripSnap, ws = p.weapons, ms = p.modules || [];
+  if (s.length !== 2 + ws.length * 6 + ms.length * 2 || s[0] !== G || s[1] !== G.stats?.cd) return false;
+  let i = 2;
+  for (const w of ws) { if (s[i] !== w || s[i + 1] !== w.id || s[i + 2] !== w.lv || s[i + 3] !== !!w.evo || s[i + 4] !== (w.mastery || 0) || s[i + 5] !== (w.fusion || null)) return false; i += 6; }
+  for (const m of ms) { if (s[i] !== m || s[i + 1] !== m.id) return false; i += 2; }
+  return true;
+}
+function rebuildStripItems(p) {
+  const prev = stripGen === G ? stripItems : [], items = [], ms = p.modules || [];
+  for (const w of p.weapons) {
+    if (w.fusion) {
+      if (items.some(it => it.kind === 'f' && it.weapons.includes(w))) continue;
+      const partner = p.weapons.find(x => x !== w && x.fusion === w.fusion);
+      if (partner) { items.push({ kind: 'f', weapons: [w, partner], key: `f:${w.id}+${partner.id}`, src: null }); continue; }
+    }
+    const interval = weaponReadout(w).interval;
+    items.push({ kind: 'w', weapons: [w], key: `w:${w.id}:${w.lv}:${w.evo ? 1 : 0}:${w.mastery || 0}`, src: interval !== null && interval >= LOADOUT_STRIP.sweepMin ? w : null });
+  }
+  for (const m of ms) {
+    const def = BOSS_MODULES[m.id]; if (!def) continue;
+    items.push({ kind: 'm', def, key: `m:${m.id}`, src: def.interval >= LOADOUT_STRIP.sweepMin ? m : null });
+  }
+  items.forEach((it, i) => {
+    const old = prev[i];
+    it.max = old && old.src === it.src ? old.max : 0; it.last = old && old.src === it.src ? old.last : 0;
+    // 同一局里新出现或变了的格子闪 flashT 秒；新开一局不闪
+    it.flashUntil = stripGen === G && (!old || old.key !== it.key) ? G.rt + LOADOUT_STRIP.flashT : old?.flashUntil ?? -1;
+    if (old?.key === it.key) Object.assign(it, { tile: old.tile, tileSize: old.tileSize, tileK: old.tileK, tileReady: old.tileReady });
+  });
+  stripItems = items; stripGen = G;
+  const s = stripSnap; s.length = 0; s.push(G, G.stats?.cd);
+  for (const w of p.weapons) s.push(w, w.id, w.lv, !!w.evo, w.mastery || 0, w.fusion || null);
+  for (const m of ms) s.push(m, m.id);
+}
+
+// 预渲染的格子位图挂在格子上：边长、像素比变了或图标刚加载完才重画；格子没变时换装重建也沿用旧位图
+const stripIconsReady = it => it.kind === 'm' ? !!stripModuleIcon(it.def) : it.weapons.every(w => stripIcons[WDEF[w.id].icon]?.ready);
+function chamfer(c, s, k) { c.beginPath(); c.moveTo(k, 0); c.lineTo(s, 0); c.lineTo(s, s - k); c.lineTo(s - k, s); c.lineTo(0, s); c.lineTo(0, k); c.closePath(); }
+function stripTile(it, size) {
+  const k = Math.max(1, Math.min(3, DPR || 1));
+  if (it.tile && it.tileSize === size && it.tileK === k && (it.tileReady || !stripIconsReady(it))) return it.tile;
+  const icons = it.kind === 'm' ? [stripModuleIcon(it.def)] : it.weapons.map(w => stripIcon(WDEF[w.id].icon));
+  const tile = it.tile && it.tileK === k && it.tileSize === size ? it.tile : offscreen(Math.ceil(size * k), Math.ceil(size * k));
+  Object.assign(it, { tile, tileSize: size, tileK: k, tileReady: icons.every(Boolean) }); stripTileVersion++;
+  const c = tile.getContext('2d'), w = it.weapons?.[0], evo = it.kind === 'w' && w.evo, cut = Math.max(3, size * .2);
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, tile.width, tile.height);
+  c.scale(k, k);
+  // 首领模块的贴图是深色的，底色提亮一点才认得出
+  chamfer(c, size, cut); c.fillStyle = it.kind === 'm' ? 'rgba(78,52,64,.9)' : 'rgba(8,12,18,.78)'; c.fill();
+  c.lineWidth = evo ? 2 : 1.2; c.strokeStyle = evo ? '#ffcd47' : it.kind === 'f' ? '#c9a6ff' : it.kind === 'm' ? '#7fd3ff' : 'rgba(170,190,210,.6)'; c.stroke();
+  const pad = size * (it.kind === 'm' ? .08 : .14);
+  if (it.kind === 'f') {
+    // 合体的两把斜着各占一半：左上一把、右下一把，中间一道斜线
+    const s2 = size * .56;
+    if (icons[0]) c.drawImage(icons[0], pad * .5, pad * .5, s2, s2);
+    if (icons[1]) c.drawImage(icons[1], size - s2 - pad * .5, size - s2 - pad * .5, s2, s2);
+    c.strokeStyle = 'rgba(201,166,255,.55)'; c.lineWidth = 1; c.beginPath(); c.moveTo(size - cut * .5, cut * .5); c.lineTo(cut * .5, size - cut * .5); c.stroke();
+  } else if (icons[0]) c.drawImage(icons[0], pad, pad, size - pad * 2, size - pad * 2);
+  if (it.kind === 'w') {
+    // 角标：等级，进化后写星；专精的小圆点排在左上
+    const mark = evo ? '★' : String(w.lv), fs = Math.round(size * .44);
+    c.font = `700 ${fs}px Teko,"Arial Narrow",sans-serif`; c.textAlign = 'right'; c.textBaseline = 'alphabetic';
+    c.lineWidth = 3; c.strokeStyle = 'rgba(0,0,0,.85)'; c.strokeText(mark, size - 2, size - 2);
+    c.fillStyle = evo ? '#ffdf7a' : '#ffffff'; c.fillText(mark, size - 2, size - 2);
+    c.fillStyle = '#ffcd47';
+    for (let i = 0; i < (w.mastery || 0); i++) { c.beginPath(); c.arc(cut + 2 + i * 4.5, 3.5, 1.6, 0, TAU); c.fill(); }
+  }
+  return tile;
+}
+// 整条技能条再合成一张位图：格子、排布或像素比变了才重画，每帧只贴一次
+let stripSheet = null, stripTileVersion = 0;
+const stripSheetFor = { l: null, items: null, v: -1, k: 0 };
+function stripSheetImage(l) {
+  const k = Math.max(1, Math.min(3, DPR || 1)), f = stripSheetFor;
+  for (const it of stripItems) stripTile(it, l.size); // 图标刚加载完的格子先重画
+  if (stripSheet && f.l === l && f.items === stripItems && f.v === stripTileVersion && f.k === k) return stripSheet;
+  const w = Math.ceil(l.w * k), h = Math.ceil(l.h * k);
+  if (!stripSheet || stripSheet.width !== w || stripSheet.height !== h) stripSheet = offscreen(w, h);
+  const c = stripSheet.getContext('2d');
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, w, h); c.setTransform(k, 0, 0, k, 0, 0);
+  for (let i = 0; i < stripItems.length; i++) { const t = l.tiles[i]; c.drawImage(stripItems[i].tile, t.x - l.x, t.y - l.y, t.s, t.s); }
+  Object.assign(f, { l, items: stripItems, v: stripTileVersion, k });
+  return stripSheet;
+}
+
+// 冷却还剩的比例：记下每轮装填开始时的冷却值当分母，超载、余热这类临时加速也算得对
+function stripCooldownLeft(it) {
+  const src = it.src; if (!src) return 0;
+  const cd = src.cd || 0;
+  if (cd > it.last + 1e-4) it.max = cd;
+  it.last = cd;
+  return it.max > 0 && cd > 0 ? Math.min(1, cd / it.max) : 0;
+}
+// 胜利、阵亡演出，超载全屏切入，首领登场横幅期间不画
+function loadoutStripHidden(p) {
+  return !p || p.hp <= 0 || G.won || G.endT > 0 || !!G.cutin?.full || (G.banner?.kind === 'boss' && G.banner.t > 0);
+}
+
+let stripLayout = null, stripLayoutFor = {}, stripAlpha = LOADOUT_STRIP.alpha, stripLastRt = 0, stripHintG = null;
+function currentStripLayout(settings) {
+  if (stripSafeBottom === null) readStripSafeBottom();
+  const layout = settings?.controlLayout === 'left' ? 'left' : 'right', size = Number(settings?.skillSize), scale = [100, 115, 130].includes(size) ? size / 100 : 1;
+  let weapons = 0, modules = 0; for (const it of stripItems) it.kind === 'm' ? modules++ : weapons++;
+  const f = stripLayoutFor;
+  if (f.W !== W || f.H !== H || f.sb !== stripSafeBottom || f.layout !== layout || f.scale !== scale || f.weapons !== weapons || f.modules !== modules) {
+    Object.assign(f, { W, H, sb: stripSafeBottom, layout, scale, weapons, modules });
+    stripLayout = loadoutStripLayout({ width: W, height: H, safeBottom: stripSafeBottom, layout, scale, weapons, modules });
+  }
+  return stripLayout;
+}
+// 摇杆起点（手指按下的位置）离技能条外框 thumbRange 以内
+function stripThumbNear(l) {
+  if (IN.id === null) return false;
+  const dx = Math.max(l.x - IN.ox, 0, IN.ox - (l.x + l.w)), dy = Math.max(l.y - IN.oy, 0, IN.oy - (l.y + l.h));
+  return dx * dx + dy * dy <= LOADOUT_STRIP.thumbRange ** 2;
+}
+function drawLoadoutStrip(settings) {
+  const p = G?.player, cfg = LOADOUT_STRIP;
+  if (settings?.loadoutStrip === false || loadoutStripHidden(p)) return;
+  if (!stripSnapshotMatches(p)) rebuildStripItems(p);
+  const l = currentStripLayout(settings); if (!l) return;
+  // 透明度按真实时间缓动：手指压近时淡下去，抬手后回来
+  const dt = Math.max(0, Math.min(.1, G.rt - stripLastRt)); stripLastRt = G.rt;
+  const target = stripThumbNear(l) ? cfg.thumbAlpha : cfg.alpha;
+  stripAlpha += (target - stripAlpha) * Math.min(1, dt * cfg.fadeRate);
+  ctx.globalAlpha = stripAlpha;
+  ctx.drawImage(stripSheetImage(l), l.x, l.y, l.w, l.h);
+  // 冷却转圈：还没装填好的部分盖一层暗色扇形，已装填的部分沿格子画一道亮弧；各格合成一条路径，一次填、一次描
+  let sweeps = 0;
+  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.beginPath();
+  for (let i = 0; i < stripItems.length; i++) {
+    const it = stripItems[i]; it.left = stripCooldownLeft(it); if (it.left <= 0) continue;
+    const t = l.tiles[i], cx = t.x + t.s / 2, cy = t.y + t.s / 2, a = -PI / 2 + (1 - it.left) * TAU;
+    ctx.moveTo(cx, cy); ctx.arc(cx, cy, t.s / 2 - 2, a, PI * 1.5); ctx.closePath(); sweeps++;
+  }
+  if (sweeps) {
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,214,120,.95)'; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i = 0; i < stripItems.length; i++) {
+      const it = stripItems[i]; if (it.left <= 0) continue;
+      const t = l.tiles[i], cx = t.x + t.s / 2, cy = t.y + t.s / 2, r = t.s / 2 - 1;
+      ctx.moveTo(cx, cy - r); ctx.arc(cx, cy, r, -PI / 2, -PI / 2 + (1 - it.left) * TAU);
+    }
+    ctx.stroke();
+  }
+  for (let i = 0; i < stripItems.length; i++) {
+    const k = (stripItems[i].flashUntil - G.rt) / cfg.flashT; if (!(k > 0)) continue;
+    const t = l.tiles[i]; ctx.globalAlpha = stripAlpha * Math.min(1, k); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.strokeRect(t.x - 1, t.y - 1, t.s + 2, t.s + 2);
+  }
+  ctx.globalAlpha = 1;
+  // 前几局开局提示一次技能条是什么
+  if (stripHintG !== G && !G.practice && G.t >= cfg.hintAt) {
+    stripHintG = G;
+    if (meta.runs <= cfg.hintRuns) toast({ text: `${l.x > W / 2 ? '右' : '左'}下小图标是已装武器和等级，转圈是冷却`, t: 4, priority: 1 });
+  }
 }
 
 // ---- src/render/environment.js ----
@@ -12111,6 +12604,7 @@ function render(rdt) {
   if (G.boss) drawGazeEdge(ctx, G.boss, { width: W, height: H, zoom: Z, camera: G.cam, bounds: hudBattleBounds(), flashes: settings.flashes });
   if (settings.flashes && G.flashA > 0) { ctx.fillStyle = `rgba(${G.flashC},${G.flashA * .5})`; ctx.fillRect(0, 0, W, H); }
   drawHUD();
+  drawLoadoutStrip(settings);
   drawJoystick();
   drawBanner();
   warmOverdriveCutin(); drawOverdriveCutin();
