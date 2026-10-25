@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#07090d">
 <title>钢铁暴走</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +24,8 @@ body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:var(-
 #app{position:relative;width:100%;height:100%;overflow:hidden;touch-action:none;background:var(--bg)}
 #c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 [hidden]{display:none!important}
+/* 页面意外被放大时放开平移和捏合，让玩家能自己缩回去（见 core/viewport-lock.js） */
+.page-zoomed #app,.page-zoomed #app *{touch-action:manipulation!important}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 .screen{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column}
@@ -1447,10 +1449,12 @@ const FEEDBACK_VISUALS = Object.freeze({ hitCrossSize: 3, hitCrossLife: .06 });
 // ---- src/core/audio.js ----
 // 音频：全部用 WebAudio 实时合成的音效与背景音乐
 
-const AU = { ctx: null, master: null, sfx: null, music: null, muffle: null, muffled: false, duck: null, duckUntil: 0, duckAt: -Infinity, duckClock: null, duckTokens: null, pauseEpoch: 0, noise: null, last: {}, voices: new Set(), background: false, musicPaused: false };
+const AU = { ctx: null, master: null, sfx: null, music: null, muffle: null, muffled: false, duck: null, duckUntil: 0, duckAt: -Infinity, duckClock: null, duckTokens: null, pauseEpoch: 0, noise: null, last: {}, voices: new Set(), background: false, musicPaused: false, wake: null };
+// 锁屏、来电后 iOS 把上下文置成 interrupted，其他浏览器是 suspended；只要不在运行就恢复，被系统关掉的整个重建。
 function audioInit() {
   if (AU.background) return;
-  if (AU.ctx) { if (AU.ctx.state === 'suspended') AU.ctx.resume()?.catch(() => { }); return; }
+  if (AU.ctx?.state === 'closed') return rebuildAudio();
+  if (AU.ctx) { if (AU.ctx.state !== 'running') AU.ctx.resume()?.catch(() => { }); return; }
   const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
   try {
     const c = AU.ctx = new AC();
@@ -1498,10 +1502,47 @@ function audioPause({ suspend = false } = {}) {
 function audioResume({ music = true } = {}) {
   AU.background = false; AU.musicPaused = !music; audioInit();
   if (!AU.ctx) return;
+  markWake();
   // 音频时钟可能已走过很久，恢复时从新一拍开始，不能补发积压音符。
   MUS.next = AU.ctx.currentTime + .1;
   syncAudioSettings(getSettings());
   if (music && MUS.resume) musicStart();
+}
+// 回到前台时记下音频时钟，之后的触摸据此判断上下文是不是假装在运行（iOS 偶发：状态是 running 但时钟不走、没有声音）。
+const WAKE_CHECK_MS = 1000;
+function markWake() { AU.wake = { at: Date.now(), clock: AU.ctx.currentTime }; }
+// 每次触摸、按键都调用：iOS 只认手势里的恢复，所以不在运行就在这里再恢复一次，并放一帧静音把输出通道唤醒。
+function audioUnlock() {
+  if (AU.background) return;
+  if (!AU.ctx) return audioInit();
+  if (AU.ctx.state === 'running') {
+    if (!AU.wake || Date.now() - AU.wake.at < WAKE_CHECK_MS) return;
+    const stalled = AU.ctx.currentTime - AU.wake.clock < .05;
+    AU.wake = null;
+    if (stalled) rebuildAudio();
+    return;
+  }
+  audioInit();
+  if (!AU.ctx) return;
+  // 从这次手势重新计时，避免刚恢复就被当成时钟停走
+  markWake();
+  try {
+    const s = AU.ctx.createBufferSource(); s.buffer = AU.ctx.createBuffer(1, 1, AU.ctx.sampleRate);
+    s.connect(AU.ctx.destination); s.start(0);
+  } catch (_) { }
+}
+// 丢掉坏掉的上下文换一个新的，音量、时停变闷和正在放的音乐照原样接上。
+function rebuildAudio() {
+  const music = MUS.on, resume = MUS.resume, muffled = AU.muffled, old = AU.ctx;
+  musicStop(); MUS.resume = resume;
+  for (const voice of AU.voices) { try { voice.source.stop(); } catch (_) { } }
+  AU.voices.clear();
+  try { if (old && old.state !== 'closed') old.close()?.catch(() => { }); } catch (_) { }
+  Object.assign(AU, { ctx: null, last: {}, duckUntil: 0, duckAt: -Infinity, duckClock: null, duckTokens: null, wake: null, muffled });
+  audioInit();
+  if (!AU.ctx) return;
+  syncAudioSettings(getSettings());
+  if (music) musicStart();
 }
 // 保留旧总开关接口，重新开启时恢复各自音量，而不是覆盖成最大音量。
 function setSound(on) {
@@ -9496,6 +9537,7 @@ function flickDash(e) {
   const dx = e.clientX - RECT.left - IN.downX, dy = e.clientY - RECT.top - IN.downY, d = Math.hypot(dx, dy);
   if (e.timeStamp - IN.downAt <= PLAYER_INPUT.flickMaxMs && d > PLAYER_INPUT.flickMinDistance) tryDash(dx / d, dy / d);
 }
+cvs.addEventListener('touchend', e => { if (e.cancelable !== false) e.preventDefault(); }, { passive: false }); // 画布不用点击，连点也不能触发双击放大
 cvs.addEventListener('pointerup', e => { flickDash(e); endPtr(e); }); cvs.addEventListener('pointercancel', endPtr); cvs.addEventListener('lostpointercapture', endPtr);
 function resetInput() {
   const id = IN.id;
@@ -9528,7 +9570,11 @@ function bindPress(el, fn) {
   });
   // 触屏按下立即生效；键盘和辅助技术的点击也能操作，且不重复触发。
   el.addEventListener('click', e => { if (e.detail === 0) { audioInit(); fn(); } });
+  // 技能键只认按下，连点时拦掉松手的默认动作，浏览器就不会当成双击放大。
+  el.addEventListener('touchend', e => { if (e.cancelable !== false) e.preventDefault(); }, { passive: false });
 }
+// 锁屏、切后台回来后，任何一次触摸或按键都顺手把声音恢复（iOS 只认手势里的恢复）。
+for (const type of ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown']) document.addEventListener(type, audioUnlock, { capture: true, passive: true });
 bindPress($('#btnDash'), () => tryDash());
 bindPress($('#btnOver'), () => tryOverload());
 $('#btnPause').addEventListener('click', () => pauseGame());
@@ -12765,6 +12811,42 @@ if (landscapeMq) {
 }
 syncLandscape();
 
+// ---- src/core/viewport-lock.js ----
+// 禁止页面缩放：连点冲刺、或一指摇杆一指按技能时，手机浏览器会当成双击放大或两指捏合，放大后在游戏里拖不回来。
+// 视口标签已写了禁止缩放，但 iOS Safari 为无障碍会无视它，所以这里再拦一次手势；万一还是放大了，先试着自动缩回，并临时放开捏合让玩家自己缩回。
+const VIEWPORT = 'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';
+const DOUBLE_TAP_MS = 350, ZOOMED = 1.01;
+// 控件自己的点击要留着，控件的双击放大由样式里的 touch-action 拦
+const CONTROL = 'button, a, input, select, textarea, summary, label, [role="button"]';
+
+function installViewportLock(win, doc) {
+  const vv = win.visualViewport, meta = doc.querySelector('meta[name="viewport"]'), root = doc.documentElement;
+  const zoomed = () => (vv?.scale ?? 1) > ZOOMED;
+  // 已经放大时不拦，好让玩家捏合或双击缩回去
+  const block = e => { if (!zoomed() && e.cancelable !== false) e.preventDefault(); };
+  for (const type of ['gesturestart', 'gesturechange', 'gestureend', 'dblclick']) doc.addEventListener(type, block, { passive: false });
+  doc.addEventListener('touchmove', e => { if (e.touches?.length > 1) block(e); }, { passive: false });
+  let lastEnd = -Infinity;
+  doc.addEventListener('touchend', e => {
+    const quick = e.timeStamp - lastEnd < DOUBLE_TAP_MS; lastEnd = e.timeStamp;
+    if (quick && !e.target?.closest?.(CONTROL)) block(e);
+  }, { passive: false });
+  let flip = false, fixedAt = -Infinity;
+  const sync = () => {
+    const on = zoomed();
+    root?.classList?.toggle('page-zoomed', on);
+    // 视口标签内容不变浏览器不会重新套用，所以在两种等价写法之间切换来触发缩回；限频，免得和缩放事件互相触发
+    if (on && meta && Date.now() - fixedAt >= 500) {
+      fixedAt = Date.now(); flip = !flip;
+      meta.setAttribute('content', flip ? VIEWPORT + ',shrink-to-fit=no' : VIEWPORT);
+    }
+    return on;
+  };
+  vv?.addEventListener?.('resize', sync);
+  win.addEventListener('pageshow', sync);
+  return { sync, zoomed };
+}
+
 // ---- src/main.js ----
 // 入口：主循环、启动加载、调试钩子
 
@@ -12877,6 +12959,7 @@ subscribeMeta(() => refreshStoredViews());
 function refreshVisibleMeta() { if (!document.hidden && (!G || G.state === 'end')) reloadMeta(); }
 window.addEventListener('pageshow', refreshVisibleMeta);
 document.addEventListener('visibilitychange', refreshVisibleMeta);
+installViewportLock(window, document);
 resize(); refreshHudLayout(); syncSoundLabels();
 loadFonts();
 loadMenuAssets(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).then(() => waitFonts(600)).then(() => {
