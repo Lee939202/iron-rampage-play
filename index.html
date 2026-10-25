@@ -329,6 +329,39 @@ footer.foot{flex-shrink:0}
 .hangar-launch{display:flex;flex-direction:column;gap:7px;max-width:620px;margin:auto}
 .hangar-launch p{font-size:12px;line-height:1.5;color:#c2d1dd;margin:0;text-align:center}
 .hangar-launch .btn{min-height:54px!important;font-size:26px!important;max-width:none!important}
+.hangar-launch-copy{min-width:0}
+.hangar-launch #hgBountyLaunch{color:#f2d296;margin-top:3px}
+#btnStart[data-bounty],#btnStartAlt[data-bounty],.hangar-launch #hgStart[data-bounty]{font-size:22px!important;letter-spacing:.02em;padding:0 10px}
+/* 悬赏沿用机库的装配清单，风险说明紧挨选择与出击摘要。 */
+.bounty-section,.bounty-medals{margin-top:28px;border-top:1px solid #344451;padding-top:3px}
+.bounty-section .sec,.bounty-medals .sec{margin-bottom:6px}
+.bounty-config{margin:16px 0 0;color:#c2d1dd;font-size:12px;line-height:1.6}
+.bounty-config+.sec{margin-top:12px}
+.bounty-list{display:grid;gap:0;border-top:1px solid #344451}
+.bounty-choice{position:relative;display:block;min-width:0;width:100%;padding:11px 12px 11px 36px;border:0;border-bottom:1px solid #344451;background:#111b24;color:#e4edf3;text-align:left;cursor:pointer;touch-action:manipulation}
+.bounty-choice::before{content:"";position:absolute;top:16px;left:12px;width:12px;height:12px;border:1px solid #788d9d;border-radius:50%}
+.bounty-choice b{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:14px;font-weight:600;line-height:1.6}
+.bounty-choice b small{color:#e1c290;font-size:12px;font-weight:400;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bounty-choice span{display:block;margin-top:3px;color:#bdcbd5;font-size:12px;line-height:1.6}
+.bounty-choice.selected{background:#2b231a}
+.bounty-choice.selected::before{background:#f4b76e;border-color:#f4b76e;box-shadow:inset 0 0 0 3px #2b231a}
+.bounty-choice.selected span{color:#dfcbb2}
+.bounty-choice:disabled{background:#101720;cursor:default}.bounty-choice:disabled b{color:#a5b3be}
+.bounty-stakes{display:flex;align-items:center;gap:7px;margin:12px 0 0}
+.bounty-stakes>span{flex:none;margin-right:3px;font-size:13px;color:#c8d6df}
+.bounty-stake{flex:1;min-width:0;min-height:44px;padding:6px 8px;font-family:var(--f-num);font-size:21px;color:#e4edf3;background:#111b24;border:1px solid #4c5c68;cursor:pointer;touch-action:manipulation}
+.bounty-stake.selected{background:#2b231a;border-color:#f4b76e;color:#ffda9b}
+.bounty-stake:disabled{color:#a5b3be;background:#101720;border-color:#344451;cursor:default}
+.bounty-status{margin:10px 0 0;font-size:12px;line-height:1.7;color:#f0d29f;font-variant-numeric:tabular-nums}
+.bounty-medal-row{display:grid;grid-template-columns:3em minmax(0,1fr);align-items:center;gap:8px;margin-top:10px}
+.bounty-medal-row>b{font-size:13px;font-weight:600}
+.bounty-medal-row>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.bounty-medal-row .medal{padding:6px 1px;font-size:12px;color:#acbbc7}
+.bounty-medal-row .medal.on{color:#1b1206}
+.pause-bounty{grid-column:1/-1;padding:12px;background:#252118;color:#f0d29f;font-size:13px;line-height:1.6}
+.pause-bounty b{font-weight:600}.pause-bounty p{margin:4px 0 0;font-size:12px}
+.end-bounty{margin:7px 0 0;font-size:13px;line-height:1.6;color:#f0d29f}.end-bounty.met{color:#cce7ae}.end-bounty.failed{color:#ffc2b4}
+@media (hover:hover){.bounty-choice:hover:not(:disabled){background:#24303a}.bounty-stake:hover:not(:disabled){border-color:#f4b76e}}
 .training-exit{position:absolute;left:max(12px,env(safe-area-inset-left,0px));top:calc(var(--safe-top) + 102px);font-size:12px;background:#142632e8;border-color:#4a6b7f}
 /* 新兵训练：新玩家主按钮字多，略收字号；练完后的出击面板只占下半屏，上方训练场仍可见 */
 .btn.primary.rookie-start{font-size:24px;letter-spacing:.06em}
@@ -498,6 +531,17 @@ button.goal-line{cursor:pointer}
 .skin-dot{display:block;width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.35)}
 .skin-dot.factory{background:conic-gradient(#e87a2a 0 25%,#6f7a3a 0 50%,#3a7bd5 0 75%,#e8e8ec 0)}
 .skin-choice.locked .skin-dot{filter:grayscale(.85) brightness(.7)}
+.skin-choice.confirming{border-color:var(--gold);background:#322819}
+.skin-choice.confirming small{color:#ffe0a1}
+.cosmetic-section{margin-top:20px}
+.cosmetic-section .sec{margin-bottom:10px}
+.cosmetic-group+ .cosmetic-group{margin-top:14px}
+.cosmetic-group h4{margin:0 0 7px;font-size:13px;font-weight:600;color:#c9d7e0}
+.cosmetic-choices{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.cosmetic-choices .skin-choice{min-height:58px;align-content:center}
+.cosmetic-preview{height:140px!important;margin-bottom:10px}
+.cosmetic-preview canvas{display:block;width:100%;height:100%}
+.cosmetic-section .section-note,.skin-section .section-note{min-height:2.8em}
 @media (hover:hover){.mech-thumb:hover{background:#21333e}.talent-choice:hover:not(:disabled){border-color:#9f805a}.btn:hover:not(:disabled),.chip:hover:not(:disabled),.buy:hover:not(:disabled){filter:brightness(1.12)}}
 @media (min-width:760px){.hangar-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;padding-top:24px}.hangar-machine{align-self:start;position:sticky;top:12px}.preview-stage{height:330px}.up-list{grid-template-columns:1fr 1fr}.hangar-launch{flex-direction:row;align-items:center;justify-content:space-between;max-width:1080px;gap:24px}.hangar-launch p{text-align:left}.hangar-launch .btn{width:280px!important;margin:0!important}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.stat.gold,.stat.record{grid-column:span 2}.end-content .build{grid-template-columns:repeat(4,minmax(0,1fr))}.menu-bottom{max-width:470px}.title-block{margin:0}.title{font-size:104px}}
 @media (max-width:350px){.scroll{padding-left:12px;padding-right:12px}.bar{padding-left:12px;padding-right:12px}.menu-bottom{padding-left:12px;padding-right:12px}.menu-stats{font-size:11px}.menu-stats b{font-size:21px}.tag{font-size:12px;line-height:1.6}.preview-stage{height:220px}.mech-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.mech-thumb{min-height:78px;display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:1fr 1fr;padding:6px;text-align:left;gap:1px 2px}.mech-thumb img{grid-row:1/3;width:42px;height:52px}.mech-thumb b{align-self:end;font-size:12px}.mech-thumb small{align-self:start;font-size:10px}.mech-stats>div{padding:10px 5px}.mech-stats dd{font-size:24px}.mech-stats dd small{font-size:9px}.settings-row{grid-template-columns:minmax(0,1fr) 112px;gap:10px}.end-title{font-size:38px}.deployment{gap:8px;padding:8px}.deployment img{width:48px;height:48px}.deployment .chip{padding:0 10px}}
@@ -606,7 +650,13 @@ input.settings-control[type="range"]{min-width:0}
           </div>
           <div class="demo-controls"><button id="hgDemo" class="chip">演示能力</button><p id="hgDemoStatus" aria-live="polite">展示机体武器与作战动作</p></div>
           <div id="mechList" class="mech-list" aria-label="预览机体"></div>
-          <section class="skin-section" aria-labelledby="skinTitle"><h3 id="skinTitle" class="sec"><span>涂装</span></h3><div id="skinList" class="skin-list"></div><p id="skinStatus" class="section-note"></p></section>
+          <section class="skin-section" aria-labelledby="skinTitle"><h3 id="skinTitle" class="sec"><span>涂装</span></h3><div class="preview-stage cosmetic-preview"><canvas id="skinPreviewCanvas" role="img" aria-label="涂装预览"></canvas></div><div id="skinList" class="skin-list"></div><p id="skinStatus" class="section-note" aria-live="polite"></p></section>
+          <section class="cosmetic-section" aria-labelledby="cosmeticTitle">
+            <h3 id="cosmeticTitle" class="sec"><span>特效</span></h3>
+            <div class="preview-stage cosmetic-preview"><canvas id="cosmeticPreviewCanvas" role="img" aria-label="特效预览"></canvas></div>
+            <div id="cosmeticList"></div>
+            <p id="cosmeticStatus" class="section-note" aria-live="polite"></p>
+          </section>
           <section class="tier-section" aria-labelledby="tierTitle"><h3 id="tierTitle" class="sec"><span>深渊层级</span></h3><div id="tierList" class="tier-list"></div><p id="tierStatus" class="section-note"></p></section>
         </div>
         <div class="hangar-specification">
@@ -619,10 +669,11 @@ input.settings-control[type="range"]{min-width:0}
           <section class="talent-section" aria-labelledby="talentTitle"><h3 id="talentTitle" class="sec"><span>战术协议</span></h3><p class="section-note">三选一 · 决定本局路线，出击后固定</p><div id="talentList" class="talent-list"></div><p id="talentStatus" class="selection-status" aria-live="polite"></p></section>
         </div>
       </div>
+      <section class="bounty-section" aria-labelledby="bountyTitle"><p id="bountyConfig" class="bounty-config"></p><h3 id="bountyTitle" class="sec"><span>出击悬赏</span></h3><p id="bountyHelp" class="section-note"></p><div id="bountyList" class="bounty-list"></div><div id="bountyStakes" class="bounty-stakes" role="group" aria-label="选择悬赏押金"></div><p id="bountyStatus" class="bounty-status" aria-live="polite"></p></section>
       <section class="permanent-section" aria-labelledby="upgradeTitle"><h3 id="upgradeTitle" class="sec"><span>永久改装</span></h3><p class="section-note">所有已解锁机体共享</p><div id="upList" class="up-list"></div></section>
-      <section class="achievement-section" aria-labelledby="achTitle"><h3 id="achTitle" class="sec"><span>勋章与成就</span><b id="achCount" class="ach-count"></b></h3><p class="section-note">协议勋章：用这个协议突围一次点亮</p><div id="medalWall" class="medal-wall"></div><div id="achList" class="ach-list"></div></section>
+      <section class="achievement-section" aria-labelledby="achTitle"><h3 id="achTitle" class="sec"><span>勋章与成就</span><b id="achCount" class="ach-count"></b></h3><p class="section-note">协议勋章：用这个协议突围一次点亮</p><div id="medalWall" class="medal-wall"></div><section class="bounty-medals" aria-labelledby="bountyMedalTitle"><h4 id="bountyMedalTitle" class="sec"><span>悬赏勋章</span><b id="bountyMedalCount" class="ach-count"></b></h4><p class="section-note">每台机甲首次完成对应悬赏时点亮。</p><div id="bountyMedalWall"></div></section><div id="achList" class="ach-list"></div></section>
     </div></div>
-    <footer class="foot"><div class="hangar-launch"><p id="hgLaunchLabel"></p><button id="hgStart" class="btn primary">出击</button></div></footer>
+    <footer class="foot"><div class="hangar-launch"><div class="hangar-launch-copy"><p id="hgLaunchLabel"></p><p id="hgBountyLaunch" hidden></p></div><button id="hgStart" class="btn primary">出击</button></div></footer>
   </section>
 
   <section id="scrSettings" class="screen panel-screen" hidden aria-labelledby="settingsTitle">
@@ -771,6 +822,51 @@ const RIG_CFG = {
   engineer: { ts: 86, ls: 88, legY: .035, legX: .18, spread: 0, stride: 13, gun: [[0, -.28]], pod: [[-.335, .015], [.325, .015]], thr: [[-.12, .30], [.12, .30]], mount: [[.33, -.3], [-.33, -.3], [.22, .3], [-.22, .3]], flame: '255,210,105', mass: .85 },
 };
 
+// ---- src/data/cosmetics.js ----
+// 金币外观目录和存档校验：只含换色与演出数据，不参与战斗数值
+const COSMETICS = [
+  { id: 'skin:assault:carbon', type: 'skin', mech: 'assault', name: '碳纤', cost: 600, h: 218, s: .12, l: .19, panel: [92, 102, 116], panelK: .8 },
+  { id: 'skin:assault:silver', type: 'skin', mech: 'assault', name: '白银', cost: 900, h: 210, s: .12, l: .63, panel: [225, 238, 250], panelK: .3 },
+  { id: 'skin:assault:ember', type: 'skin', mech: 'assault', name: '熔火', cost: 1200, h: 12, s: .88, l: .41, panel: [126, 76, 60], panelK: .7, glow: { h: 30, s: .95, l: .64 } },
+  { id: 'skin:assault:aurora', type: 'skin', mech: 'assault', name: '极光', cost: 1500, h: 155, s: .75, l: .37, panel: [102, 144, 166], panelK: .55, glow: { h: 280, s: .88, l: .67 } },
+  { id: 'skin:heavy:desert', type: 'skin', mech: 'heavy', name: '沙漠迷彩', cost: 600, h: 35, s: .43, l: .43, panel: [211, 184, 140], panelK: .6 },
+  { id: 'skin:heavy:fortress', type: 'skin', mech: 'heavy', name: '钢铁堡垒', cost: 900, h: 218, s: .18, l: .34, panel: [126, 142, 162], panelK: .65 },
+  { id: 'skin:heavy:copper', type: 'skin', mech: 'heavy', name: '赤铜', cost: 1200, h: 18, s: .64, l: .4, panel: [210, 148, 104], panelK: .6, glow: { h: 42, s: .95, l: .63 } },
+  { id: 'skin:heavy:obsidian', type: 'skin', mech: 'heavy', name: '黑曜', cost: 1500, h: 276, s: .32, l: .19, panel: [88, 74, 106], panelK: .85, glow: { h: 295, s: .85, l: .65 } },
+  { id: 'skin:phantom:moonlight', type: 'skin', mech: 'phantom', name: '月白', cost: 600, h: 228, s: .2, l: .63, panel: [230, 228, 250], panelK: .35 },
+  { id: 'skin:phantom:rose', type: 'skin', mech: 'phantom', name: '绯樱', cost: 900, h: 338, s: .64, l: .48, panel: [246, 182, 208], panelK: .5 },
+  { id: 'skin:phantom:specter', type: 'skin', mech: 'phantom', name: '幽冥', cost: 1200, h: 178, s: .66, l: .26, panel: [66, 116, 120], panelK: .75, glow: { h: 160, s: .88, l: .65 } },
+  { id: 'skin:phantom:prism', type: 'skin', mech: 'phantom', name: '幻彩', cost: 1500, h: 265, s: .85, l: .49, panel: [152, 106, 204], panelK: .55, glow: { h: 325, s: .92, l: .7 } },
+  { id: 'skin:storm:cobalt', type: 'skin', mech: 'storm', name: '钴蓝', cost: 600, h: 228, s: .79, l: .35, panel: [116, 140, 210], panelK: .5 },
+  { id: 'skin:storm:ion', type: 'skin', mech: 'storm', name: '离子绿', cost: 900, h: 132, s: .67, l: .36, panel: [148, 210, 166], panelK: .5 },
+  { id: 'skin:storm:neon', type: 'skin', mech: 'storm', name: '霓虹', cost: 1200, h: 305, s: .85, l: .43, panel: [182, 94, 186], panelK: .65, glow: { h: 328, s: .96, l: .68 } },
+  { id: 'skin:storm:tempest', type: 'skin', mech: 'storm', name: '雷暴', cost: 1500, h: 250, s: .45, l: .22, panel: [92, 90, 138], panelK: .8, glow: { h: 52, s: .98, l: .67 } },
+  { id: 'skin:lancer:arctic', type: 'skin', mech: 'lancer', name: '极地', cost: 600, h: 196, s: .24, l: .6, panel: [214, 238, 246], panelK: .35 },
+  { id: 'skin:lancer:verdigris', type: 'skin', mech: 'lancer', name: '青铜', cost: 900, h: 164, s: .43, l: .31, panel: [148, 184, 166], panelK: .55 },
+  { id: 'skin:lancer:ruby', type: 'skin', mech: 'lancer', name: '红宝石', cost: 1200, h: 347, s: .8, l: .4, panel: [174, 88, 114], panelK: .65, glow: { h: 355, s: .94, l: .66 } },
+  { id: 'skin:lancer:starlight', type: 'skin', mech: 'lancer', name: '星辉', cost: 1500, h: 224, s: .6, l: .25, panel: [102, 120, 182], panelK: .7, glow: { h: 52, s: .9, l: .72 } },
+  { id: 'skin:engineer:ceramic', type: 'skin', mech: 'engineer', name: '白瓷', cost: 600, h: 32, s: .14, l: .64, panel: [245, 232, 213], panelK: .3 },
+  { id: 'skin:engineer:moss', type: 'skin', mech: 'engineer', name: '苔原', cost: 900, h: 116, s: .35, l: .34, panel: [160, 186, 138], panelK: .6 },
+  { id: 'skin:engineer:honey', type: 'skin', mech: 'engineer', name: '蜂金', cost: 1200, h: 43, s: .91, l: .47, panel: [96, 82, 62], panelK: .75, glow: { h: 29, s: .95, l: .68 } },
+  { id: 'skin:engineer:nebula', type: 'skin', mech: 'engineer', name: '星云', cost: 1500, h: 274, s: .6, l: .36, panel: [138, 112, 178], panelK: .6, glow: { h: 165, s: .92, l: .67 } },
+  { id: 'trail:flame', type: 'trail', name: '烈焰', cost: 1000, color: '255,118,48' },
+  { id: 'trail:lightning', type: 'trail', name: '电光', cost: 1000, color: '92,224,255' },
+  { id: 'trail:sakura', type: 'trail', name: '樱花', cost: 1000, color: '255,154,208' },
+  { id: 'trail:shadow', type: 'trail', name: '暗影', cost: 1000, color: '164,116,226' },
+  { id: 'kill:gold', type: 'killFx', name: '金屑', cost: 1500, color: '255,209,96' },
+  { id: 'kill:pixel', type: 'killFx', name: '像素碎裂', cost: 1500, color: '116,244,182' },
+  { id: 'kill:plasma', type: 'killFx', name: '电浆环', cost: 1500, color: '164,144,255' },
+];
+const cosmeticById = id => COSMETICS.find(item => item.id === id);
+const cosmeticOwned = (source, id) => !!cosmeticById(id) && Object.hasOwn(source?.cosmetics?.owned || {}, id) && source.cosmetics.owned[id] === true;
+function normalizeCosmetics(value) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const ownedSource = source.owned && typeof source.owned === 'object' && !Array.isArray(source.owned) ? source.owned : {};
+  const owned = Object.fromEntries(COSMETICS.filter(item => Object.hasOwn(ownedSource, item.id) && ownedSource[item.id] === true).map(item => [item.id, true]));
+  const selected = (type, id) => typeof id === 'string' && owned[id] === true && cosmeticById(id)?.type === type ? id : '';
+  return { owned, trail: selected('trail', source.trail), killFx: selected('killFx', source.killFx) };
+}
+
 // ---- src/data/skins.js ----
 // 换色涂装：成就解锁、每台机甲各自选；改色算法是纯函数，贴图模块用它处理像素
 // 每台机甲涂装区的平均色相、饱和度、亮度（从 mech_*.webp 统计）；keep 是保留原色的色相段（黄色警示条、指示灯）
@@ -793,13 +889,13 @@ const SKINS = [
   { id: 'shadow', name: '暗影', need: 'perfect-30', h: 220, s: .1, l: .2, panel: [92, 98, 110], panelK: .8 },
   { id: 'gold', name: '鎏金', need: 'all-mechs-win', h: 43, s: .85, l: .45, panel: [62, 60, 66], panelK: .75 },
 ];
-const skinById = id => SKINS.find(s => s.id === id);
-const skinUnlocked = (skin, meta) => !skin.need || !!meta.achievements?.[skin.need];
+const skinById = id => SKINS.find(s => s.id === id) || (cosmeticById(id)?.type === 'skin' ? cosmeticById(id) : undefined);
+const skinUnlocked = (skin, meta) => skin.type === 'skin' ? cosmeticOwned(meta, skin.id) : !skin.need || !!meta.achievements?.[skin.need];
 const skinForAchievement = id => SKINS.find(s => s.need === id);
 // 这台机甲当前用的涂装；没选、选了未解锁的或不存在的都回到出厂
 function selectedSkin(meta, mechId) {
   const skin = skinById(meta.skins?.[mechId]);
-  return skin && skinUnlocked(skin, meta) ? skin : SKINS[0];
+  return skin && (!skin.mech || skin.mech === mechId) && skinUnlocked(skin, meta) ? skin : SKINS[0];
 }
 // 界面色块用的颜色
 const skinSwatch = skin => skin.h === undefined ? '' : `hsl(${skin.h} ${Math.round(skin.s * 100)}% ${Math.round(Math.min(.62, skin.l + .12) * 100)}%)`;
@@ -810,8 +906,8 @@ function skinHslToRgb(h, s, l) {
   const [r, g, b] = hp < 1 ? [c, x, 0] : hp < 2 ? [x, c, 0] : hp < 3 ? [0, c, x] : hp < 4 ? [0, x, c] : hp < 5 ? [x, 0, c] : [c, 0, x];
   return [r + m, g + m, b + m];
 }
-// 原地改 RGBA 像素：涂装区旋转色相、用伽马把平均饱和度/亮度映射到目标（不会过曝）；青色发光和 keep 段不动；白色面板按 panel 相乘
-function recolorPixels(data, mechId, skin) {
+// 原地改 RGBA 像素：涂装区换色、保留警示条；可选 glow 单独换青色发光，不传时与原版完全一致
+function recolorPixels(data, mechId, skin, glow = skin.glow) {
   const base = SKIN_BASE[mechId];
   if (!base || skin.h === undefined) return data;
   const dh = skin.h - base.h, gl = Math.log(skin.l) / Math.log(base.l);
@@ -824,10 +920,15 @@ function recolorPixels(data, mechId, skin) {
     const mx = Math.max(r, g, b), mn = Math.min(r, g, b), c = mx - mn, l = (mx + mn) / 2;
     const h = c === 0 ? 0 : (mx === r ? ((g - b) / c + 6) % 6 : mx === g ? (b - r) / c + 2 : (r - g) / c + 4) * 60;
     let w = skinStep(.06, .16, c);
-    if (h >= 168 && h <= 206 && c > .25 && mx > .55) w = 0;
+    const emissive = h >= 168 && h <= 206 && c > .25 && mx > .55;
+    if (emissive) w = 0;
     // keep 段两端各留几度渐变，免得黄绿交界处出现硬边
     if (base.keep) w *= 1 - skinStep(base.keep[0] - 4, base.keep[0] + 2, h) * (1 - skinStep(base.keep[1] - 2, base.keep[1] + 4, h));
     let R = r, G = g, B = b;
+    if (emissive && glow) {
+      const s = Math.min(1, c / (1 - Math.abs(2 * l - 1) + 1e-9));
+      [R, G, B] = skinHslToRgb(glow.h, Math.min(1, s * (glow.s ?? .8) / .8), Math.min(.9, l * (glow.l ?? .65) / .65));
+    }
     if (w > 0) {
       const s = Math.min(1, c / (1 - Math.abs(2 * l - 1) + 1e-9));
       const [pr, pg, pb] = skinHslToRgb(h + dh, lowerS ? s * ks : Math.pow(s, ks), Math.pow(l, gl));
@@ -903,6 +1004,67 @@ function normalizeSettingsSnapshot(value, reducedMotion = false) {
   return normalized;
 }
 
+// ---- src/data/bounties.js ----
+// 出击悬赏的数据、固定批次抽选、合同校验与只读达成判定
+const BOUNTY_STAKES = [200, 500, 1000];
+const BOUNTY_MIN_MULTIPLIER = 1.3;
+const BOUNTIES = [
+  { id: 'speed', name: '稳健速攻', description: '8 分钟内突围，累计生命承伤不超过 250（治疗不抵扣，护盾吸收不计）', difficulty: '普通', multipliers: { 0: 1.7, 3: 3.06 } },
+  { id: 'blitz', name: '闪电战', description: '7 分 30 秒内突围', difficulty: '困难', multipliers: { 0: 1.53, 3: 2.19 } },
+  { id: 'scorpion', name: '蝎尾无伤', description: '击破毒蝎领主，全程未被它命中（护盾吸收也算命中）', difficulty: '困难', multipliers: { 0: 1.3, 3: 1.3 } },
+  { id: 'rampage', name: '暴走时刻', description: '评级 S 以上累计 60 秒，并突围', difficulty: '普通', multipliers: { 0: 5.1, 3: 5.1 } },
+  { id: 'noheal', name: '禁疗突围', description: '一个治疗包都不捡，并突围', difficulty: '困难', multipliers: { 0: 3, 3: 3.9 } },
+  { id: 'combo', name: '六千连斩', description: '最高连杀达到 6000，并突围', difficulty: '普通', multipliers: { 0: 1.39, 3: 3.06 } },
+  { id: 'dodge', name: '弹幕舞者', description: '极限闪避达到 40 次，并突围', difficulty: '普通', multipliers: { 0: 3.06, 3: 1.53 } },
+  { id: 'objectives', name: '极速全清', description: '6 分钟内完成 3 次战场行动，并突围', difficulty: '普通', multipliers: { 0: 2.55, 3: 3.83 } },
+];
+const bountyById = id => BOUNTIES.find(b => b.id === id) || null;
+// 使用局数自己的整数序列，不消费战斗的 Math.random；刷新页面始终得到同一批。
+function bountyOffers(runs) {
+  let seed = (Number.isSafeInteger(runs) && runs >= 0 ? runs : 0) >>> 0;
+  const pool = [...BOUNTIES];
+  for (let i = pool.length - 1; i > 0; i--) {
+    seed = (Math.imul(seed ^ 0x9e3779b9, 1664525) + 1013904223) >>> 0;
+    const j = seed % (i + 1); [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, 3);
+}
+function bountyMultiplier(id, tier = 0) {
+  const def = bountyById(id); if (!def) return 0;
+  const level = Number.isInteger(tier) ? Math.max(0, Math.min(10, tier)) : 0;
+  // 普通层和深渊三层分别校准；中间线性插值，更高层暂沿用三层倍率。
+  return Math.max(BOUNTY_MIN_MULTIPLIER, Math.round((def.multipliers[0] + (def.multipliers[3] - def.multipliers[0]) * Math.min(3, level) / 3) * 100) / 100);
+}
+function normalizeBountyContract(value, runId) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  if (typeof value.runId !== 'string' || !value.runId || value.runId.length > 200 || ['__proto__', 'constructor', 'prototype'].includes(value.runId) || (runId !== undefined && value.runId !== runId)) return null;
+  if (!bountyById(value.id) || !BOUNTY_STAKES.includes(value.stake) || !Number.isInteger(value.tier) || value.tier < 0 || value.tier > 10 || !['assault', 'heavy', 'phantom', 'storm', 'lancer', 'engineer'].includes(value.mech)) return null;
+  const contract = { runId: value.runId, id: value.id, stake: value.stake, tier: value.tier, mech: value.mech, met: value.met === true };
+  // 扣押时锁定报价；之后调倍率不会抹掉历史收据，也不会改掉恢复快照的承诺返还。
+  if (Number.isSafeInteger(value.lockedReturn) && value.lockedReturn >= 0) contract.lockedReturn = value.lockedReturn;
+  return contract;
+}
+function bountyReturn(contract) {
+  return contract && bountyById(contract.id) && BOUNTY_STAKES.includes(contract.stake) && Number.isInteger(contract.tier) && contract.tier >= 0 && contract.tier <= 10
+    ? Number.isSafeInteger(contract.lockedReturn) && contract.lockedReturn >= 0 ? contract.lockedReturn : Math.floor(contract.stake * bountyMultiplier(contract.id, contract.tier)) : 0;
+}
+function evaluateBounty(id, metrics, win = false) {
+  if (!metrics || metrics.abandoned) return false;
+  const n = key => Number.isFinite(metrics[key]) && metrics[key] >= 0 ? metrics[key] : 0;
+  const valid = key => Number.isFinite(metrics[key]) && metrics[key] >= 0;
+  switch (id) {
+    case 'speed': return win === true && valid('t') && metrics.t <= 480 && valid('damageTaken') && metrics.damageTaken <= 250;
+    case 'blitz': return win === true && Number.isFinite(metrics.t) && metrics.t >= 0 && metrics.t <= 450;
+    case 'scorpion': return n('bossKills') >= 1 && metrics.scorpionHit === false;
+    case 'rampage': return win && n('highSeconds') >= 60;
+    case 'noheal': return win && metrics.healPickups === 0;
+    case 'combo': return win && n('bestCombo') >= 6000;
+    case 'dodge': return win && n('perfects') >= 40;
+    case 'objectives': return win && n('relayClears') >= 3 && valid('relayCompletedAt') && metrics.relayCompletedAt <= 360;
+    default: return false;
+  }
+}
+
 // ---- src/core/save.js ----
 // 本地存档与多页面增量合并：保留成长数据、未知字段和共享设置引用
 
@@ -923,6 +1085,35 @@ function saveEpochOf(snapshot) { return typeof snapshot?.saveEpoch === 'string' 
 function newSaveEpoch() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
   return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+function saveBountyChoice(value) {
+  const choice = saveRecord(value);
+  return bountyById(choice.id) && BOUNTY_STAKES.includes(choice.stake) && Number.isSafeInteger(choice.round) && choice.round >= 0
+    ? { id: choice.id, stake: choice.stake, round: choice.round } : null;
+}
+function saveBountyMeta(value) {
+  const bounty = saveRecord(value), stakes = {};
+  for (const [runId, value] of Object.entries(saveRecord(bounty.stakes))) {
+    const contract = normalizeBountyContract(value, runId);
+    if (contract) stakes[runId] = { ...contract, met: false };
+  }
+  let active = normalizeBountyContract(bounty.active);
+  // active 是初版约定的押金凭证；缺少内部去重账本时仍能从它迁移。
+  if (active && !Object.hasOwn(stakes, active.runId)) stakes[active.runId] = { ...active, met: false };
+  if (active && !['id', 'stake', 'tier', 'mech'].every(key => stakes[active.runId][key] === active[key])) active = null;
+  const medals = {};
+  for (const [key, value] of Object.entries(saveRecord(bounty.medals))) {
+    const [mech, id, extra] = key.split(':');
+    if (value === true && extra === undefined && normalizeBountyContract({ runId: 'medal', id, stake: BOUNTY_STAKES[0], tier: 0, mech, met: false })) medals[key] = true;
+  }
+  return { choice: saveBountyChoice(bounty.choice), active, medals, stakes };
+}
+function saveBountyReceipt(value, contract) {
+  const receipt = saveRecord(value);
+  if (!contract || receipt.id !== contract.id || receipt.stake !== contract.stake || typeof receipt.met !== 'boolean') return null;
+  // 收据保留当时的实际返还，日后调倍率也不能抹掉已发记录、再按新价格发一次。
+  if (!Number.isSafeInteger(receipt.returned) || receipt.returned < 0 || (!receipt.met && receipt.returned !== 0)) return null;
+  return { id: receipt.id, stake: receipt.stake, met: receipt.met, returned: receipt.returned };
 }
 function normalizeMeta(source) {
   source = saveRecord(source);
@@ -950,13 +1141,23 @@ function normalizeMeta(source) {
     goal: typeof source.goal === 'string' ? source.goal : '',
     achievements: { ...saveRecord(source.achievements) }, mechStats: { ...saveRecord(source.mechStats) },
     skins: Object.fromEntries(Object.entries(saveRecord(source.skins)).filter(([, v]) => typeof v === 'string')),
+    cosmetics: normalizeCosmetics(source.cosmetics),
     // 深渊层级：通关层和所选层是非负整数，各层最快突围是正数；坏值丢弃
     tierClear: saveEntries(source.tierClear, v => Number.isInteger(v) && v >= 0), tierSel: saveEntries(source.tierSel, v => Number.isInteger(v) && v >= 0),
     tierFastest: saveEntries(source.tierFastest, v => typeof v === 'number' && Number.isFinite(v) && v > 0),
     daily: normalizeDaily(source.daily),
     // 一次性玩法提示（如第一次遇到毒蝎的绕后提示）：记录对象，旧存档没有就是空对象
     hints: { ...saveRecord(source.hints) },
+    bounty: saveBountyMeta(source.bounty),
   });
+  for (const [runId, value] of Object.entries(normalized.settledRuns)) {
+    if (!saveIsRecord(value) || !Object.hasOwn(value, 'bounty')) continue;
+    const receipt = saveBountyReceipt(value.bounty, normalized.bounty.stakes[runId]);
+    normalized.settledRuns[runId] = { ...value };
+    if (receipt) normalized.settledRuns[runId].bounty = receipt;
+    else delete normalized.settledRuns[runId].bounty;
+  }
+  if (normalized.bounty.active && normalized.settledRuns[normalized.bounty.active.runId]?.bounty) normalized.bounty.active = null;
   for (const key of ['coins', 'runs', 'wins', 'best', 'bestKills']) {
     if (typeof normalized[key] !== 'number' || !Number.isFinite(normalized[key]) || normalized[key] < 0) normalized[key] = 0;
   }
@@ -1016,8 +1217,39 @@ function mergeMetaSnapshots(base, local, fresh) {
   // 存档代号变了，说明别的页恢复过备份：本页基于旧存档的快照和未保存差额全部作废，以恢复后的存档为准。
   if (saveEpochOf(fresh) !== saveEpochOf(base)) return normalizeMeta(saveCopy(fresh));
   const merged = mergeSaveFields(base, local, fresh);
+  // 恢复只删除本页读到的快照；保存前别页改写过的同局记录仍需后续恢复。
+  for (const [runId, snapshot] of Object.entries(saveRecord(fresh.pendingSettlements))) {
+    if (Object.hasOwn(saveRecord(base.pendingSettlements), runId) && !Object.hasOwn(saveRecord(local.pendingSettlements), runId)
+      && !saveEqual(snapshot, base.pendingSettlements[runId])) merged.pendingSettlements = { ...saveRecord(merged.pendingSettlements), [runId]: saveCopy(snapshot) };
+  }
+  if (Object.hasOwn(base, 'pendingSettle') && !Object.hasOwn(local, 'pendingSettle') && Object.hasOwn(fresh, 'pendingSettle')
+    && !saveEqual(fresh.pendingSettle, base.pendingSettle)) merged.pendingSettle = saveCopy(fresh.pendingSettle);
   // 可累计的字段按本页差额合并；纪录、解锁和永久改装不被旧页回退。
   for (const key of ['coins', 'runs', 'wins']) merged[key] = fresh[key] + (Number.isFinite(local[key]) ? local[key] - base[key] : 0);
+  // 同一对局的押金和返还属于一次性交易：旧页重复提交的差额从金币合并中抵消。
+  const baseBounty = saveBountyMeta(base.bounty), localBounty = saveBountyMeta(local.bounty), freshBounty = saveBountyMeta(fresh.bounty);
+  merged.bounty = { ...saveRecord(merged.bounty), stakes: { ...freshBounty.stakes }, medals: { ...freshBounty.medals, ...localBounty.medals } };
+  for (const [runId, contract] of Object.entries(localBounty.stakes)) {
+    if (!baseBounty.stakes[runId] && freshBounty.stakes[runId]) merged.coins += contract.stake;
+    if (!merged.bounty.stakes[runId]) merged.bounty.stakes[runId] = contract;
+  }
+  const disputedMedals = new Set();
+  for (const [runId, value] of Object.entries(saveRecord(local.settledRuns))) {
+    const localReceipt = saveBountyReceipt(value?.bounty, localBounty.stakes[runId]);
+    const baseReceipt = saveBountyReceipt(base.settledRuns?.[runId]?.bounty, baseBounty.stakes[runId]);
+    const freshReceipt = saveBountyReceipt(fresh.settledRuns?.[runId]?.bounty, freshBounty.stakes[runId]);
+    if (!freshReceipt) continue;
+    if (localReceipt) merged.coins -= localReceipt.returned - (baseReceipt?.returned || 0);
+    const medal = `${localBounty.stakes[runId]?.mech}:${localReceipt?.id}`;
+    if (localReceipt?.met && !freshReceipt.met && !baseBounty.medals[medal] && !freshBounty.medals[medal]) disputedMedals.add(medal);
+    // 成败在首次结算后固定；旧的活页可以补普通收益，不能重开已经结束的悬赏。
+    merged.settledRuns[runId] = { ...saveRecord(merged.settledRuns?.[runId]), bounty: freshReceipt };
+  }
+  for (const medal of disputedMedals) {
+    const completed = Object.entries(saveRecord(merged.settledRuns)).some(([runId, value]) => value?.bounty?.met
+      && `${merged.bounty.stakes[runId]?.mech}:${value.bounty.id}` === medal);
+    if (!completed) delete merged.bounty.medals[medal];
+  }
   for (const key of ['best', 'bestKills']) merged[key] = Math.max(fresh[key], Number.isFinite(local[key]) ? local[key] : 0);
   const times = [fresh.fastestWin, local.fastestWin].filter(value => Number.isFinite(value) && value > 0);
   merged.fastestWin = times.length ? Math.min(...times) : 0;
@@ -1048,6 +1280,13 @@ function mergeMetaSnapshots(base, local, fresh) {
   for (const [key, value] of Object.entries(saveRecord(local.unlocked))) {
     if (value === true || !Object.hasOwn(merged.unlocked, key)) merged.unlocked[key] = value;
   }
+  // 另一页可能在本页检查余额后抢先扣款；禁止把负余额归零后仍保留第二份押金合同。
+  const addedStake = Object.keys(localBounty.stakes).some(runId => !baseBounty.stakes[runId] && !freshBounty.stakes[runId]);
+  if (addedStake && merged.coins < 0) throw new Error('金币已在另一页使用，悬赏押金未扣除');
+  const addedCosmetic = Object.keys(normalizeCosmetics(local.cosmetics).owned).some(id => !base.cosmetics.owned[id] && !fresh.cosmetics.owned[id]);
+  if (addedCosmetic && merged.coins < 0) throw new Error('金币已在另一页使用，外观未购买');
+  // 外观是永久购买：另一页的旧选择不能抹掉已经买下的物品；选择仍按本页实际改动合并。
+  merged.cosmetics = { ...saveRecord(merged.cosmetics), owned: { ...fresh.cosmetics.owned, ...normalizeCosmetics(local.cosmetics).owned } };
   return normalizeMeta(merged);
 }
 function applyMetaSnapshot(target, source) {
@@ -1089,6 +1328,98 @@ function replaceMeta(source) {
     notifyMeta('replace', changedKeys);
     return true;
   } catch (_) { return false; }
+}
+let saveCosmeticDbPromise = null;
+function saveCosmeticLockDatabase() {
+  if (saveCosmeticDbPromise) return saveCosmeticDbPromise;
+  saveCosmeticDbPromise = new Promise((resolve, reject) => {
+    if (!globalThis.indexedDB?.open) { reject(new Error('安全购买锁不可用')); return; }
+    const request = globalThis.indexedDB.open('ironrampage.meta-locks.v1', 1);
+    request.onupgradeneeded = () => request.result.createObjectStore('locks');
+    request.onsuccess = () => {
+      const database = request.result;
+      database.onversionchange = () => { database.close(); saveCosmeticDbPromise = null; };
+      resolve(database);
+    };
+    request.onerror = () => reject(request.error || new Error('安全购买锁打开失败'));
+  }).catch(error => { saveCosmeticDbPromise = null; throw error; });
+  return saveCosmeticDbPromise;
+}
+async function saveWithCosmeticLock(task) {
+  const locks = globalThis.navigator?.locks;
+  if (typeof locks?.request === 'function') return locks.request('ironrampage.cosmetic-purchase', { mode: 'exclusive' }, task);
+  // 普通 HTTP 页面可能没有 Web Locks；同一数据库的读写事务也会跨页排队。
+  const database = await saveCosmeticLockDatabase();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction('locks', 'readwrite');
+    let result, finished = false;
+    // 数据库只提供互斥，实际存档写入 localStorage；写入完成后以持久化结果为准。
+    // 此时锁事务即使中断，也不能把已经生效的购买误报失败，更不能回滚覆盖别页进度。
+    const finish = error => finished ? resolve(result) : reject(transaction.error || error);
+    transaction.oncomplete = () => finish(new Error('安全购买锁未完成'));
+    transaction.onabort = () => finish(new Error('安全购买锁中断'));
+    transaction.onerror = () => finish(new Error('安全购买锁失败'));
+    transaction.objectStore('locks').get('cosmetic-purchase').onsuccess = () => {
+      // 不在事务里 await，确保整个同步读档和写档阶段始终持有锁。
+      try { result = task(); finished = true; } catch (error) { transaction.abort(); reject(error); }
+    };
+  });
+}
+// 外观选择只改演出；没有购买或类型不匹配时拒绝，避免存档篡改越过购买。
+function selectCosmetic(type, id) {
+  reloadMeta();
+  const item = cosmeticById(id), slot = type === 'kill' ? 'killFx' : type;
+  if (slot !== 'skin' && slot !== 'trail' && slot !== 'killFx') return { ok: false, reason: 'unknown' };
+  if (id && (!item || item.type !== slot)) return { ok: false, reason: 'unknown' };
+  if (item && !cosmeticOwned(meta, id)) return { ok: false, reason: 'locked' };
+  const before = saveCopy(meta);
+  if (slot === 'skin') {
+    if (!item) return { ok: false, reason: 'unknown' };
+    meta.skins[item.mech] = item.id;
+  } else meta.cosmetics[slot] = id || '';
+  if (saveMeta()) return { ok: true, item };
+  applyMetaSnapshot(meta, before);
+  return { ok: false, reason: 'storage' };
+}
+// 跨页锁把「读最新金币→校验→购买→保存」串起来，同物不重复扣、不同物不透支。
+// 两种原生跨页锁都不可用时拒绝扣款，不退回有竞态风险的读写。
+function purchaseCosmetic(id, expectedEpoch = saveEpochOf(saveBaseline)) {
+  const item = cosmeticById(id);
+  if (!item) return Promise.resolve({ ok: false, reason: 'unknown' });
+  const purchase = () => {
+    try {
+      const fresh = readMetaSnapshot();
+      if (fresh) {
+        const merged = mergeMetaSnapshots(saveBaseline, meta, fresh), changedKeys = changedMetaKeys(meta, merged);
+        applyMetaSnapshot(meta, merged); saveBaseline = fresh;
+        notifyMeta('reload', changedKeys);
+      }
+      if (saveEpochOf(meta) !== expectedEpoch) return { ok: false, reason: 'epoch' };
+      if (item.type === 'skin' && meta.unlocked[item.mech] !== true) return { ok: false, reason: 'locked' };
+      if (cosmeticOwned(meta, id)) {
+        const selected = selectCosmetic(item.type, id);
+        return selected.ok ? { ok: true, reason: 'owned', item } : selected;
+      }
+      if (meta.coins < item.cost) return { ok: false, reason: 'coins' };
+      const before = saveCopy(meta);
+      meta.coins -= item.cost; meta.cosmetics.owned[id] = true;
+      if (item.type === 'skin') meta.skins[item.mech] = id;
+      else meta.cosmetics[item.type] = id;
+      if (saveMeta()) {
+        if (saveEpochOf(meta) !== expectedEpoch) return { ok: false, reason: 'epoch' };
+        return { ok: true, item };
+      }
+      // 购买失败完整回滚本次扣款和选择，保留购买前尚未落盘的正常收益。
+      applyMetaSnapshot(meta, before);
+      return { ok: false, reason: 'storage' };
+    } catch (error) {
+      saveLastFailed = true; notifySaveFailure(error);
+      return { ok: false, reason: 'storage' };
+    }
+  };
+  return saveWithCosmeticLock(purchase).catch(error => {
+    saveLastFailed = true; notifySaveFailure(error); return { ok: false, reason: 'storage' };
+  });
 }
 if (typeof window !== 'undefined') window.addEventListener?.('storage', event => {
   if (event.key === SAVE_KEY && (!event.storageArea || event.storageArea === localStorage)) reloadMeta();
@@ -1151,9 +1482,44 @@ function applyMechSkin(mechId) {
   }
   RIG[mechId] = rigSkins[key] || base;
 }
+// 金币拖尾只替换残影用的缓存剪影；出厂样式直接复用原对象，不改冲刺采样和机甲绘制。
+const dashCosmeticRigCache = {};
+function dashTrailRig(mechId, style) {
+  const base = RIG[mechId]; if (!base || !style?.id) return base;
+  const key = mechId + ':' + style.id + ':' + style.shape;
+  if (!dashCosmeticRigCache[key]) {
+    dashCosmeticRigCache[key] = { ...base, torsoG: dashCosmeticSilhouette(base.torsoG, style), legLG: dashCosmeticSilhouette(base.legLG, style), legRG: dashCosmeticSilhouette(base.legRG, style) };
+  }
+  return dashCosmeticRigCache[key];
+}
+const dashCosmeticSpriteCache = {};
+function dashTrailSprite(mech, style) {
+  const im = mechSprite(mech); if (!im || !style?.id) return im;
+  const key = mech.id + ':' + style.id + ':' + style.shape;
+  return dashCosmeticSpriteCache[key] || (dashCosmeticSpriteCache[key] = dashCosmeticSilhouette(im, style));
+}
+function dashCosmeticSilhouette(im, style) {
+  const width = im.naturalWidth || im.width, height = im.naturalHeight || im.height, c = offscreen(width, height), x = c.getContext('2d');
+  x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = `rgb(${style.color})`; x.fillRect(0, 0, width, height); x.globalCompositeOperation = 'source-over';
+  // 图形一并烘进同尺寸剪影；每帧仍只画原有腿部和上身，不增加粒子或临时画布。
+  if (style.shape === 'flame') {
+    x.fillStyle = `rgba(${style.color},.7)`;
+    for (let i = 0; i < 3; i++) { const a = width * (.3 + i * .2), b = height * (.56 - i % 2 * .08); x.beginPath(); x.moveTo(a - width * .07, b); x.lineTo(a, height * .96); x.lineTo(a + width * .06, b); x.closePath(); x.fill(); }
+  } else if (style.shape === 'lightning') {
+    x.strokeStyle = `rgba(${style.color},.9)`; x.lineWidth = Math.max(1, width * .025);
+    for (const side of [-1, 1]) { x.beginPath(); x.moveTo(width * (.5 + side * .22), height * .15); x.lineTo(width * (.5 + side * .36), height * .4); x.lineTo(width * (.5 + side * .2), height * .55); x.lineTo(width * (.5 + side * .4), height * .83); x.stroke(); }
+  } else if (style.shape === 'sakura') {
+    x.fillStyle = `rgba(${style.color},.85)`;
+    for (let i = 0; i < 5; i++) { const a = i * Math.PI * .4; x.beginPath(); x.ellipse(width * (.5 + Math.cos(a) * .34), height * (.5 + Math.sin(a) * .34), width * .035, height * .075, a, 0, Math.PI * 2); x.fill(); }
+  } else if (style.shape === 'shadow') {
+    x.globalCompositeOperation = 'destination-out';
+    for (let i = 0; i < 4; i++) x.fillRect(0, height * (.25 + i * .15), width, Math.max(1, height * .025));
+  }
+  return c;
+}
 // 机库预览、菜单、缩略图用的整图：当前涂装的改色版，贴图没到或出厂涂装时用原图
-function mechSprite(mech) {
-  const skin = selectedSkin(meta, mech.id);
+function mechSprite(mech, previewSkin) {
+  const skin = previewSkin || selectedSkin(meta, mech.id);
   return skin.id === 'factory' ? IMG[mech.img] : skinImage(mech.img, mech.id, skin) || IMG[mech.img];
 }
 // 超载切入立绘：第一次要用时才请求，到之前返回 null；套当前涂装（改色结果和机甲贴图一样按涂装缓存）
@@ -1778,6 +2144,45 @@ const TUTORIAL_STEPS = [
   { id: 'perfect', text: '迎着红色弹丸冲刺，擦身穿过会触发极限闪避' },
 ];
 
+// ---- src/data/combat-visuals.js ----
+// 伤害聚合、数字字体和玩家曳光的集中视觉参数
+const COMBAT_VISUALS = Object.freeze({
+  damage: Object.freeze({ window: .2, life: .6, defaultCap: 30, crowdedBulletCount: 150, normalSize: 14, critSize: 19, pulseTime: .12, pulseScale: .13, blockedColor: '150,162,176', blockedOffset: .9 }),
+  bullet: Object.freeze({ lengthMin: 14, lengthMax: 20, velocityScale: .025, tracerLengthScale: 1.3, width: 2.4, droneWidth: 2.2, tracerWidth: 3, evolvedWidth: 3.5, evolvedColor: '255,205,71' }),
+});
+const DAMAGE_NUMBER_FONTS = Object.freeze({ normal: '600 14px Teko,"Arial Narrow",sans-serif', crit: '600 19px Teko,"Arial Narrow",sans-serif' });
+function combatDamageTextCap(value) {
+  return Number.isFinite(value) ? Math.max(0, Math.min(COMBAT_VISUALS.damage.defaultCap, Math.floor(value))) : COMBAT_VISUALS.damage.defaultCap;
+}
+function damageNumberIsVisible(text, mode = 'all', enemyBulletCount = 0) {
+  return !!text.big || mode !== 'off' && (mode !== 'important' && enemyBulletCount <= COMBAT_VISUALS.damage.crowdedBulletCount || !!text.crit);
+}
+
+// 拖尾外观只在这里选择样式；默认参数保留原有冲刺残影，后续特效线可沿用这一接点。
+const DASH_COSMETIC_STYLES = Object.freeze({
+  'trail:flame': Object.freeze({ color: '255,126,47', shape: 'flame' }),
+  'trail:lightning': Object.freeze({ color: '126,211,255', shape: 'lightning' }),
+  'trail:sakura': Object.freeze({ color: '245,153,192', shape: 'sakura' }),
+  'trail:shadow': Object.freeze({ color: '139,116,188', shape: 'shadow' }),
+});
+const DASH_DEFAULT_STYLE = Object.freeze({ id: '', shape: 'factory', step: 2, alpha: .32, blend: 'lighter' });
+function dashTrailStyle(mech, snapshot = {}, settings = {}, budget = {}, reducedMotion = false) {
+  const id = snapshot.cosmetics?.trail, item = cosmeticById(id), style = DASH_COSMETIC_STYLES[id];
+  if (!style || item?.type !== 'trail' || !cosmeticOwned(snapshot, id)) return DASH_DEFAULT_STYLE;
+  const calm = settings.flashes === false || reducedMotion, simple = calm || budget.detail === 0;
+  return { ...style, id, shape: simple ? 'plain' : style.shape, step: simple ? 4 : 2, alpha: calm ? .16 : .26, blend: calm ? 'source-over' : 'lighter' };
+}
+const KILL_COSMETIC_STYLES = Object.freeze({
+  'kill:gold': Object.freeze({ kind: 'cosmeticGold', color: '235,184,76' }),
+  'kill:pixel': Object.freeze({ kind: 'cosmeticPixel', color: '150,225,209' }),
+  'kill:plasma': Object.freeze({ kind: 'cosmeticPlasma', color: '150,180,240' }),
+});
+function killFxStyle(snapshot = {}, settings = {}, reducedMotion = false) {
+  const id = snapshot.cosmetics?.killFx, item = cosmeticById(id), style = KILL_COSMETIC_STYLES[id];
+  if (!style || item?.type !== 'killFx' || !cosmeticOwned(snapshot, id)) return null;
+  return { ...style, id, calm: settings.flashes === false || reducedMotion };
+}
+
 // ---- src/game/state.js ----
 // 当前对局状态。G 只能通过 setG 替换，其他模块只读
 let G = null;
@@ -1890,7 +2295,19 @@ function feedback(kind, options = {}) {
 // ---- src/game/fx.js ----
 // 特效与提示：粒子、烟雾、飘字、闪屏、底部提示
 
+// 缓存查询对象而非结果，避免逐粒子创建查询，同时保留系统设置的实时变化。
+const fxReducedMotionMq = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
 function part(x, y, vx, vy, life, size, col) { if (G.parts.length >= (G.effectBudget ?? EXPERIENCE.particleCap)) return; G.parts.push({ x, y, vx, vy, life, max: life, size, col, k: 0 }); }
+// 死亡粒子的随机参数仍由旧循环原序生成，外观只重塑这一个粒子，绝不额外抽玩法随机数。
+function enemyDeathPart(e, index, vx, vy, life, size) {
+  const style = !e.boss && killFxStyle(meta, G.settings, !!fxReducedMotionMq?.matches);
+  if (!style) { part(e.x, e.y, vx, vy, life, size, e.col); return; }
+  if (G.parts.length >= (G.effectBudget ?? EXPERIENCE.particleCap)) return;
+  const ring = style.kind === 'cosmeticPlasma' && index === 0 && !style.calm;
+  // 即使降级后不绘制，也保留原寿命与预算占位，避免后续武器因空出预算而多抽随机数。
+  G.parts.push({ x: e.x, y: e.y, vx: ring ? 0 : vx * (style.calm ? .2 : .7), vy: ring ? 0 : vy * (style.calm ? .2 : .7), life, max: life, size: ring ? Math.max(8, e.r) : size, col: style.color, k: 0, kind: style.kind, ring, calm: style.calm, index, angle: index * 2.399963 });
+}
 function smoke(x, y, size, life = .7) { if (G.parts.length >= (G.effectBudget ?? EXPERIENCE.particleCap)) return; G.parts.push({ x, y, vx: rand(-15, 15), vy: rand(-15, 15), life, max: life, size, col: '', k: 1 }); }
 function floatText(x, y, str, col, size, life) { G.texts.push({ x, y, str, col, size, life, max: life, vy: -40, big: true }); }
 function dmgText(x, y, v, crit) {
@@ -2534,20 +2951,6 @@ const MECH_AWAKEN = {
   engineer: { drones: 4, radius: 60, damage: 30, speed: 420, cooldownReduction: 4 },
   projectile: { radius: 4, missileLife: 2.4, cap: 200 },
 };
-
-// ---- src/data/combat-visuals.js ----
-// 伤害聚合、数字字体和玩家曳光的集中视觉参数
-const COMBAT_VISUALS = Object.freeze({
-  damage: Object.freeze({ window: .2, life: .6, defaultCap: 30, crowdedBulletCount: 150, normalSize: 14, critSize: 19, pulseTime: .12, pulseScale: .13, blockedColor: '150,162,176', blockedOffset: .9 }),
-  bullet: Object.freeze({ lengthMin: 14, lengthMax: 20, velocityScale: .025, tracerLengthScale: 1.3, width: 2.4, droneWidth: 2.2, tracerWidth: 3, evolvedWidth: 3.5, evolvedColor: '255,205,71' }),
-});
-const DAMAGE_NUMBER_FONTS = Object.freeze({ normal: '600 14px Teko,"Arial Narrow",sans-serif', crit: '600 19px Teko,"Arial Narrow",sans-serif' });
-function combatDamageTextCap(value) {
-  return Number.isFinite(value) ? Math.max(0, Math.min(COMBAT_VISUALS.damage.defaultCap, Math.floor(value))) : COMBAT_VISUALS.damage.defaultCap;
-}
-function damageNumberIsVisible(text, mode = 'all', enemyBulletCount = 0) {
-  return !!text.big || mode !== 'off' && (mode !== 'important' && enemyBulletCount <= COMBAT_VISUALS.damage.crowdedBulletCount || !!text.crit);
-}
 
 // ---- src/game/damage-numbers.js ----
 // 按敌人聚合有效伤害；数字预算独立于重要提示，不依赖浏览器和画质核心
@@ -4872,6 +5275,46 @@ onKill((enemy, source) => {
   if (typeof source === 'string' && (source.startsWith('mech:') || source.startsWith('kick:') || source.startsWith('skill:') || source.startsWith('steal:') || source === 'execute' || source === 'vent' || source === 'perfect' || source === 'cord')) awardStyleRank('skillKill');
 });
 
+// ---- src/game/bounty.js ----
+// 悬赏局内观察：只记录命中和拾取，沿用现有战绩，不改变战斗行为
+
+function bountyMetrics(run) {
+  const damageTaken = Object.values(run.report?.damageTakenBySource || {}).reduce((sum, value) => sum + (Number.isFinite(value) && value > 0 ? value : 0), 0);
+  const completed = (run.actionResults || []).filter(result => result.outcome === 'complete' && Number.isFinite(result.time) && result.time >= 0);
+  // 只认真实完成记录，不以行动计数猜测时间，也不四舍五入临界时刻。
+  const relayCompletedAt = completed.length >= 3 ? completed[completed.length - 1].time : null;
+  return { t: run.bounty?.winAt ?? run.t, bossKills: run.bossKills, highSeconds: run.styleRank?.highSeconds || 0,
+    healPickups: run.bounty?.healPickups || 0, bestCombo: run.bestCombo, perfects: run.perfects, relayClears: run.relayClears,
+    damageTaken, relayCompletedAt, scorpionHit: run.bounty?.scorpionHit === true, abandoned: !!run.abandoned };
+}
+function updateBountyProgress(run, win = run?.won) {
+  const bounty = run?.bounty;
+  if (!bounty || run.practice || run.daily) return;
+  // 速攻记录最终首领倒下的战斗时刻，不把结尾的金币吸取演出算成战斗。
+  if (win && bounty.winAt === undefined) bounty.winAt = run.t;
+  if (run.abandoned) { bounty.met = false; return; }
+  if (bounty.finished) return;
+  if (!bounty.met) bounty.met = evaluateBounty(bounty.id, bountyMetrics(run), !!win);
+  if (win) bounty.finished = true;
+}
+function bountyProgressText(run) {
+  const bounty = run?.bounty, def = bountyById(bounty?.id);
+  if (!def || run.practice || run.daily) return '';
+  let progress;
+  const m = bountyMetrics(run);
+  switch (bounty.id) {
+    case 'speed': progress = `${fmtTime(m.t)} / 8:00 · 承伤 ${Math.ceil(m.damageTaken)} / 250`; break;
+    case 'blitz': progress = `${fmtTime(m.t)} / 7:30`; break;
+    case 'scorpion': progress = bounty.scorpionHit ? '已被命中' : run.bossKills > 0 ? '已击破' : '等待毒蝎'; break;
+    case 'rampage': progress = `${Math.floor(m.highSeconds)} / 60 秒`; break;
+    case 'noheal': progress = `治疗 ${m.healPickups} / 0`; break;
+    case 'combo': progress = `${m.bestCombo || 0} / 6000`; break;
+    case 'dodge': progress = `${m.perfects || 0} / 40`; break;
+    case 'objectives': progress = `${m.relayClears || 0} / 3 · ${fmtTime(m.relayCompletedAt ?? m.t)} / 6:00`; break;
+  }
+  return `悬赏：${def.name} ${bounty.met ? '已达成' : progress}`;
+}
+
 // ---- src/game/combat.js ----
 // 伤害结算、击杀、首领死亡、掉落
 
@@ -4919,7 +5362,7 @@ function killEnemy(e, source) {
   if (p.overT <= 0) p.overload = Math.min(100, p.overload + (e.boss ? 40 : e.elite ? 6 : .55 * energyScale) * styleRewards.energyMul);
   if (G.combo % 50 === 0) { floatText(p.x, p.y - 70, `${G.combo} 连杀！`, '255,205,71', 26, 1); if (p.overT <= 0) p.overload = Math.min(100, p.overload + 8 * energyScale * styleRewards.energyMul); }
   if (!e.boss) feedback(e.elite ? 'eliteKill' : 'kill', { x: e.x, y: e.y, combo: G.combo });
-  for (let i = 0; i < (e.elite ? 22 : 9); i++) { const a = Math.random() * TAU, s = rand(40, 220); part(e.x, e.y, Math.cos(a) * s, Math.sin(a) * s, rand(.2, .45), rand(4, 9), e.col); }
+  for (let i = 0; i < (e.elite ? 22 : 9); i++) { const a = Math.random() * TAU, s = rand(40, 220); enemyDeathPart(e, i, Math.cos(a) * s, Math.sin(a) * s, rand(.2, .45), rand(4, 9)); }
   if (G.decals.length > 70) G.decals.shift();
   G.decals.push({ x: e.x, y: e.y, r: e.r * rand(1, 1.5), col: e.col, life: 9, seed: Math.random() * 1000 });
   runKillHooks(e, source);
@@ -4947,6 +5390,7 @@ function bossDeath(e, xpMul = 1) {
   G.banner = { kind: 'info', title: e.final ? '母巢击破！' : '首领击破！', sub: e.final ? '突围成功' : '拾取补给箱', t: 2.4, max: 2.4, col: '255,205,71' };
   // 最终首领倒下后场上金币全部吸过来，倒计时结束前能捡完
   if (e.final) { G.victoryT = 3.2; G.won = true; for (const q of G.pickups) if (q.kind === 'coin') { q.mag = true; q.t = Math.max(q.t, .3); } }
+  if (G.bounty) updateBountyProgress(G);
 }
 function drop(kind, x, y, v = 1, salvage = null) {
   if (kind === 'xp' && G.pickups.length > 420) { // 晶体太多时合并，避免掉帧
@@ -6675,7 +7119,7 @@ function collect(o) {
   switch (o.kind) {
     case 'xp': gainXp(o.v); SFX.pickup(); break;
     case 'coin': G.coins += o.v; SFX.coin(); break;
-    case 'heal': { const h = p.maxHp * healPickupFraction(G.t); p.hp = Math.min(p.maxHp, p.hp + h); floatText(p.x, p.y - 34, '+' + Math.round(h), '90,255,140', 20, .9); SFX.level(); break; }
+    case 'heal': { if (G.bounty) G.bounty.healPickups = (G.bounty.healPickups || 0) + 1; const h = p.maxHp * healPickupFraction(G.t); p.hp = Math.min(p.maxHp, p.hp + h); floatText(p.x, p.y - 34, '+' + Math.round(h), '90,255,140', 20, .9); SFX.level(); break; }
     case 'magnet': for (const q of G.pickups) if (q.kind === 'xp' || q.kind === 'coin') { q.mag = true; q.t = Math.max(q.t, .3); } floatText(p.x, p.y - 34, '磁力吸取', '90,230,255', 20, .9); SFX.level(); break;
     // 拆解战利品队列和保底队列一一对应，只有首领宝箱带内容
     case 'chest': G.pendingChest++; (G.chestGuarantees ||= []).push(o.v ?? GROWTH.chestMinItems); (G.chestSalvage ||= []).push(o.salvage || null); break;
@@ -6692,41 +7136,80 @@ function createRunIdentity() {
   return `run-${Date.now().toString(36)}-${origin}-${++persistenceIdentityCounter}`;
 }
 function persistenceRecord(value) { return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
+// 押金先落盘再允许开局；失败时回滚本次交易，避免后续存档意外补扣。
+function reserveBounty(run, choice) {
+  if (!run || run.practice || run.daily || !run.runId) return false;
+  reloadMeta();
+  if (!(meta.wins >= 1)) return false;
+  const existing = normalizeBountyContract(meta.bounty.stakes[run.runId], run.runId);
+  if (existing) {
+    if (meta.settledRuns[run.runId]?.bounty || existing.mech !== (run.mech?.id || run.mech) || existing.tier !== (run.tier ?? 0)) return false;
+    const progress = normalizeBountyContract(run.bounty, run.runId);
+    if (!progress || !['id', 'stake', 'tier', 'mech'].every(key => progress[key] === existing[key])) run.bounty = { ...existing, met: false };
+    return true;
+  }
+  if (!choice || !Number.isSafeInteger(choice.round) || choice.round < 0 || choice.round !== meta.runs || !bountyById(choice.id) || !bountyOffers(meta.runs).some(offer => offer.id === choice.id)
+    || !BOUNTY_STAKES.includes(choice.stake) || choice.stake > meta.coins) return false;
+  const contract = normalizeBountyContract({ runId: run.runId, id: choice.id, stake: choice.stake, tier: run.tier ?? 0, mech: run.mech?.id || run.mech, met: false });
+  if (!contract) return false;
+  // 扣押时锁定承诺返还，跨版本恢复也沿用出击时的报价。
+  contract.lockedReturn = bountyReturn(contract);
+  const coins = meta.coins, previous = JSON.parse(JSON.stringify(meta.bounty));
+  meta.coins -= contract.stake;
+  meta.bounty.stakes[run.runId] = contract; meta.bounty.active = contract; meta.bounty.choice = null;
+  if (!saveMeta()) { meta.coins = coins; meta.bounty = previous; return false; }
+  // 另一页恰好恢复备份时，saveMeta 会丢弃旧代号交易；不能把未扣款合同带进新局。
+  const savedContract = normalizeBountyContract(meta.bounty.stakes[run.runId], run.runId);
+  if (!savedContract || !['id', 'stake', 'tier', 'mech'].every(key => savedContract[key] === contract[key])) return false;
+  run.bounty = { ...contract };
+  return true;
+}
 function validRunSnapshot(value, id) {
   if (!value || typeof value !== 'object' || typeof id !== 'string' || !id || ['__proto__', 'constructor', 'prototype'].includes(id)) return null;
   if (!Number.isFinite(value.t) || value.t < 0 || value.t > Number.MAX_SAFE_INTEGER) return null;
   if (!['coins', 'kills', 'bossKills'].every(key => Number.isSafeInteger(value[key]) && value[key] >= 0)) return null;
   // 深渊层级和每日挑战日期随快照保存，恢复结算时金币倍率和每日奖励不丢
   const daily = typeof value.daily === 'string' ? value.daily : value.daily?.key;
-  return { id, mech: typeof value.mech === 'string' ? value.mech : value.mech?.id || '', t: value.t,
+  const mech = typeof value.mech === 'string' ? value.mech : value.mech?.id || '';
+  const tier = Number.isInteger(value.tier) && value.tier >= 0 && value.tier <= TIER_MAX ? value.tier : 0;
+  const bounty = normalizeBountyContract(value.bounty, id);
+  return { id, mech, t: value.t,
     coins: value.coins, kills: value.kills, bossKills: value.bossKills, won: value.won === true,
     styleBonus: Number.isSafeInteger(value.styleBonus) && value.styleBonus >= 0 ? Math.min(STYLE_RANK.bonusCap, value.styleBonus) : 0,
-    tier: Number.isInteger(value.tier) && value.tier >= 0 && value.tier <= TIER_MAX ? value.tier : 0, daily: isDailyKey(daily) ? daily : '',
+    tier, daily: isDailyKey(daily) ? daily : '',
+    bounty: !isDailyKey(daily) && bounty?.mech === mech && bounty.tier === tier ? bounty : null,
+    ended: value.ended === true,
     savedAt: Number.isFinite(value.savedAt) ? value.savedAt : Date.now() };
 }
 const snapshotEarned = snapshot => runReward(snapshot.coins, snapshot.kills, snapshot.bossKills, snapshot.won, tierMods(snapshot.tier).coins).earned + snapshot.styleBonus;
 function snapshotRunProgress(run, win = run?.won) {
   if (!run || run.practice) return null;
   if (!run.runId) run.runId = createRunIdentity();
+  if (run.bounty) updateBountyProgress(run, win);
   // 奖金单列保存，恢复和续局共用同一幂等账本，不混入拾取金币或深渊倍率。
   return validRunSnapshot({ ...run, styleBonus: styleRankBonusForSeconds(run.styleRank?.highSeconds), won: !!win, savedAt: Date.now() }, run.runId);
 }
-function checkpointRun() {
+function checkpointRun({ ended = false } = {}) {
   if (!G || G.practice || G.state === 'end') return false;
   const snapshot = snapshotRunProgress(G); if (!snapshot) return false;
+  // 卸载事件与后台事件可能交错；同局已确认的结束证据不能被后续普通快照抹掉。
+  if (ended === true) G.persistenceEnded = true;
+  snapshot.ended = G.persistenceEnded === true;
   reloadMeta();
   meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
   meta.settledRuns = persistenceRecord(meta.settledRuns);
   const prior = persistenceRecord(meta.settledRuns[snapshot.id]);
   const earned = snapshotEarned(snapshot);
-  if (prior.earned >= earned && prior.t >= snapshot.t && (!snapshot.won || prior.won)) return false;
+  if (prior.earned >= earned && prior.t >= snapshot.t && (!snapshot.won || prior.won) && (!snapshot.bounty || prior.bounty)) return false;
   meta.pendingSettlements[snapshot.id] = snapshot;
   return saveMeta();
 }
-function settleRunSnapshot(snapshot) {
+function settleRunSnapshot(snapshot, { recovering = false, includeBounty = true } = {}) {
   reloadMeta();
   meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
   meta.settledRuns = persistenceRecord(meta.settledRuns);
+  // 普通恢复不持支付锁；重读后新出现的悬赏快照必须留给锁内阶段。
+  if (!includeBounty && meta.pendingSettlements[snapshot.id]?.bounty) return null;
   const prior = persistenceRecord(meta.settledRuns[snapshot.id]);
   const earned = snapshotEarned(snapshot);
   const previousPaid = Number.isSafeInteger(prior.earned) && prior.earned >= 0 ? prior.earned : 0;
@@ -6754,35 +7237,60 @@ function settleRunSnapshot(snapshot) {
       meta.daily = { ...day, bestT: Math.max(day.bestT || 0, snapshot.t), kills: Math.max(day.kills || 0, snapshot.kills), win: !!(day.win || snapshot.won) };
     }
   }
-  meta.settledRuns[snapshot.id] = { earned: Math.max(previousPaid, earned), won: !!(snapshot.won || prior.won), t: Math.max(prior.t || 0, snapshot.t) };
+  let bounty = prior.bounty || null, bountyReward = 0;
+  const contract = includeBounty ? normalizeBountyContract(meta.bounty.stakes[snapshot.id], snapshot.id) : null;
+  const progress = normalizeBountyContract(snapshot.bounty, snapshot.id);
+  // 快照不能凭空造出押金：只认已扣款账本里同机体、同层级、同条目的合同。
+  if (!bounty && contract) {
+    const matches = progress && ['id', 'stake', 'tier', 'mech'].every(key => progress[key] === contract[key]);
+    const met = !!(matches && progress.met && !snapshot.daily);
+    // 另一页恢复未达成的快照时，原页可能只是暂停，不能据此提前封掉仍在玩的合同。
+    // 只有真实终局或明确卸载的快照才封失败；后台暂停和往返缓存仍可能继续。
+    if (!recovering || snapshot.ended || met) {
+      bountyReward = met ? bountyReturn(contract) : 0;
+      bounty = { id: contract.id, stake: contract.stake, met, returned: bountyReward };
+      meta.coins += bountyReward;
+      if (met) meta.bounty.medals[`${contract.mech}:${contract.id}`] = true;
+    }
+  }
+  const settled = { earned: Math.max(previousPaid, earned), won: !!(snapshot.won || prior.won), t: Math.max(prior.t || 0, snapshot.t) };
+  if (bounty) settled.bounty = bounty;
+  meta.settledRuns[snapshot.id] = settled;
+  if (includeBounty && bounty && meta.bounty.active?.runId === snapshot.id) meta.bounty.active = null;
   // 只清本局的记录；其他标签页的对局快照由三方存档合并保留。
   const pending = meta.pendingSettlements[snapshot.id];
   if (!pending || pending.savedAt <= snapshot.savedAt) delete meta.pendingSettlements[snapshot.id];
   const saved = saveMeta();
-  return { earned, credited, previousPaid, alreadyPaid: previousPaid >= earned, newBest, fastest, tierUnlocked, dailyReward, styleBonus: snapshot.styleBonus, saved };
+  return { earned, credited, previousPaid, alreadyPaid: previousPaid >= earned, newBest, fastest, tierUnlocked, dailyReward, styleBonus: snapshot.styleBonus, bounty, bountyReward, bountyUnmetStake: !bounty && contract ? contract.stake : 0, saved };
 }
 function settleRunProgress(run, win) {
   const snapshot = snapshotRunProgress(run, win);
-  return snapshot ? settleRunSnapshot(snapshot) : { earned: 0, credited: 0, previousPaid: 0, alreadyPaid: false, newBest: false, fastest: false, tierUnlocked: 0, dailyReward: 0, styleBonus: 0, saved: false };
+  return snapshot ? settleRunSnapshot(snapshot) : { earned: 0, credited: 0, previousPaid: 0, alreadyPaid: false, newBest: false, fastest: false, tierUnlocked: 0, dailyReward: 0, styleBonus: 0, bounty: null, bountyReward: 0, saved: false };
 }
-function recoverPendingRuns() {
+function recoverPendingRuns({ includeBounty = true } = {}) {
   reloadMeta();
   meta.pendingSettlements = persistenceRecord(meta.pendingSettlements);
   const legacy = meta.pendingSettle;
-  if (legacy) {
+  if (legacy && (includeBounty || !legacy.bounty)) {
     const id = legacy.runId || `legacy-${legacy.savedAt || 0}-${legacy.mech || ''}`;
     const snapshot = validRunSnapshot(legacy, id);
     if (snapshot) meta.pendingSettlements[id] = snapshot;
     delete meta.pendingSettle;
   }
-  const pending = Object.entries(meta.pendingSettlements), result = { credited: 0, recovered: 0, saved: true };
+  const pending = Object.entries(meta.pendingSettlements), result = { credited: 0, recovered: 0, saved: true, bountyLost: 0, bountyUnmet: 0, pendingBounty: false };
   for (const [id, value] of pending) {
+    if (!includeBounty && value?.bounty) continue;
     const snapshot = validRunSnapshot(value, id);
     if (!snapshot) { delete meta.pendingSettlements[id]; continue; }
-    const receipt = settleRunSnapshot(snapshot);
-    result.credited += receipt.credited + receipt.dailyReward; result.recovered++; result.saved = result.saved && receipt.saved;
+    const receipt = settleRunSnapshot(snapshot, { recovering: true, includeBounty });
+    if (!receipt) continue;
+    result.credited += receipt.credited + receipt.dailyReward + receipt.bountyReward; result.recovered++; result.saved = result.saved && receipt.saved;
+    if (includeBounty && receipt.bounty?.met === false) result.bountyLost += receipt.bounty.stake;
+    result.bountyUnmet += receipt.bountyUnmetStake;
   }
+  // 无快照不能证明原页已经关闭（可能仍在另一页战斗）；保留押金账本，新局不会承接旧 runId。
   if (pending.length || legacy) result.saved = saveMeta() && result.saved;
+  result.pendingBounty = !!meta.pendingSettle?.bounty || Object.values(meta.pendingSettlements).some(snapshot => snapshot?.bounty);
   return result;
 }
 
@@ -7647,6 +8155,76 @@ const ICONS = {
 };
 const svgI = k => `<svg class="i" viewBox="0 0 48 48" aria-hidden="true">${ICONS[k] || ''}</svg>`;
 
+// ---- src/core/bounty-lock.js ----
+// 悬赏支付跨页互斥：优先浏览器锁，不支持时用同一数据库的读写事务串行同步存档段
+// 和外观购买锁共用名称、数据库与仓库，避免同一余额被两种消费并发扣除。
+const BOUNTY_LOCK_NAME = 'ironrampage.cosmetic-purchase';
+const BOUNTY_LOCK_DATABASE = 'ironrampage.meta-locks.v1';
+const BOUNTY_LOCK_STORE = 'locks';
+function bountyLockAction(action) {
+  const result = action();
+  if (result && typeof result.then === 'function') throw new Error('悬赏存档操作必须同步完成');
+  return result;
+}
+function bountyIndexedLock(action) {
+  return new Promise((resolve, reject) => {
+    const database = globalThis.indexedDB;
+    if (typeof database?.open !== 'function') { reject(new Error('当前浏览器无法安全保存悬赏，请开启站点存储权限后重试')); return; }
+    let finished = false, connection = null;
+    const finish = (error, result) => {
+      if (finished) return;
+      finished = true;
+      try { connection?.close(); } catch (_) { }
+      if (error) reject(error); else resolve(result);
+    };
+    let request;
+    try { request = database.open(BOUNTY_LOCK_DATABASE, 1); } catch (error) { finish(error); return; }
+    request.onupgradeneeded = () => {
+      try {
+        connection = request.result;
+        if (!request.result.objectStoreNames.contains(BOUNTY_LOCK_STORE)) request.result.createObjectStore(BOUNTY_LOCK_STORE);
+      } catch (error) { try { request.transaction?.abort(); } catch (_) { } finish(error); }
+    };
+    request.onerror = () => finish(request.error || new Error('无法打开悬赏存档锁'));
+    request.onblocked = () => finish(new Error('悬赏存档锁暂不可用，请关闭旧版游戏页面后重试'));
+    request.onsuccess = () => {
+      connection = request.result;
+      if (finished) { connection.close(); return; }
+      let transaction, value, actionError;
+      try {
+        // 同库同仓库的 readwrite 事务跨连接串行；在 get 回调内同步操作 localStorage。
+        transaction = connection.transaction(BOUNTY_LOCK_STORE, 'readwrite');
+        transaction.oncomplete = () => finish(null, value);
+        transaction.onabort = () => finish(actionError || transaction.error || new Error('悬赏存档操作未完成'));
+        transaction.onerror = () => finish(actionError || transaction.error || new Error('悬赏存档操作失败'));
+        const probe = transaction.objectStore(BOUNTY_LOCK_STORE).get('cosmetic-purchase');
+        probe.onsuccess = () => {
+          try { value = bountyLockAction(action); }
+          catch (error) { actionError = error; try { transaction.abort(); } catch (_) { finish(error); } }
+        };
+        probe.onerror = () => {
+          actionError = probe.error || new Error('无法读取悬赏存档锁');
+          try { transaction.abort(); } catch (_) { finish(actionError); }
+        };
+      } catch (error) {
+        try { transaction?.abort(); } catch (_) { }
+        finish(error);
+      }
+    };
+  });
+}
+async function withBountyLock(action) {
+  if (typeof action !== 'function') throw new TypeError('悬赏存档操作必须是函数');
+  const locks = globalThis.navigator?.locks;
+  if (typeof locks?.request === 'function') {
+    let invoked = false;
+    try { return await locks.request(BOUNTY_LOCK_NAME, () => { invoked = true; return bountyLockAction(action); }); }
+    // 后端不能用时才换后备；操作本身抛错绝不能被第二次执行。
+    catch (error) { if (invoked) throw error; }
+  }
+  return bountyIndexedLock(action);
+}
+
 // ---- src/data/achievements.js ----
 // 成就与协议勋章墙：纯数据加判定函数，结算时调用；按机甲记录的战绩也在这里累计
 
@@ -7735,27 +8313,50 @@ function hangarBadge(meta) {
   const n = affordableUpgradeCount(meta);
   return n ? `可升级 ${n}` : affordableMechCount(meta) ? '可解锁机体' : '';
 }
-// 下一个目标：机库里设定的机甲优先，否则取最便宜的未解锁机甲；机甲全解锁后取最便宜的下一级改装；全部买完返回 null
+// 下一个目标：机甲、改装都买完后指向最便宜的未买外观；角标仍只提示战力成长。
 function nextGoal(meta) {
   const locked = MECHS.filter(m => !meta.unlocked?.[m.id]);
   const mech = locked.find(m => m.id === meta.goal) || locked.slice().sort((a, b) => a.cost - b.cost)[0];
   const goal = mech ? { kind: 'mech', id: mech.id, name: mech.name, cost: mech.cost }
     : META_UPS.map(u => ({ kind: 'up', id: u.id, name: `${u.name} ${(meta.up?.[u.id] || 0) + 1} 级`, cost: nextUpgradeCost(u, meta.up) }))
-      .filter(g => g.cost > 0).sort((a, b) => a.cost - b.cost)[0];
+      .filter(g => g.cost > 0).sort((a, b) => a.cost - b.cost)[0]
+      || COSMETICS.filter(item => !cosmeticOwned(meta, item.id)).slice().sort((a, b) => a.cost - b.cost)
+        .map(item => ({ kind: 'cosmetic', id: item.id, name: `${item.mech ? MECHS.find(m => m.id === item.mech).name + '·' : ''}${item.name}`, cost: item.cost }))[0];
   if (!goal) return null;
   return { ...goal, have: Math.max(0, Math.min(meta.coins, goal.cost)), ready: meta.coins >= goal.cost };
+}
+
+// ---- src/render/cosmetics.js ----
+// 外观演出的纯绘制：复用死亡粒子预算，不创建战斗对象或消耗玩法随机数
+function drawCosmeticFragment(ctx, q, zoom = 1, flashes = true) {
+  if (!q.kind?.startsWith('cosmetic')) return false;
+  const calm = q.calm || !flashes, visualLife = calm ? Math.min(.16, q.max) : q.max, t = Math.max(0, Math.min(1, 1 - (q.max - q.life) / visualLife)), size = Math.max(1, q.size);
+  if (!(t > 0) || calm && q.index >= 3) return true;
+  ctx.save(); ctx.translate(q.x, q.y); ctx.globalAlpha = t * (calm ? .6 : .8); ctx.fillStyle = `rgb(${q.col})`; ctx.strokeStyle = `rgb(${q.col})`;
+  if (calm) ctx.fillRect(-size * .2, -size * .2, size * .4, size * .4);
+  else if (q.kind === 'cosmeticGold') {
+    ctx.rotate((q.angle || 0) + (1 - t) * 1.2); ctx.beginPath(); ctx.moveTo(-size * .7, 0); ctx.lineTo(0, -size * .3); ctx.lineTo(size * .7, 0); ctx.lineTo(0, size * .3); ctx.closePath(); ctx.fill();
+  } else if (q.kind === 'cosmeticPixel') {
+    const pixel = Math.max(2, Math.round(size * .6)); ctx.fillRect(-pixel / 2, -pixel / 2, pixel, pixel);
+  } else if (q.ring) {
+    ctx.lineWidth = (1 + t) / zoom; ctx.beginPath(); ctx.arc(0, 0, size * (.45 + (1 - t) * 1.9), 0, Math.PI * 2); ctx.stroke();
+  } else {
+    ctx.rotate(q.angle || 0); ctx.lineWidth = 1.4 / zoom; ctx.beginPath(); ctx.arc(0, 0, size * .65, -.7, .7); ctx.stroke();
+  }
+  ctx.restore(); return true;
 }
 
 // ---- src/render/preview.js ----
 // 机库试验台：只读美术资源的独立演示，不创建对局、不触碰存档或战绩
 
 let hangarPreviewCanvas = null, hangarPreviewMech = null, hangarPreviewFrame = 0, hangarPreviewStarted = 0, hangarPreviewNotify = null;
+let hangarCosmeticDemo = null;
 const HANGAR_DEMO_SECONDS = 5;
 function stopHangarPreview() {
   if (hangarPreviewFrame) cancelAnimationFrame(hangarPreviewFrame);
   hangarPreviewFrame = 0; hangarPreviewStarted = 0;
-  if (hangarPreviewNotify) hangarPreviewNotify(false, '能力示意结束 · 可再次播放');
-  hangarPreviewNotify = null;
+  if (hangarPreviewNotify) hangarPreviewNotify(false, hangarCosmeticDemo ? '外观预览结束 · 可再次播放' : '能力示意结束 · 可再次播放');
+  hangarPreviewNotify = null; hangarCosmeticDemo = null;
 }
 function setHangarPreview(canvas, mech) {
   stopHangarPreview(); hangarPreviewCanvas = canvas; hangarPreviewMech = mech;
@@ -7784,6 +8385,21 @@ function playHangarDemo(notify) {
   };
   hangarPreviewFrame = requestAnimationFrame(tick);
 }
+// 未购买也可在独立试验台预览；借用临时选择只生成图像，不写入存档、不创建真实虫子。
+function playHangarCosmeticDemo(type, id, notify = () => {}) {
+  const item = cosmeticById(id), kind = type === 'kill' ? 'killFx' : type;
+  if (!hangarPreviewCanvas || !hangarPreviewMech || !item || item.type !== kind || item.mech && item.mech !== hangarPreviewMech.id) return false;
+  stopHangarPreview(); hangarCosmeticDemo = { type: kind, item }; hangarPreviewNotify = notify; hangarPreviewStarted = performance.now();
+  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) { drawHangarPreview(.63, true); notify(false, `${item.name} · 静态预览，已跟随系统减少动态效果`); hangarPreviewNotify = null; return true; }
+  const tick = now => {
+    const elapsed = (now - hangarPreviewStarted) / 1000;
+    if (elapsed >= 2 || !hangarPreviewCanvas?.isConnected) { stopHangarPreview(); drawHangarPreview(0, false); return; }
+    hangarPreviewNotify?.(true, `${item.name} · ${kind === 'killFx' ? '虫子爆散预览' : '机甲冲刺预览'}`);
+    drawHangarPreview(elapsed, true); hangarPreviewFrame = requestAnimationFrame(tick);
+  };
+  hangarPreviewFrame = requestAnimationFrame(tick); return true;
+}
 function drawHangarPreview(t, active) {
   const canvas = hangarPreviewCanvas, mech = hangarPreviewMech;
   if (!canvas || !mech) return;
@@ -7805,13 +8421,17 @@ function drawHangarPreview(t, active) {
   }
   ctx.strokeStyle = '#b98b4c'; ctx.lineWidth = 3;
   for (const side of [-1, 1]) { ctx.beginPath(); ctx.moveTo(side * 188, -35); ctx.lineTo(side * 188, 35); ctx.stroke(); }
-  const dash = active && t >= 1 && t < 2.5, over = active && t >= 2.5;
-  const move = dash ? Math.sin(Math.min(1, (t - 1) / .5) * Math.PI) * 42 : 0;
+  const cosmetic = hangarCosmeticDemo, dash = cosmetic ? active && cosmetic.type !== 'killFx' && t >= .2 && t < 1.4 : active && t >= 1 && t < 2.5, over = !cosmetic && active && t >= 2.5;
+  const move = dash ? Math.sin(Math.min(1, (t - (cosmetic ? .2 : 1)) / .5) * Math.PI) * 42 : 0;
   const mx = dash ? move * .45 : 0, my = -move;
   const color = mech.id === 'phantom' ? '#d89dff' : mech.id === 'heavy' || mech.id === 'engineer' ? '#ffc973' : '#82deef';
-  const im = mechSprite(mech);
+  const im = mechSprite(mech, cosmetic?.type === 'skin' ? cosmetic.item : undefined);
   if (dash && im) {
-    for (let i = 3; i >= 1; i--) { ctx.globalAlpha = .11 * (4 - i); ctx.drawImage(im, mx - 98 - i * 6, my - 96 + i * 15, 196, 196); }
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches, snapshot = cosmetic?.type === 'trail' ? { cosmetics: { owned: { [cosmetic.item.id]: true }, trail: cosmetic.item.id } } : {};
+    const trail = dashTrailStyle(mech, snapshot, getSettings(), getQualityBudget(), reduced), ghost = cosmetic?.type === 'trail' ? dashTrailSprite(mech, trail) : im;
+    ctx.globalCompositeOperation = cosmetic?.type === 'trail' ? trail.blend : 'source-over';
+    for (let i = trail.step === 4 ? 1 : 3; i >= 1; i--) { ctx.globalAlpha = .11 * (4 - i) * (trail.id ? trail.alpha / .32 : 1); ctx.drawImage(ghost, mx - 98 - i * 6, my - 96 + i * 15, 196, 196); }
+    ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1;
   }
   if (over || (mech.id === 'storm' && dash)) {
@@ -7823,9 +8443,30 @@ function drawHangarPreview(t, active) {
   ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(0, 32, 70, 47, 0, 0, Math.PI * 2); ctx.fill();
   if (im) { const recoil = active && mech.weapon === 'rail' ? Math.max(0, .1 - t % .8) * 45 : 0; ctx.drawImage(im, -98, -98 + recoil, 196, 196); }
   else { ctx.fillStyle = '#b6c7d3'; ctx.font = '16px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(mech.name, 0, 0); }
-  if (active) drawHangarWeapon(ctx, mech, t, over, color);
+  if (active && !cosmetic) drawHangarWeapon(ctx, mech, t, over, color);
   if (mech.id === 'engineer') { ctx.strokeStyle = '#8edee8'; ctx.globalAlpha = .6; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 88, 106, 0, -.6, 3.8); ctx.stroke(); ctx.globalAlpha = 1; }
-  ctx.restore(); ctx.restore();
+  ctx.restore();
+  if (cosmetic?.type === 'killFx' && active) drawHangarCosmeticKill(ctx, cosmetic.item, t);
+  ctx.restore();
+}
+function drawHangarCosmeticKill(ctx, item, t) {
+  const x = 120, y = -24, reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const style = killFxStyle({ cosmetics: { owned: { [item.id]: true }, killFx: item.id } }, getSettings(), reduced);
+  if (t < .55) {
+    const im = IMG.enemy_crawler;
+    if (im) ctx.drawImage(im, x - 26, y - 26, 52, 52);
+    else {
+      ctx.fillStyle = '#856b52'; ctx.beginPath(); ctx.ellipse(x, y, 13, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#b49670'; ctx.lineWidth = 2;
+      for (const side of [-1, 1]) for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(x + side * 9, y - 10 + i * 9); ctx.lineTo(x + side * 23, y - 15 + i * 13); ctx.stroke(); }
+    }
+    return;
+  }
+  const life = .75 - (t - .55); if (life <= 0) return;
+  const n = Math.min(style.calm ? 3 : 9, Math.max(1, Math.floor(9 * getQualityBudget().particleScale)));
+  for (let i = 0; i < n; i++) {
+    const a = i * 2.399963, distance = style.calm ? 5 : (t - .55) * (35 + i * 4), ring = style.kind === 'cosmeticPlasma' && i === 0 && !style.calm;
+    drawCosmeticFragment(ctx, { kind: style.kind, col: style.color, x: ring ? x : x + Math.cos(a) * distance, y: ring ? y : y + Math.sin(a) * distance, size: ring ? 20 : 6, angle: a, life, max: .75, ring, calm: style.calm }, 1, !style.calm);
+  }
 }
 function drawHangarWeapon(ctx, mech, t, over, color) {
   ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
@@ -7923,11 +8564,12 @@ function decodeSaveBackup(text) {
   if (!backupRecord(payload) || !backupRecord(payload.meta)) return { ok: false, error: '备份码里没有可用的存档' };
   return { ok: true, meta: normalizeMeta(payload.meta), at: Number.isFinite(payload.at) ? payload.at : 0 };
 }
-// 恢复前给玩家核对的摘要：金币、已解锁机甲 id、永久改装总等级、突围、出击和最高存活。
+// 恢复前给玩家核对的摘要：金币、机甲、改装、已买外观和战绩。
 function saveBackupSummary(source) {
   const levels = Object.values(source.up || {}).filter(value => Number.isFinite(value) && value > 0);
   return { coins: source.coins, unlocked: Object.keys(source.unlocked || {}).filter(id => source.unlocked[id] === true),
-    upgrades: levels.reduce((sum, value) => sum + value, 0), wins: source.wins, runs: source.runs, best: source.best };
+    upgrades: levels.reduce((sum, value) => sum + value, 0), cosmetics: Object.keys(normalizeCosmetics(source.cosmetics).owned).length,
+    wins: source.wins, runs: source.runs, best: source.best };
 }
 // 申请持久化存储，降低浏览器清理站点数据时连存档一起删掉的概率；每页只申请一次，已是持久存储时不再申请。
 let persistRequest = null;
@@ -7966,7 +8608,7 @@ function renderBackupPreview(result) {
   const row = (label, value) => `<div><dt>${label}</dt><dd>${value}</dd></div>`;
   $('#backupSummary').innerHTML = (when ? row('备份时间', when) : '') + row('金币', backupNumber(s.coins)) +
     row('已解锁机甲', `${mechs.map(m => m.name).join('、') || '无'}（${mechs.length}/${MECHS.length}）`) +
-    row('永久改装', `共 ${s.upgrades} 级`) + row('战绩', `突围 ${s.wins} 次 · 出击 ${s.runs} 场 · 最久存活 ${s.best ? fmtTime(s.best) : '--'}`);
+    row('永久改装', `共 ${s.upgrades} 级`) + row('已购外观', `${s.cosmetics} 款`) + row('战绩', `突围 ${s.wins} 次 · 出击 ${s.runs} 场 · 最久存活 ${s.best ? fmtTime(s.best) : '--'}`);
   $('#backupCurrent').textContent = `将覆盖本机当前进度（金币 ${backupNumber(now.coins)}，已解锁 ${backupMechs(now.unlocked).length} 台机甲，突围 ${now.wins} 次），覆盖后无法撤销。`;
 }
 // 每次打开设置都收起备份面板；暂停中打开时恢复按钮禁用。
@@ -8160,9 +8802,10 @@ window.addEventListener('keydown', event => {
 
 const scr = { menu: $('#scrMenu'), hangar: $('#scrHangar'), settings: $('#scrSettings'), level: $('#scrLevel'), chest: $('#scrChest'), relay: $('#scrRelay'), trained: $('#scrTrained'), pause: $('#scrPause'), end: $('#scrEnd') };
 let previewMechId = meta.sel;
+let cosmeticConfirm = null, cosmeticBuying = false;
 function show(name) {
   resetInput();
-  if (name !== 'hangar') stopHangarPreview();
+  if (name !== 'hangar') { stopHangarPreview(); cosmeticConfirm = null; }
   for (const k in scr) { scr[k].hidden = k !== name; scr[k].inert = k !== name; }
   const hud = $('#hud');
   hud.hidden = !(G && (name === null || name === 'level' || name === 'chest' || name === 'relay' || name === 'trained'));
@@ -8189,7 +8832,9 @@ function refreshStoredViews() {
 function showRecoveryNotice(result) {
   const notice = $('#saveNotice'); if (!notice) return;
   notice.hidden = !result?.recovered;
-  notice.textContent = result?.saved ? `上局中断，已结算 ${result.credited} 金币` : '上局中断，收益暂未写入浏览器，请保持此页打开';
+  notice.textContent = result?.notice || (result?.saved ? `上局中断，已结算 ${result.credited} 金币` : '上局中断，收益暂未写入浏览器，请保持此页打开');
+  if (result?.bountyLost) notice.textContent += `；悬赏未达成，押金 ${result.bountyLost} 已失去`;
+  if (result?.bountyUnmet) notice.textContent += `；悬赏尚未达成，押金 ${result.bountyUnmet} 暂不返还。若原页已结束，押金已失去；仍在运行的原页可继续达成。`;
 }
 // 后台贴图到齐前，菜单和机库只能用原图地址、机库预览只画机体名字；到齐后补刷当时开着的那一页
 let assetRefreshWatch = false;
@@ -8216,6 +8861,14 @@ function refreshMenu() {
   const rookie = meta.runs === 0 && !meta.tutorial;
   $('#btnStart').hidden = rookie; $('#btnRookie').hidden = !rookie;
   $('#btnStartAlt').hidden = !rookie; $('#btnTraining').hidden = rookie;
+  // 悬赏配置会跨页面保存，最终出击按钮也必须写明本次扣款。
+  const bountyChoice = hangarBountyChoice();
+  for (const id of ['#btnStart', '#btnStartAlt']) {
+    $(id).disabled = !!bountyChoice && bountyChoice.stake > meta.coins;
+    if (bountyChoice) $(id).dataset.bounty = 'true'; else delete $(id).dataset.bounty;
+    $(id).textContent = bountyChoice ? `出击 · 押 ${bountyChoice.stake} / 返 ${bountyReturn({ ...bountyChoice, tier })}` : id === '#btnStart' ? '出 击' : '直接出击';
+  }
+  if (bountyChoice) $('#menuTalent').textContent += ` · 悬赏：${bountyById(bountyChoice.id).name}${bountyChoice.stake > meta.coins ? '（余额不足，请到机库改选）' : ` · 押金 ${bountyChoice.stake}`}`;
   const goal = nextGoal(meta), goalLine = $('#menuGoal');
   goalLine.hidden = !goal;
   if (goal) { goalLine.innerHTML = goalLineHtml(goal); goalLine.className = 'goal-line' + (goal.ready ? ' ready' : ''); goalLine.dataset.target = goalTarget(goal); }
@@ -8229,7 +8882,7 @@ function renderDailyEntry() {
 }
 // 按钮角标（如「可升级 3」），空串时移除
 function setBadge(button, text) { if (text) button.dataset.badge = text; else delete button.dataset.badge; }
-const goalTarget = goal => goal.kind === 'mech' ? goal.id : 'upgrades';
+const goalTarget = goal => goal.kind === 'mech' ? goal.id : goal.kind === 'cosmetic' ? goal.id : 'upgrades';
 // 「下一个目标」一行进度，菜单和结算页共用；from 是结算前的金币，进度条从这里涨到现在
 function goalLineHtml(goal, from = goal.have) {
   const pct = v => (Math.max(0, Math.min(1, v / goal.cost)) * 100).toFixed(1) + '%';
@@ -8239,10 +8892,13 @@ function goalLineHtml(goal, from = goal.have) {
 function openMenu() { setG(null); musicStop(); refreshMenu(); show('menu'); }
 // target：机甲 id 时直接预览那台机甲，'upgrades' 时滚到永久改装
 function openHangar(target) {
-  previewMechId = MECHS.some(m => m.id === target) ? target : selectedHangarMech().id;
+  cosmeticConfirm = null;
+  const cosmeticGoal = cosmeticById(target);
+  previewMechId = cosmeticGoal?.mech || (MECHS.some(m => m.id === target) ? target : selectedHangarMech().id);
   // 成就只在结算时变化，勋章墙和成就列表打开机库时画一次，选机体、协议、改装时不重建
   show('hangar'); renderHangar(); renderAchievements(); refreshWhenAssetsArrive();
   if (target === 'upgrades') $('#upgradeTitle').scrollIntoView?.({ block: 'start' });
+  if (cosmeticGoal) $(cosmeticGoal.type === 'skin' ? '#skinTitle' : '#cosmeticTitle').scrollIntoView?.({ block: 'start' });
 }
 // 机库里的通用超载说明，数值取自 OVERLOAD：冷却倍率换算成射速，受伤倍率换算成减伤
 function overloadSummary() {
@@ -8255,7 +8911,8 @@ function ventSummary() {
   return `首领战排热：超载满 ${VENT.minElapsed} 秒后再按一次，剩余时间压成一发熔核炮，按这次超载打首领的每秒伤害折算。`;
 }
 function renderHangar() {
-  const focused = document.activeElement, focusMech = focused?.dataset?.mech, focusTalent = focused?.dataset?.talent, focusUpgrade = focused?.dataset?.up;
+  const focused = document.activeElement, focusMech = focused?.dataset?.mech, focusTalent = focused?.dataset?.talent, focusUpgrade = focused?.dataset?.up, focusBounty = focused?.dataset?.bounty, focusStake = focused?.dataset?.stake;
+  const focusSkin = focused?.dataset?.skin, focusCosmetic = focused?.dataset?.cosmetic;
   const m = MECHS.find(mech => mech.id === previewMechId) || selectedHangarMech(), selected = selectedHangarMech();
   const unlocked = !!meta.unlocked[m.id], equipped = selected.id === m.id, talent = getSelectedTalent(m.id, meta.talents);
   $('#hgCoins').textContent = meta.coins;
@@ -8283,33 +8940,147 @@ function renderHangar() {
   const launchTalent = getSelectedTalent(selected.id, meta.talents);
   const launchTier = selectedTier(meta, selected.id);
   $('#hgLaunchLabel').textContent = `出击配置：${selected.name} · ${launchTalent.name}${launchTier ? ' · ' + tierName(launchTier) : ''}`;
-  $('#hgStart').textContent = '驾驶 ' + selected.name + ' 出击';
+  $('#hgStart').disabled = false; $('#hgStart').textContent = '驾驶 ' + selected.name + ' 出击';
+  renderBounties(selected, launchTier);
+  renderBountyMedals();
   $('#upList').innerHTML = META_UPS.map(u => {
     const lv = upLv(u.id), maxed = lv >= u.max, cost = nextUpgradeCost(u, meta.up);
     return `<div class="up cut"><div><div class="un">${u.name} <span class="upgrade-level">${lv}/${u.max}</span></div><div class="ud">${u.desc}</div><div class="pips" aria-hidden="true">${Array.from({ length: u.max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</div></div><button class="buy" data-up="${u.id}" ${maxed || meta.coins < cost ? 'disabled' : ''} aria-label="${u.name}${maxed ? '已满级' : `提升至${lv + 1}级，消耗${cost}金币${meta.coins < cost ? '，金币不足' : ''}`}">${maxed ? '已满级' : cost + ' 金币'}</button></div>`;
   }).join('');
   renderSkins(m, unlocked);
+  renderCosmetics();
   renderTiers(m, unlocked);
   setHangarPreview($('#hgPreviewCanvas'), m);
+  setHangarPreview($('#skinPreviewCanvas'), m);
+  setHangarPreview($('#cosmeticPreviewCanvas'), m);
   $('#hgDemo').disabled = false; $('#hgDemo').textContent = '演示能力'; $('#hgDemoStatus').textContent = '5 秒能力示意 · 不影响对局';
   if (focusMech) $('#mechList').querySelector(`[data-mech="${focusMech}"]`)?.focus({ preventScroll: true });
   if (focusTalent) $('#talentList').querySelector(`[data-talent="${focusTalent}"]`)?.focus({ preventScroll: true });
   if (focusUpgrade) $('#upList').querySelector(`[data-up="${focusUpgrade}"]:not([disabled])`)?.focus({ preventScroll: true });
+  if (focusBounty !== undefined) $('#bountyList').querySelector(`[data-bounty="${focusBounty}"]`)?.focus({ preventScroll: true });
+  if (focusStake) $('#bountyStakes').querySelector(`[data-stake="${focusStake}"]:not([disabled])`)?.focus({ preventScroll: true });
+  if (focusSkin) $('#skinList').querySelector(`[data-skin="${focusSkin}"]:not([disabled])`)?.focus({ preventScroll: true });
+  if (focusCosmetic) $('#cosmeticList').querySelector(`[data-cosmetic="${focusCosmetic}"]:not([disabled])`)?.focus({ preventScroll: true });
 }
-// 涂装：成就解锁，每台机甲各自保存；锁定的写明哪条成就解锁
+// 候选只由已结算局数决定；选择仅保存配置，出击的扣款由对局入口统一执行。
+function hangarBountyChoice() {
+  const choice = meta.bounty?.choice;
+  return meta.wins > 0 && choice?.round === meta.runs && bountyOffers(meta.runs).some(b => b.id === choice.id) && BOUNTY_STAKES.includes(choice.stake) ? choice : null;
+}
+function renderBounties(mech, tier) {
+  const open = meta.wins > 0, choice = hangarBountyChoice(), selected = choice && bountyById(choice.id);
+  $('#bountyList').hidden = !open; $('#bountyStakes').hidden = !open;
+  $('#bountyHelp').textContent = open ? '每结算一局更换 3 条。出击时扣押金；倍率已包含押金，返还不再乘深渊奖励。每日挑战与训练不能押。' : '首次突围后开放。先熟悉战场，再用金币挑战额外目标。';
+  $('#bountyList').innerHTML = open ? `<button type="button" class="bounty-choice${choice ? '' : ' selected'}" data-bounty="" aria-pressed="${!choice}"><b>不押悬赏</b><span>不扣押金，照常出击</span></button>` + bountyOffers(meta.runs).map(b => `<button type="button" class="bounty-choice${choice?.id === b.id ? ' selected' : ''}" data-bounty="${b.id}" aria-pressed="${choice?.id === b.id}" ${meta.coins < BOUNTY_STAKES[0] ? 'disabled' : ''}><b>${b.name}<small>${b.difficulty} · ${bountyMultiplier(b.id, tier)} 倍</small></b><span>${b.description}</span></button>`).join('') : '';
+  $('#bountyStakes').innerHTML = open ? `<span>押金</span>` + BOUNTY_STAKES.map(stake => `<button type="button" class="bounty-stake${choice?.stake === stake ? ' selected' : ''}" data-stake="${stake}" aria-pressed="${choice?.stake === stake}" ${!choice || stake > meta.coins ? 'disabled' : ''} aria-label="押金 ${stake} 金币${stake > meta.coins ? '，金币不足' : ''}">${stake}</button>`).join('') : '';
+  const total = choice ? bountyReturn({ ...choice, tier, mech: mech.id }) : 0;
+  $('#bountyStatus').textContent = choice ? `${selected.name} · 押金 ${choice.stake} 金币 · 达成返还 ${total} 金币。失败、主动退出或关页都会损失押金。` : open && meta.coins < BOUNTY_STAKES[0] ? '金币不足 200，本次不押悬赏。' : '本次不押悬赏。';
+  if (choice && total < choice.stake) $('#bountyStatus').textContent += '此条达成后的返还也低于押金，请按显示金额决定是否押注。';
+  if (choice && choice.stake > meta.coins) $('#bountyStatus').textContent = `已选押金 ${choice.stake}，余额仅 ${meta.coins} 金币。请选择更低押金，或选择不押悬赏。`;
+  $('#bountyConfig').textContent = `出击配置：${mech.name} · ${tierName(tier)}`;
+  $('#hgBountyLaunch').hidden = !choice;
+  $('#hgBountyLaunch').textContent = choice ? `悬赏：${selected.name} · 押 ${choice.stake} · 返还 ${total}` : '';
+  if (choice) $('#hgStart').textContent = `出击 · 押 ${choice.stake} / 返 ${total}`;
+  if (choice) $('#hgStart').dataset.bounty = 'true'; else delete $('#hgStart').dataset.bounty;
+  $('#hgStart').disabled = !!choice && choice.stake > meta.coins;
+}
+function renderBountyMedals() {
+  const medals = meta.bounty?.medals || {}, count = MECHS.reduce((n, mech) => n + BOUNTIES.filter(b => medals[`${mech.id}:${b.id}`]).length, 0);
+  $('#bountyMedalCount').textContent = `${count} / ${MECHS.length * BOUNTIES.length}`;
+  $('#bountyMedalWall').innerHTML = MECHS.map(mech => `<div class="bounty-medal-row"><b>${mech.name}</b><div>${BOUNTIES.map(b => `<span class="medal${medals[`${mech.id}:${b.id}`] ? ' on' : ''}" aria-label="${mech.name} · ${b.name}${medals[`${mech.id}:${b.id}`] ? '，已完成' : '，未完成'}">${b.name}</span>`).join('')}</div></div>`).join('');
+}
+$('#bountyList').addEventListener('click', e => {
+  const button = e.target.closest('[data-bounty]'); if (!button || button.disabled) return;
+  reloadMeta(); if (!(meta.wins > 0)) return;
+  const id = button.dataset.bounty, before = hangarBountyChoice();
+  if (id && (!bountyOffers(meta.runs).some(b => b.id === id) || meta.coins < BOUNTY_STAKES[0])) return;
+  if (!meta.bounty) meta.bounty = { choice: null, active: null, medals: {}, stakes: {} };
+  meta.bounty.choice = id ? { id, stake: before?.stake || BOUNTY_STAKES[0], round: meta.runs } : null;
+  saveMeta(); SFX.click(); renderHangar();
+});
+$('#bountyStakes').addEventListener('click', e => {
+  const button = e.target.closest('[data-stake]'); if (!button || button.disabled) return;
+  reloadMeta(); const choice = hangarBountyChoice(), stake = Number(button.dataset.stake);
+  if (!choice || !BOUNTY_STAKES.includes(stake) || stake > meta.coins) return;
+  meta.bounty.choice = { ...choice, stake }; saveMeta(); SFX.click(); renderHangar();
+});
+// 成就涂装保持原解锁条件；金币涂装只列出当前预览机体的四款。
 function renderSkins(m, unlocked) {
   const now = selectedSkin(meta, m.id), open = SKINS.filter(skin => skinUnlocked(skin, meta)).length;
-  $('#skinList').innerHTML = SKINS.map(skin => {
+  $('#skinList').innerHTML = [...SKINS, ...COSMETICS.filter(item => item.type === 'skin' && item.mech === m.id)].map(skin => {
     const free = skinUnlocked(skin, meta), on = skin.id === now.id;
-    const note = !free ? `${achievementById(skin.need).name}解锁` : on ? '使用中' : '';
-    return `<button type="button" class="skin-choice${on ? ' selected' : ''}${free ? '' : ' locked'}" data-skin="${skin.id}" aria-pressed="${on}" aria-label="${skin.name}涂装${note ? '，' + note : ''}" ${free && unlocked ? '' : 'disabled'}><i class="skin-dot${skin.h === undefined ? ' factory' : ''}"${skin.h === undefined ? '' : ` style="background:${skinSwatch(skin)}"`}></i><b>${skin.name}</b><small>${note}</small></button>`;
+    const confirming = cosmeticConfirm?.id === skin.id;
+    const note = skin.cost && !free ? confirming ? '再点购买' : `${skin.cost} 金币` : !free ? `${achievementById(skin.need).name}解锁` : on ? '使用中' : skin.cost ? '已购买' : '';
+    return `<button type="button" class="skin-choice${on ? ' selected' : ''}${!free && !skin.cost ? ' locked' : ''}${confirming ? ' confirming' : ''}" data-skin="${skin.id}" aria-pressed="${on}" aria-label="${skin.name}涂装${note ? '，' + note : ''}" ${unlocked && (free || skin.cost) && !cosmeticBuying ? '' : 'disabled'}><i class="skin-dot${skin.h === undefined ? ' factory' : ''}"${skin.h === undefined ? '' : ` style="background:${skinSwatch(skin)}"`}></i><b>${skin.name}</b><small>${note}</small></button>`;
   }).join('');
-  $('#skinStatus').textContent = unlocked ? `已解锁 ${open} / ${SKINS.length} 种 · 每台机体分别保存` : '解锁机体后可选涂装。';
+  const paid = COSMETICS.filter(item => item.type === 'skin' && item.mech === m.id && cosmeticOwned(meta, item.id)).length;
+  $('#skinStatus').textContent = unlocked ? `成就涂装 ${open}/${SKINS.length} · 金币涂装 ${paid}/4 · 每台机体分别保存` : '解锁机体后可选涂装。';
 }
+function renderCosmetics() {
+  $('#cosmeticList').innerHTML = [['trail', '冲刺拖尾'], ['killFx', '击杀特效']].map(([type, title]) => {
+    const items = COSMETICS.filter(item => item.type === type), current = meta.cosmetics?.[type] || '';
+    return `<div class="cosmetic-group"><h4>${title}</h4><div class="cosmetic-choices">${[{ id: '', name: '默认' }, ...items].map(item => {
+      const owned = !item.id || cosmeticOwned(meta, item.id), on = current === item.id, confirming = cosmeticConfirm?.id === item.id && !!item.id;
+      const note = on ? '使用中' : owned ? '可换装' : confirming ? '再点购买' : `${item.cost} 金币`;
+      return `<button type="button" class="skin-choice${on ? ' selected' : ''}${confirming ? ' confirming' : ''}" data-cosmetic="${item.id}" data-cosmetic-type="${type}" aria-pressed="${on}" aria-label="${title}：${item.name}，${note}" ${cosmeticBuying ? 'disabled' : ''}><b>${item.name}</b><small>${note}</small></button>`;
+    }).join('')}</div></div>`;
+  }).join('');
+  $('#cosmeticStatus').textContent = cosmeticBuying ? '正在保存购买，请稍候。' : '点击预览；未购买的外观再次点击才扣币。只改变画面。';
+}
+function cosmeticMessage(message) { $('#skinStatus').textContent = message; $('#cosmeticStatus').textContent = message; }
+function previewHangarCosmetic(type, id, mech) {
+  setHangarPreview($(type === 'skin' ? '#skinPreviewCanvas' : '#cosmeticPreviewCanvas'), mech);
+  playHangarCosmeticDemo(type === 'killFx' ? 'kill' : type, id);
+}
+// 确认仅对当前物品、机体和存档代号有效；读到新存档或换物品后重新确认。
+async function useHangarCosmetic(id, type) {
+  if (cosmeticBuying) return;
+  reloadMeta();
+  const item = cosmeticById(id), mech = MECHS.find(m => m.id === previewMechId);
+  if (!mech || type === 'skin' && (!item || item.mech !== mech.id || !meta.unlocked[mech.id])) return;
+  const epoch = meta.saveEpoch || '';
+  if (item && !cosmeticOwned(meta, id)) {
+    if (meta.coins < item.cost) {
+      cosmeticConfirm = null; renderHangar(); previewHangarCosmetic(type, id, mech);
+      cosmeticMessage(`${item.name}预览 · 需要 ${item.cost} 金币，还差 ${item.cost - meta.coins} 金币。`); return;
+    }
+    if (cosmeticConfirm?.id !== id || cosmeticConfirm.mech !== mech.id || cosmeticConfirm.epoch !== epoch) {
+      cosmeticConfirm = { id, mech: mech.id, epoch }; renderHangar(); previewHangarCosmetic(type, id, mech);
+      cosmeticMessage(`再点一次花 ${item.cost} 金币购买${item.name}。换一项或离开机库可取消。`); return;
+    }
+    cosmeticConfirm = null; cosmeticBuying = true; renderHangar();
+    let result;
+    try { result = await purchaseCosmetic(id, epoch); } catch (_) { result = { ok: false, reason: 'storage' }; }
+    finally { cosmeticBuying = false; }
+    if (type === 'skin') applyMechSkin(mech.id);
+    if (scr.hangar.hidden) return;
+    renderHangar();
+    if (previewMechId !== mech.id) return;
+    if (!result.ok) {
+      const message = result.reason === 'coins' ? '金币不足，购买没有生效。' : result.reason === 'epoch' ? '存档已恢复，请重新选择并确认购买。' : result.reason === 'locked' ? '请先解锁这台机体。' : '浏览器无法保存，购买没有生效，请重试或备份存档。';
+      cosmeticMessage(message); return;
+    }
+    SFX.click(); previewHangarCosmetic(type, id, mech);
+    cosmeticMessage(result.reason === 'owned' ? `${item.name}已在其他页面购买，已换上。` : `已购买并换上${item.name}，花费 ${item.cost} 金币。`); return;
+  }
+  cosmeticConfirm = null;
+  const result = selectCosmetic(type, id);
+  if (type === 'skin') applyMechSkin(mech.id);
+  renderHangar();
+  if (!result.ok) { cosmeticMessage('浏览器无法保存，换装没有生效，请重试。'); return; }
+  SFX.click(); previewHangarCosmetic(type, id, mech); cosmeticMessage(`已换上${item?.name || '默认'}${type === 'trail' ? '拖尾' : type === 'killFx' ? '击杀特效' : '涂装'}。`);
+}
+$('#cosmeticList').addEventListener('click', e => {
+  const b = e.target.closest('[data-cosmetic]'); if (!b || b.disabled) return;
+  return useHangarCosmetic(b.dataset.cosmetic, b.dataset.cosmeticType);
+});
 $('#skinList').addEventListener('click', e => {
   const b = e.target.closest('[data-skin]'); if (!b || b.disabled) return;
   reloadMeta(); if (!meta.unlocked[previewMechId]) return;
-  const skin = skinById(b.dataset.skin), m = MECHS.find(mech => mech.id === previewMechId); if (!skin || !m || !skinUnlocked(skin, meta)) return;
+  const skin = skinById(b.dataset.skin), m = MECHS.find(mech => mech.id === previewMechId); if (!skin || !m) return;
+  if (skin.cost) return useHangarCosmetic(skin.id, 'skin');
+  if (!skinUnlocked(skin, meta)) return;
+  cosmeticConfirm = null;
   if (!meta.skins) meta.skins = {};
   meta.skins[m.id] = skin.id; saveMeta(); applyMechSkin(m.id); SFX.click(); renderHangar();
   $('#hgSelectionStatus').textContent = `${m.name}换上了${skin.name}涂装。`;
@@ -8335,7 +9106,7 @@ $('#tierList').addEventListener('click', e => {
 });
 $('#mechList').addEventListener('click', e => {
   const b = e.target.closest('[data-mech]'); if (!b || !MECHS.some(m => m.id === b.dataset.mech)) return;
-  previewMechId = b.dataset.mech; SFX.click(); renderHangar();
+  cosmeticConfirm = null; previewMechId = b.dataset.mech; SFX.click(); renderHangar();
 });
 $('#hgSelect').addEventListener('click', () => {
   reloadMeta();
@@ -8373,9 +9144,11 @@ $('#upList').addEventListener('click', e => {
   $('#hgSelectionStatus').textContent = `${u.name}已提升至 ${lv + 1} 级，所有机体共享。`;
 });
 $('#hgDemo').addEventListener('click', () => {
+  setHangarPreview($('#hgPreviewCanvas'), MECHS.find(m => m.id === previewMechId));
   SFX.click(); playHangarDemo((playing, text) => { $('#hgDemo').disabled = playing; $('#hgDemo').textContent = playing ? '演示中' : '再次演示'; $('#hgDemoStatus').textContent = text; });
 });
 let assemblingRun = null;
+let pendingBountyLaunch = null;
 // 后台贴图还没到齐时先显示装配进度，到齐后自动开局
 function waitGameAssets() {
   $('#lstat').textContent = '机甲装配中…'; $('#loading').hidden = false;
@@ -8384,14 +9157,33 @@ function waitGameAssets() {
 }
 // 返回的 Promise 在真正开局（G 已建好）后完成；装配中重复出击只开一局，返回同一个 Promise
 function startRun(options = {}, deferred = false) {
+  if (pendingBountyLaunch) return pendingBountyLaunch;
   if (!deferred) { audioInit(); SFX.click(); }
-  if (!gameAssetsReady()) return assemblingRun || (assemblingRun = waitGameAssets().then(() => { assemblingRun = null; startRun(options, true); }));
+  if (!gameAssetsReady()) return assemblingRun || (assemblingRun = waitGameAssets().then(() => { assemblingRun = null; return startRun(options, true); }));
+  const choice = !options.practice && !options.daily && hangarBountyChoice();
+  if (choice) {
+    const expected = { ...choice, coins: meta.coins, mech: meta.sel, tier: selectedTier(meta, meta.sel) };
+    pendingBountyLaunch = Promise.resolve().then(() => withBountyLock(() => {
+      reloadMeta(); const current = hangarBountyChoice();
+      if (!current || ['id', 'stake', 'round'].some(key => current[key] !== expected[key]) || meta.coins !== expected.coins || meta.sel !== expected.mech || selectedTier(meta, meta.sel) !== expected.tier || current.stake > meta.coins) {
+        openHangar(); $('#bountyStatus').textContent = '悬赏选择或金币余额已变化，请重新选择后出击。'; return false;
+      }
+      return launchPreparedRun(options, current);
+    })).catch(() => {
+      openHangar(); $('#bountyStatus').textContent = '本地悬赏事务不可用，尚未扣除押金。请选择不押悬赏后出击。'; return false;
+    }).finally(() => { pendingBountyLaunch = null; });
+    return pendingBountyLaunch;
+  }
+  return Promise.resolve(launchPreparedRun(options));
+}
+// 锁内保持同步：同一笔押金、开局场次和后续保存必须完整写完后才放行下一页。
+function launchPreparedRun(options, bountyChoice = null) {
   resetAdaptiveQualityRun();
   if ($('#saveNotice')) $('#saveNotice').hidden = true;
-  newRun(options); show(null); musicStart(); MUS.intensity = 1;
+  if (newRun({ ...options, bountyChoice }) === false) { openHangar(); $('#bountyStatus').textContent = '悬赏押金未保存，请重新选择后出击。'; return false; }
+  show(null); musicStart(); MUS.intensity = 1;
   G.cam.x = 0; G.cam.y = 0;
   try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => { }); } catch (_) { }
-  return Promise.resolve();
 }
 $('#btnStart').addEventListener('click', () => startRun());
 $('#menuDaily').addEventListener('click', () => startRun({ daily: dailySetup(dailyKey()) }));
@@ -8512,23 +9304,47 @@ function renderEndDaily(run, win, settlement) {
   $('#endDailyShare').value = dailyShareText(run.daily.key, run.mech.name, run.talent?.name || '', { win, t: run.t, kills: run.kills });
   $('#endDailyCopy').textContent = '复制战绩';
 }
+let pendingBountyEnd = null;
 function endRun(win) {
+  if (!G || G.state === 'end') return;
+  if (G.state === 'settling') return pendingBountyEnd;
+  if (!G.bounty || G.practice || G.daily) return finishEndRun(win);
+  const run = G;
+  run.bountyEndWin = !!win;
+  run.state = 'settling';
+  pendingBountyEnd = Promise.resolve().then(() => withBountyLock(() => {
+    if (G !== run) return false;
+    if (!run.bountyEndCheckpointed) { checkpointRun(); run.bountyEndCheckpointed = true; }
+    run.state = 'playing'; return finishEndRun(win);
+  })).catch(() => {
+    if (G !== run) return false;
+    run.state = 'paused'; show('pause');
+    $('#psMech').textContent = '悬赏结算尚未完成，当前对局仍保留。';
+    $('#psBuild').innerHTML = '<div class="pause-bounty">本地悬赏事务不可用，请在本页重试结束并结算。</div>';
+    $('#psQuit').textContent = '重试结束并结算'; $('#psResume').disabled = true;
+    return false;
+  }).finally(() => { pendingBountyEnd = null; });
+  return pendingBountyEnd;
+}
+function finishEndRun(win) {
   if (!G || G.state === 'end') return;
   const run = G; run.state = 'end'; musicStop();
   const practice = !!run.practice;
   const { killBonus, bossBonus, winBonus, tierBonus, earned: baseEarned } = runReward(run.coins, run.kills, run.bossKills, win, run.mods?.coins ?? 1);
   const style = practice ? null : run.styleRank, styleBonus = styleRankBonusForSeconds(style?.highSeconds), earned = baseEarned + styleBonus;
-  let newAchievements = [];
-  if (!practice) {
+  let newAchievements = run.endAchievements || [];
+  if (!practice && !run.endStatsApplied) {
     // 先累计本机战绩，再判定成就（「全员突围」等要看累计战绩）；随下面的结算一次写盘
     const summary = achievementSummary(run, win);
     if (summary.mechId) { if (!meta.mechStats) meta.mechStats = {}; meta.mechStats[summary.mechId] = applyMechStats(meta.mechStats[summary.mechId], summary); }
     newAchievements = evaluateAchievements(summary, meta);
     if (!meta.achievements) meta.achievements = {};
     for (const id of newAchievements) meta.achievements[id] = Date.now();
+    run.endStatsApplied = true; run.endAchievements = newAchievements;
   }
   // 金币、场次和纪录由 settleRunProgress 幂等结算（含中断恢复）
   const settlement = practice ? null : settleRunProgress(run, win);
+  const bountyReceipt = settlement?.bounty, bountyReturned = bountyReceipt?.returned || 0;
   // 突围后申请持久化存储（首次突围就会申请；每页只申请一次），减少浏览器清理数据时丢档
   if (win && !practice) requestPersistentStorage();
   const newBest = !!settlement?.newBest, fastest = !!settlement?.fastest;
@@ -8542,7 +9358,7 @@ function endRun(win) {
   // 首屏只留存活、击杀、等级和金币，其余收进「更多数据」
   const records = (newBest ? '<span class="rec">新纪录</span>' : '') + (fastest ? '<span class="rec">最快突围</span>' : '');
   $('#endStats').innerHTML = stat(practice ? '训练时间' : '存活时间', fmtTime(run.t), records) + stat('击杀', run.kills) + stat('等级', run.player.level) +
-    (practice ? '<div class="stat gold"><small>训练模式</small><b>不计战绩</b></div>' : `<div class="stat gold"><small>获得金币（拾取 ${run.coins} + 击杀 ${killBonus} + 首领 ${bossBonus}${win ? ` + 突围 ${winBonus}` : ''}${tierBonus ? ` + 深渊 ${tierBonus}` : ''}${styleBonus ? ` + 评级 ${styleBonus}` : ''}）</small><b class="num">+${earned}</b></div>`);
+    (practice ? '<div class="stat gold"><small>训练模式</small><b>不计战绩</b></div>' : `<div class="stat gold"><small>获得金币（拾取 ${run.coins} + 击杀 ${killBonus} + 首领 ${bossBonus}${win ? ` + 突围 ${winBonus}` : ''}${tierBonus ? ` + 深渊 ${tierBonus}` : ''}${styleBonus ? ` + 评级 ${styleBonus}` : ''}${bountyReturned ? ` + 悬赏 ${bountyReturned}` : ''}）</small><b class="num">+${earned + bountyReturned}</b>${bountyReceipt ? `<p class="end-bounty ${bountyReceipt.met ? 'met' : 'failed'}">${bountyReceipt.met ? `悬赏达成 +${bountyReturned}` : `悬赏失败（押金 ${bountyReceipt.stake}）`}</p>` : ''}</div>`);
   // 最快突围按层级分开记
   const fastestRecord = run.tier ? meta.tierFastest?.[run.tier] : meta.fastestWin;
   $('#endMoreStats').innerHTML = stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('时停', run.timeStops || 0) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) + stat('迫击借刀', run.mortarStats?.borrowedKills || 0) +
@@ -8553,10 +9369,10 @@ function endRun(win) {
   const goal = practice ? null : nextGoal(meta);
   $('#endGoal').hidden = !goal;
   if (goal) {
-    $('#endGoalLine').innerHTML = goalLineHtml(goal, meta.coins - (settlement?.credited ?? earned) - (settlement?.dailyReward || 0));
+    $('#endGoalLine').innerHTML = goalLineHtml(goal, meta.coins - (settlement?.credited ?? earned) - (settlement?.dailyReward || 0) - (settlement?.bountyReward || 0));
     $('#endGoalLine').className = 'goal-line' + (goal.ready ? ' ready' : '');
     $('#endGoalGo').hidden = !goal.ready; $('#endGoalGo').dataset.target = goalTarget(goal);
-    $('#endGoalGo').textContent = goal.kind === 'mech' ? `去解锁${goal.name}` : '去改装';
+    $('#endGoalGo').textContent = goal.kind === 'mech' ? `去解锁${goal.name}` : goal.kind === 'cosmetic' ? '去选外观' : '去改装';
   }
   setBadge($('#endHangar'), practice ? '' : hangarBadge(meta));
   $('#endAch').hidden = !newAchievements.length;
@@ -9017,7 +9833,7 @@ $('#btnStartAlt').addEventListener('click', () => startRun());
 // 对局：开局、属性结算、每帧主更新
 
 // daily：每日挑战配置（data/daily.js 的 dailySetup），指定机体和协议，可以是未解锁的机体
-function newRun({ practice = false, daily = null } = {}) {
+function newRun({ practice = false, daily = null, bountyChoice = null } = {}) {
   reloadMeta();
   const mech = (daily && MECHS.find(m => m.id === daily.mechId)) || MECHS.find(m => m.id === meta.sel && meta.unlocked[m.id]) || MECHS[0];
   setG({
@@ -9041,6 +9857,9 @@ function newRun({ practice = false, daily = null } = {}) {
   initFusionState(); initResonanceState(); // 合体技、模块共鸣的运行状态；两个模块的钩子在这里显式导入
   initSkillMods();
   initStyleRank();
+  // 本次押注必须由显示报价并拿到跨页锁的入口明确传入；不继承别页刚写入的选择。
+  const choice = !practice && !daily && meta.wins > 0 && bountyChoice;
+  if (choice && !reserveBounty(G, choice)) { setG(null); return false; }
   if (!practice) { meta.runs++; saveMeta(); }
 }
 const newWeapon = id => ({ id, lv: 1, evo: false, mastery: 0, cd: .3, side: 1, ang: 0, drones: [] });
@@ -9093,6 +9912,7 @@ function update(rdt) {
   if (!G.practice) updateRelay(dt); // 中继落点先结算伤害，再拾取，避免致命伤被治疗包绕过。
   updateStyleRank();
   updatePickups(pdt);
+  if (G.bounty) updateBountyProgress(G);
   updateFx(pdt, dt); updateBossPartFx(dt);
   compact(G.enemies, e => !e.dead);
   if (G.comboT > 0) { G.comboT -= dt; if (G.comboT <= 0) G.combo = 0; }
@@ -9434,6 +10254,7 @@ function hurtPlayer(dmg, sx, sy, cause = 'unknown') {
   if (timeStopActive()) return false; // 时停期间机甲无敌，也不消耗定住的敌弹
   if (G.debugGod) return true; // 调试无敌照常消耗敌弹，且不消耗机体护盾。
   const p = G.player; if (G.practice) return p.dashT <= 0; if (p.invuln > 0 || p.dashT > 0 || p.hp <= 0) return false;
+  if (G.bounty && cause === 'boss:scorpion' && !G.bounty.met) G.bounty.scorpionHit = true;
   if (absorbMechHit()) return true; // 护盾命中也消耗敌弹，但不扣生命。
   if (absorbStealHit()) return true;
   dmg = incomingDamage(dmg, G.t, G.stats.armor + talentArmorBonus(), p.overT > 0) * runMul('dmgTaken');
@@ -9457,13 +10278,14 @@ function gainXp(v) {
 function pauseGame() {
   if (!G || G.state !== 'playing' || G.won || G.victoryT > 0 || G.endT > 0 || G.player.hp <= 0) return;
   checkpointRun(); audioPause(); G.state = 'paused';
+  $('#psResume').disabled = false;
   const p = G.player;
   $('#psCoins').textContent = G.practice ? '训练不计' : G.coins;
   $('#psMech').textContent = G.mech ? `${G.mech.name}${G.talent ? ' · ' + G.talent.name : ''}${G.practice ? ' · 安全训练' : ''}` : '';
   $('#psQuit').textContent = G.practice ? '结束训练' : '结束并结算';
   const modules = p.modules || [];
   // 「技能一览」：武器、技能（觉醒和改装接在后面）、芯片、首领模块、协议，见 ui/loadout-sheet.js
-  $('#psBuild').innerHTML = `<div class="loadout-summary" style="grid-column:1/-1"><span>武器 <b>${weaponSlotsUsed(p)}/4</b></span><span>芯片 <b>${p.passives.length}/4</b></span>${modules.length ? `<span>模块 <b>${modules.length}/${BOSS_MODULE_SLOTS}</b></span>` : ''}</div>` + loadoutSheet(p, pauseMechAwakenSummary(p) + pauseSkillMods(p)) + pauseTrainingSummary(p);
+  $('#psBuild').innerHTML = `<div class="loadout-summary" style="grid-column:1/-1"><span>武器 <b>${weaponSlotsUsed(p)}/4</b></span><span>芯片 <b>${p.passives.length}/4</b></span>${modules.length ? `<span>模块 <b>${modules.length}/${BOSS_MODULE_SLOTS}</b></span>` : ''}</div>` + (G.bounty && !G.practice && !G.daily ? `<div class="pause-bounty"><b>${bountyProgressText(G)}</b><p>押金 ${G.bounty.stake} 金币 · 主动退出或关页会损失押金。</p></div>` : '') + loadoutSheet(p, pauseMechAwakenSummary(p) + pauseSkillMods(p)) + pauseTrainingSummary(p);
   $('#psRecipes').innerHTML = Object.entries(WDEF).sort(([a], [b]) => Number(p.weapons.some(w => w.id === b)) - Number(p.weapons.some(w => w.id === a))).map(([id, d]) => {
     const w = p.weapons.find(x => x.id === id), s = p.passives.find(x => x.id === d.evoWith), ready = canEvolve(p, id);
     const blocked = !w && weaponSlotsUsed(p) >= 4 || !s && p.passives.length >= 4;
@@ -9496,13 +10318,16 @@ function resumeGame() { if (!G || G.state !== 'paused') return; audioResume(); G
 $('#psResume').addEventListener('click', () => { SFX.click(); resumeGame(); });
 $('#psQuit').addEventListener('click', () => {
   if (!G || G.state !== 'paused') return;
+  if (G.bountyEndWin !== undefined) return endRun(G.bountyEndWin);
   if (G.won || G.victoryT > 0) return endRun(true);
   if (G.endT > 0 || G.player.hp <= 0) return endRun(false);
   G.abandoned = true; G.player.hp = 0; G.endT = 2; endRun(false);
 });
-function pauseForBackground() {
+function pauseForBackground(event) {
   // 胜利或击毁演出不能进入暂停菜单，但后台音频与进度仍必须处理。
   checkpointRun(); audioPause({ suspend: true }); pauseGame();
+  // 明确卸载才标记结束；切后台和往返缓存中的页面都可能继续原局。
+  if (event?.type === 'pagehide' && event.persisted === false) checkpointRun({ ended: true });
 }
 function resumeForegroundAudio() { if (!document.hidden) audioResume({ music: G?.state !== 'paused' }); }
 document.addEventListener('visibilitychange', () => { if (document.hidden) pauseForBackground(); else resumeForegroundAudio(); });
@@ -9816,6 +10641,8 @@ const HUD_TOAST_MAX_H = 54, HUD_TRAINING_EXIT_BOTTOM = 146;
 // 带部位的首领在场时，顶部仪表在血条下多一行部位状态
 const HUD_PART_ROW = 16;
 const hudPartRow = () => G?.boss && !G.boss.dead && !G.practice && G.boss.parts?.length ? HUD_PART_ROW : 0;
+const HUD_BOUNTY_ROW = 16;
+const hudBountyRow = () => G?.bounty && !G.practice && !G.daily ? HUD_BOUNTY_ROW : 0;
 // 机身血条顶边在机甲中心下方 42 世界单位（腿部贴图之外）；机体特性标签让到它下方（render/mech-traits.js）。
 const HUD_MECH_BAR_Y = 42;
 let hudSafeTop = 0, hudSafeBottom = 0;
@@ -9826,7 +10653,7 @@ function refreshHudLayout() {
 }
 window.addEventListener('resize', refreshHudLayout);
 // 顶部仪表的下沿（含首领部位行）；镜头黑边的上边贴在这里
-const hudPanelBottom = () => hudSafeTop + 84 + hudPartRow();
+const hudPanelBottom = () => hudSafeTop + 84 + hudPartRow() + hudBountyRow();
 // 世界到屏幕的缩放：屏幕适配的 ZOOM 乘镜头推近（render() 每帧写进 G.cam.zoom）
 const hudZoom = () => ZOOM * (G?.cam?.zoom || 1);
 function hudBattleBounds() {
@@ -9834,7 +10661,7 @@ function hudBattleBounds() {
   // 技能区：底边距 24 + 冲刺按钮 84（随按钮大小设置缩放）+ 上方留白 24。
   const size = Number(G?.settings?.skillSize), scale = [100, 115, 130].includes(size) ? size / 100 : 1;
   return { left: 24, right: W - 24,
-    top: Math.min(H / 2 - 32, hudSafeTop + (relayVisible ? 124 : 94) + hudPartRow()),
+    top: Math.min(H / 2 - 32, hudSafeTop + (relayVisible ? 124 : 94) + hudPartRow() + hudBountyRow()),
     bottom: Math.max(H / 2 + 32, H - hudSafeBottom - 48 - 84 * scale) };
 }
 // 提示条放在顶部仪表（含中继状态条）下方，避开单手拖摇杆时拇指盖住的下半屏；训练时再让开退出按钮。
@@ -9891,8 +10718,8 @@ function drawHUD() {
   const p = G.player, top = hudSafeTop, left = 14, hpk = clamp(p.hp / p.maxHp, 0, 1);
   hudMechHealth();
   // 装甲、计时、当前威胁总计84像素；完整配装和金币在暂停详情查看。
-  const partRow = hudPartRow();
-  ctx.fillStyle = 'rgba(7,12,18,.9)'; ctx.fillRect(0, 0, W, top + 84 + partRow);
+  const partRow = hudPartRow(), bountyRow = hudBountyRow();
+  ctx.fillStyle = 'rgba(7,12,18,.9)'; ctx.fillRect(0, 0, W, top + 84 + partRow + bountyRow);
   ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillStyle = hpk < .3 ? '#ff9c9e' : '#bdcbd5';
   ctx.fillText(hpk < .3 ? '装甲危急' : '机体装甲', left, top + 8);
   const bw = Math.min(120, W * .34);
@@ -9904,9 +10731,13 @@ function drawHUD() {
   ctx.textAlign = 'center'; ctx.font = '600 32px Teko,"Arial Narrow",sans-serif'; ctx.fillStyle = frozen ? TIME_STOP_VISUAL.hudColor : '#f3f7fb'; ctx.fillText(fmtTime(G.t), timeX, top + 4);
   ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillStyle = '#b6e3e9'; ctx.fillText(`等级 ${p.level}`, timeX, top + 37);
   if (frozen) hudTimeStop(timeX, top);
-  ctx.fillStyle = '#253741'; ctx.fillRect(left, top + 54, W - 2 * left, 2);
-  ctx.fillStyle = '#75dce8'; ctx.fillRect(left, top + 54, (W - 2 * left) * clamp(p.xp / p.xpNext, 0, 1), 2);
-  const statusY = top + 61, boss = G.boss && !G.boss.dead ? G.boss : null;
+  if (bountyRow) {
+    ctx.textAlign = 'left'; ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillStyle = G.bounty.met ? '#d7efb2' : '#e5d1a4';
+    ctx.fillText(bountyProgressText(G), left, top + 54, W - left * 2);
+  }
+  ctx.fillStyle = '#253741'; ctx.fillRect(left, top + 54 + bountyRow, W - 2 * left, 2);
+  ctx.fillStyle = '#75dce8'; ctx.fillRect(left, top + 54 + bountyRow, (W - 2 * left) * clamp(p.xp / p.xpNext, 0, 1), 2);
+  const statusY = top + 61 + bountyRow, boss = G.boss && !G.boss.dead ? G.boss : null;
   ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.textAlign = 'left';
   if (G.practice) {
     ctx.fillStyle = '#b8e1db'; ctx.fillText('安全训练 · 不计战绩', left, statusY);
@@ -9922,17 +10753,17 @@ function drawHUD() {
     ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.fillStyle = boss.vulnerableT > 0 ? '#ffe6a3' : '#e2cbd4';
     const phase = bossPhaseLabel(boss);
     ctx.fillText(phase, W - left - pctW, statusY);
-    ctx.fillStyle = '#3c2933'; ctx.fillRect(left, top + 77, W - left * 2, 6);
-    ctx.fillStyle = `rgb(${boss.col})`; ctx.fillRect(left, top + 77, (W - left * 2) * bk, 6);
-    ctx.fillStyle = '#cf9bab'; ctx.fillRect(W / 2, top + 77, 1, 6);
-    if (partRow) hudBossParts(boss, left, top + 87);
+    ctx.fillStyle = '#3c2933'; ctx.fillRect(left, top + 77 + bountyRow, W - left * 2, 6);
+    ctx.fillStyle = `rgb(${boss.col})`; ctx.fillRect(left, top + 77 + bountyRow, (W - left * 2) * bk, 6);
+    ctx.fillStyle = '#cf9bab'; ctx.fillRect(W / 2, top + 77 + bountyRow, 1, 6);
+    if (partRow) hudBossParts(boss, left, top + 87 + bountyRow);
   } else {
     const next = BOSS_TIMES[G.bossIdx], act = battlefieldMixAt(G.t).to;
     ctx.fillStyle = G.won ? '#ffdb7e' : '#cad5dd';
     ctx.fillText(G.won ? '母巢击破 · 突围成功' : G.warn ? '首领正在接近' : `${act.name} · ${next === undefined ? '击破母巢' : '下一首领'}`, left, statusY);
     if (!G.won && next !== undefined) { ctx.textAlign = 'right'; ctx.fillStyle = G.warn ? '#ffac96' : '#e9eef3'; ctx.fillText(fmtTime(Math.ceil(Math.max(0, next - G.t))), W - left, statusY); }
   }
-  hudRelayStatus(top + 89 + partRow);
+  hudRelayStatus(top + 89 + partRow + bountyRow);
   const styleY = Math.max(hudToastTop() + HUD_TOAST_MAX_H + 8, H * .19), styleHeight = drawStyleRank(ctx, styleY);
   if (G.combo >= 10) {
     // 连杀固定在两行提示条的下方，提示出现时两者都看得到，也不会跳位。
@@ -12331,6 +13162,9 @@ function drawSkillMods(c, game, options = {}) {
 // ---- src/render/world.js ----
 // 世界绘制：地面、敌人、机甲、子弹与特效，最后叠加屏幕空间的 HUD
 
+// 世界与碎片绘制共用查询对象，每帧只读当前结果，不重复创建查询。
+const worldReducedMotionMq = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
 // 对象颜色字段是固定的几种分量串（如 '255,60,160'），按串缓存 'rgb(...)'，绘制时不再每帧拼新字符串
 const worldRgbCache = new Map();
 function worldRgb(col) {
@@ -12553,12 +13387,14 @@ function render(rdt) {
   const m = G.mech, PS = 66, R = RIG[m.id], skillLift = skillModLift(G);
   if (p.hp > 0 || G.endT < .15) {
     const ss = R ? R.ts * 1.15 : PS; ctx.globalAlpha = .6; ctx.drawImage(SHADOW, p.x - ss / 2, p.y - ss / 2 + 6, ss, ss);
-    ctx.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < p.ghosts.length; i += 2) {
-      const g = p.ghosts[i], ga = g.life / .25 * .32;
-      if (R) drawMech(R, g.x, g.y, g.la, g.a, g.ph, 0, { sil: true, alpha: ga });
+    const trail = dashTrailStyle(m, meta, settings, budget, !!worldReducedMotionMq?.matches), trailRig = dashTrailRig(m.id, trail);
+    ctx.globalCompositeOperation = trail.blend;
+    for (let i = 0; i < p.ghosts.length; i += trail.step) {
+      const g = p.ghosts[i], ga = g.life / .25 * trail.alpha;
+      if (R) drawMech(trailRig, g.x, g.y, g.la, g.a, g.ph, 0, { sil: true, alpha: ga });
       else { ctx.globalAlpha = ga; drawSprite(m.img, g.x, g.y, PS, g.a, 1, ga); }
     }
+    ctx.globalCompositeOperation = 'lighter';
     if (p.overT > 0) { const gs = 120 + Math.sin(G.rt * 12) * 12; ctx.globalAlpha = .22 * budget.glowScale; ctx.drawImage(gl('255,120,30'), p.x - gs / 2, p.y - gs / 2, gs, gs); }
     if (!R) { const back = p.angle + PI, th = 14 + Math.min(20, Math.hypot(p.vx, p.vy) / 8) + Math.random() * 4; ctx.globalAlpha = 1; ctx.drawImage(gl('80,220,255'), p.x + Math.cos(back) * 22 - th, p.y + Math.sin(back) * 22 - th, th * 2, th * 2); }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -12723,6 +13559,7 @@ function drawPlayerBullet(c, bullet, glowScale = 1) { drawPlayerBullets(c, [bull
 
 // 少量命中碎屑用短线、金属片和电灼描线区分武器，避免增加大面积光晕。
 function drawImpactFragment(c, q, zoom, flashes = true) {
+  if (q.kind?.startsWith('cosmetic') && drawCosmeticFragment(c, q, zoom, flashes && !worldReducedMotionMq?.matches)) return;
   if (q.kind === 'hitCross') {
     if (!flashes || q.rendered || !(q.life > 0)) return;
     c.save(); c.translate(q.x, q.y); c.globalAlpha = 1; c.strokeStyle = '#fff'; c.lineWidth = 1.3 / zoom;
@@ -12962,8 +13799,20 @@ document.addEventListener('visibilitychange', refreshVisibleMeta);
 installViewportLock(window, document);
 resize(); refreshHudLayout(); syncSoundLabels();
 loadFonts();
-loadMenuAssets(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).then(() => waitFonts(600)).then(() => {
-  const recovered = recoverPendingRuns(); $('#loading').hidden = true; openMenu(); showRecoveryNotice(recovered);
+loadMenuAssets(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).then(() => waitFonts(600)).then(async () => {
+  let recovered;
+  try {
+    recovered = recoverPendingRuns({ includeBounty: false });
+    if (recovered.pendingBounty) {
+      const bountyRecovery = await withBountyLock(() => recoverPendingRuns());
+      for (const key of ['credited', 'recovered', 'bountyLost', 'bountyUnmet']) recovered[key] += bountyRecovery[key];
+      recovered.saved = recovered.saved && bountyRecovery.saved;
+    }
+  } catch (_) {
+    const ordinaryNotice = recovered?.recovered ? recovered.saved ? `上局中断，已结算 ${recovered.credited} 金币；` : '上局中断，普通收益暂未写入浏览器；' : '';
+    recovered = { ...recovered, recovered: true, saved: false, notice: ordinaryNotice + '本地悬赏事务不可用，悬赏恢复已暂停。可在本页选择不押悬赏出击，或稍后重试恢复。' };
+  }
+  $('#loading').hidden = true; openMenu(); showRecoveryNotice(recovered);
   watchRedrawTriggers(); requestAnimationFrame(t => { last = t; frame(t); });
   loadGameAssets();
 });
