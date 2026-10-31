@@ -636,6 +636,21 @@ input.settings-control[type="range"]{min-width:0}
 .anomaly-codex-grid .anomaly-icon{width:30px;height:30px;font-size:15px}
 .anomaly-codex-grid .unknown .anomaly-icon{--chip:120,135,150}
 @media (max-width:360px){.anomaly-card{grid-template-columns:42px minmax(0,1fr);gap:8px;padding:10px}.anomaly-card .anomaly-icon{width:42px;height:42px;font-size:20px}}
+
+/* 初始武器：沿用机库材质，图标与文字共同表达已选和解锁状态 */
+.start-weapon-section{margin-top:22px;border-top:1px solid #344451}
+.start-weapon-section .sec{margin-bottom:5px}
+.start-weapon-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:8px}
+.start-weapon-choice{min-width:0;min-height:82px;padding:10px;text-align:left;background:#111b24;border:1px solid #344451;color:#e4edf3}
+.start-weapon-choice svg{width:24px;height:24px;vertical-align:middle;margin-right:6px}
+.start-weapon-choice b{font-size:13px;line-height:1.6}
+.start-weapon-choice span{display:block;color:#b7c6d2;font-size:12px;line-height:1.6;margin-top:4px}
+.start-weapon-choice[aria-pressed="true"]{border-color:#ba8a4e;background:#2b231a}
+.start-weapon-choice[aria-pressed="true"] span{color:#dac8b0}
+.start-weapon-choice:disabled{cursor:not-allowed;color:#a8bac9}
+.start-weapon-choice:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.start-weapon-note p{margin:6px 0;color:#ffabab;font-size:13px;line-height:1.65}
+@media (hover:hover){.start-weapon-choice:hover:not(:disabled){border-color:#ba8a4e}}
 </style>
 </head>
 <body>
@@ -716,6 +731,7 @@ input.settings-control[type="range"]{min-width:0}
           <div id="hgAbilities" class="mech-abilities"></div>
           <div class="mech-equip"><button id="hgSelect" class="btn">装备机体</button><button id="hgUnlock" class="btn unlock" hidden>解锁机体</button><button id="hgGoal" type="button" class="chip goal-chip" hidden>设为下一个目标</button><p id="hgSelectionStatus" class="selection-status" aria-live="polite"></p></div>
           <section class="talent-section" aria-labelledby="talentTitle"><h3 id="talentTitle" class="sec"><span>战术协议</span></h3><p class="section-note">三选一 · 决定本局路线，出击后固定</p><div id="talentList" class="talent-list"></div><p id="talentStatus" class="selection-status" aria-live="polite"></p></section>
+          <section class="start-weapon-section" aria-labelledby="startWeaponTitle"><h3 id="startWeaponTitle" class="sec"><span>初始武器</span></h3><p class="section-note">开局自带 · 解锁机甲后，它的招牌武器所有机甲都能带</p><div id="startWeaponList" class="start-weapon-list"></div><div id="startWeaponNote" class="start-weapon-note" aria-live="polite"></div><p id="startWeaponStatus" class="selection-status" aria-live="polite"></p></section>
         </div>
       </div>
       <section class="bounty-section" aria-labelledby="bountyTitle"><p id="bountyConfig" class="bounty-config"></p><h3 id="bountyTitle" class="sec"><span>出击悬赏</span></h3><p id="bountyHelp" class="section-note"></p><div id="bountyList" class="bounty-list"></div><div id="bountyStakes" class="bounty-stakes" role="group" aria-label="选择悬赏押金"></div><p id="bountyStatus" class="bounty-status" aria-live="polite"></p></section>
@@ -899,6 +915,20 @@ const RIG_CFG = {
   lancer: { ts: 80, ls: 88, legY: .03, legX: .18, spread: 0, stride: 14, gun: [[0, -.45]], pod: [[-.28, .06], [.28, .06]], thr: [[-.10, .40], [.095, .40]], mount: [[.18, -.1], [-.18, -.1], [.27, .24], [-.27, .24]], flame: '145,200,255', mass: .65 },
   engineer: { ts: 86, ls: 88, legY: .035, legX: .18, spread: 0, stride: 13, gun: [[0, -.28]], pod: [[-.335, .015], [.325, .015]], thr: [[-.12, .30], [.12, .30]], mount: [[.33, -.3], [-.33, -.3], [.22, .3], [-.22, .3]], flame: '255,210,105', mass: .85 },
 };
+
+// 解锁机体同时开放它的招牌武器；预览机体的招牌固定排第一。
+function startWeaponOptions(meta, mechId) {
+  const signature = MECHS.find(m => m.id === mechId)?.weapon;
+  const options = MECHS.map(m => ({ id: m.weapon, mechId: m.id, open: m.id === 'assault' || meta?.unlocked?.[m.id] === true, lockText: `解锁${m.name}后可带`, signature: m.weapon === signature }));
+  options.sort((a, b) => Number(b.signature) - Number(a.signature));
+  options.push({ id: 'cord', mechId: null, open: meta?.wins > 0, lockText: '首次突围后可带', signature: false });
+  return options;
+}
+function startWeaponFor(meta, mechId) {
+  const mech = MECHS.find(m => m.id === mechId) || MECHS[0];
+  const choice = meta?.startWeapon?.[mech.id];
+  return startWeaponOptions(meta, mech.id).find(option => option.id === choice && option.open)?.id || mech.weapon;
+}
 
 // ---- src/data/cosmetics.js ----
 // 金币外观目录和存档校验：只含换色与演出数据，不参与战斗数值
@@ -1201,11 +1231,16 @@ function saveBountyReceipt(value, contract) {
   if (!Number.isSafeInteger(receipt.returned) || receipt.returned < 0 || (!receipt.met && receipt.returned !== 0)) return null;
   return { id: receipt.id, stake: receipt.stake, met: receipt.met, returned: receipt.returned };
 }
+// 旧档沿用当时装备机体的选择；显式坏值回落普通层，不复活旧选择。
+function saveLegacyTierPick(source) {
+  const v = Object.hasOwn(source, 'tierPick') ? source.tierPick : saveRecord(source.tierSel)[source.sel || 'assault'];
+  return Number.isInteger(v) && v >= 0 ? v : 0;
+}
 function normalizeMeta(source) {
   source = saveRecord(source);
   let reducedMotion = false;
   try { reducedMotion = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; } catch (_) { }
-  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {}, goal: '', achievements: {}, mechStats: {}, skins: {}, tierClear: {}, tierSel: {}, tierFastest: {}, hints: {}, zoneCodex: {}, anomalyCodex: {}, daily: { date: '', bestT: 0, kills: 0, win: false, rewarded: false } };
+  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {}, goal: '', achievements: {}, mechStats: {}, skins: {}, startWeapon: {}, tierClear: {}, tierSel: {}, tierPick: 0, tierFastest: {}, hints: {}, zoneCodex: {}, anomalyCodex: {}, daily: { date: '', bestT: 0, kills: 0, win: false, rewarded: false } };
   const settings = normalizeSettingsSnapshot(source.settings, reducedMotion);
   // 仅旧格式的总静音映射为双通道静音；新格式以已保存的独立音量为准。
   if (!Object.keys(saveRecord(source.settings)).length && source.sound === false) { settings.musicVolume = 0; settings.sfxVolume = 0; }
@@ -1227,9 +1262,11 @@ function normalizeMeta(source) {
     goal: typeof source.goal === 'string' ? source.goal : '',
     achievements: { ...saveRecord(source.achievements) }, mechStats: { ...saveRecord(source.mechStats) },
     skins: Object.fromEntries(Object.entries(saveRecord(source.skins)).filter(([, v]) => typeof v === 'string')),
+    startWeapon: Object.fromEntries(Object.entries(saveRecord(source.startWeapon)).filter(([, v]) => typeof v === 'string')),
     cosmetics: normalizeCosmetics(source.cosmetics),
     // 深渊层级：通关层和所选层是非负整数，各层最快突围是正数；坏值丢弃
     tierClear: saveEntries(source.tierClear, v => Number.isInteger(v) && v >= 0), tierSel: saveEntries(source.tierSel, v => Number.isInteger(v) && v >= 0),
+    tierPick: saveLegacyTierPick(source),
     tierFastest: saveEntries(source.tierFastest, v => typeof v === 'number' && Number.isFinite(v) && v > 0),
     daily: normalizeDaily(source.daily),
     // 一次性玩法提示（如第一次遇到毒蝎的绕后提示）：记录对象，旧存档没有就是空对象
@@ -1238,6 +1275,10 @@ function normalizeMeta(source) {
     zoneCodex: { ...saveRecord(source.zoneCodex) }, anomalyCodex: { ...saveRecord(source.anomalyCodex) },
     bounty: saveBountyMeta(source.bounty),
   });
+  // 只迁移旧格式已存在的胜场，避免本局结算前新增的胜场抢先解锁。
+  if (!Object.hasOwn(source, 'tierPick')) for (const [id, stats] of Object.entries(normalized.mechStats)) {
+    if (stats?.wins > 0 && !Object.hasOwn(normalized.tierClear, id)) normalized.tierClear[id] = 0;
+  }
   for (const [runId, value] of Object.entries(normalized.settledRuns)) {
     if (!saveIsRecord(value) || !Object.hasOwn(value, 'bounty')) continue;
     const receipt = saveBountyReceipt(value.bounty, normalized.bounty.stakes[runId]);
@@ -2396,22 +2437,49 @@ function feedback(kind, options = {}) {
 // ---- src/game/hooks.js ----
 // 战斗钩子：命中、击杀、开火、冲刺、导弹落地和每帧的注册表；合体技、模块共鸣和以后的新卡挂在这里，不用再改武器和伤害结算
 // 注册在模块加载时做一次；没有注册的钩子什么都不做，已有行为不变。
+// 每个钩子注册时带一个名字：所在文件名，同一个文件里同一种钩子有两个时写成「文件名:用途」。
+// 执行顺序只看 HOOK_ORDER 里的先后，和哪个文件先被 import 无关，浏览器、构建版和平衡模拟一致。
+// 表按 2026-10-28 浏览器里的实际顺序填。新加钩子先在表里写明排在谁前面、谁后面；没登记的名字一注册就报错。
+const HOOK_ORDER = {
+  hit: ['fx-polish', 'fusions', 'colossus', 'anomalies', 'mech-awaken'],
+  kill: ['fx-polish', 'night', 'style-rank', 'forms', 'skill-mods-2-dash', 'resonance', 'amalgam', 'anomalies', 'mech-awaken'],
+  hurt: ['night', 'style-rank', 'allies'],
+  fire: ['fx-polish', 'zone-storm-dark', 'fusions:blade', 'fusions:beacon', 'resonance', 'mech-awaken'],
+  // 处决计数要先清零，变身后的风暴冲刺才按新的一次冲刺判定接触
+  dash: ['fx-polish', 'execute', 'forms-storm', 'skill-mods-2-dash', 'skill-mods-dash', 'resonance', 'anomalies'],
+  land: ['fx-polish', 'night', 'act-fall', 'fusions', 'resonance'],
+  tick: ['fx-polish', 'night', 'forms-storm', 'act-fall', 'fusions', 'resonance'],
+};
 const COMBAT_HOOKS = { hit: [], kill: [], hurt: [], fire: [], dash: [], land: [], tick: [] };
+const COMBAT_HOOK_IDS = { hit: [], kill: [], hurt: [], fire: [], dash: [], land: [], tick: [] };
+
+// 按 HOOK_ORDER 插到对应位置；COMBAT_HOOKS 里始终是排好序的函数，每帧照旧顺着数组调用
+function addCombatHook(kind, id, fn) {
+  if (typeof id !== 'string' || typeof fn !== 'function') throw new Error(`注册 ${kind} 钩子要先写名字再写函数，比如 onHit('fusions', fn)`);
+  const order = HOOK_ORDER[kind], rank = order.indexOf(id), ids = COMBAT_HOOK_IDS[kind];
+  if (rank < 0) throw new Error(`钩子 ${kind}「${id}」没有登记在 HOOK_ORDER.${kind} 里，先在表里写明它排在哪`);
+  if (ids.includes(id)) throw new Error(`钩子 ${kind}「${id}」注册了两次`);
+  let at = ids.length;
+  while (at > 0 && order.indexOf(ids[at - 1]) > rank) at--;
+  ids.splice(at, 0, id); COMBAT_HOOKS[kind].splice(at, 0, fn);
+}
+// 按执行顺序列出某种钩子已注册的名字（测试和调试用）
+function combatHookIds(kind) { return [...COMBAT_HOOK_IDS[kind]]; }
 
 // fn(e, dealt, o)：hitEnemy 结算完以后调用；dealt 是实际扣掉的生命加护盾，o 是 hitEnemy 的选项（含 source）
-function onHit(fn) { COMBAT_HOOKS.hit.push(fn); }
+function onHit(id, fn) { addCombatHook('hit', id, fn); }
 // fn(e, source)：敌人被击杀时调用（经验、掉落之前）
-function onKill(fn) { COMBAT_HOOKS.kill.push(fn); }
+function onKill(id, fn) { addCombatHook('kill', id, fn); }
 // fn(amount)：真正扣除生命后调用；护盾、无敌与安全训练不触发。
-function onHurt(fn) { COMBAT_HOOKS.hurt.push(fn); }
+function onHurt(id, fn) { addCombatHook('hurt', id, fn); }
 // fn(w, shot)：武器开火后调用；shot 是这一发的信息（磁轨的炮口与方向、导弹本轮第一枚的下标、电弧的连锁结果），钩子可以读写
-function onFire(fn) { COMBAT_HOOKS.fire.push(fn); }
+function onFire(id, fn) { addCombatHook('fire', id, fn); }
 // fn()：冲刺开始时调用
-function onDash(fn) { COMBAT_HOOKS.dash.push(fn); }
+function onDash(id, fn) { addCombatHook('dash', id, fn); }
 // fn(m)：导弹落地爆炸之后调用，m 是这枚导弹
-function onLand(fn) { COMBAT_HOOKS.land.push(fn); }
+function onLand(id, fn) { addCombatHook('land', id, fn); }
 // fn(dt)：武器更新完以后每帧调用一次；dt 是机甲一侧的 dt，时停中照常走
-function onTick(fn) { COMBAT_HOOKS.tick.push(fn); }
+function onTick(id, fn) { addCombatHook('tick', id, fn); }
 
 function runHitHooks(e, dealt, o) { const list = COMBAT_HOOKS.hit; for (let i = 0; i < list.length; i++) list[i](e, dealt, o); }
 function runKillHooks(e, source) { const list = COMBAT_HOOKS.kill; for (let i = 0; i < list.length; i++) list[i](e, source); }
@@ -2470,7 +2538,7 @@ function updateFxPolish(dt, bodyDt = dt) {
   for (const decal of G.decals) if (decal.kind?.startsWith('fx')) decal.life -= dt;
   compact(G.decals, decal => !decal.kind?.startsWith('fx') || decal.life > 0);
 }
-onDash(() => {
+onDash('fx-polish', () => {
   if (!G || dashTrailStyle(G.mech, meta).id) return;
   const p = G.player, angle = Math.atan2(p.ddy, p.ddx), color = FX_POLISH_COLORS[G.mech.id];
   fxPolishEvent('dash', { angle, color });
@@ -2479,28 +2547,28 @@ onDash(() => {
 onFeedback((kind, options) => {
   if (kind === 'perfect') fxPolishEvent('perfect', { x: options.x, y: options.y, angle: options.angle, r: 120 });
 });
-onKill(e => {
+onKill('fx-polish', e => {
   if (!e.elite || e.boss) return;
   fxPolishEvent('elite', { x: e.x, y: e.y, r: e.r, img: e.img, size: e.size, ang: e.ang || 0, color: e.col });
 });
-onHit((enemy, dealt, options) => {
+onHit('fx-polish', (enemy, dealt, options) => {
   if (options?.source === 'rail' && G?.player.weapons.some(weapon => weapon.id === 'rail' && weapon.evo)) {
     fxPolishEvent('railHit', { x: enemy.x, y: enemy.y, r: enemy.r });
   }
 });
-onFire((weapon, shot) => {
+onFire('fx-polish', (weapon, shot) => {
   if (!G) return;
   const watch = fxPolishWatch();
   if (weapon.id === 'missile') for (let i = shot.first; i < G.missiles.length; i++) watch.missiles.set(G.missiles[i], weapon.evo);
   if (weapon.id === 'tesla' && weapon.evo && G.bolts.length) watch.evolvedArcs.add(G.bolts[G.bolts.length - 1]);
 });
-onLand(missile => {
+onLand('fx-polish', missile => {
   if (!G) return;
   const evo = !!fxPolishWatch().missiles.get(missile), color = evo ? '255,205,71' : '255,145,60';
   fxPolishEvent('missile', { x: missile.x, y: missile.y, r: missile.rad, evo, color });
   fxPolishDecal('fxScorch', { x: missile.x, y: missile.y, r: missile.rad * .7, color });
 });
-onTick(() => {
+onTick('fx-polish', () => {
   if (!G) return;
   const watch = fxPolishWatch();
   // 首次武器更新在全屏切入冻结之后，地裂纹与原冲击波同时开始。
@@ -4060,7 +4128,7 @@ function chooseFieldEvents(random = Math.random) {
 }
 
 // ---- src/data/tiers.js ----
-// 深渊层级：首次突围后可选的加难，每层叠加倍率；按机体记最高通关层，通关第 L 层解锁第 L+1 层
+// 深渊层级：全账号共享解锁与出击选择；按机体保留最高通关战绩，每层叠加倍率
 const TIER_MAX = 10;
 // 第 L 层的倍率（L=0 为普通，全是 1）；数值用 simulate-balance.mjs --tier 校准，记录见 iron-rampage-plan.md 的平衡记录
 function tierMods(L) {
@@ -4078,14 +4146,20 @@ function tierCleared(meta, mechId) {
   const v = meta.tierClear?.[mechId];
   return Math.max(Number.isInteger(v) && v >= 0 ? Math.min(TIER_MAX, v) : -1, meta.mechStats?.[mechId]?.wins > 0 ? 0 : -1);
 }
-const tierMaxSelectable = (meta, mechId) => Math.min(TIER_MAX, tierCleared(meta, mechId) + 1);
+const tierMaxSelectable = meta => Math.min(TIER_MAX, bestTierCleared(meta) + 1);
 // 出击用的层级：存的选择超过可选上限时按上限算
-function selectedTier(meta, mechId) {
-  const v = meta.tierSel?.[mechId];
-  return Number.isInteger(v) && v > 0 ? Math.min(v, tierMaxSelectable(meta, mechId)) : 0;
+function selectedTier(meta) {
+  const v = meta.tierPick;
+  return Number.isInteger(v) && v > 0 ? Math.min(v, tierMaxSelectable(meta)) : 0;
 }
 // 所有机体里最高的通关层，-1 表示还没突围过
 const bestTierCleared = meta => Math.max(-1, ...Object.keys({ ...meta.tierClear, ...meta.mechStats }).map(id => tierCleared(meta, id)));
+
+// 并列时取调用方列表中靠前的机体；没有突围记录时不显示机体。
+function bestTierMech(meta, mechIds) {
+  const best = bestTierCleared(meta);
+  return best < 0 ? undefined : mechIds.find(id => tierCleared(meta, id) === best);
+}
 
 // ---- src/game/difficulty.js ----
 // 本局难度修正：深渊层级倍率与每日挑战的固定配置；刷怪、受伤、掉落各处只乘一个系数
@@ -4094,7 +4168,7 @@ const bestTierCleared = meta => Math.max(-1, ...Object.keys({ ...meta.tierClear,
 const runMul = key => G?.mods?.[key] ?? 1;
 // 开局时调用：训练和每日挑战固定普通层；每日挑战的行动顺序按当天种子排好
 function initRunModifiers(daily = null) {
-  G.tier = G.practice || daily ? 0 : selectedTier(meta, G.mech.id);
+  G.tier = G.practice || daily ? 0 : selectedTier(meta);
   G.mods = tierMods(G.tier);
   G.daily = daily;
   if (daily) {
@@ -4564,10 +4638,10 @@ function nightLightSegment(x, y, ex, ey, radius) {
   const count = Math.min(6, Math.max(1, Math.ceil(Math.hypot(ex - x, ey - y) / Math.max(1, radius))));
   for (let i = 0; i <= count; i++) registerNightLight(x + (ex - x) * i / count, y + (ey - y) * i / count, radius);
 }
-onTick(nightScanLights);
-onLand(missile => { registerNightLight(missile.x, missile.y, missile.rad); });
-onHurt(() => { if (nightActive()) G.nightStats.hits++; });
-onKill(enemy => {
+onTick('night', nightScanLights);
+onLand('night', missile => { registerNightLight(missile.x, missile.y, missile.rad); });
+onHurt('night', () => { if (nightActive()) G.nightStats.hits++; });
+onKill('night', enemy => {
   if (!nightActive() || !nightRunAlive()) return;
   G.nightStats.kills++;
   if (!enemy.elite || enemy.boss || G.night.zoneNight && !currentZone().reward.eliteFlare) return;
@@ -4942,12 +5016,13 @@ function settleRunSnapshot(snapshot, { recovering = false, includeBounty = true 
   meta.coins += credited + zoneReceipt.reward; meta.best = Math.max(meta.best, snapshot.t); meta.bestKills = Math.max(meta.bestKills, snapshot.kills);
   if (snapshot.won && !prior.won) meta.wins++;
   if (fastest) { if (tier) meta.tierFastest = { ...persistenceRecord(meta.tierFastest), [tier]: snapshot.t }; else meta.fastestWin = snapshot.t; }
-  // 突围记这台机体的最高通关层；第一次通关某层时告诉结算页解锁了下一层
+  // 保留单机战绩；只在超过全账号结算前最高层时提示解锁，避免本局已增加的 wins 干扰。
   let tierUnlocked = 0;
   if (snapshot.won && snapshot.mech) {
     meta.tierClear = persistenceRecord(meta.tierClear);
+    const previousBest = Math.max(-1, ...Object.values(meta.tierClear).filter(v => Number.isInteger(v) && v >= 0));
     const cleared = meta.tierClear[snapshot.mech];
-    if (!(Number.isInteger(cleared) && cleared >= tier)) { meta.tierClear[snapshot.mech] = tier; if (tier < TIER_MAX) tierUnlocked = tier + 1; }
+    if (!(Number.isInteger(cleared) && cleared >= tier)) { meta.tierClear[snapshot.mech] = tier; if (tier > previousBest && tier < TIER_MAX) tierUnlocked = tier + 1; }
   }
   // 每日挑战：每天第一次结算发奖励；只更新当天或更新的日期，旧日期的中断局不覆盖今天的纪录
   let dailyReward = 0;
@@ -5999,8 +6074,8 @@ function styleRankSnapshot(run = G) {
 onFeedback(kind => {
   if (kind === 'perfect' || kind === 'timeStop' || kind === 'partBreak' || kind === 'execute' || kind === 'steal' || kind === 'rip') awardStyleRank(kind);
 });
-onHurt(hurtStyleRank);
-onKill((enemy, source) => {
+onHurt('style-rank', hurtStyleRank);
+onKill('style-rank', (enemy, source) => {
   // 援军击杀不算玩家的评级。
   if (typeof source === 'string' && source.startsWith('ally:')) return;
   if (enemy.elite) awardStyleRank('eliteKill');
@@ -6477,7 +6552,7 @@ function executeLive() { return !!(G?.execute && G.state === 'playing' && G.play
 function executeEligible(e) {
   return !!(e && !e.dead && !e.entering && !e.boss && (e.elite || e.tideCore) && e.maxHp > 0 && e.hp > 0 && e.hp <= e.maxHp * EXECUTE.hpRatio && !(e.shield > 0));
 }
-onDash(() => { if (G?.execute) G.execute.dashCount = 0; });
+onDash('execute', () => { if (G?.execute) G.execute.dashCount = 0; });
 function executeFx(kind, x, y, r, angle) {
   const list = G.execute.fx;
   if (list.length >= EXECUTE.fxCap) list.shift();
@@ -6665,7 +6740,7 @@ function stormFormDash(phase) {
   stormFormLine(state.dash.x, state.dash.y, p.x, p.y); state.dash = null;
 }
 // 等通用冲刺钩子先清处决计数，再沿瞬移路线调用原有接触判定。
-onDash(() => {
+onDash('forms-storm', () => {
   if (!formActive() || G.mech.id !== 'storm') return;
   const p = G.player, state = G.form.combat, dash = state.dash, cfg = FORM_DEFS.storm.dash;
   if (!dash?.pending) return;
@@ -6724,7 +6799,7 @@ function stormFormCageUpdate(pdt) {
   cage.remaining = Math.max(0, cage.remaining - pdt);
   if (cage.remaining <= 1e-9) G.form.stormCage = null;
 }
-onTick(stormFormCageUpdate);
+onTick('forms-storm', stormFormCageUpdate);
 const stormForm = Object.freeze({
   enter() { G.form.combat = { lightningT: 0, dash: null }; },
   update(pdt) {
@@ -7717,7 +7792,7 @@ function formSnapshot() {
   return { ...f, definition: FORM_DEFS[G?.mech?.id], implemented: formImplemented(), ready: !!f && f.sync >= FORM_RULES.syncMax,
     available: canTransform(), blocked: !formLive() || formBlocked(), awakened: !!G?.player?.awaken?.active };
 }
-onKill((enemy, source) => {
+onKill('forms', (enemy, source) => {
   if (!G?.form || G.practice) return;
   if (enemy.boss && G.bossKills === 0) unlockForm();
   if (formActive() && source?.startsWith('form:')) G.form.energy = Math.min(FORM_RULES.energyMax, G.form.energy + FORM_RULES.energyPerKill);
@@ -8051,8 +8126,8 @@ function beginSkillDash2() {
     p.dashT = Math.max(p.dashT, cfg.flight + .001); skillModCount('hookCasts');
   }
 }
-onDash(beginSkillDash2);
-onKill((e, source) => {
+onDash('skill-mods-2-dash', beginSkillDash2);
+onKill('skill-mods-2-dash', (e, source) => {
   const hook = G?.skillMods?.dash?.hook;
   if (source === 'execute' && hook?.target === e) { hook.arrived = true; hook.executed = true; }
 });
@@ -8211,7 +8286,7 @@ function skillDashStarted() {
     s.mines.push({ x: p.x, y: p.y, arm: cfg.arm, life: cfg.duration, max: cfg.duration }); skillModCount('minePlaced');
   }
 }
-onDash(skillDashStarted);
+onDash('skill-mods-dash', skillDashStarted);
 
 // 只替换普通敌人的目标点：枪口、自爆引信和追击都复用原有 AI。
 function skillDecoyTarget(e, player) {
@@ -8970,8 +9045,8 @@ function actFallWeaponHit(dt) {
     }
   }
 }
-onTick(actFallWeaponHit);
-onLand(m => { if (G?.actFall?.phase === 'falling') for (const b of G.actFall.debris) if (!b.dead && b.warning <= 0 && Math.hypot(b.x - m.x, b.y - m.y) <= m.rad + b.r) actFallBreak(b); });
+onTick('act-fall', actFallWeaponHit);
+onLand('act-fall', m => { if (G?.actFall?.phase === 'falling') for (const b of G.actFall.debris) if (!b.dead && b.warning <= 0 && Math.hypot(b.x - m.x, b.y - m.y) <= m.rad + b.r) actFallBreak(b); });
 // 只供渲染使用：等候中锁住旧幕，成功着陆直接切幕，错过窗口沿用原渐变。
 function actFallGroundMix() {
   const acts = zoneActs(), original = battlefieldMixAt(G?.t || 0, acts), f = G?.actFall;
@@ -9154,6 +9229,29 @@ function nextGoal(meta) {
   if (!goal) return null;
   return { ...goal, have: Math.max(0, Math.min(meta.coins, goal.cost)), ready: meta.coins >= goal.cost };
 }
+
+// ---- src/ui/icons.js ----
+// 界面用的线框 SVG 图标
+
+function sawIcon() { let d = ''; for (let i = 0; i < 20; i++) { const a = i / 20 * TAU, r = i % 2 ? 13 : 20; d += (i ? 'L' : 'M') + (24 + Math.cos(a) * r).toFixed(1) + ' ' + (24 + Math.sin(a) * r).toFixed(1); } return `<path d="${d}Z"/><circle cx="24" cy="24" r="5"/>`; }
+const ICONS = {
+  gatling: '<rect x="5" y="17" width="13" height="15" rx="2"/><path d="M18 20h24M18 24.5h24M18 29h24M10 32v8"/>',
+  missile: '<path d="M10 38l4-12L32 8c3-2 7-2 8-2 0 1 0 5-2 8L20 34z"/><path d="M14 26H7l5-7M22 34v7l7-5"/><circle cx="31" cy="17" r="2.5"/>',
+  tesla: '<path d="M27 4L11 27h11l-4 17 19-24H26z"/>',
+  saw: sawIcon(),
+  rail: '<path d="M4 24h10"/><path d="M14 17h15l5 7-5 7H14z"/><path d="M34 24h10M39 19l5 5-5 5"/>',
+  drone: '<circle cx="24" cy="24" r="6"/><path d="M19 19l-5-5M29 19l5-5M19 29l-5 5M29 29l5 5"/><circle cx="11" cy="11" r="5"/><circle cx="37" cy="11" r="5"/><circle cx="11" cy="37" r="5"/><circle cx="37" cy="37" r="5"/>',
+  cord: '<path d="M38 35H25a13 13 0 1 1 13-13c0 6-4 10-10 10a8 8 0 1 1 8-8"/><circle cx="24" cy="22" r="3"/><path d="M38 35l4-4M38 35l4 4M38 35v-6"/>',
+  firectl: '<rect x="14" y="14" width="20" height="20" rx="2"/><rect x="20" y="20" width="8" height="8"/><path d="M19 8v6M24 8v6M29 8v6M19 34v6M24 34v6M29 34v6M8 19h6M8 24h6M8 29h6M34 19h6M34 24h6M34 29h6"/>',
+  cooler: '<circle cx="24" cy="24" r="18"/><path d="M24 24c0-8 4-12 9-12M24 24c7 4 8 10 5 14M24 24c-7 4-13 2-15-3"/><circle cx="24" cy="24" r="3"/>',
+  thruster: '<path d="M24 5c5 7 12 13 12 23a12 12 0 0 1-24 0c0-6 3-10 6-13 1 4 4 6 4 6s-1-9 2-16z"/>',
+  plating: '<path d="M24 4l16 6v12c0 10-7 18-16 22C15 40 8 32 8 22V10z"/><path d="M16 22l6 6 10-11"/>',
+  magnet: '<path d="M11 8v16a13 13 0 0 0 26 0V8h-8v16a5 5 0 0 1-10 0V8z"/><path d="M11 14h8M29 14h8"/>',
+  crit: '<circle cx="24" cy="24" r="15"/><path d="M24 4v11M24 33v11M4 24h11M33 24h11"/><circle cx="24" cy="24" r="3"/>',
+  heal: '<path d="M18 6h12v12h12v12H30v12H18V30H6V18h12z"/>',
+  gold: '<circle cx="24" cy="24" r="16"/><path d="M28 17h-6a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8h-7M24 13v4M24 33v3"/>',
+};
+const svgI = k => `<svg class="i" viewBox="0 0 48 48" aria-hidden="true">${ICONS[k] || ''}</svg>`;
 
 // ---- src/render/cosmetics.js ----
 // 外观演出的纯绘制：复用死亡粒子预算，不创建战斗对象或消耗玩法随机数
@@ -9712,12 +9810,12 @@ function refreshWhenAssetsArrive() {
 function refreshMenu() {
   const mech = selectedHangarMech(), talent = getSelectedTalent(mech.id, meta.talents);
   // 突围过以后「最久存活」换成「最高层级」
-  const tier = selectedTier(meta, mech.id), topTier = bestTierCleared(meta);
+  const tier = selectedTier(meta), topTier = bestTierCleared(meta);
   $('#mCoins').textContent = meta.coins; $('#mWins').textContent = meta.wins;
   $('#mBestLabel').textContent = topTier >= 0 ? '最高层级' : '最久存活';
   $('#mBest').textContent = topTier >= 0 ? tierName(topTier) : meta.best ? fmtTime(meta.best) : '--';
   $('#menuMech').textContent = `${mech.name} · ${mech.cls}`;
-  $('#menuTalent').textContent = talent.name + '协议' + (tier ? ` · ${tierName(tier)}` : '');
+  $('#menuTalent').textContent = talent.name + '协议' + (startWeaponFor(meta, mech.id) !== mech.weapon ? ' · ' + WDEF[startWeaponFor(meta, mech.id)].name : '') + (tier ? ` · ${tierName(tier)}` : '');
   $('#menuMechImage').src = mechSpriteURL(mech);
   refreshWhenAssetsArrive();
   $('#mFastest').textContent = meta.fastestWin ? `最快突围 · ${fmtTime(meta.fastestWin)}` : '最快突围 · 等待首次胜利';
@@ -9778,7 +9876,7 @@ function ventSummary() {
 }
 function renderHangar() {
   renderZoneCodex(); renderAnomalyCodex();
-  const focused = document.activeElement, focusMech = focused?.dataset?.mech, focusTalent = focused?.dataset?.talent, focusUpgrade = focused?.dataset?.up, focusBounty = focused?.dataset?.bounty, focusStake = focused?.dataset?.stake;
+  const focused = document.activeElement, focusMech = focused?.dataset?.mech, focusTalent = focused?.dataset?.talent, focusStartWeapon = focused?.dataset?.startWeapon, focusUpgrade = focused?.dataset?.up, focusBounty = focused?.dataset?.bounty, focusStake = focused?.dataset?.stake;
   const focusSkin = focused?.dataset?.skin, focusCosmetic = focused?.dataset?.cosmetic;
   const m = MECHS.find(mech => mech.id === previewMechId) || selectedHangarMech(), selected = selectedHangarMech();
   const unlocked = !!meta.unlocked[m.id], equipped = selected.id === m.id, talent = getSelectedTalent(m.id, meta.talents);
@@ -9787,7 +9885,7 @@ function renderHangar() {
   $('#hgPreviewClass').textContent = m.cls;
   $('#hgPreviewName').textContent = m.name;
   $('#hgAvailability').textContent = equipped ? '当前出击机体' : unlocked ? '已解锁 · 可装备' : `${m.cost} 金币解锁`;
-  $('#hgPreviewDescription').innerHTML = `${m.desc}<b>初始武器 · ${WDEF[m.weapon].name}</b>`;
+  $('#hgPreviewDescription').innerHTML = `${m.desc}<b>初始武器 · ${WDEF[startWeaponFor(meta, m.id)].name}</b>`;
   $('#hgRecord').textContent = mechRecordText(m.id);
   $('#hgStats').innerHTML = [['生命', m.hp, ''], ['移速', m.speed, ''], ['装甲减伤', m.armor, '点'], ['冲刺冷却', m.dashCd, '秒']].map(([label, value, unit]) => `<div><dt>${label}</dt><dd>${value}${unit ? `<small>${unit}</small>` : ''}</dd></div>`).join('');
   const overload = `${m.trait.activeDesc} ${overloadSummary()}`;
@@ -9805,9 +9903,11 @@ function renderHangar() {
   $('#hgSelectionStatus').textContent = equipped ? '出击将使用这台机体与下方协议。' : unlocked ? `当前预览 ${m.name}；出击机体仍是 ${selected.name}。` : meta.coins < m.cost ? `还差 ${m.cost - meta.coins} 金币；可以先预览能力与协议。` : '解锁后可装备；只有点击解锁按钮才会消耗金币。';
   $('#talentList').innerHTML = getTalentOptions(m.id).map(option => `<button type="button" class="talent-choice ${option.id === talent.id ? 'selected' : ''}" data-talent="${option.id}" aria-pressed="${option.id === talent.id}" ${unlocked ? '' : 'disabled'}><b>${option.name}${option.id === talent.id ? ' · 已选' : ''}</b><span>${option.description}</span>${meta.achievements?.['proto:' + option.id] ? '<em class="talent-medal">已突围</em>' : ''}</button>`).join('');
   $('#talentStatus').textContent = unlocked ? `${m.name}已选 ${talent.name}；每台机体分别保存。` : '解锁机体后可选择协议。';
+  renderStartWeapons(m, talent, unlocked);
+  const launchWeapon = startWeaponFor(meta, selected.id);
   const launchTalent = getSelectedTalent(selected.id, meta.talents);
-  const launchTier = selectedTier(meta, selected.id);
-  $('#hgLaunchLabel').textContent = `出击配置：${selected.name} · ${launchTalent.name}${launchTier ? ' · ' + tierName(launchTier) : ''}`;
+  const launchTier = selectedTier(meta);
+  $('#hgLaunchLabel').textContent = `出击配置：${selected.name} · ${launchTalent.name}${launchWeapon !== selected.weapon ? ' · ' + WDEF[launchWeapon].name : ''}${launchTier ? ' · ' + tierName(launchTier) : ''}`;
   $('#hgStart').disabled = false; $('#hgStart').textContent = '驾驶 ' + selected.name + ' 出击';
   renderBounties(selected, launchTier);
   renderBountyMedals();
@@ -9823,6 +9923,7 @@ function renderHangar() {
   setHangarPreview($('#cosmeticPreviewCanvas'), m);
   $('#hgDemo').disabled = false; $('#hgDemo').textContent = '演示能力'; $('#hgDemoStatus').textContent = '5 秒能力示意 · 不影响对局';
   if (focusMech) $('#mechList').querySelector(`[data-mech="${focusMech}"]`)?.focus({ preventScroll: true });
+  if (focusStartWeapon) $('#startWeaponList').querySelector(`[data-start-weapon="${focusStartWeapon}"]`)?.focus({ preventScroll: true });
   if (focusTalent) $('#talentList').querySelector(`[data-talent="${focusTalent}"]`)?.focus({ preventScroll: true });
   if (focusUpgrade) $('#upList').querySelector(`[data-up="${focusUpgrade}"]:not([disabled])`)?.focus({ preventScroll: true });
   if (focusBounty !== undefined) $('#bountyList').querySelector(`[data-bounty="${focusBounty}"]`)?.focus({ preventScroll: true });
@@ -9953,24 +10054,25 @@ $('#skinList').addEventListener('click', e => {
   meta.skins[m.id] = skin.id; saveMeta(); applyMechSkin(m.id); SFX.click(); renderHangar();
   $('#hgSelectionStatus').textContent = `${m.name}换上了${skin.name}涂装。`;
 });
-// 深渊层级：这台机体突围后才能选；通关第 L 层解锁第 L+1 层，每台机体分别保存
+// 深渊层级：任意机体突围后全账号解锁，共用出击选择并显示单机战绩
 function renderTiers(m, unlocked) {
-  const top = tierMaxSelectable(meta, m.id), now = selectedTier(meta, m.id), cleared = tierCleared(meta, m.id);
+  const top = tierMaxSelectable(meta), now = selectedTier(meta), cleared = tierCleared(meta, m.id);
   $('#tierList').innerHTML = Array.from({ length: Math.min(TIER_MAX, top + 1) + 1 }, (_, L) => {
     const open = L <= top, on = L === now, note = !open ? (L === 1 ? '突围后解锁' : `通关${tierName(L - 1)}`) : on ? '已选' : '';
     return `<button type="button" class="tier-choice${on ? ' selected' : ''}${open ? '' : ' locked'}" data-tier="${L}" aria-pressed="${on}" ${open && unlocked ? '' : 'disabled'}><b>${tierName(L)}</b><small>${note}</small></button>`;
   }).join('');
-  $('#tierStatus').textContent = !unlocked ? '解锁机体后可选深渊层级。' : cleared < 0 ? `${m.name}突围一次后解锁深渊层级：敌人更强，金币更多。`
-    : `${m.name}最高通关：${tierName(cleared)}。${tierName(now)}：${tierModsText(now)}。`;
+  const best = bestTierCleared(meta), bestMech = MECHS.find(mech => mech.id === bestTierMech(meta, MECHS.map(mech => mech.id)));
+  const personal = bestMech?.id === m.id ? '' : ` · ${m.name}最高：${cleared < 0 ? '还没突围' : tierName(cleared)}`;
+  $('#tierStatus').textContent = best < 0 ? '任意机体突围一次后解锁深渊层级：敌人更强，金币更多。'
+    : `全账号最高通关：${tierName(best)}（${bestMech?.name || '未知机体'}）${personal}。所有机体共用出击层级。${tierName(now)}：${tierModsText(now)}。`;
 }
 $('#tierList').addEventListener('click', e => {
   const b = e.target.closest('[data-tier]'); if (!b || b.disabled) return;
   reloadMeta();
   const m = MECHS.find(mech => mech.id === previewMechId), L = Number(b.dataset.tier);
-  if (!m || !meta.unlocked[m.id] || !Number.isInteger(L) || L < 0 || L > tierMaxSelectable(meta, m.id)) return;
-  if (!meta.tierSel) meta.tierSel = {};
-  meta.tierSel[m.id] = L; saveMeta(); SFX.click(); renderHangar();
-  $('#hgSelectionStatus').textContent = `${m.name}出击层级改为${tierName(L)}。`;
+  if (!m || !meta.unlocked[m.id] || !Number.isInteger(L) || L < 0 || L > tierMaxSelectable(meta)) return;
+  meta.tierPick = L; saveMeta(); SFX.click(); renderHangar();
+  $('#hgSelectionStatus').textContent = `出击层级改为${tierName(L)}，所有机体通用。`;
 });
 $('#mechList').addEventListener('click', e => {
   const b = e.target.closest('[data-mech]'); if (!b || !MECHS.some(m => m.id === b.dataset.mech)) return;
@@ -10030,10 +10132,10 @@ function startRun(options = {}, deferred = false) {
   if (!gameAssetsReady()) return assemblingRun || (assemblingRun = waitGameAssets().then(() => { assemblingRun = null; return startRun(options, true); }));
   const choice = !options.practice && !options.daily && hangarBountyChoice();
   if (choice) {
-    const expected = { ...choice, coins: meta.coins, mech: meta.sel, tier: selectedTier(meta, meta.sel) };
+    const expected = { ...choice, coins: meta.coins, mech: meta.sel, tier: selectedTier(meta) };
     pendingBountyLaunch = Promise.resolve().then(() => withBountyLock(() => {
       reloadMeta(); const current = hangarBountyChoice();
-      if (!current || ['id', 'stake', 'round'].some(key => current[key] !== expected[key]) || meta.coins !== expected.coins || meta.sel !== expected.mech || selectedTier(meta, meta.sel) !== expected.tier || current.stake > meta.coins) {
+      if (!current || ['id', 'stake', 'round'].some(key => current[key] !== expected[key]) || meta.coins !== expected.coins || meta.sel !== expected.mech || selectedTier(meta) !== expected.tier || current.stake > meta.coins) {
         openHangar(); $('#bountyStatus').textContent = '悬赏选择或金币余额已变化，请重新选择后出击。'; return false;
       }
       return launchPreparedRun(options, current);
@@ -10060,6 +10162,34 @@ $('#btnHangar').addEventListener('click', () => { audioInit(); SFX.click(); open
 $('#menuChangeMech').addEventListener('click', () => { audioInit(); SFX.click(); openHangar(); });
 $('#menuGoal').addEventListener('click', () => { audioInit(); SFX.click(); openHangar($('#menuGoal').dataset.target); });
 $('#hgBack').addEventListener('click', () => { SFX.click(); refreshMenu(); show('menu'); });
+
+// 换初始武器只延后专属武器效果，机体能力和协议的通用部分保持原样。
+function startWeaponNotes(mech, talent, weaponId) {
+  if (weaponId === mech.weapon) return [];
+  const notes = [];
+  if (mech.id === 'lancer') notes.push('跃迁装填和觉醒的磁轨余辉只强化磁轨炮；对局里拿到磁轨炮后照常生效。');
+  if (mech.id === 'engineer') notes.push('协同防护多出的僚机只加给僚机无人机，护盾照常；超载增援不受影响。');
+  const restricted = new Set([talent?.effects?.weapon, talent?.effects?.weakpointWeapon].filter(id => id && id !== weaponId));
+  for (const id of restricted) notes.push(`协议『${talent.name}』作用在${WDEF[id].name}上的效果，要等拿到${WDEF[id].name}才生效。`);
+  return notes;
+}
+function renderStartWeapons(mech, talent, unlocked) {
+  const picked = startWeaponFor(meta, mech.id);
+  $('#startWeaponList').innerHTML = startWeaponOptions(meta, mech.id).map(option => `<button type="button" class="start-weapon-choice" data-start-weapon="${option.id}" aria-pressed="${option.id === picked}" ${unlocked && option.open ? '' : 'disabled'}>${svgI(option.id)}<b>${WDEF[option.id].name}</b><span>${option.signature ? '招牌 · ' : ''}${!option.open ? option.lockText : option.id === picked ? '已选' : '可携带'}</span></button>`).join('');
+  $('#startWeaponNote').innerHTML = startWeaponNotes(mech, talent, picked).map(note => `<p>${note}</p>`).join('');
+  $('#startWeaponStatus').textContent = unlocked ? `${mech.name}已选 ${WDEF[picked].name}；每台机体分别保存。每日挑战固定使用招牌武器。` : '解锁机体后可选择初始武器。';
+}
+$('#startWeaponList').addEventListener('click', e => {
+  reloadMeta();
+  const button = e.target.closest('[data-start-weapon]');
+  if (!button || button.disabled || !meta.unlocked[previewMechId]) return;
+  const option = startWeaponOptions(meta, previewMechId).find(item => item.id === button.dataset.startWeapon && item.open);
+  if (!option) return;
+  meta.startWeapon ||= {};
+  if (option.signature) delete meta.startWeapon[previewMechId];
+  else meta.startWeapon[previewMechId] = option.id;
+  saveMeta(); SFX.click(); renderHangar(); refreshMenu();
+});
 
 // ---- src/ui/zone.js ----
 // 战区三选一界面：沿用升级卡布局，独立键盘输入与防误触保护
@@ -10177,29 +10307,6 @@ const ARMORY_ZONE_HAZARDS = {
   armory: { init: initArmorySupplies, enter: enterArmorySupplies, exit: exitArmorySupplies, update: updateArmorySupplies },
 };
 
-// ---- src/ui/icons.js ----
-// 界面用的线框 SVG 图标
-
-function sawIcon() { let d = ''; for (let i = 0; i < 20; i++) { const a = i / 20 * TAU, r = i % 2 ? 13 : 20; d += (i ? 'L' : 'M') + (24 + Math.cos(a) * r).toFixed(1) + ' ' + (24 + Math.sin(a) * r).toFixed(1); } return `<path d="${d}Z"/><circle cx="24" cy="24" r="5"/>`; }
-const ICONS = {
-  gatling: '<rect x="5" y="17" width="13" height="15" rx="2"/><path d="M18 20h24M18 24.5h24M18 29h24M10 32v8"/>',
-  missile: '<path d="M10 38l4-12L32 8c3-2 7-2 8-2 0 1 0 5-2 8L20 34z"/><path d="M14 26H7l5-7M22 34v7l7-5"/><circle cx="31" cy="17" r="2.5"/>',
-  tesla: '<path d="M27 4L11 27h11l-4 17 19-24H26z"/>',
-  saw: sawIcon(),
-  rail: '<path d="M4 24h10"/><path d="M14 17h15l5 7-5 7H14z"/><path d="M34 24h10M39 19l5 5-5 5"/>',
-  drone: '<circle cx="24" cy="24" r="6"/><path d="M19 19l-5-5M29 19l5-5M19 29l-5 5M29 29l5 5"/><circle cx="11" cy="11" r="5"/><circle cx="37" cy="11" r="5"/><circle cx="11" cy="37" r="5"/><circle cx="37" cy="37" r="5"/>',
-  cord: '<path d="M38 35H25a13 13 0 1 1 13-13c0 6-4 10-10 10a8 8 0 1 1 8-8"/><circle cx="24" cy="22" r="3"/><path d="M38 35l4-4M38 35l4 4M38 35v-6"/>',
-  firectl: '<rect x="14" y="14" width="20" height="20" rx="2"/><rect x="20" y="20" width="8" height="8"/><path d="M19 8v6M24 8v6M29 8v6M19 34v6M24 34v6M29 34v6M8 19h6M8 24h6M8 29h6M34 19h6M34 24h6M34 29h6"/>',
-  cooler: '<circle cx="24" cy="24" r="18"/><path d="M24 24c0-8 4-12 9-12M24 24c7 4 8 10 5 14M24 24c-7 4-13 2-15-3"/><circle cx="24" cy="24" r="3"/>',
-  thruster: '<path d="M24 5c5 7 12 13 12 23a12 12 0 0 1-24 0c0-6 3-10 6-13 1 4 4 6 4 6s-1-9 2-16z"/>',
-  plating: '<path d="M24 4l16 6v12c0 10-7 18-16 22C15 40 8 32 8 22V10z"/><path d="M16 22l6 6 10-11"/>',
-  magnet: '<path d="M11 8v16a13 13 0 0 0 26 0V8h-8v16a5 5 0 0 1-10 0V8z"/><path d="M11 14h8M29 14h8"/>',
-  crit: '<circle cx="24" cy="24" r="15"/><path d="M24 4v11M24 33v11M4 24h11M33 24h11"/><circle cx="24" cy="24" r="3"/>',
-  heal: '<path d="M18 6h12v12h12v12H30v12H18V30H6V18h12z"/>',
-  gold: '<circle cx="24" cy="24" r="16"/><path d="M28 17h-6a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8h-7M24 13v4M24 33v3"/>',
-};
-const svgI = k => `<svg class="i" viewBox="0 0 48 48" aria-hidden="true">${ICONS[k] || ''}</svg>`;
-
 // ---- src/ui/zone-armory.js ----
 // 军械库空投三选一：复用选卡样式，点击和数字快捷键领取后继续战斗
 
@@ -10289,7 +10396,7 @@ function stormZoneUpdate(dt) {
   if (s.clock >= cfg.interval - 1e-9) { s.clock %= cfg.interval; stormZoneWarning(s); }
 }
 // 使用已有开火钩子续接真实链，额外跳数与武器等级、共鸣各自独立。
-onFire((weapon, shot) => {
+onFire('zone-storm-dark', (weapon, shot) => {
   if (G.practice || currentZone().id !== 'storm' || weapon.id !== 'tesla' || !shot?.last) return;
   const pts = [shot.last.x, shot.last.y], count = currentZone().mods?.teslaChain || 0;
   for (let i = 0; i < count; i++) {
@@ -10518,7 +10625,7 @@ function fusionRecipes(p = G?.player) {
 const fusionDamageMul = () => G.stats.dmg * (G.player.overT > 0 ? OVERLOAD.dmgMul : 1);
 
 // 飞刃射出：磁轨每次开火，顺着主光束放出一片锯刃
-onFire((w, shot) => {
+onFire('fusions:blade', (w, shot) => {
   if (w.id !== 'rail' || !fusionOn('blade')) return;
   const saw = fusionWeapon('saw'), f = FUSIONS.blade, dmg = wp(saw).dmg * shot.dM * f.dmgMul;
   (G.fusionBlades ||= []).push({ x: shot.x, y: shot.y, a: shot.angle, out: true, dist: 0, dmg, hit: new Set(), spin: 0, life: 0 });
@@ -10554,14 +10661,14 @@ function updateBlades(dt) {
 }
 
 // 信标轰炸：磁轨打中的敌人插信标，导弹出膛优先追信标，追信标的导弹爆炸半径变大
-onHit((e, dealt, o) => {
+onHit('fusions', (e, dealt, o) => {
   if (o.source !== 'rail' || e.dead || !fusionOn('beacon')) return;
   const now = actionClock(), list = G.fusionBeacons ||= [];
   // 到期那一帧还没从名单里清掉时又被打中，只续时间不再登记，否则下一轮导弹全分给它
   if (!(e.beaconUntil > now) && !list.includes(e)) list.push(e);
   e.beaconUntil = now + FUSIONS.beacon.markT;
 });
-onFire((w, shot) => {
+onFire('fusions:beacon', (w, shot) => {
   if (w.id !== 'missile' || !G.fusionBeacons?.length || !fusionOn('beacon')) return;
   const p = G.player, now = actionClock(), range2 = AUTO_TARGETING.ranges.missile ** 2;
   const beacons = G.fusionBeacons.filter(e => e.beaconUntil > now && isWeaponTarget(e) && d2(p.x, p.y, e.x, e.y) < range2).sort((a, b) => d2(p.x, p.y, a.x, a.y) - d2(p.x, p.y, b.x, b.y));
@@ -10583,7 +10690,7 @@ function beaconRingProps(m, r1) {
   const ring = G.props.filter(q => !q.dead && !q.inactive && q.kind !== 'toxic' && d2(m.x, m.y, q.x, q.y) > (m.rad + q.r) ** 2 && d2(m.x, m.y, q.x, q.y) <= (r1 + q.r) ** 2);
   for (const q of ring) hitPropsCircle(q.x, q.y, 0, m.dmg);
 }
-onLand(m => {
+onLand('fusions', m => {
   if (!m.beacon) return;
   const r1 = m.rad * FUSIONS.beacon.blastMul;
   query(m.x, m.y, r1 + 40, beaconRingHit, m);
@@ -10617,7 +10724,7 @@ function updateWings() {
   }
 }
 
-onTick(dt => {
+onTick('fusions', dt => {
   if (G.fusionBlades?.length) updateBlades(dt);
   if (G.fusionBeacons?.length) { const now = actionClock(); compact(G.fusionBeacons, e => !e.dead && e.beaconUntil > now); }
   if (fusionOn('wing')) updateWings();
@@ -10709,7 +10816,7 @@ function updatePincerSweeps(dt) {
 }
 
 // 毒刺炮 + 导弹：导弹落点也留毒池；离自己留下的毒池太近就续那一片，离毒刺炮的毒池太近就不留
-onLand(m => {
+onLand('resonance', m => {
   if (!resonanceActive('stinger')) return;
   const cfg = BOSS_MODULES.stinger, r = RESONANCE.stinger, pools = G.venomPools || (G.venomPools = []), merge2 = r.mergeR * r.mergeR;
   let own = 0;
@@ -10726,7 +10833,7 @@ onLand(m => {
 });
 
 // 寄生虫巢 + 锯刃：锯刃击杀时有几率在尸体处孵一只友军小虫，受小虫上限约束
-onKill((e, source) => {
+onKill('resonance', (e, source) => {
   if (source !== 'saw' || !resonanceActive('parasite')) return;
   const cfg = BOSS_MODULES.parasite, list = G.parasites || (G.parasites = []);
   if (list.length >= cfg.cap || Math.random() >= RESONANCE.parasite.chance) return;
@@ -10737,7 +10844,7 @@ onKill((e, source) => {
 });
 
 // 液压腿 + 磁轨：冲刺开始时磁轨立即装填
-onDash(() => {
+onDash('resonance', () => {
   if (!resonanceActive('hydraulic')) return;
   G.player.weapons.find(w => w.id === 'rail').cd = 0;
   resonanceState().glowUntil = actionClock() + RESONANCE.hydraulic.glowT;
@@ -10745,7 +10852,7 @@ onDash(() => {
 });
 
 // 孢子环 + 电弧：连锁打完后，在被孢子环减速的敌人之间再跳几次
-onFire((w, shot) => {
+onFire('resonance', (w, shot) => {
   if (w.id !== 'tesla' || !shot?.last || !resonanceActive('spore')) return;
   const range2 = AUTO_TARGETING.ranges.teslaChain ** 2, pts = [shot.last.x, shot.last.y];
   let cur = shot.last, dmg = shot.dmg, jumps = 0;
@@ -10795,7 +10902,7 @@ function bossResonanceHint() {
   if (lines.length) toast({ text: lines.slice(0, 2).join('；'), t: 4.5, priority: 2 });
 }
 
-onTick(dt => {
+onTick('resonance', dt => {
   bossResonanceHint();
   const R = G.resonance;
   if (G.player.modules?.length) {
@@ -11041,7 +11148,7 @@ function updateAmalgam(dt) {
   G.amalgamStats.scans++; G.amalgamStats.eligibleCrowdPeak = Math.max(G.amalgamStats.eligibleCrowdPeak, crawlers.length);
   if (crawlers.length > (zonesEnabled() ? currentZone().mods?.amalgamThreshold ?? AMALGAM.crawlerThreshold : AMALGAM.crawlerThreshold)) amalgamSpawnHorn(crawlers);
 }
-onKill((e, source) => {
+onKill('amalgam', (e, source) => {
   if (!e.amalgam || !G?.amalgam || e.amalgamDeathQueued) return;
   e.amalgamKillSource = source; e.amalgamDeathQueued = true; e.slam = null; G.amalgam.deaths.push(e);
 });
@@ -11279,7 +11386,7 @@ function colossusAdvanceTransit(c, dt) {
     }
   }
 }
-onHit((enemy, damage) => {
+onHit('colossus', (enemy, damage) => {
   if (enemy.colossusJoint && G.colossusStats) G.colossusStats.jointDamage += damage;
 });
 
@@ -11382,7 +11489,7 @@ function allyQueueTriggers() {
   // 冷却中出现的同幕/同战机会保留，跨幕或首领战结束后失效，不把旧救援带进下一战。
   s.pending = s.pending.filter(q => q.boss ? q.boss === G.boss && !q.boss.dead : q.act === act);
 }
-onHurt(() => { if (allyLive()) allyQueueTriggers(); });
+onHurt('allies', () => { if (allyLive()) allyQueueTriggers(); });
 function allyLand(a) {
   allyCircle(a, a.x, a.y, ALLY_RULES.landingRadius, ALLY_RULES.landingDamage, ALLY_RULES.landingKnock);
   const cfg = ALLY_RULES[a.id], targets = allyTargets(a), target = allyDenseTarget(a);
@@ -12502,7 +12609,9 @@ function newRun({ practice = false, daily = null, bountyChoice = null } = {}) {
   initMechTraits(G.player, mech);
   initMechAwaken();
   initExecute();
-  G.player.weapons.push(newWeapon(mech.weapon));
+  const startId = daily ? mech.weapon : startWeaponFor(meta, mech.id);
+  G.startWeapon = startId;
+  G.player.weapons.push(newWeapon(startId));
   recalc(); G.player.hp = G.player.maxHp;
   initRunModifiers(daily); initProps(); initCordState(); initTimeStop(); initTide(); initMortarState();
   initNight(); initActFall(); initZones(); initZoneHazards();
@@ -12900,7 +13009,7 @@ onOverloadGain(source => {
   if (on.fervor && source !== 'kill' && source !== 'combo') return 0;
   return on.overheat ? ANOMALY_RULES.overheatCharge : 1;
 });
-onHit((e, dealt, o) => {
+onHit('anomalies', (e, dealt, o) => {
   const a = G?.anomaly; if (!a?.slots.length || !(dealt > 0) || o.source?.startsWith('anomaly:')) return;
   if (!o.flat) {
     if (a.on.hunter && (e.boss || e.elite)) anomalyStat('hunter', dealt * (1 - 1 / ANOMALY_RULES.hunterDamage));
@@ -12913,7 +13022,7 @@ onHit((e, dealt, o) => {
     hitEnemy(e, dealt * ANOMALY_RULES.shadowDamage, { source: 'anomaly:shadow', flat: true });
   }
 });
-onKill(e => {
+onKill('anomalies', e => {
   const a = G?.anomaly; if (!a?.slots.length && !a?.debts.length) return;
   if (a.on.chain && !e.boss && a.blasts.length < 40 && e.maxHp > 0) a.blasts.push({ x: e.x, y: e.y, dmg: e.maxHp * ANOMALY_RULES.chainDamage, t: .08 });
   if (a.debts.length) anomalyPayDebt(ANOMALY_RULES.bloodKillPayment);
@@ -12922,7 +13031,7 @@ onKill(e => {
     if (p.hp > 0) { p.hp = p.maxHp; anomalyStat('sacrifice', 1); floatText(p.x, p.y - 50, '献祭 · 回满', '255,140,160', 24, 1.2); }
   }
 });
-onDash(() => {
+onDash('anomalies', () => {
   const a = G?.anomaly, p = G?.player; if (!a?.slots.length || !p) return;
   a.dashFull = p.dashT;
   if (a.on.shadow) a.shadows = [{ x: p.x, y: p.y, angle: p.angle, t: ANOMALY_RULES.shadowDuration, max: ANOMALY_RULES.shadowDuration }];
@@ -13936,11 +14045,11 @@ function activateMechAwaken() {
   }
   SFX.mechAwaken();
 }
-onKill(e => {
+onKill('mech-awaken', e => {
   // 击杀钩子先于 bossDeath 的计数；在真正的第二只首领死亡时立即强化，横幅留到本帧末尾。
   if (e.boss && !e.final && G.bossKills === MECH_AWAKEN.bossKills - 1) activateMechAwaken();
 });
-onHit((e, dealt, o) => {
+onHit('mech-awaken', (e, dealt, o) => {
   const a = G.player.awaken, key = o.mechEffect && o.mechEffect + 'Damage';
   if (!a || !Object.hasOwn(a.stats, key) || G.practice) return;
   a.stats[key] += dealt / (o.flat ? 1 : bossMarkMul(e));
@@ -14056,7 +14165,7 @@ function awakenShieldBroken() {
 function markAwakenRail(multiplier) {
   const a = mechAwakenLive(); if (a?.active && G.mech.id === 'lancer') a.railBoost = multiplier;
 }
-onFire((weapon, shot) => {
+onFire('mech-awaken', (weapon, shot) => {
   const a = mechAwakenLive(); if (!a?.active || G.mech.id !== 'lancer' || weapon.id !== 'rail' || !(a.railBoost > 0)) return;
   const cfg = MECH_AWAKEN.lancer, level = wp(weapon);
   const angles = weapon.evo ? [0, .3, -.3] : level.b === 1 ? [0] : level.b === 2 ? [0, Math.PI] : [0, 2.09, -2.09];
@@ -20226,7 +20335,7 @@ loadMenuAssets(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).the
   watchRedrawTriggers(); requestAnimationFrame(t => { last = t; frame(t); });
   loadGameAssets();
 });
-window.__IR = { get G() { return G; }, get anomalyCatalog() { return ANOMALIES; }, get ANOMALY_RULES() { return ANOMALY_RULES; }, get SKILL_MODS() { return SKILL_MODS; }, meta, skip(t) { if (G) { G.t = t; G.nextElite = t + 5; while (G.swarmIdx < SWARM_TIMES.length && SWARM_TIMES[G.swarmIdx] < t) G.swarmIdx++; while (G.bossIdx < BOSS_TIMES.length && BOSS_TIMES[G.bossIdx] < t - 3) G.bossIdx++; skipTideSchedule(t); } }, god() { if (G) G.debugGod = true; }, set speed(v) { SPEED = v; }, PERF, IN, RIG, start(id) { if (id) { meta.unlocked[id] = true; meta.sel = id; } return startRun(); }, screenPos() { const p = G.player, z = ZOOM * (G.cam.zoom || 1); return { x: W / 2 + (p.x - G.cam.x) * z, y: H / 2 + (p.y - G.cam.y) * z }; }, ventReady: () => ventReady(), formReady: () => canTransform(), tryForm: () => tryForm(), tryFormFinisher: () => tryFormFinisher(), formSnapshot: () => formSnapshot(), zone(id, index) { return setZoneRoute(id, index); }, get zoneNow() { return G ? currentZone().id : null; }, anomaly(id, replaceId) { return grantAnomaly(id, replaceId); }, anomalyOffer(source = 'debug') { if (!G) return false; G.anomaliesEnabled = !G.practice; return queueAnomaly(source); } };
+window.__IR = { get G() { return G; }, get anomalyCatalog() { return ANOMALIES; }, get ANOMALY_RULES() { return ANOMALY_RULES; }, get SKILL_MODS() { return SKILL_MODS; }, meta, startWeapon(id) { reloadMeta(); const mech = MECHS.find(m => m.id === meta.sel); if (!mech || !meta.unlocked[mech.id]) return false; const choice = startWeaponOptions(meta, mech.id).find(o => o.id === id && o.open); if (!choice) return false; meta.startWeapon ||= {}; if (choice.signature) delete meta.startWeapon[mech.id]; else meta.startWeapon[mech.id] = id; return saveMeta(); }, skip(t) { if (G) { G.t = t; G.nextElite = t + 5; while (G.swarmIdx < SWARM_TIMES.length && SWARM_TIMES[G.swarmIdx] < t) G.swarmIdx++; while (G.bossIdx < BOSS_TIMES.length && BOSS_TIMES[G.bossIdx] < t - 3) G.bossIdx++; skipTideSchedule(t); } }, god() { if (G) G.debugGod = true; }, set speed(v) { SPEED = v; }, PERF, IN, RIG, start(id) { if (id) { meta.unlocked[id] = true; meta.sel = id; } return startRun(); }, screenPos() { const p = G.player, z = ZOOM * (G.cam.zoom || 1); return { x: W / 2 + (p.x - G.cam.x) * z, y: H / 2 + (p.y - G.cam.y) * z }; }, ventReady: () => ventReady(), formReady: () => canTransform(), tryForm: () => tryForm(), tryFormFinisher: () => tryFormFinisher(), formSnapshot: () => formSnapshot(), zone(id, index) { return setZoneRoute(id, index); }, get zoneNow() { return G ? currentZone().id : null; }, anomaly(id, replaceId) { return grantAnomaly(id, replaceId); }, anomalyOffer(source = 'debug') { if (!G) return false; G.anomaliesEnabled = !G.practice; return queueAnomaly(source); } };
 })();
 </script>
 </body>
