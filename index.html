@@ -660,6 +660,12 @@ input.settings-control[type="range"]{min-width:0}
 @keyframes mercyDashPulse{0%,100%{box-shadow:0 0 0 3px rgba(255,76,96,.55)}50%{box-shadow:0 0 0 7px rgba(255,76,96,.9)}}
 @media (prefers-reduced-motion:reduce){.mercy-dash-cue::before{animation:none;box-shadow:0 0 0 4px rgba(255,76,96,.85)}}
 .mercy-sheet-line{grid-column:1/-1;margin:6px 0 0;padding:7px 9px;font-size:12px;line-height:1.5;color:#cdebd9;background:rgba(8,18,15,.65);border:1px solid #405b4b}
+
+/* 骑乘提示只画冷却环外圈，招式冷却进度仍由原有扇区表示。 */
+.ride-dash-cue::before{animation:rideDashPulse .6s ease-in-out infinite}
+.ride-skill::before{box-shadow:0 0 0 4px rgba(110,200,255,.85)}
+@keyframes rideDashPulse{0%,100%{box-shadow:0 0 0 3px rgba(110,200,255,.55)}50%{box-shadow:0 0 0 7px rgba(110,200,255,.95)}}
+@media (prefers-reduced-motion:reduce){.ride-dash-cue::before{animation:none;box-shadow:0 0 0 4px rgba(110,200,255,.85)}}
 </style>
 </head>
 <body>
@@ -1953,6 +1959,7 @@ const FEEDBACK_EVENTS = Object.freeze({
   bossWeak: { kick: 3, stop: .06, duck: .08 },
   // 首领部位被打碎：顿帧和重音仅次于狂暴，同样走真实时间预算
   partBreak: { kick: 6, stop: .08, duck: .12, cine: true },
+  ride: { kick: 5, stop: .08, duck: .12, cine: true },
   // 居合一闪：要全斩的那一刀冲刺结束时「静」，只压音乐；落刀反冲，全斩再加短顿帧（普通一刀不顿，免得占掉极限闪避的顿帧预算）。踢爆弹：踢中那一下反冲
   iaidoDraw: { duck: .12 },
   iaido: { kick: 4 },
@@ -2751,7 +2758,7 @@ function rebuildGrid() {
   gridUsedCount = 0;
   if (grid.size > GRID_CELL_LIMIT) grid.clear();
   for (const e of G.enemies) {
-    if (e.dead) continue;
+    if (e.dead || e.kneel?.phase === 'ridden') continue; // 坐骑不吞掉机甲在背上发射的子弹。
     const x0 = Math.floor((e.x - e.r) / CELL), x1 = Math.floor((e.x + e.r) / CELL), y0 = Math.floor((e.y - e.r) / CELL), y1 = Math.floor((e.y + e.r) / CELL);
     for (let cx = x0; cx <= x1; cx++) for (let cy = y0; cy <= y1; cy++) {
       const k = gk(cx, cy); let cell = grid.get(k);
@@ -3193,6 +3200,7 @@ function reportSourceName(source) {
   if (source === 'zone:armory') return '军械库清屏炸弹';
   if (source === 'fall') return '坠落冲击';
   if (source?.startsWith('boss:emperor')) return reportCauseName(source);
+  if (source?.startsWith('ride:')) return { crush: '骑乘碾压', ring: '骑乘环射', blast: '骑乘自爆' }[source.slice(5)] || '骑乘伤害';
   return { overload: '超载冲击', vent: '熔核炮', perfect: '极限反弹', chain: '连锁爆炸', reboot: '紧急重启', 'boss:gaze': '深渊凝视', unknown: '其他伤害' }[source] || '其他伤害';
 }
 function reportCauseName(cause) {
@@ -3960,6 +3968,8 @@ const BOSS_PRESENTATION = {
 // 最终首领放深渊凝视时提示绕后，之后的头冠过热也是破绽
 // 巢穴炮垒：钻地时写「钻入地下」，扇形打完的核心过热也写「过热」，打碎支撑后平时那段后面标易伤（supportMul）
 function bossPhaseLabel(boss) {
+  if (boss.kneel?.phase === 'down' && boss.kneel.owner === 'ride') return `跪地 ${Math.max(0, boss.kneel.left).toFixed(1)}秒`;
+  if (boss.kneel?.phase === 'ridden') return `骑乘 ${Math.max(0, boss.kneel.left).toFixed(1)}秒`;
   if (boss.kneel?.phase === 'down' && boss.kneel.owner === 'mercy') return `求饶 ${Math.max(0, boss.kneel.left).toFixed(1)}秒`;
   if (boss.burrowing) return '钻入地下';
   if (boss.entering) return '正在接近';
@@ -4294,6 +4304,29 @@ const MERCY_TEXT = {
   finishEnd: '补刀', spareEnd: '放走', repayEnd: '报恩', reclaimedEnd: '夺回宝箱', escapedEnd: '钻回地下',
 };
 
+// ---- src/data/boss-ride.js ----
+// 驾驭首领：开放门槛、驾驶碾压、招式、自爆奖励和显示文案
+const BOSS_RIDE = {
+  enabled: true, winsRequired: 1, perRun: 2, bosses: ['scorpion', 'queen'], minParts: 2, queenMinParts: 1,
+  kneel: { lockRatio: .1, duration: 4 }, duration: 8, mountInvuln: .6, dismountInvuln: 1.2, dismountPad: 30, standPad: 24, hurtMul: .4,
+  speed: { scorpion: 230, queen: 200 }, accel: 6, turn: 8, cruise: .6,
+  crush: { reach: .5, eliteRatio: .08, eliteEvery: .5, knock: 300 },
+  river: { waves: [{ at: 0, count: 40, cols: 6 }, { at: 4, count: 30, cols: 5 }], gapX: 34, gapY: 40, outsidePad: 1 },
+  move: { scorpion: { speed: 380, time: .8, cd: 2, eliteRatio: .12 }, queen: { count: 24, speed: 520, life: .8, damage: 40, pierce: 2, r: 6, cd: 2 } },
+  blast: { radius: 220, every: 10, step: 20, max: 400, damage: 300 },
+  bonusCoins: { scorpion: 15, queen: 30 }, fullPartsCoins: 20, coinValue: 2, coinScatter: 70, goldenAngle: 2.399963229728653,
+  view: { lift: 10, color: '110,200,255', trail: 24, trailEvery: .05, eyes: { scorpion: [[-.045, -.16], [.045, -.16]], queen: [[-.035, -.20], [.035, -.20]] },
+    textLift: 22, titleSize: 25, cueSize: 18, textLife: 1.6, hintLife: 4.5, mountLife: 2.4, blastLife: 2, counterLife: 1,
+    ghostLife: .25, smokeSize: 20, smokeLife: .45 },
+};
+
+const BOSS_RIDE_TEXT = {
+  kneel: '跪地！', mountCue: '冲刺骑上', cue: '冲刺骑上它', redCue: '红眼：冲刺骑上它，放走会记仇',
+  hint: '拆够{parts}个部位，首领跪下时冲刺撞上去就能骑它', mounted: '骑上了！', title: '驾驭首领！',
+  scorpion: '冲锋', queen: '环射', dash: '骑上', jump: '跳车',
+  blast: '轰！', blastSub: '补给箱掉在自爆点', blastRadius: '爆炸半径', reward: '骑乘奖励', stat: '驾驭首领', mercyEnd: '骑上它了',
+};
+
 // ---- src/data/allies.js ----
 // 援军的触发、机动、火力与台词；伤害均沿用技能的逐目标成长口径
 const ALLY_RULES = Object.freeze({
@@ -4327,7 +4360,7 @@ const STYLE_RANK = Object.freeze({
   scores: Object.freeze({ perfect: 30, timeStop: 60, iaidoFull: 40, iaidoThousand: 60, iaidoCross: 40,
     kickFull: 40, blink: 40, vent: 80, cord: 20, partBreak: 80, eliteKill: 25, skillKill: 3,
     execute: 50, steal: 30, rip: 80, clash: 80, topple: 120,
-    juggle: 40, hornStop: 60, amalgam: 120, snowball: 30, snowballMountain: 60 }),
+    juggle: 40, hornStop: 60, amalgam: 120, snowball: 30, snowballMountain: 60, ride: 120 }),
   cordPerEnemy: 2, cordMaxScore: 60,
 });
 
@@ -6536,7 +6569,8 @@ function updateAnomalies(pdt, dt) {
     if (ready.length) { a.blasts = a.blasts.filter(b => b.t > 0); for (const b of ready) anomalyChainBlast(b); }
   }
   if (a.gravity) anomalyUpdateGravity(a.gravity, pdt, dt);
-  if (a.on.overheat && p.overload >= 100 && !(p.overT > 0) && G.state === 'playing' && !G.form?.active) {
+  // 骑乘时超载键是跳车，炉心不自动触发它；下车后恢复自动爆发。
+  if (a.on.overheat && p.overload >= 100 && !(p.overT > 0) && G.state === 'playing' && !G.form?.active && !G.ride?.active) {
     tryOverload(); if (p.overT > 0) anomalyStat('overheat', 1);
   }
   if (a.on.stasis) {
@@ -7314,7 +7348,7 @@ function frostUpdate(dt, pdt) {
   const s = G.frostZone, cfg = FROST_ZONE_RULES, p = G.player, center = G.cam || p;
   // 冲刺刚结束：按惯性多滑一段，速度线性衰减到 0，总距离 = 冲刺距离 × (dashGlide − 1)
   const dashing = p.dashT > 0;
-  if (dashing) s.glide = null;
+  if (dashing || G.ride?.active) s.glide = null;
   else if (s.wasDash && p.hp > 0) {
     const len = Math.hypot(p.ddx, p.ddy) || 1, distance = DASH_V * DASH_T * Math.max(0, zoneMul('dashGlide') - 1);
     if (distance > 0) { s.glide = { dx: p.ddx / len, dy: p.ddy / len, v: 2 * distance / cfg.glideTime, t: 0 }; s.glides++; }
@@ -8286,6 +8320,234 @@ function updateClashFreeze(rdt) {
   return true;
 }
 
+// ---- src/game/boss-ride.js ----
+// 首领驾驶：跪地骑上、驾驶碾压、虫河、首领招式与跳车自爆
+
+function initRide() {
+  G.rideEnabled = BOSS_RIDE.enabled && !G.practice && (meta?.wins || 0) >= BOSS_RIDE.winsRequired;
+  G.ride = { count: 0, active: null, fx: [], cd: 0 };
+  G.rideStats = { kneels: 0, mounts: 0, standUps: 0, aborts: 0, rides: [] };
+}
+function rideEnabled() { return !!G?.ride && !G.practice && !!G.rideEnabled; }
+function rideActive() { return !!G?.ride?.active; }
+function rideBrokenParts(e) { return (e?.parts || []).filter(q => q.broken); }
+function rideEligible(e) {
+  return rideEnabled() && !rideActive() && !!e?.boss && !e.dead && !e.final && BOSS_RIDE.bosses.includes(e.kind) && G.ride.count < BOSS_RIDE.perRun;
+}
+function rideAllow(e) { return rideEligible(e) && rideBrokenParts(e).length >= (e.kind === 'queen' ? BOSS_RIDE.queenMinParts : BOSS_RIDE.minParts); }
+function rideArmBoss(e) {
+  if (!rideEligible(e) || e.kneel) return false;
+  return armBossKneel(e, { owner: 'ride', lockRatio: BOSS_RIDE.kneel.lockRatio, duration: BOSS_RIDE.kneel.duration });
+}
+function rideCanMount(e) {
+  return rideAllow(e) && !e.entering && e.hp > 0 && e.kneel?.phase === 'down' && (e.kneel.owner !== 'mercy' || e.kneel.eye === 'red');
+}
+function rideKneelHint(e) {
+  if (!rideCanMount(e)) return false;
+  if (!e.kneel.rideNoticed) { e.kneel.rideNoticed = true; G.rideStats.kneels++; }
+  const hints = meta.hints && typeof meta.hints === 'object' ? meta.hints : (meta.hints = {});
+  if (!hints.rideKneel) {
+    hints.rideKneel = true; saveMeta();
+    const required = e.kind === 'queen' ? BOSS_RIDE.queenMinParts : BOSS_RIDE.minParts;
+    toast({ text: BOSS_RIDE_TEXT.hint.replace('{parts}', required), t: BOSS_RIDE.view.hintLife, priority: 3 });
+  }
+  return true;
+}
+function rideBegin(e) {
+  const cfg = BOSS_RIDE.view, y = e.y - e.size / 2 - cfg.textLift;
+  floatText(e.x, y, BOSS_RIDE_TEXT.kneel, cfg.color, cfg.titleSize, cfg.textLife);
+  floatText(e.x, y - cfg.textLift, BOSS_RIDE_TEXT.cue, cfg.color, cfg.cueSize, cfg.textLife);
+  rideKneelHint(e);
+}
+function rideStand(e) { if (standUpBoss(e)) G.rideStats.standUps++; }
+const RIDE_KNEEL = { allow: rideAllow, begin: rideBegin, contact: rideMount, timeout: rideStand };
+function rideHurtTotal() { return Object.values(G.report?.damageTakenBySource || {}).reduce((n, value) => n + value, 0); }
+function rideInputAllowed() { return rideActive() && G.state === 'playing' && G.player?.hp > 0 && !(G.endT > 0); }
+function rideMount(e) {
+  if (!rideCanMount(e)) return false;
+  const p = G.player, heading = Number.isFinite(e.ang) ? e.ang : p.angle || 0;
+  rideKneelHint(e);
+  const parts = rideBrokenParts(e).map(q => q.id), bonusParts = (e.parts || []).filter(q => !q.broken).map(q => q.id);
+  const stats = { kind: e.kind, kneelAt: e.kneel.at, mountAt: G.t, mountDelay: Math.max(0, G.t - e.kneel.at), endAt: null, reason: null,
+    crushed: 0, eliteHits: 0, moves: 0, riverSpawned: 0, blastRadius: null, blastKills: 0, hurt: 0, parts, bonusParts, chestAt: null,
+    maxHp: p.maxHp, overloadAtEnd: null };
+  const active = { boss: e, kind: e.kind, t: 0, vx: 0, vy: 0, heading, cd: 0, move: null, crushed: 0, crushedAt: new Map(),
+    river: 0, trail: [{ x: e.x, y: e.y }], trailAt: 0, hurtAt0: rideHurtTotal(), jumpQueued: null, stats, crushMilestoneAt: null };
+  G.ride.active = active; G.ride.count++; G.ride.cd = 0; G.rideStats.mounts++; G.rideStats.rides.push(stats);
+  if (e.kneel.owner === 'mercy') G.mercyStats.outcome = 'ride';
+  e.kneel.phase = 'ridden'; e.kneel.left = BOSS_RIDE.duration; e.st = 'ride'; e.stT = 0;
+  p.dashT = 0; p.amp = 0; p.x = e.x; p.y = e.y; p.vx = p.vy = 0; p.invuln = Math.max(p.invuln, BOSS_RIDE.mountInvuln);
+  if (G.frostZone) { G.frostZone.wasDash = false; G.frostZone.glide = null; }
+  feedback('ride', { x: e.x, y: e.y, angle: heading }); awardStyleRank('ride');
+  floatText(e.x, e.y - e.r - BOSS_RIDE.view.textLift, BOSS_RIDE_TEXT.mounted, BOSS_RIDE.view.color, BOSS_RIDE.view.titleSize, BOSS_RIDE.view.textLife);
+  G.banner = { kind: 'info', title: BOSS_RIDE_TEXT.title, sub: `拖动开着它碾虫 · 冲刺＝${BOSS_RIDE_TEXT[e.kind]} · 超载＝${BOSS_RIDE_TEXT.jump}`,
+    t: BOSS_RIDE.view.mountLife, max: BOSS_RIDE.view.mountLife, col: BOSS_RIDE.view.color };
+  rideRiver(active);
+  return true;
+}
+// 列的横向偏移在接近视口角落时可能越过边界，必要时继续沿行进方向外推。
+function rideRiver(active) {
+  const cfg = BOSS_RIDE.river, ca = Math.cos(active.heading), sa = Math.sin(active.heading), center = G.cam || G.player;
+  while (active.river < cfg.waves.length && active.t + 1e-9 >= cfg.waves[active.river].at) {
+    const wave = cfg.waves[active.river++], [x0, y0] = ringPos(active.heading);
+    for (let i = 0; i < wave.count; i++) {
+      const side = (i % wave.cols - (wave.cols - 1) / 2) * cfg.gapX, ahead = Math.floor(i / wave.cols) * cfg.gapY;
+      let x = x0 + ca * ahead - sa * side, y = y0 + sa * ahead + ca * side;
+      if (Math.abs(x - center.x) <= VW / 2 && Math.abs(y - center.y) <= VH / 2) {
+        const tx = Math.abs(ca) > 1e-9 ? ((ca > 0 ? VW / 2 + cfg.outsidePad : -VW / 2 - cfg.outsidePad) - (x - center.x)) / ca : Infinity;
+        const ty = Math.abs(sa) > 1e-9 ? ((sa > 0 ? VH / 2 + cfg.outsidePad : -VH / 2 - cfg.outsidePad) - (y - center.y)) / sa : Infinity;
+        const push = Math.max(0, Math.min(tx, ty)); x += ca * push; y += sa * push;
+      }
+      if (spawnEnemy('crawler', x, y)) active.stats.riverSpawned++;
+    }
+  }
+}
+function rideCrushCandidate(e, active) {
+  const boss = active.boss, cfg = BOSS_RIDE.crush;
+  if (e.boss || e.colossusJoint || e.amalgam || e.amalgamRunner || e.fixedTarget || e.kicked || e.entering || juggleAirborne(e) ||
+      (e.x - boss.x) ** 2 + (e.y - boss.y) ** 2 >= (boss.r + e.r * cfg.reach) ** 2) return;
+  const elite = e.elite || e.tideCore, last = active.crushedAt.get(e.id), charge = active.move;
+  let ratio = 0;
+  if (elite) {
+    if (last === undefined || active.t - last + 1e-9 >= cfg.eliteEvery) { ratio += cfg.eliteRatio; active.crushedAt.set(e.id, active.t); active.stats.eliteHits++; }
+    if (charge && !charge.hits.has(e.id)) { ratio += BOSS_RIDE.move.scorpion.eliteRatio; charge.hits.add(e.id); }
+    if (!(ratio > 0)) return;
+  }
+  const a = Math.atan2(e.y - boss.y, e.x - boss.x), before = active.crushed;
+  hitEnemy(e, elite ? e.maxHp * ratio : e.hp + e.maxHp, { source: 'ride:crush', flat: true, crit: false, kx: Math.cos(a) * cfg.knock, ky: Math.sin(a) * cfg.knock });
+  if (e.dead) { active.crushed++; active.stats.crushed = active.crushed; }
+  if (Math.floor(active.crushed / BOSS_RIDE.blast.every) > Math.floor(before / BOSS_RIDE.blast.every)) active.crushMilestoneAt = active.t;
+}
+function rideSteer(dt, mx, my) {
+  if (!rideInputAllowed() || !Number.isFinite(dt) || !(dt > 0)) return;
+  const active = G.ride.active, e = active.boss, p = G.player;
+  if (e.dead || !(e.hp > 0)) { rideAbort(); return; }
+  if (active.jumpQueued) { rideFinish(active.jumpQueued); return; }
+  const elapsed = Math.min(dt, Math.max(0, BOSS_RIDE.duration - active.t));
+  active.t += elapsed; active.cd = Math.max(0, active.cd - elapsed); G.ride.cd = active.cd;
+  let steeringDt = elapsed;
+  if (active.move) {
+    const stepDt = Math.min(elapsed, active.move.left), speed = BOSS_RIDE.move.scorpion.speed;
+    active.vx = Math.cos(active.move.heading) * speed; active.vy = Math.sin(active.move.heading) * speed;
+    e.x += active.vx * stepDt; e.y += active.vy * stepDt; active.heading = active.move.heading;
+    active.move.left = Math.max(0, active.move.left - stepDt); steeringDt -= stepDt;
+    if (stepDt > 0) smoke(e.x - Math.cos(active.heading) * e.r, e.y - Math.sin(active.heading) * e.r, BOSS_RIDE.view.smokeSize, BOSS_RIDE.view.smokeLife);
+  }
+  if (steeringDt > 0) {
+    const magnitude = Math.hypot(mx || 0, my || 0), manual = magnitude > PLAYER_INPUT.deadzone;
+    const speed = BOSS_RIDE.speed[active.kind], factor = Math.min(1, steeringDt * BOSS_RIDE.accel);
+    const x = manual ? mx / Math.max(1, magnitude) : Math.cos(active.heading) * BOSS_RIDE.cruise;
+    const y = manual ? my / Math.max(1, magnitude) : Math.sin(active.heading) * BOSS_RIDE.cruise;
+    active.vx += (x * speed - active.vx) * factor; active.vy += (y * speed - active.vy) * factor;
+    e.x += active.vx * steeringDt; e.y += active.vy * steeringDt;
+    if (Math.hypot(active.vx, active.vy) > 1e-6) active.heading = Math.atan2(active.vy, active.vx);
+  }
+  e.ang = angLerp(e.ang || 0, active.heading, Math.min(1, elapsed * BOSS_RIDE.turn));
+  e.kneel.left = Math.max(0, BOSS_RIDE.duration - active.t);
+  p.x = e.x; p.y = e.y; p.vx = active.vx; p.vy = active.vy;
+  rideRiver(active); query(e.x, e.y, e.r + 40, rideCrushCandidate, active);
+  if (active.move?.left <= 1e-9) active.move = null;
+  if (active.t - active.trailAt + 1e-9 >= BOSS_RIDE.view.trailEvery) {
+    active.trailAt = active.t; active.trail.push({ x: e.x, y: e.y });
+    if (active.trail.length > BOSS_RIDE.view.trail) active.trail.shift();
+  }
+  active.stats.hurt = Math.max(0, rideHurtTotal() - active.hurtAt0);
+  if (active.t + 1e-9 >= BOSS_RIDE.duration) { rideJump('timeout'); rideFinish('timeout'); }
+}
+function rideDash() {
+  if (!rideInputAllowed()) return false;
+  const active = G.ride.active, cfg = BOSS_RIDE.move[active.kind], e = active.boss;
+  if (active.cd > 0 || active.jumpQueued) return false;
+  active.cd = cfg.cd; G.ride.cd = cfg.cd; active.stats.moves++;
+  if (active.kind === 'scorpion') active.move = { heading: e.ang || 0, left: cfg.time, hits: new Set() };
+  else for (let i = 0; i < cfg.count; i++) {
+    const angle = i / cfg.count * TAU;
+    G.pbullets.push({ x: e.x, y: e.y, vx: Math.cos(angle) * cfg.speed, vy: Math.sin(angle) * cfg.speed, r: cfg.r, dmg: cfg.damage * G.stats.dmg,
+      life: cfg.life, pierce: cfg.pierce, hit: [], col: '120,200,255', big: true, source: 'ride:ring' });
+  }
+  return true;
+}
+function rideJump(reason = 'jump') {
+  if (!rideInputAllowed() || !['jump', 'timeout'].includes(reason)) return false;
+  G.ride.active.jumpQueued ||= reason; return true;
+}
+function rideBlastRadius(crushed) { const cfg = BOSS_RIDE.blast; return Math.min(cfg.max, cfg.radius + cfg.step * Math.floor(Math.max(0, crushed) / cfg.every)); }
+function rideFinish(reason) {
+  const active = G.ride.active; if (!active) return;
+  const e = active.boss, p = G.player, stats = active.stats, radius = rideBlastRadius(active.crushed), offset = e.r + p.r + BOSS_RIDE.dismountPad;
+  e.kneel.outcome = 'ride';
+  p.ghosts.push({ x: p.x, y: p.y, a: p.angle, la: p.legA, ph: p.ph, life: BOSS_RIDE.view.ghostLife });
+  p.x = e.x - Math.cos(active.heading) * offset; p.y = e.y - Math.sin(active.heading) * offset; p.vx = p.vy = 0;
+  p.ghosts.push({ x: p.x, y: p.y, a: p.angle, la: p.legA, ph: p.ph, life: BOSS_RIDE.view.ghostLife });
+  p.invuln = Math.max(p.invuln, BOSS_RIDE.dismountInvuln);
+  stats.endAt = G.t; stats.reason = reason; stats.crushed = active.crushed; stats.hurt = Math.max(0, rideHurtTotal() - active.hurtAt0); stats.blastRadius = radius;
+  const before = G.report?.killsByWeapon?.['ride:blast'] || 0;
+  finishBossBy(e, 'ride:blast');
+  explode(e.x, e.y, radius, BOSS_RIDE.blast.damage * G.stats.dmg, '120,200,255', true, 0, 'ride:blast');
+  stats.blastKills = Math.max(0, (G.report?.killsByWeapon?.['ride:blast'] || 0) - before - 1);
+  stats.chestAt = { x: e.x, y: e.y }; stats.overloadAtEnd = p.overload;
+  if (e.kneel.owner === 'mercy') G.mercyStats.endAt = G.t;
+  active.crushedAt.clear(); active.move?.hits.clear(); G.ride.active = null; G.ride.cd = 0;
+  G.banner = { kind: 'info', title: BOSS_RIDE_TEXT.blast, sub: BOSS_RIDE_TEXT.blastSub, t: BOSS_RIDE.view.blastLife, max: BOSS_RIDE.view.blastLife, col: BOSS_RIDE.view.color };
+}
+function rideAbort() {
+  const active = G?.ride?.active; if (!active) return false;
+  active.stats.endAt = G.t; active.stats.reason = 'abort'; active.stats.hurt = Math.max(0, rideHurtTotal() - active.hurtAt0); active.stats.overloadAtEnd = G.player.overload;
+  active.crushedAt.clear(); active.move?.hits.clear(); G.ride.active = null; G.ride.cd = 0;
+  if (standUpBoss(active.boss)) G.rideStats.standUps++;
+  G.player.vx = G.player.vy = 0;
+  G.rideStats.aborts++; return true;
+}
+function rideHurtMul() { return rideActive() ? BOSS_RIDE.hurtMul : 1; }
+function rideSalvage(e) {
+  if (e?.kneel?.outcome !== 'ride') return null;
+  const broken = rideBrokenParts(e).map(q => q.id), rest = (e.parts || []).filter(q => !q.broken).map(q => q.id);
+  return { kind: e.kind, parts: [...broken, ...rest], rideBonus: rest };
+}
+function rideDeathDrop(e) {
+  if (e?.kneel?.outcome !== 'ride') return;
+  const extra = rideBrokenParts(e).length === (BOSS_PARTS[e.kind]?.length || 0) ? BOSS_RIDE.fullPartsCoins / BOSS_RIDE.coinValue : 0;
+  const count = (BOSS_RIDE.bonusCoins[e.kind] || 0) + extra;
+  for (let i = 0; i < count; i++) {
+    const angle = i * BOSS_RIDE.goldenAngle, radius = BOSS_RIDE.coinScatter * Math.sqrt((i + .5) / count);
+    drop('coin', e.x + Math.cos(angle) * radius, e.y + Math.sin(angle) * radius, BOSS_RIDE.coinValue);
+  }
+}
+function rideSkillView(kind, view) {
+  const active = G?.ride?.active;
+  if (active) {
+    const skin = { ...view, badge: undefined, charges: undefined, chargeProgress: undefined, form: false, weak: false, modName: undefined, accessibleLabel: undefined, mercy: false, ride: 'on' };
+    if (kind === 'over') return { ...skin, state: 'ready', label: BOSS_RIDE_TEXT.jump, text: `${Math.max(0, BOSS_RIDE.duration - active.t).toFixed(1)} 秒`, progress: 1 };
+    const cd = BOSS_RIDE.move[active.kind].cd;
+    return { ...skin, state: active.cd > 0 ? 'cooldown' : 'ready', label: BOSS_RIDE_TEXT[active.kind], text: active.cd > 0 ? `${active.cd.toFixed(1)} 秒` : '就绪', progress: 1 - active.cd / cd };
+  }
+  return kind === 'dash' && rideCanMount(G?.boss) ? { ...view, label: BOSS_RIDE_TEXT.dash, mercy: false, ride: 'cue' } : view;
+}
+function rideEndText(run) {
+  const stats = run?.rideStats;
+  return stats?.mounts ? `${stats.mounts} 次 · 压死 ${stats.rides.reduce((n, item) => n + item.crushed, 0)}` : '';
+}
+function debugRide(cmd) {
+  if (!G?.ride) return false;
+  G.rideEnabled = true;
+  const boss = G.boss;
+  if (cmd === 'jump') return rideJump('jump');
+  if (!boss || boss.dead || boss.final || !BOSS_RIDE.bosses.includes(boss.kind)) return false;
+  if (cmd === 'parts') {
+    const ids = boss.kind === 'scorpion' ? ['claw', 'legs'] : ['crown', 'sacs'];
+    for (const id of ids) { const q = boss.parts?.find(item => item.id === id); if (q && !q.broken) breakBossPartNow(boss, q); }
+    return true;
+  }
+  if (cmd === 'kneel') {
+    rideArmBoss(boss);
+    if (boss.kneel?.phase !== 'armed') return false;
+    boss.hp = Math.min(boss.hp, boss.kneel.lockHp); boss.kneel.pending = true;
+    return beginBossKneel(boss);
+  }
+  if (cmd === 'mount') return rideMount(boss);
+  return false;
+}
+
 // ---- src/game/forms.js ----
 // 变身状态机：评级同步率、形态接管、护甲和终结能量，所有动作计时都停在暂停界面。
 
@@ -8304,7 +8566,7 @@ function formLive() { return !!(G?.form && !G.practice && G.state === 'playing' 
 function formImplemented() { return !!(FORM_DEFS[G?.mech?.id]?.enabled && FORM_HANDLERS[G?.mech?.id]); }
 function formBlocked() {
   if (['falling', 'landing'].includes(G?.actFall?.phase)) return true;
-  return !!(formActive() || G?.boss?.entering || timeStopActive() || G?.player?.rootT > 0 || skillDropActive() || G?.hitStop > 0 || G?.form?.freezeRemaining > 0 || clashActive());
+  return !!(formActive() || G?.boss?.entering || timeStopActive() || G?.player?.rootT > 0 || skillDropActive() || G?.hitStop > 0 || G?.form?.freezeRemaining > 0 || clashActive() || rideActive());
 }
 function unlockForm() {
   if (!G?.form || G.practice || G.form.unlocked) return false;
@@ -8873,9 +9135,10 @@ function mercyArmBoss(e) {
   G.mercyStats.armAt = G.t;
   return true;
 }
-function mercyKneelCue(e) { return e.kneel.eye === 'red' ? MERCY_TEXT.redCue : MERCY_TEXT.greenCue; }
+function mercyKneelCue(e) { return rideCanMount(e) ? BOSS_RIDE_TEXT.redCue : e.kneel.eye === 'red' ? MERCY_TEXT.redCue : MERCY_TEXT.greenCue; }
 function mercyKneelHint(e) {
   if (!bossBegging(e) || G.practice) return;
+  if (rideCanMount(e)) { rideKneelHint(e); return; }
   const hints = meta.hints && typeof meta.hints === 'object' ? meta.hints : (meta.hints = {});
   if (hints.mercyKneel) return;
   hints.mercyKneel = true; saveMeta();
@@ -8893,6 +9156,7 @@ function mercyBegin(e) {
   mercyKneelHint(e);
 }
 function mercyFinish(e) {
+  if (rideCanMount(e)) { G.mercyStats.outcome = 'ride'; return rideMount(e); }
   e.kneel.outcome = 'finish'; e.kneel.phase = 'done'; e.kneel.left = 0;
   G.mercyStats.outcome = 'finish'; G.mercyStats.finishDelay = Math.max(0, G.t - e.kneel.at); G.mercyStats.endAt = G.t;
   feedback('execute', { x: e.x, y: e.y, angle: Math.atan2(e.y - G.player.y, e.x - G.player.x) });
@@ -9106,6 +9370,7 @@ function mercySheetText() {
 function mercyEndText(run) {
   const stats = run?.mercyStats;
   if (!stats?.outcome) return '';
+  if (stats.outcome === 'ride') return BOSS_RIDE_TEXT.mercyEnd;
   if (stats.outcome === 'finish') return MERCY_TEXT.finishEnd;
   if (stats.ally.at !== null) return MERCY_TEXT.repayEnd;
   if (stats.grudge.killed) return MERCY_TEXT.reclaimedEnd;
@@ -9151,11 +9416,11 @@ function armBossKneel(e, { owner, lockRatio, duration }) {
   return true;
 }
 function bossKneeling(e) { return e?.kneel?.phase === 'down'; }
-function bossHeld(e) { return bossKneeling(e); }
-function kneelUntargetable(e) { return bossKneeling(e) && MERCY_RULES.kneel.retarget; }
+function bossHeld(e) { return bossKneeling(e) || e?.kneel?.phase === 'ridden'; }
+function kneelUntargetable(e) { return e?.kneel?.phase === 'ridden' || bossKneeling(e) && MERCY_RULES.kneel.retarget; }
 function bossBegging(e) { return e?.kneel?.phase === 'down' && e.kneel.owner === 'mercy'; }
 // 分派在调用时读取，避免构建和模拟拼接导入环时碰到尚未初始化的常量。
-function kneelHandler(e) { return e.kneel.owner === 'mercy' ? MERCY_KNEEL : null; }
+function kneelHandler(e) { return e.kneel.owner === 'mercy' ? MERCY_KNEEL : e.kneel.owner === 'ride' ? RIDE_KNEEL : null; }
 function kneelClampDamage(e, dmg) {
   const k = e?.kneel;
   if (!k || k.phase !== 'armed' || kneelHandler(e)?.allow?.(e) === false) return dmg;
@@ -9179,6 +9444,7 @@ function beginBossKneel(e) {
   return true;
 }
 function updateBossKneel(e, dt) {
+  if (e?.kneel?.phase === 'ridden') return true;
   if (e?.kneel?.pending) beginBossKneel(e);
   if (!bossKneeling(e)) return false;
   const k = e.kneel;
@@ -9200,8 +9466,15 @@ function kneelDashContact(x0, y0, x1, y1) {
 }
 function standUpBoss(e) {
   if (!e?.kneel || e.dead || !(e.hp > 0)) return false;
+  const pushPlayer = e.kneel.phase === 'ridden' || e.kneel.owner === 'ride';
   e.kneel.phase = 'done'; e.kneel.pending = false; e.kneel.left = 0; e.kneel.outcome = 'stand';
   kneelClearState(e); nextBossPhase(e);
+  // 骑乘中断或本线跪地超时都避免贴身撞伤；旧饶命站起行为保留。
+  if (pushPlayer && G?.player) {
+    const p = G.player, angle = Math.atan2(p.y - e.y, p.x - e.x), distance = e.r + p.r + BOSS_RIDE.standPad;
+    if (Math.hypot(p.x - e.x, p.y - e.y) < distance) { p.x = e.x + Math.cos(angle) * distance; p.y = e.y + Math.sin(angle) * distance; }
+    p.invuln = Math.max(p.invuln, BOSS_RIDE.dismountInvuln);
+  }
   return true;
 }
 function kneelLeft(e) { return bossKneeling(e) ? Math.max(0, e.kneel.left) : 0; }
@@ -10880,7 +11153,7 @@ function director(dt) {
       }
     }
   }
-  const rate = spawnRate(t, !!(G.boss || G.warn)) * runMul('spawn'), cap = spawnCap(t);
+  const rate = spawnRate(t, !!(G.boss || G.warn) && !rideActive()) * runMul('spawn'), cap = spawnCap(t);
   G.spawnAcc += rate * dt;
   updateFormations(dt); // 敌军编队：排队、进场（进场时从 spawnAcc 扣成员数）、站位、齐射计时、散队
   while (G.spawnAcc >= 1) {
@@ -10903,6 +11176,7 @@ function spawnBoss(i) {
   const e = { id: G.eid++, boss: true, kind: b.kind, final: !!b.final, name: b.name, img: b.img, x: p.x, y: p.y - VH / 2 - b.size * .6, r: b.r, size: b.size, hp: b.hp, maxHp: b.hp, speed: b.speed, dmg: 22, xp: 0, col: b.col || (b.kind === 'scorpion' ? '255,40,80' : '190,90,255'), kx: 0, ky: 0, flash: 0, ang: PI / 2, st: 'enter', stT: 0, seq: -1, sub: 0, n: 0, spA: 0, sumT: 6, q: 0, sawT: 0, entering: true, guard: b.guard ? { ...b.guard, baseHp: b.hp } : null };
   applyRunModifiers(e); initBossParts(e, b.hp);
   if (G.mercyEnabled) mercyArmBoss(e);
+  if (G.rideEnabled) rideArmBoss(e);
   if (b.kind === 'fortress') initFortressBoss(e); // 从机甲正上方的地下顶出来，不从屏外走进来
   G.enemies.push(e); G.boss = e; MUS.intensity = 2;
   G.banner = { kind: 'boss', title: b.name, sub: b.final ? '最终决战 · 击破它即可突围' : '击败首领获得补给箱', t: 2.4, max: 2.4, col: e.col };
@@ -12563,6 +12837,7 @@ const CINEMA_SHOTS = Object.freeze({
   emperor: Object.freeze({ priority: 5.5, zoom: 1.1, rise: .2, hold: 1.5, dur: 2.5, bars: .08 }),
   bossKill: Object.freeze({ priority: 4, zoom: 1.1, rise: .12, hold: .9, dur: 1.6 }),
   form: Object.freeze({ priority: 3.5, zoom: 1.12, rise: .12, hold: .45, dur: 1.1 }),
+  ride: Object.freeze({ priority: 3.4, zoom: 1.12, rise: .12, hold: .5, dur: 1.1, speedLines: 14 }),
   timeStop: Object.freeze({ priority: 3, zoom: 1.08, rise: .15, hold: .15, dur: 2, speedLines: 18 }),
   partBreak: Object.freeze({ priority: 2, zoom: 1.07, rise: .06, hold: .2, dur: .7, invertFrames: 2 }),
   bossEnrage: Object.freeze({ priority: 1, rise: .12, hold: .65, dur: .8, bars: .07 }),
@@ -13894,7 +14169,7 @@ function syncChestOk() { $('#chestOk').disabled = !chestRevealed || !!chestSalva
 function salvageResonance(moduleId) { const text = resonanceHint(moduleId); return text ? `<small class="salvage-resonance">${text}</small>` : ''; }
 function salvageCard(c) {
   const m = BOSS_MODULES[c.module], on = chestSalvagePick === c.module;
-  return `<button type="button" class="salvage-card${on ? ' sel' : ''}" data-module="${c.module}" aria-pressed="${on}"><img src="assets/sprites/${m.icon}.webp" alt="" width="44" height="44"><span class="salvage-copy"><b>${m.name}<em>拆自${c.partName}</em></b><small>${bossModuleDesc(c.module)}</small>${salvageResonance(c.module)}</span></button>`;
+  return `<button type="button" class="salvage-card${on ? ' sel' : ''}" data-module="${c.module}" aria-pressed="${on}"><img src="assets/sprites/${m.icon}.webp" alt="" width="44" height="44"><span class="salvage-copy"><b>${m.name}<em>${c.bonus ? BOSS_RIDE_TEXT.reward + ' · ' : '拆自'}${c.partName}</em></b><small>${bossModuleDesc(c.module)}</small>${salvageResonance(c.module)}</span></button>`;
 }
 function renderSalvage(salvage, scrap) {
   const el = $('#chestSalvage'), choices = chestSalvageOpen ? salvageChoices(salvage) : [];
@@ -14041,6 +14316,7 @@ function finishEndRun(win) {
   $('#endMoreStats').innerHTML = stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('时停', run.timeStops || 0) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) + stat('迫击借刀', run.mortarStats?.borrowedKills || 0) + stat('借巨兽踩死', `${run.colossusStats?.stompKills || 0} 只`) +
     (!practice ? stat('最高评级', STYLE_RANK.labels[style?.maxRank] || STYLE_RANK.labels[0]) + stat('S 档以上时长', `${Number.isFinite(style?.highSeconds) ? Math.max(0, style.highSeconds).toFixed(1) : '0.0'} 秒`) + stat('评级奖金', `${styleBonus} 金币`) : '') +
     (!practice && mercyEndText(run) ? stat('饶它一命', mercyEndText(run)) : '') +
+    (!practice && rideEndText(run) ? stat(BOSS_RIDE_TEXT.stat, rideEndText(run)) : '') +
     (!practice && fastestRecord ? `<div class="stat record"><small>最快突围${run.tier ? `（${tierName(run.tier)}）` : ''}${fastest ? ' · 新纪录' : ''}</small><b class="num">${fmtTime(fastestRecord)}</b></div>` : '');
   $('#endMore').open = false;
   // 金币卡片下面接「下一个目标」，进度条从结算前涨到结算后；金币够了直接去机库
@@ -14573,6 +14849,7 @@ function newRun({ practice = false, daily = null, bountyChoice = null } = {}) {
   initRunModifiers(daily); initProps(); initCordState(); initTimeStop(); initTide(); initMortarState();
   initFormations(); // 敌军编队：要在 initZones() 之前（classic 测试在 initZones 之后把开关钉成关）
   initMercy();
+  initRide();
   initSnowball();
   initNight(); initActFall(); initBossPool(); initZones(); initZoneHazards();
   initFusionState(); initResonanceState(); // 合体技、模块共鸣的运行状态；两个模块的钩子在这里显式导入
@@ -15306,7 +15583,7 @@ function installBossModule(id) {
 // 宝箱里能选的模块：只给本场打碎的部位，槽满或已装同款的不给
 function salvageChoices(salvage) {
   if (!salvage?.parts?.length) return [];
-  return salvage.parts.map(partId => BOSS_PARTS[salvage.kind]?.find(d => d.id === partId)).filter(d => d && canInstallBossModule(d.module)).map(d => ({ part: d.id, partName: d.name, module: d.module }));
+  return salvage.parts.map(partId => BOSS_PARTS[salvage.kind]?.find(d => d.id === partId)).filter(d => d && canInstallBossModule(d.module)).map(d => ({ part: d.id, partName: d.name, module: d.module, ...(salvage.rideBonus ? { bonus: salvage.rideBonus.includes(d.id) } : {}) }));
 }
 // 结算拆解战利品：选了模块就装上；没有可选的（一个都没打碎、槽满）给残骸回收金币。返回结果说明。
 function resolveSalvage(salvage, moduleId = null) {
@@ -15427,9 +15704,10 @@ function bossDeath(e, xpMul = 1, deathVisual = null) {
   G.boss = null; G.bossKills++; MUS.intensity = 1;
   for (const b of G.ebullets) b.dead = true;
   if (e.kind === 'fortress') clearFortressShells();
-  if (mercyBossSpared(e)) mercySpareDrop(e); else drop('chest', e.x, e.y, GROWTH.bossChestMinItems, bossSalvage(e));
+  if (mercyBossSpared(e)) mercySpareDrop(e); else drop('chest', e.x, e.y, GROWTH.bossChestMinItems, rideSalvage(e) || bossSalvage(e));
   for (let i = 0; i < 6; i++) drop('xp', e.x + rand(-50, 50), e.y + rand(-50, 50), 25 * xpMul);
   for (let i = 0; i < 15; i++) drop('coin', e.x + rand(-70, 70), e.y + rand(-70, 70), 2);
+  rideDeathDrop(e);
   drop('heal', e.x + 40, e.y);
   // 最终首领倒下后场上金币全部吸过来，倒计时结束前能捡完
   if (e.final) { G.victoryT = 3.2; G.won = true; for (const q of G.pickups) if (q.kind === 'coin') { q.mag = true; q.t = Math.max(q.t, .3); } }
@@ -15894,6 +16172,7 @@ const DASH_T = .17, DASH_V = 840;
 // dirX/dirY：甩动手势给出的方向，优先于当前输入和方向记忆。
 function tryDash(dirX, dirY) {
   if (['tremor', 'entrance', 'ending'].includes(G?.emperor?.stage)) return;
+  if (rideActive()) { rideDash(); return; }
   if (clashTap()) return;
   if (trySkillRewind()) return;
   if (skillDropActive()) return;
@@ -15913,6 +16192,7 @@ function tryDash(dirX, dirY) {
 function tryOverload() {
   if (['tremor', 'entrance', 'ending'].includes(G?.emperor?.stage)) return;
   if (clashActive()) return;
+  if (rideActive()) { rideJump('jump'); return; }
   if (G.form?.active) return tryFormFinisher();
   const p = G && G.player; if (!p || G.state !== 'playing' || p.hp <= 0 || G.endT > 0) return;
   // 超载中再按：首领在场时排热，剩余时间压成一发熔核炮
@@ -15936,7 +16216,7 @@ function updatePlayer(dt, rdt, worldDt = dt) {
   if (clashActive()) return;
   const p = G.player, st = G.stats, over = p.overT > 0;
   // 击毁演出期间不再移动或回血；紧急重启统一由对局更新处理。
-  if (p.hp <= 0 || G.endT > 0) { p.vx = p.vy = 0; p.dashT = 0; decayPlayerEffects(dt, rdt); return; }
+  if (p.hp <= 0 || G.endT > 0) { p.vx = p.vy = 0; p.dashT = 0; decayPlayerEffects(dt, rdt); rideAbort(); return; }
   updateMechTraits(dt);
   let mx = IN.mx, my = IN.my; const k = keyVec(); mx += k[0]; my += k[1];
   const m = Math.hypot(mx, my);
@@ -15944,7 +16224,8 @@ function updatePlayer(dt, rdt, worldDt = dt) {
   if (m > PLAYER_INPUT.deadzone) { p.lastMoveX = mx / m; p.lastMoveY = my / m; p.lastMoveAt = G.t; }
   if (m > 1) { mx /= m; my /= m; }
   p.moveInX = mx; p.moveInY = my; p.moveInPress = IN.downAt ?? 0;
-  if (skillDropActive()) p.vx = p.vy = 0;
+  if (rideActive()) rideSteer(dt, mx, my);
+  else if (skillDropActive()) p.vx = p.vy = 0;
   else if (p.dashT > 0) {
     // 液压腿模块只加冲刺速度：冲得更远，时长、无敌和极限闪避窗口不变
     const dashV = DASH_V * moduleDashSpeedMul() * (G.form?.active ? FORM_DEFS[G.mech.id].dashDistanceMul : 1);
@@ -15975,10 +16256,10 @@ function updatePlayer(dt, rdt, worldDt = dt) {
     p.legA = angLerp(p.legA, back ? mv + PI : mv, Math.min(1, dt * 10)); p.walkDir = back ? -1 : 1;
   }
   const R = RIG[G.mech.id], stepLen = R ? R.stride * 3.2 : 40;
-  p.amp = lerp(p.amp, p.dashT > 0 ? 0 : clamp(sp / st.speed, 0, 1), Math.min(1, dt * 8));
-  if (p.dashT <= 0) p.ph += sp * dt / stepLen * PI * p.walkDir;
+  p.amp = lerp(p.amp, p.dashT > 0 || rideActive() ? 0 : clamp(sp / st.speed, 0, 1), Math.min(1, dt * 8));
+  if (p.dashT <= 0 && !rideActive()) p.ph += sp * dt / stepLen * PI * p.walkDir;
   const cs = Math.cos(p.ph);
-  if (p.amp > .3 && (cs > 0) !== (p.lastCs > 0)) footstep(p.lastCs > 0 ? -1 : 1);
+  if (!rideActive() && p.amp > .3 && (cs > 0) !== (p.lastCs > 0)) footstep(p.lastCs > 0 ? -1 : 1);
   p.lastCs = cs;
   decayPlayerEffects(dt, rdt);
   if (over && Math.random() < .5) part(p.x + rand(-16, 16), p.y + rand(-16, 16), rand(-40, 40), rand(-40, 40), .4, rand(3, 6), '255,140,40');
@@ -16053,6 +16334,7 @@ function hurtPlayer(dmg, sx, sy, cause = 'unknown') {
   // 护盾命中也消耗敌弹，但不扣生命；电磁风暴里护盾只挡一半，剩下的照常结算。
   if (absorbMechHit() || absorbStealHit()) { const shieldMul = zoneMul('shield'); if (shieldMul >= 1) return true; dmg *= 1 - shieldMul; }
   dmg = incomingDamage(dmg, G.t, G.stats.armor + talentArmorBonus(), p.overT > 0) * runMul('dmgTaken');
+  dmg *= rideHurtMul();
   dmg = reactMechArmor(dmg);
   const formArmorHit = !!G.form?.active;
   if (formArmorHit) dmg = absorbFormHit(dmg);
@@ -17216,12 +17498,12 @@ function hudToastTop() {
 }
 function drawIndicators() {
   const list = [], relay = G.relay, p = G.player;
-  if (G.boss && !G.boss.dead && !(G.boss.hp <= 0) && !G.boss.underground) {
+  if (G.boss && !G.boss.dead && !(G.boss.hp <= 0) && !G.boss.underground && G.boss.kneel?.phase !== 'ridden') {
     const boss = G.boss, weak = boss.vulnerableT > 0;
     const elapsed = Math.max(0, (boss.weakWindow || boss.vulnerableT) - (boss.vulnerableT || 0));
     const pulse = weak && G.settings?.flashes !== false ? 1 + Math.sin(elapsed * BOSS_PRESENTATION.weakPulseRate) * BOSS_PRESENTATION.indicatorPulseAmount : 1;
-    const begging = bossBegging(boss);
-    list.push([boss.x, boss.y, begging ? MERCY_RULES.eyes[boss.kneel.eye] : weak ? BOSS_PRESENTATION.weakColor : '255,70,100', begging ? '求饶' : weak ? `破绽 ×${boss.weakMul || 1}` : '首领', pulse]);
+    const begging = bossBegging(boss), rideDown = boss.kneel?.phase === 'down' && boss.kneel.owner === 'ride';
+    list.push([boss.x, boss.y, rideDown ? BOSS_RIDE.view.color : begging ? MERCY_RULES.eyes[boss.kneel.eye] : weak ? BOSS_PRESENTATION.weakColor : '255,70,100', rideDown ? '跪地' : begging ? '求饶' : weak ? `破绽 ×${boss.weakMul || 1}` : '首领', pulse]);
   }
   if (relay && (relay.status === 'available' || relay.status === 'active')) list.push([relay.x, relay.y, '63,230,255', relay.type === 'hunt' ? '围猎' : relay.type === 'convoy' ? '车队' : relay.type === 'blackout' ? '封锁' : '中继']);
   let chest = null, chestDist = Infinity;
@@ -21616,6 +21898,61 @@ function drawFormationWarning(c, pending, flashes) {
   c.restore();
 }
 
+// ---- src/render/boss-ride.js ----
+// 驾驭首领：跪地蓝环、车辙拖尾、自爆范围、蓝眼与背上机甲的抬升
+
+function drawRideGround(c, vis, Z) {
+  const e = G?.boss, active = G?.ride?.active, col = BOSS_RIDE.view.color;
+  if (active) {
+    const trail = active.trail || [], boss = active.boss;
+    if (trail.length > 1) {
+      c.save(); c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = boss.r * .5;
+      for (let i = 1; i < trail.length; i++) {
+        const p0 = trail[i - 1], p1 = trail[i];
+        if (!vis(p1.x, p1.y, boss.r)) continue;
+        c.strokeStyle = `rgba(${col},${(.35 * i / trail.length).toFixed(3)})`;
+        c.beginPath(); c.moveTo(p0.x, p0.y); c.lineTo(p1.x, p1.y); c.stroke();
+      }
+      c.restore();
+    }
+    const radius = rideBlastRadius(active.crushed);
+    if (vis(boss.x, boss.y, radius)) {
+      c.save(); c.strokeStyle = `rgba(${col},.25)`; c.lineWidth = 2 / Z; c.setLineDash([10 / Z, 8 / Z]);
+      c.beginPath(); c.arc(boss.x, boss.y, radius, 0, TAU); c.stroke(); c.restore();
+    }
+  }
+  if (!e || e.dead || e.kneel?.phase !== 'down' || e.kneel.owner !== 'ride' || !vis(e.x, e.y, e.size)) return;
+  const ratio = Math.max(0, Math.min(1, e.kneel.left / e.kneel.duration)), radius = e.r + 12;
+  c.save(); c.lineWidth = 4 / Z; c.strokeStyle = `rgba(${col},.22)`;
+  c.beginPath(); c.arc(e.x, e.y, radius, 0, TAU); c.stroke();
+  c.lineCap = 'round'; c.strokeStyle = `rgb(${col})`;
+  c.beginPath(); c.arc(e.x, e.y, radius, -PI / 2, -PI / 2 + TAU * ratio); c.stroke(); c.restore();
+}
+
+function drawRideFront(c, vis, Z) {
+  const active = G?.ride?.active, e = active?.boss || G?.boss;
+  if (!e || e.dead || !vis(e.x, e.y, e.size)) return;
+  const col = BOSS_RIDE.view.color;
+  if (active) {
+    c.save(); c.fillStyle = `rgb(${col})`; c.strokeStyle = '#092333'; c.lineWidth = 1.5 / Z;
+    for (const [lx, ly] of BOSS_RIDE.view.eyes[e.kind] || []) {
+      // 驾驶蓝眼置于背上机甲轮廓外，避免正确的躯干眼位被机甲上身遮住。
+      const eyeY = Math.min(ly, -(e.r + G.player.r) / e.size), [x, y] = bossLocalPoint(e, lx, eyeY);
+      c.beginPath(); c.ellipse(x, y, e.size * .023, e.size * .014, (e.ang || 0) + PI / 2, 0, TAU); c.fill(); c.stroke();
+    }
+    c.restore();
+  }
+  const text = active && active.crushMilestoneAt !== null && active.t - active.crushMilestoneAt <= BOSS_RIDE.view.counterLife
+    ? `×${Math.floor(active.crushed / BOSS_RIDE.blast.every) * BOSS_RIDE.blast.every} · ${BOSS_RIDE_TEXT.blastRadius} ${rideBlastRadius(active.crushed)}`
+    : !active && rideCanMount(e) ? BOSS_RIDE_TEXT.mountCue : '';
+  if (!text) return;
+  c.save(); c.font = `600 ${14 / Z}px "PingFang SC",sans-serif`; c.textAlign = 'center'; c.textBaseline = 'bottom';
+  c.lineWidth = 3 / Z; c.strokeStyle = '#07121c'; c.fillStyle = `rgb(${col})`;
+  c.strokeText(text, e.x, e.y - e.r - 20 / Z); c.fillText(text, e.x, e.y - e.r - 20 / Z); c.restore();
+}
+
+function rideMechLift(game) { return game?.ride?.active ? BOSS_RIDE.view.lift : 0; }
+
 // ---- src/render/world.js ----
 // 世界绘制：地面、敌人、机甲、子弹与特效，最后叠加屏幕空间的 HUD
 
@@ -21777,6 +22114,7 @@ function render(rdt) {
   drawMortarTelegraphs(ctx, G.mortarShells || [], p, { visible: vis, zoom: Z });
   drawFormationGround(ctx, vis, Z); // 敌军编队成员脚下的淡色小圈
   drawActFallGround(ctx, G, { x0, y0, x1, y1, settings, budget });
+  drawRideGround(ctx, vis, Z);
   // 敌人
   for (const e of G.enemies) {
     if (e.dead || e.colossusJoint || e.amalgam || e.underground || !vis(e.x, e.y, e.size)) continue; // underground：钻在地下的巢穴炮垒
@@ -21866,7 +22204,8 @@ function render(rdt) {
   // 玩家
   drawAllies(drawMech, vis);
   drawMercyWorld(ctx, vis, Z);
-  const m = G.mech, PS = 66, R = RIG[m.id], skillLift = skillModLift(G);
+  drawRideFront(ctx, vis, Z);
+  const m = G.mech, PS = 66, R = RIG[m.id], skillLift = skillModLift(G) + rideMechLift(G);
   if ((p.hp > 0 || G.endT < .15) && !(G.form?.hiddenRemaining > 0)) {
     const ss = R ? (R.body ?? R.ts) * 1.15 : PS; ctx.globalAlpha = .6; ctx.drawImage(SHADOW, p.x - ss / 2, p.y - ss / 2 + 6, ss, ss);
     const trail = dashTrailStyle(m, meta, settings, budget, !!worldReducedMotionMq?.matches);
@@ -22241,6 +22580,7 @@ function paintSkill(control, view) {
   // 排热时首领破绽亮起：按钮外圈闪两下（styles.css 按 data-weak 播一次动画）
   if (!!view.weak !== !!last.weak) { button.dataset.weak = view.weak ? 'true' : 'false'; last.weak = !!view.weak; }
   if (!!view.mercy !== !!last.mercy) { button.classList.toggle('mercy-dash-cue', !!view.mercy); last.mercy = !!view.mercy; }
+  if (view.ride !== last.ride) { button.classList.toggle('ride-dash-cue', view.ride === 'cue'); button.classList.toggle('ride-skill', view.ride === 'on'); last.ride = view.ride; }
   if (!!view.form !== !!last.form) { button.dataset.form = view.form ? 'true' : 'false'; last.form = !!view.form; }
   if (last.label !== view.label) { label.textContent = view.label; last.label = view.label; }
   if (last.text !== view.text) { status.textContent = view.text; last.text = view.text; }
@@ -22311,8 +22651,8 @@ function frame(now) {
       const clash = G.clash?.active;
       paintSkill(skillControls.dash, clash?.kind === 'boss'
         ? { state: 'ready', label: clash.hold ? '按住' : '连点', text: clash.hold ? `按住 ${Math.max(0, CLASH.duration - clash.heldTime).toFixed(1)} 秒` : `${clash.taps}/${CLASH.taps} 下`, progress: Math.min(1, (clash.hold ? clash.heldTime / CLASH.duration : clash.taps / CLASH.taps)).toFixed(2) }
-        : mercyDashView(skillStatus('dash', p, G.stats, G.endT > 0, null, skillModButtonState(G, 'dash'), form)));
-      paintSkill(skillControls.over, skillStatus('over', p, G.stats, G.endT > 0, ventReady() ? { weak: ventBoss().vulnerableT > 0 } : null, skillModButtonState(G, 'over'), form));
+        : rideSkillView('dash', mercyDashView(skillStatus('dash', p, G.stats, G.endT > 0, null, skillModButtonState(G, 'dash'), form))));
+      paintSkill(skillControls.over, rideSkillView('over', skillStatus('over', p, G.stats, G.endT > 0, ventReady() ? { weak: ventBoss().vulnerableT > 0 } : null, skillModButtonState(G, 'over'), form)));
       const formHidden = !form?.implemented || !form.unlocked || !!G.practice;
       if (skillControls.form.button.hidden !== formHidden) skillControls.form.button.hidden = formHidden;
       if (!formHidden) paintSkill(skillControls.form, skillStatus('form', p, G.stats, G.endT > 0, null, null, form));
@@ -22353,6 +22693,7 @@ window.__IR = { get G() { return G; }, get anomalyCatalog() { return ANOMALIES; 
 window.__IR.formation = id => debugFormation(id); // 浏览器试玩：本局立刻排一队编队（shield 盾枪队、raid 奔袭队、mortar 迫击队）
 window.__IR.mercy = cmd => debugMercy(cmd); // 浏览器试玩：求饶、绿眼、红眼、报恩和记仇
 window.__IR.snowball = (lv, evo, radius) => debugSnowball(lv, evo, radius);
+window.__IR.ride = cmd => debugRide(cmd); // 浏览器试玩：拆件、跪地、骑上和跳车
 })();
 </script>
 </body>
