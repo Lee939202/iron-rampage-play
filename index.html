@@ -184,6 +184,12 @@ footer.foot .btn{width:100%;max-width:440px;margin:0 auto}
 .card.fusion .ic{border-color:#c98cff;color:#e2c4ff}.card.fusion .nm em{color:#ffd678}
 .card .ic.duo{position:relative}.card .ic.duo svg.i{position:absolute;width:24px;height:24px}.card .ic.duo svg.i:first-child{left:3px;top:3px}.card .ic.duo svg.i:last-child{right:3px;bottom:3px;color:#e2c4ff}
 .card .ht.fusion{color:#d9b8ff}
+.card.relay-perk{position:relative;background:linear-gradient(100deg,#5c4008,#2b1d06 62%,#17110a);border-color:#ffd56e;box-shadow:inset 0 0 0 1px rgba(255,226,150,.45),inset 0 0 18px rgba(255,190,60,.18);animation:cardIn .22s ease-out forwards,relayPerkGlow 2.4s ease-in-out .3s infinite}
+.card.relay-perk::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,240,190,.2) 50%,transparent 62%);background-size:260% 100%;animation:relayPerkSheen 2.8s ease-in-out .35s infinite;pointer-events:none}
+.card.relay-perk .ic{color:#ffe08a;border-color:#ffd56e;background:#2a1c04}
+.card.relay-perk .nm{color:#fff1c8}.card.relay-perk .nm em{color:#ffd56e}.card.relay-perk .ds{color:#f3e2bb}.card.relay-perk .ht.pair{color:#e8cf95}
+@keyframes relayPerkSheen{0%{background-position:120% 0}55%,100%{background-position:-60% 0}}
+@keyframes relayPerkGlow{0%,100%{box-shadow:inset 0 0 0 1px rgba(255,226,150,.45),inset 0 0 14px rgba(255,190,60,.14)}50%{box-shadow:inset 0 0 0 1px rgba(255,236,180,.75),inset 0 0 26px rgba(255,200,80,.32)}}
 .card.skillmod.dash{border-color:#53bdd1;background:linear-gradient(100deg,#123541,#101b25 80%)}
 .card.skillmod.over{border-color:#cf9251;background:linear-gradient(100deg,#402d1c,#201b17 80%)}
 .card.skillmod.dash .ic,.card.skillmod.dash .nm em{color:#83e9fb;border-color:#53bdd1}
@@ -195,7 +201,7 @@ footer.foot .btn{width:100%;max-width:440px;margin:0 auto}
 .build-summary>span:last-child:nth-child(3),.build-summary>span:last-child:nth-child(4){font-size:11px}
 .choice-feedback,.choice-note,.relay-intro{margin:0;text-align:center;font-size:12px;line-height:1.5;color:#b1c1cf}
 .choice-feedback{min-height:18px;color:#9ee0e7}.choice-note{font-size:11px;color:#9dabb9}.relay-intro{color:#dbcb9d}
-.relay-overlay .ol-title{color:var(--gold)}
+.relay-overlay .ol-title{color:var(--gold);text-shadow:0 0 18px rgba(255,200,80,.45)}
 .recipe{padding:10px 0;border-bottom:1px solid #2d3947}.recipe-progress,.recipe-state{display:block;margin-top:3px;line-height:1.55}.recipe-state{font-size:11.5px;color:#9dafbf}.recipe.ready .recipe-state,.recipe.done .recipe-state{color:#e8cb76}.recipe.blocked .recipe-state{color:#e8a2a5}
 .recipe.fusion b{color:#d9b8ff}.recipe.fusion.ready .recipe-state,.recipe.fusion.done .recipe-state{color:#ffd678}.fusion-detail{margin-top:3px;font-family:var(--f-body);font-size:11px;line-height:1.5;color:#d9b8ff}
 
@@ -252,7 +258,7 @@ svg.i{width:38px;height:38px;fill:none;stroke:currentColor;stroke-width:2.6;stro
 .btn-col .btn{width:100%;max-width:none;margin:0}
 @media (max-width:350px){.overlay{padding-left:10px;padding-right:10px}.card{grid-template-columns:34px minmax(0,1fr);gap:8px}.card .ic{width:34px;height:34px}.card .ic svg.i{width:25px;height:25px}.card .nm{font-size:15px}.card .ds{font-size:12px}.loadout-summary{gap:4px 12px}.build{grid-template-columns:1fr 1fr}.bi{grid-template-columns:24px minmax(0,1fr);gap:6px;padding:7px}.bi svg.i{width:23px;height:23px}.bi .bn{font-size:12px}}
 @media (max-height:620px){.overlay{padding-top:calc(var(--safe-top) + 10px);padding-bottom:calc(var(--safe-bottom) + 10px)}.ol-inner{gap:8px}.card{min-height:96px;padding:10px}.ol-title{font-size:26px}.menu{overflow-y:auto;touch-action:pan-y}.title-block{margin-top:12px}.menu-bottom{margin-top:20px}}
-@media (prefers-reduced-motion:reduce){.card{animation:none;opacity:1;transform:none}#btnOver[data-state="ready"]{animation:none}#btnOver[data-state="vent"]{animation:none}#btnOver[data-state="vent"][data-weak="true"]::before{animation:none;box-shadow:0 0 0 3px rgba(255,236,190,.85)}}
+@media (prefers-reduced-motion:reduce){.card{animation:none;opacity:1;transform:none}.card.relay-perk{animation:none;opacity:1;transform:none}.card.relay-perk::after{display:none}#btnOver[data-state="ready"]{animation:none}#btnOver[data-state="vent"]{animation:none}#btnOver[data-state="vent"][data-weak="true"]::before{animation:none;box-shadow:0 0 0 3px rgba(255,236,190,.85)}}
 
 /* ---------- 机库、协议与复盘：延续工业面板，提升操作层级 ---------- */
 :root{--muted:#a9b6c4}
@@ -930,7 +936,7 @@ input.settings-control[type="range"]{min-width:0}
   <section id="scrRelay" class="screen overlay relay-overlay" hidden>
     <div class="ol-inner">
       <h2 class="ol-title">战场行动完成</h2>
-      <p class="relay-intro">定向补强配装，选择一项带回战场。</p>
+      <p class="relay-intro">行动专属军械 · 只有完成战场行动才拿得到，选一项带回战场。</p>
       <div id="relayBuild" class="build-summary loadout-summary"></div>
       <p id="relayFeedback" class="choice-feedback" aria-live="polite"></p>
       <div id="relayCards" class="cards"></div>
@@ -2243,6 +2249,8 @@ const FEEDBACK_EVENTS = Object.freeze({
   timeStop: { cine: true }, bossKill: { cine: true }, form: { cine: true }, clash: { cine: true }, topple: { cine: true }, finale: { cine: true }, emperor: { cine: true },
   // 处决独立预算；夺技沿用同次处决，撕扯沿用原部位打碎反馈，只发事件供评级识别。
   execute: { kick: 5, stop: .09, duck: .12 }, steal: {}, rip: {},
+  // 战场行动完成：补给舱砸地，反冲、顿帧、压音乐、推镜头一起上（只在行动完成时一次）
+  relayDrop: { kick: 7, stop: .08, duck: .25, cine: true },
 });
 const FEEDBACK_SOUNDS = Object.freeze({
   kill: { gap: .04, type: 'triangle', f0: 430, f1: 150, duration: .055, volume: .065,
@@ -2255,6 +2263,7 @@ const FEEDBACK_SOUNDS = Object.freeze({
   bossWeak: { gap: .35, tone: ['triangle', 1800, 480, .14, .14], noise: [.09, .12, 'highpass', 3600, 1100] },
   amalgamHorn: { gap: .5, tone: ['sawtooth', 160, 95, .55, .1], noise: [.18, .05, 'lowpass', 600, 140] },
   partBreak: { gap: .25, tone: ['sawtooth', 260, 55, .3, .16], noise: [.32, .24, 'lowpass', 1800, 120] },
+  relayDrop: { gap: .5, tone: ['sine', 120, 32, .75, .5], noise: [.6, .32, 'lowpass', 1500, 70] },
 });
 
 const FEEDBACK_VISUALS = Object.freeze({ hitCrossSize: 3, hitCrossLife: .06 });
@@ -2465,6 +2474,8 @@ const SFX = {
   gazeCharge() { if (!okA('gazeCharge', .5)) return; osc('sawtooth', 70, 420, .95, .1); osc('sine', 140, 840, .95, .09); nz(.9, .07, 'bandpass', 400, 2600, null, null, 3); },
   gazeBeam() { if (!okA('gazeBeam', .5)) return; osc('sawtooth', 58, 36, 1.3, .3); nz(1.5, .26, 'lowpass', 1800, 260); osc('square', 880, 220, .3, .05); },
   // 穿身：短促往上扬的一声「嗖」
+  // 战场行动完成：大圈收成光柱时往上扬的一声
+  relayBeam() { if (!okA('relayBeam', .5)) return; osc('sine', 260, 1560, .42, .12); osc('triangle', 520, 2080, .4, .05); nz(.42, .07, 'highpass', 2600, 6400); },
   blink() { if (!okA('blink', .2)) return; nz(.18, .22, 'highpass', 1800, 7000, null, null, 1); osc('sine', 600, 2400, .16, .1); },
   // 超载最后 1 秒的警示滴答：n 是剩余的拍数，越接近结束越高
   overTick(n = 1) { if (!okA('overTick', .15)) return; const f = 880 + Math.max(0, 4 - n) * 180; osc('triangle', f, f * .8, .05, .06); },
@@ -3487,7 +3498,7 @@ function reportSourceName(source) {
   if (source === 'fall') return '坠落冲击';
   if (source?.startsWith('boss:emperor')) return reportCauseName(source);
   if (source?.startsWith('ride:')) return { crush: '骑乘碾压', ring: '骑乘环射', blast: '骑乘自爆' }[source.slice(5)] || '骑乘伤害';
-  return { overload: '超载冲击', vent: '熔核炮', perfect: '极限反弹', chain: '连锁爆炸', reboot: '紧急重启', 'boss:gaze': '深渊凝视', unknown: '其他伤害' }[source] || '其他伤害';
+  return { overload: '超载冲击', vent: '熔核炮', perfect: '极限反弹', chain: '连锁爆炸', reboot: '紧急重启', 'boss:gaze': '深渊凝视', relayDrop: '补给舱冲击', relayBarrage: '轨道齐射', unknown: '其他伤害' }[source] || '其他伤害';
 }
 function reportCauseName(cause) {
   if (cause === 'zone:lightning') return '电磁风暴落雷';
@@ -4597,6 +4608,91 @@ function chooseFieldEvents(random = Math.random) {
   return order.slice(0, RELAY_CONFIG.times.length);
 }
 
+// ---- src/data/relay-payoff.js ----
+// 战场行动完成的回报：收圈光柱、补给舱落地冲击波的节奏，以及只有行动能拿的金边军械卡数值
+// 演出秒数都是真实时间（慢放中照常走，时停和变身定格时停住）
+const RELAY_DROP = Object.freeze({
+  collapseAt: .35, // 大圈收成光柱用时
+  landAt: 1, // 补给舱落地（冲击波）的时刻：下落留够 0.65 秒，屏幕上看得见它砸下来
+  readyAt: 1.75, // 弹出金边奖励卡的时刻
+  fallHeight: 400, // 补给舱从多高落下（世界单位，从屏幕上沿附近开始）
+  slowT: .5, shake: .9, flash: .55, // 落地慢放、震屏、闪白
+  eliteDamage: .35, // 冲击波对精英造成其最大生命的比例；普通虫直接清掉，首领和巨型目标不受影响
+  knock: 520, waveSpeed: 1100,
+  podFade: 1.6, // 选完奖励后补给舱留在原地淡出的秒数（游戏时间）
+});
+
+// 补给舱开舱时自动装配一次定向升级（原来行动奖励给的那一步构筑，不用再在卡里挑）；
+// 金边军械卡全是爆发卡，三选一；残血时整备卡一定占一张，爆发卡不够三张时用定向改造（再推一步）补位
+const RELAY_PERKS = Object.freeze({
+  burstSlots: 3, dropSteps: 1, grantAt: .3, // grantAt：落地后多少秒开舱装配
+  firepower: { duration: 30, dmgMul: 2 },
+  ally: {},
+  barrage: { strikes: 10, interval: .32, delay: .35, radius: 78, damage: 45, range: 380, cluster: 75 },
+  overcharge: {},
+  repair: { hpBelow: .45, invuln: 2.5 },
+  refit: { steps: 1 },
+});
+
+// ---- src/data/mercy.js ----
+// 饶它一命的开放条件、跪地、蝎尾信物、报恩与记仇规则
+const MERCY_RULES = {
+  enabled: true, winsRequired: 1, bosses: ['scorpion'],
+  kneel: { lockRatio: .10, duration: 4, pad: 10, retarget: true },
+  eyes: { redParts: 2, green: '107,236,161', red: '255,76,96' },
+  spare: { coins: 20, coinValue: 2, coinSpread: 56, burrow: 1.2 },
+  ally: { extraTrigger: true, act3Delay: 30, maxVisits: 2, aimRadius: 400, legacyLaneHalfWidth: 60,
+    hpRatio: .35, finalDelay: 25, duration: 20, emerge: 1, emergeDistance: 160,
+    chargeAt: [1, 7, 13], aim: .8, chargeDuration: .6, chargeSpeed: 640, laneHalfWidth: 90,
+    clamp: .5, bossHpRatio: .025, weakTime: 2, damage: 40, knock: 420,
+    followDistance: 140, followSpeed: 230, leaveAt: 19, directions: 12, size: 160, radius: 42 },
+  grudge: { burrowing: true, entryBurrow: 1.5, hurtBurrow: 1.2, healthStep: 1 / 3,
+    relocateMin: 200, relocateMax: 260, bodyDamageMul: .3,
+    sweepRadius: 110, sweepWarn: .6, sweepDamage: 13, sweepDamageMul: .6, sweepFxLife: .35, hintDuration: 3,
+    delay: 60, duration: 45, skipBeforeWarn: 20, retry: .5, distance: 240,
+    eliteHpMul: 4, speedMul: 1.2, size: 160, radius: 42, color: '255,60,80', emerge: 1.2, coins: 20 },
+  fx: { cap: 24, dustCount: 12, dustSize: 26, dustLife: .7, goldenAngle: 2.399963229728653 },
+  presentation: { textLift: 24, titleSize: 24, cueSize: 16, textLife: 1.6, hintLife: 4.5, bannerLife: 2.2 },
+};
+const MERCY_TEXT = {
+  kneel: '求饶！', greenCue: '绿眼：放走会报恩', redCue: '红眼：放走会记仇',
+  hint: '毒蝎求饶：冲刺撞上去补刀拿宝箱，4 秒不碰就放它走',
+  finish: '补刀！', dash: '补刀', spare: '放它走了',
+  greenSpare: '第三幕它会回来报恩', redSpare: '第三幕它会回来报仇',
+  repay: '它回来了', repaySub: '毒蝎领主前来报恩', clamp: '钳住！',
+  grudge: '残躯毒蝎', grudgeSub: '打死夺回宝箱', grudgeKilled: '宿怨了结',
+  grudgeWeakHint: '打尾巴！',
+  grudgeEscaped: '残躯毒蝎钻回地下 · 首领宝箱没了',
+  greenSheet: '蝎尾信物 · 绿眼：第三幕你危急或最终首领开打 25 秒后，它来帮你 20 秒',
+  greenExtraSheet: '蝎尾信物 · 绿眼：第三幕开场 30 秒内来报恩，最终首领开打 25 秒后再来一次',
+  redSheet: '蝎尾信物 · 红眼：第三幕它会来报仇，45 秒内打死能夺回首领宝箱',
+  repaidSheet: '蝎尾信物 · 已报恩', reclaimedSheet: '蝎尾信物 · 宝箱已夺回', escapedSheet: '蝎尾信物 · 它钻回地下了',
+  finishEnd: '补刀', spareEnd: '放走', repayEnd: '报恩', reclaimedEnd: '夺回宝箱', escapedEnd: '钻回地下',
+};
+
+// ---- src/data/boss-ride.js ----
+// 驾驭首领：开放门槛、驾驶碾压、招式、自爆奖励和显示文案
+const BOSS_RIDE = {
+  enabled: true, holdFire: true, winsRequired: 1, perRun: 2, bosses: ['scorpion', 'queen'], minParts: 2, queenMinParts: 1,
+  kneel: { lockRatio: .1, duration: 4 }, duration: 8, mountInvuln: .6, dismountInvuln: 1.2, dismountPad: 30, standPad: 24, hurtMul: .4,
+  speed: { scorpion: 230, queen: 200 }, accel: 6, turn: 8, cruise: .6,
+  crush: { reach: .5, eliteRatio: .08, eliteEvery: .5, knock: 300 },
+  river: { waves: [{ at: 0, count: 40, cols: 6 }, { at: 4, count: 30, cols: 5 }], gapX: 34, gapY: 40, outsidePad: 1 },
+  move: { scorpion: { speed: 380, time: .8, cd: 2, eliteRatio: .12 }, queen: { count: 24, speed: 520, life: .8, damage: 40, pierce: 2, r: 6, cd: 2 } },
+  blast: { radius: 260, legacyRadius: 220, every: 10, step: 20, max: 400, damage: 300 },
+  bonusCoins: { scorpion: 15, queen: 30 }, fullPartsCoins: 20, coinValue: 2, coinScatter: 70, goldenAngle: 2.399963229728653,
+  view: { lift: 10, color: '110,200,255', trail: 24, trailEvery: .05, eyes: { scorpion: [[-.045, -.16], [.045, -.16]], queen: [[-.035, -.20], [.035, -.20]] },
+    textLift: 22, titleSize: 25, cueSize: 18, textLife: 1.6, hintLife: 4.5, mountLife: 2.4, blastLife: 2, counterLife: 1,
+    ghostLife: .25, smokeSize: 20, smokeLife: .45 },
+};
+
+const BOSS_RIDE_TEXT = {
+  kneel: '跪地！', mountCue: '冲刺骑上', cue: '冲刺骑上它', redCue: '红眼：冲刺骑上它，放走会记仇',
+  hint: '拆够{parts}个部位，首领跪下时冲刺撞上去就能骑它', mounted: '骑上了！', title: '驾驭首领！',
+  scorpion: '冲锋', queen: '环射', dash: '骑上', jump: '跳车',
+  blast: '轰！', blastSub: '补给箱掉在自爆点', blastRadius: '爆炸半径', reward: '骑乘奖励', stat: '驾驭首领', mercyEnd: '骑上它了',
+};
+
 // ---- src/data/weekly.js ----
 // 每周异变赛：周键（北京时间周一 0 点换周的 ISO 周）、本周配置、八条周规则、周分与铜银金档线、分享文字
 // 本文件顶层只放常量和纯函数，不读别的模块的值，部分测试只拼几个文件也能加载。
@@ -4776,65 +4872,6 @@ const PROPS_DEF = {
   cocoon: { name: '虫茧', img: 'prop_cocoon', openImg: 'prop_cocoon_open', col: '190,139,202', r: 19, size: 58, hp: 22, ttl: 42, hatchTime: 9 },
   // 熔渣罐：打碎溅一小圈熔渣，原地留 4 秒火池；冲刺踢飞时落点留火池（火池只烫敌人，见 game/zone-frost-forge.js）
   slag: { name: '熔渣罐', img: 'prop_slag', col: '255,122,48', r: 14, size: 44, hp: 10, ttl: 44, blastRadius: 46, damage: 10, pool: true },
-};
-
-// ---- src/data/mercy.js ----
-// 饶它一命的开放条件、跪地、蝎尾信物、报恩与记仇规则
-const MERCY_RULES = {
-  enabled: true, winsRequired: 1, bosses: ['scorpion'],
-  kneel: { lockRatio: .10, duration: 4, pad: 10, retarget: true },
-  eyes: { redParts: 2, green: '107,236,161', red: '255,76,96' },
-  spare: { coins: 20, coinValue: 2, coinSpread: 56, burrow: 1.2 },
-  ally: { extraTrigger: true, act3Delay: 30, maxVisits: 2, aimRadius: 400, legacyLaneHalfWidth: 60,
-    hpRatio: .35, finalDelay: 25, duration: 20, emerge: 1, emergeDistance: 160,
-    chargeAt: [1, 7, 13], aim: .8, chargeDuration: .6, chargeSpeed: 640, laneHalfWidth: 90,
-    clamp: .5, bossHpRatio: .025, weakTime: 2, damage: 40, knock: 420,
-    followDistance: 140, followSpeed: 230, leaveAt: 19, directions: 12, size: 160, radius: 42 },
-  grudge: { burrowing: true, entryBurrow: 1.5, hurtBurrow: 1.2, healthStep: 1 / 3,
-    relocateMin: 200, relocateMax: 260, bodyDamageMul: .3,
-    sweepRadius: 110, sweepWarn: .6, sweepDamage: 13, sweepDamageMul: .6, sweepFxLife: .35, hintDuration: 3,
-    delay: 60, duration: 45, skipBeforeWarn: 20, retry: .5, distance: 240,
-    eliteHpMul: 4, speedMul: 1.2, size: 160, radius: 42, color: '255,60,80', emerge: 1.2, coins: 20 },
-  fx: { cap: 24, dustCount: 12, dustSize: 26, dustLife: .7, goldenAngle: 2.399963229728653 },
-  presentation: { textLift: 24, titleSize: 24, cueSize: 16, textLife: 1.6, hintLife: 4.5, bannerLife: 2.2 },
-};
-const MERCY_TEXT = {
-  kneel: '求饶！', greenCue: '绿眼：放走会报恩', redCue: '红眼：放走会记仇',
-  hint: '毒蝎求饶：冲刺撞上去补刀拿宝箱，4 秒不碰就放它走',
-  finish: '补刀！', dash: '补刀', spare: '放它走了',
-  greenSpare: '第三幕它会回来报恩', redSpare: '第三幕它会回来报仇',
-  repay: '它回来了', repaySub: '毒蝎领主前来报恩', clamp: '钳住！',
-  grudge: '残躯毒蝎', grudgeSub: '打死夺回宝箱', grudgeKilled: '宿怨了结',
-  grudgeWeakHint: '打尾巴！',
-  grudgeEscaped: '残躯毒蝎钻回地下 · 首领宝箱没了',
-  greenSheet: '蝎尾信物 · 绿眼：第三幕你危急或最终首领开打 25 秒后，它来帮你 20 秒',
-  greenExtraSheet: '蝎尾信物 · 绿眼：第三幕开场 30 秒内来报恩，最终首领开打 25 秒后再来一次',
-  redSheet: '蝎尾信物 · 红眼：第三幕它会来报仇，45 秒内打死能夺回首领宝箱',
-  repaidSheet: '蝎尾信物 · 已报恩', reclaimedSheet: '蝎尾信物 · 宝箱已夺回', escapedSheet: '蝎尾信物 · 它钻回地下了',
-  finishEnd: '补刀', spareEnd: '放走', repayEnd: '报恩', reclaimedEnd: '夺回宝箱', escapedEnd: '钻回地下',
-};
-
-// ---- src/data/boss-ride.js ----
-// 驾驭首领：开放门槛、驾驶碾压、招式、自爆奖励和显示文案
-const BOSS_RIDE = {
-  enabled: true, holdFire: true, winsRequired: 1, perRun: 2, bosses: ['scorpion', 'queen'], minParts: 2, queenMinParts: 1,
-  kneel: { lockRatio: .1, duration: 4 }, duration: 8, mountInvuln: .6, dismountInvuln: 1.2, dismountPad: 30, standPad: 24, hurtMul: .4,
-  speed: { scorpion: 230, queen: 200 }, accel: 6, turn: 8, cruise: .6,
-  crush: { reach: .5, eliteRatio: .08, eliteEvery: .5, knock: 300 },
-  river: { waves: [{ at: 0, count: 40, cols: 6 }, { at: 4, count: 30, cols: 5 }], gapX: 34, gapY: 40, outsidePad: 1 },
-  move: { scorpion: { speed: 380, time: .8, cd: 2, eliteRatio: .12 }, queen: { count: 24, speed: 520, life: .8, damage: 40, pierce: 2, r: 6, cd: 2 } },
-  blast: { radius: 260, legacyRadius: 220, every: 10, step: 20, max: 400, damage: 300 },
-  bonusCoins: { scorpion: 15, queen: 30 }, fullPartsCoins: 20, coinValue: 2, coinScatter: 70, goldenAngle: 2.399963229728653,
-  view: { lift: 10, color: '110,200,255', trail: 24, trailEvery: .05, eyes: { scorpion: [[-.045, -.16], [.045, -.16]], queen: [[-.035, -.20], [.035, -.20]] },
-    textLift: 22, titleSize: 25, cueSize: 18, textLife: 1.6, hintLife: 4.5, mountLife: 2.4, blastLife: 2, counterLife: 1,
-    ghostLife: .25, smokeSize: 20, smokeLife: .45 },
-};
-
-const BOSS_RIDE_TEXT = {
-  kneel: '跪地！', mountCue: '冲刺骑上', cue: '冲刺骑上它', redCue: '红眼：冲刺骑上它，放走会记仇',
-  hint: '拆够{parts}个部位，首领跪下时冲刺撞上去就能骑它', mounted: '骑上了！', title: '驾驭首领！',
-  scorpion: '冲锋', queen: '环射', dash: '骑上', jump: '跳车',
-  blast: '轰！', blastSub: '补给箱掉在自爆点', blastRadius: '爆炸半径', reward: '骑乘奖励', stat: '驾驭首领', mercyEnd: '骑上它了',
 };
 
 // ---- src/data/style-rank.js ----
@@ -5901,21 +5938,7 @@ function buildOptions() {
   for (const o of trainingChoices()) { if (out.length >= count) break; addGrowthChoice(out, o); }
   return out;
 }
-// 中继定向推进已有构筑，满配后保留训练和主动换装，不用金币占满奖励。
-function buildRelayOptions() {
-  const p = G.player, pool = growthOptions(), out = [], weapons = p.weapons.filter(w => !w.evo).slice().sort((a, b) => b.lv - a.lv);
-  const primary = pool.find(o => o.kind === 'evo') || pool.filter(o => o.kind === 'wup').sort((a, b) => p.weapons.find(w => w.id === b.id).lv - p.weapons.find(w => w.id === a.id).lv)[0] || pool.find(o => o.kind === 'mastery') || pool.find(o => o.kind === 'wnew');
-  addGrowthChoice(out, primary);
-  const partner = weapons.map(partnerChoice).find(Boolean);
-  addGrowthChoice(out, partner);
-  if (!partner) addGrowthChoice(out, pool.filter(o => o.kind === 'pup').sort((a, b) => passLv(b.id) - passLv(a.id))[0]);
-  const training = pool.length < 3 || nearFullBuild(), ranks = trainingChoices().sort((a, b) => (p.training?.[a.id] || 0) - (p.training?.[b.id] || 0));
-  if (!out.length && training) addGrowthChoice(out, ranks[0]);
-  if (out.length < 2) { const swaps = swapChoices(); if (swaps.length) addGrowthChoice(out, weighted(swaps)); }
-  if (out.length < 3) addGrowthChoice(out, { kind: 'fieldrepair' });
-  for (const o of [...(training ? ranks : []), ...pool, ...ranks]) { if (out.length >= 3) break; addGrowthChoice(out, o); }
-  return out.slice(0, 3);
-}
+// 战场行动的奖励三选一在 game/relay-perks.js（金边军械卡），不再从普通成长里挑。
 function progressionNumber(value) { return Number(value.toFixed(Math.abs(value) < .1 ? 3 : 1)); }
 function masteryBenefit(w) {
   const before = weaponStats(w), after = weaponStats({ ...w, mastery: (w.mastery || 0) + 1 });
@@ -9615,638 +9638,6 @@ function debugRide(cmd) {
   return false;
 }
 
-// ---- src/data/allies.js ----
-// 援军的触发、机动、火力与台词；伤害均沿用技能的逐目标成长口径
-const ALLY_RULES = Object.freeze({
-  maxCalls: 3, cooldown: 40, duration: 15, landingDuration: .45, leaveDuration: 1, landingDistance: 110,
-  rank: 4, rescueHp: .3, damageMul: 3.5, weaponCooldownMul: .15, landingRadius: 160, landingDamage: 60, landingKnock: 400,
-  cutinDuration: 2, followMin: 60, followMax: 180, followSpeed: 205, thinkInterval: .4,
-  dashInterval: 2.5, dashDuration: .18, dashSpeed: 720, targetRange: 520, clusterRadius: 95,
-  beamLength: 820, droneCount: 2, droneOrbit: 46, shotLife: .14, blastLife: .4, fxCap: 90,
-  assault: { count: 12, damage: 20, radius: 40 },
-  heavy: { offset: 42, duration: 8, interval: .3, range: 360, damage: 16 },
-  phantom: { length: 260, width: 54, damage: 65 },
-  storm: { count: 3, interval: 1, radius: 180, damage: 16 },
-  lancer: { length: 820, width: 24, damage: 104 },
-  engineer: { count: 2, radius: 65, damage: 40 },
-});
-const ALLY_LINES = Object.freeze({
-  assault: '先锋到位，一起突围！', heavy: '别退，火力交给我！', phantom: '你的身后，我来守。',
-  storm: '雷霆接入，清出一条路！', lancer: '目标锁定，掩护你前进。', engineer: '蜂巢上线，援护就位！',
-});
-
-// ---- src/game/allies.js ----
-// 援军触发、安全空降和独立协战：不进入玩家、敌人或拾取物的碰撞流程
-
-function initAllies() {
-  G.allies = { count: 0, lastAt: -Infinity, used: [], styleActs: [], bosses: [], pending: [], active: null, cutin: null };
-}
-function allyLive() { return !!G?.allies && !G.practice && G.state === 'playing' && G.player.hp > 0 && !(G.endT > 0) && !G.won; }
-function allyUnlocked() { return MECHS.filter(m => meta.unlocked?.[m.id]); }
-function allyAct() { if (zonesEnabled()) return currentZoneIndex(); let index = 0; for (let i = 1; i < BATTLEFIELD_ACTS.length; i++) if (G.t >= BATTLEFIELD_ACTS[i].start) index = i; return index; }
-// 复用穿身的安全检查，包含冲锋车道、凝视瞄准线、迫击落点及行动走廊。
-function allyLandingPoint() {
-  const p = G.player, angle = p.angle || 0, start = Math.random() * TAU;
-  for (let i = 0; i < 12; i++) {
-    const a = start + i * TAU / 12, x = p.x + Math.cos(a) * ALLY_RULES.landingDistance, y = p.y + Math.sin(a) * ALLY_RULES.landingDistance;
-    if (blinkLandingSafe(x, y, p)) return { x, y };
-  }
-  return { x: p.x - Math.cos(angle) * ALLY_RULES.landingDistance, y: p.y - Math.sin(angle) * ALLY_RULES.landingDistance };
-}
-function allyDamage(e, base) { return base * ALLY_RULES.damageMul * G.stats.dmg * (e.boss ? 1 : enemyHpMul(G.t) * runMul('enemyHp')); }
-function allyHit(e, base, a, knock = 0) {
-  if (!e || e.dead || e.entering || !(e.hp > 0)) return;
-  const angle = Math.atan2(e.y - a.y, e.x - a.x), force = e.boss ? 1 : knock;
-  hitEnemy(e, allyDamage(e, base), { source: 'ally:' + a.id, crit: false, kx: Math.cos(angle) * force, ky: Math.sin(angle) * force });
-}
-function allyEffect(a, kind, fields) {
-  if (a.fx.length >= ALLY_RULES.fxCap) a.fx.shift();
-  const max = kind === 'blast' ? ALLY_RULES.blastLife : ALLY_RULES.shotLife;
-  a.fx.push({ kind, x: a.x, y: a.y, col: a.col, life: max, max, ...fields });
-}
-function allyCircle(a, x, y, radius, damage, knock = 0) {
-  for (const e of G.enemies) if (!e.dead && !e.entering && d2(x, y, e.x, e.y) <= (radius + e.r) ** 2) allyHit(e, damage, { id: a.id, x, y }, knock);
-  allyEffect(a, 'blast', { x, y, r: radius });
-}
-function allyTargets(a, range = ALLY_RULES.targetRange) {
-  return G.enemies.filter(e => !e.dead && !e.entering && !e.kicked && !kneelUntargetable(e) && e.hp > 0 && d2(a.x, a.y, e.x, e.y) < range ** 2).sort((e, f) => d2(a.x, a.y, e.x, e.y) - d2(a.x, a.y, f.x, f.y));
-}
-function allyDenseTarget(a) {
-  const targets = allyTargets(a); let best = null, count = -1;
-  for (let i = 0; i < targets.length; i += Math.max(1, Math.floor(targets.length / 16))) {
-    const e = targets[i]; let n = 0;
-    for (const f of targets) if (d2(e.x, e.y, f.x, f.y) < ALLY_RULES.clusterRadius ** 2) n++;
-    if (n > count) { best = e; count = n; }
-  }
-  return best;
-}
-function allyLine(a, angle, length, width, damage, clear = false) {
-  const ux = Math.cos(angle), uy = Math.sin(angle), x2 = a.x + ux * length, y2 = a.y + uy * length;
-  const touches = (x, y, r) => { const along = Math.max(0, Math.min(length, (x - a.x) * ux + (y - a.y) * uy)); return d2(x, y, a.x + ux * along, a.y + uy * along) < (width / 2 + r) ** 2; };
-  for (const e of G.enemies) if (!e.dead && !e.entering && touches(e.x, e.y, e.r)) allyHit(e, damage, a);
-  if (clear) for (const b of G.ebullets) if (!b.dead && touches(b.x, b.y, b.r || 0)) b.dead = true;
-  allyEffect(a, 'beam', { x2, y2, r: width });
-}
-function allyLevel(id) {
-  const weapons = G.player.weapons, own = weapons.find(w => w.id === id);
-  return Math.max(1, Math.min(WDEF[id].lv.length, own?.lv || Math.max(1, ...weapons.map(w => w.lv))));
-}
-function summonAlly(reason = 'style') {
-  if (!allyLive()) return false;
-  const state = G.allies, unlocked = allyUnlocked();
-  const calls = G.weekly?.mods.allyCalls ?? 1; // 周规则「援军之周」：次数上限 ×2、冷却减半
-  if (unlocked.length < 2 || state.active || state.count >= ALLY_RULES.maxCalls * calls || G.t - state.lastAt < ALLY_RULES.cooldown / calls) return false;
-  const pool = unlocked.filter(m => m.id !== G.mech.id), fresh = pool.filter(m => !state.used.includes(m.id)), choices = fresh.length ? fresh : pool;
-  if (!choices.length) return false;
-  const mech = choices[Math.floor(Math.random() * choices.length)], point = allyLandingPoint(), lv = allyLevel(mech.weapon);
-  const a = { id: mech.id, ...point, angle: G.player.angle, legA: G.player.angle, ph: 0, age: 0, life: ALLY_RULES.duration,
-    landingT: ALLY_RULES.landingDuration, fromX: point.x - 300, fromY: point.y - 620, col: RIG_CFG[mech.id].flame,
-    dashT: 0, dashCd: ALLY_RULES.dashInterval, weaponId: mech.weapon, weaponLv: lv, cd: 0, thinkT: 0, target: null, fx: [], turrets: [], pulseLeft: 0, pulseT: 0, reason };
-  state.count++; state.lastAt = G.t; state.used.push(mech.id); state.active = a;
-  state.cutin = { id: mech.id, t: ALLY_RULES.cutinDuration, max: ALLY_RULES.cutinDuration };
-  return true;
-}
-function allyQueueTriggers() {
-  const s = G.allies, act = allyAct(), boss = G.boss;
-  // 高评级每幕呼叫一次；援军之周每幕两次（上一次还在排队时不再加）
-  const stylePerAct = G.weekly?.mods.allyCalls ?? 1;
-  if (G.styleRank?.rank >= ALLY_RULES.rank && s.styleActs.filter(x => x === act).length < stylePerAct && !s.pending.some(q => q.act === act)) { s.styleActs.push(act); s.pending.push({ reason: 'style', act }); }
-  if (boss && !boss.dead && !boss.entering && G.player.hp < G.player.maxHp * ALLY_RULES.rescueHp && !s.bosses.includes(boss)) {
-    s.bosses.push(boss); s.pending.push({ reason: 'rescue', boss });
-  }
-  // 冷却中出现的同幕/同战机会保留，跨幕或首领战结束后失效，不把旧救援带进下一战。
-  s.pending = s.pending.filter(q => q.boss ? q.boss === G.boss && !q.boss.dead : q.act === act);
-}
-onHurt('allies', () => { if (allyLive()) allyQueueTriggers(); });
-function allyLand(a) {
-  allyCircle(a, a.x, a.y, ALLY_RULES.landingRadius, ALLY_RULES.landingDamage, ALLY_RULES.landingKnock);
-  const cfg = ALLY_RULES[a.id], targets = allyTargets(a), target = allyDenseTarget(a);
-  if (target) a.angle = Math.atan2(target.y - a.y, target.x - a.x);
-  if (a.id === 'assault') for (let i = 0; i < cfg.count && targets.length; i++) { const e = targets[i % targets.length]; if (!e.dead) allyCircle(a, e.x, e.y, cfg.radius, cfg.damage); }
-  if (a.id === 'heavy') for (const side of [-1, 1]) a.turrets.push({ x: a.x + side * cfg.offset, y: a.y, life: cfg.duration, cd: 0 });
-  if (a.id === 'phantom') allyLine(a, a.angle, cfg.length, cfg.width, cfg.damage);
-  if (a.id === 'storm') { a.pulseLeft = cfg.count; a.pulseT = 0; }
-  if (a.id === 'lancer') allyLine(a, a.angle, cfg.length, cfg.width, cfg.damage, true);
-  if (a.id === 'engineer') for (let i = 0; i < cfg.count && targets.length; i++) { const e = targets[i % targets.length]; if (!e.dead) allyCircle(a, e.x, e.y, cfg.radius, cfg.damage); allyEffect(a, 'drone', { x: e.x, y: e.y, r: cfg.radius }); }
-}
-function allyFire(a) {
-  const cfg = WDEF[a.weaponId].lv[a.weaponLv - 1], targets = allyTargets(a), first = targets[0];
-  if (!first) return false;
-  a.angle = Math.atan2(first.y - a.y, first.x - a.x);
-  if (a.weaponId === 'missile') for (let i = 0; i < cfg.n; i++) { const e = targets[i % targets.length]; if (!e.dead) allyCircle(a, e.x, e.y, cfg.rad, cfg.dmg); }
-  else if (a.weaponId === 'rail') for (let i = 0; i < cfg.b; i++) allyLine(a, a.angle + i * TAU / cfg.b, ALLY_RULES.beamLength, cfg.w, cfg.dmg);
-  else if (a.weaponId === 'tesla') {
-    let from = a; const seen = new Set();
-    for (let i = 0; i < cfg.c; i++) {
-      const e = targets.filter(e => !e.dead && !seen.has(e)).sort((e, f) => d2(from.x, from.y, e.x, e.y) - d2(from.x, from.y, f.x, f.y))[0];
-      if (!e) break;
-      seen.add(e); allyHit(e, cfg.dmg, a); allyEffect(a, 'arc', { x: from.x, y: from.y, x2: e.x, y2: e.y }); from = e;
-    }
-  } else if (a.weaponId === 'saw') {
-    for (const e of targets) if (d2(a.x, a.y, e.x, e.y) <= (cfg.rad + cfg.size + e.r) ** 2) allyHit(e, cfg.dmg, a, cfg.knock);
-  } else {
-    const count = a.weaponId === 'drone' ? ALLY_RULES.droneCount : cfg.n;
-    for (let i = 0; i < count; i++) {
-      const e = targets.find(e => !e.dead); if (!e) break;
-      allyHit(e, cfg.dmg, a); allyEffect(a, 'shot', { x2: e.x, y2: e.y });
-    }
-  }
-  return true;
-}
-function allySpecialUpdate(a, dt) {
-  if (a.pulseLeft > 0) { a.pulseT -= dt; if (a.pulseT <= 0) { const cfg = ALLY_RULES.storm; allyCircle(a, a.x, a.y, cfg.radius, cfg.damage); a.pulseLeft--; a.pulseT += cfg.interval; } }
-  for (const t of a.turrets) {
-    const cfg = ALLY_RULES.heavy; t.life -= dt; t.cd -= dt;
-    if (t.life <= 0) continue;
-    allyEffect(a, 'turret', { x: t.x, y: t.y, r: 15 });
-    if (t.cd <= 0) { const target = allyTargets(t, cfg.range)[0]; if (target) { allyHit(target, cfg.damage, { id: a.id, x: t.x, y: t.y }); allyEffect(a, 'shot', { x: t.x, y: t.y, x2: target.x, y2: target.y }); t.cd += cfg.interval; } }
-  }
-  compact(a.turrets, t => t.life > 0);
-}
-function updateAllies(pdt, dt) {
-  if (!G?.allies || G.state !== 'playing' || !(pdt > 0)) return;
-  const state = G.allies;
-  if (state.cutin) { state.cutin.t -= pdt; if (state.cutin.t <= 0) state.cutin = null; }
-  if (!allyLive()) { state.active = null; return; }
-  allyQueueTriggers();
-  if (state.pending.length && summonAlly(state.pending[0].reason)) state.pending.shift();
-  const a = state.active; if (!a) return;
-  a.age += pdt;
-  for (const f of a.fx) f.life -= pdt;
-  compact(a.fx, f => f.life > 0);
-  // 飞入和协战均走玩家一侧时钟，时停不冻结；落地剩余步长才计入 15 秒。
-  if (a.landingT > 0) {
-    const elapsed = Math.min(pdt, a.landingT); a.landingT = Math.max(0, a.landingT - elapsed); pdt -= elapsed;
-    if (a.landingT > 1e-9) return;
-    a.landingT = 0; if (!rideHoldingFire()) allyLand(a);
-  }
-  const elapsed = Math.min(a.life, pdt); a.life = Math.max(0, a.life - elapsed);
-  if (a.life <= 1e-9) { state.active = null; return; }
-  if (rideHoldingFire()) return; // 停止协战攻击，但不延长援军的在场时间。
-  a.thinkT -= elapsed; a.dashCd -= elapsed;
-  if (a.thinkT <= 0) { a.target = allyDenseTarget(a); a.thinkT = ALLY_RULES.thinkInterval; }
-  const p = G.player, target = a.target && !a.target.dead ? a.target : null;
-  if (target && a.dashCd <= 0) { a.dashT = ALLY_RULES.dashDuration; a.dashCd += ALLY_RULES.dashInterval; a.dashAngle = Math.atan2(target.y - a.y, target.x - a.x); }
-  const dir = target ? Math.atan2(target.y - p.y, target.x - p.x) : p.angle + Math.PI;
-  const dash = a.dashT > 0, oldX = a.x, oldY = a.y;
-  if (dash) {
-    const move = ALLY_RULES.dashSpeed * Math.min(elapsed, a.dashT);
-    a.x += Math.cos(a.dashAngle) * move; a.y += Math.sin(a.dashAngle) * move;
-  } else {
-    // 沿玩家周围的圆环换侧，避免直穿中心后被最小跟随半径卡在原侧。
-    const radius = Math.max(ALLY_RULES.followMin, Math.hypot(a.x - p.x, a.y - p.y));
-    const from = Math.atan2(a.y - p.y, a.x - p.x), turn = Math.atan2(Math.sin(dir - from), Math.cos(dir - from));
-    const step = ALLY_RULES.followSpeed * elapsed, angle = from + Math.sign(turn) * Math.min(Math.abs(turn), step / radius);
-    const r = radius + Math.sign(ALLY_RULES.landingDistance - radius) * Math.min(Math.abs(ALLY_RULES.landingDistance - radius), step);
-    a.x = p.x + Math.cos(angle) * r; a.y = p.y + Math.sin(angle) * r;
-  }
-  a.dashT = Math.max(0, a.dashT - elapsed); a.legA = Math.atan2(a.y - oldY, a.x - oldX); a.ph += elapsed * 10;
-  const gap = Math.hypot(a.x - p.x, a.y - p.y);
-  if (gap > ALLY_RULES.followMax || gap < ALLY_RULES.followMin) {
-    const r = Math.max(ALLY_RULES.followMin, Math.min(ALLY_RULES.followMax, gap)), angle = gap < ALLY_RULES.followMin ? dir : Math.atan2(a.y - p.y, a.x - p.x);
-    a.x = p.x + Math.cos(angle) * r; a.y = p.y + Math.sin(angle) * r;
-  }
-  const cfg = WDEF[a.weaponId].lv[a.weaponLv - 1]; a.cd -= elapsed;
-  if (a.cd <= 0 && allyFire(a)) a.cd = (a.weaponId === 'saw' ? WDEF.saw.hitInterval : cfg.cd) * (G.stats.cd || 1) * ALLY_RULES.weaponCooldownMul;
-  if (a.weaponId === 'saw') for (let i = 0; i < cfg.n; i++) { const spin = a.age * cfg.spin + i * TAU / cfg.n; allyEffect(a, 'saw', { x: a.x + Math.cos(spin) * cfg.rad, y: a.y + Math.sin(spin) * cfg.rad, r: cfg.size, angle: spin }); }
-  if (a.weaponId === 'drone') for (let i = 0; i < ALLY_RULES.droneCount; i++) { const orbit = a.age + i * Math.PI; allyEffect(a, 'drone', { x: a.x + Math.cos(orbit) * ALLY_RULES.droneOrbit, y: a.y + Math.sin(orbit) * ALLY_RULES.droneOrbit, r: 12 }); }
-  allySpecialUpdate(a, elapsed);
-}
-
-// ---- src/game/mercy.js ----
-// 毒蝎求饶的两种结局：补刀、放走后的绿眼报恩和红眼记仇
-
-function initMercy() {
-  G.mercyEnabled = MERCY_RULES.enabled && !G.practice && (meta?.wins || 0) >= MERCY_RULES.winsRequired;
-  G.mercy = { token: null, salvage: null, parts: null, act3At: null, finalSeenAt: null, ally: null, grudge: null, fx: [], forceEye: null, grudgeRetryAt: 0 };
-  G.mercyStats = { kneels: 0, kneelAt: null, eye: null, parts: [], outcome: null, finishDelay: null, armAt: null, endAt: null,
-    ally: { at: null, trigger: null, charges: 0, bossHits: 0, bossDamage: 0, kills: 0 },
-    grudge: { at: null, hp: null, killed: false, ttk: null, escaped: false, skipped: 0 } };
-}
-function mercyEnabled() { return !!G?.mercy && !G.practice && !!G.mercyEnabled; }
-function mercyArmBoss(e) {
-  if (!mercyEnabled() || e?.final || !MERCY_RULES.bosses.includes(e?.kind)) return false;
-  if (!armBossKneel(e, { owner: 'mercy', lockRatio: MERCY_RULES.kneel.lockRatio, duration: MERCY_RULES.kneel.duration })) return false;
-  G.mercyStats.armAt = G.t;
-  return true;
-}
-function mercyKneelCue(e) { return rideCanMount(e) ? BOSS_RIDE_TEXT.redCue : e.kneel.eye === 'red' ? MERCY_TEXT.redCue : MERCY_TEXT.greenCue; }
-function mercyKneelHint(e) {
-  if (!bossBegging(e) || G.practice) return;
-  if (rideCanMount(e)) { rideKneelHint(e); return; }
-  const hints = meta.hints && typeof meta.hints === 'object' ? meta.hints : (meta.hints = {});
-  if (hints.mercyKneel) return;
-  hints.mercyKneel = true; saveMeta();
-  toast({ text: MERCY_TEXT.hint, t: MERCY_RULES.presentation.hintLife, priority: 3 });
-}
-function mercyBegin(e) {
-  const k = e.kneel, state = G.mercy, stats = G.mercyStats, cfg = MERCY_RULES.presentation;
-  const broken = (e.parts || []).filter(q => q.broken);
-  k.eye = state.forceEye || (broken.length >= MERCY_RULES.eyes.redParts ? 'red' : 'green');
-  state.parts = (e.parts || []).map(q => ({ ...q })); state.salvage = bossSalvage(e);
-  stats.kneels++; stats.kneelAt = G.t; stats.eye = k.eye; stats.parts = broken.map(q => q.id);
-  const y = e.y - e.size / 2 - cfg.textLift, color = MERCY_RULES.eyes[k.eye];
-  floatText(e.x, y, MERCY_TEXT.kneel, color, cfg.titleSize, cfg.textLife);
-  floatText(e.x, y - cfg.textLift, mercyKneelCue(e), color, cfg.cueSize, cfg.textLife);
-  mercyKneelHint(e);
-}
-function mercyFinish(e) {
-  if (rideCanMount(e)) { G.mercyStats.outcome = 'ride'; return rideMount(e); }
-  e.kneel.outcome = 'finish'; e.kneel.phase = 'done'; e.kneel.left = 0;
-  G.mercyStats.outcome = 'finish'; G.mercyStats.finishDelay = Math.max(0, G.t - e.kneel.at); G.mercyStats.endAt = G.t;
-  feedback('execute', { x: e.x, y: e.y, angle: Math.atan2(e.y - G.player.y, e.x - G.player.x) });
-  floatText(e.x, e.y - e.r - MERCY_RULES.presentation.textLift, MERCY_TEXT.finish, MERCY_RULES.eyes.red, MERCY_RULES.presentation.titleSize, MERCY_RULES.presentation.textLife);
-  finishBossBy(e, 'mercy:finish');
-}
-function mercySpare(e) {
-  e.kneel.outcome = 'spare'; e.kneel.phase = 'done'; e.kneel.left = 0;
-  G.mercyStats.outcome = 'spare'; G.mercyStats.endAt = G.t;
-  finishBossBy(e, 'mercy:spare');
-}
-const MERCY_KNEEL = { begin: mercyBegin, contact: mercyFinish, timeout: mercySpare };
-function mercyFinalWarnAt() { return BOSS_TIMES[2] - 3; }
-function mercyBossSpared(e) { return e?.kneel?.owner === 'mercy' && e.kneel.outcome === 'spare'; }
-function mercyRig(parts, x, y, angle, size) {
-  return { kind: 'scorpion', x, y, ang: angle, size, st: 'walk', sub: 0, vulnerableT: 0, stunT: 0,
-    parts: (parts || BOSS_PARTS.scorpion.map(q => ({ id: q.id, zone: q.zone, acc: 0, max: q.threshold, broken: false }))).map(q => ({ smokeT: 0, smokeAcc: 0, brokenAt: null, ...q })) };
-}
-function mercyDust(x, y, size) {
-  const cfg = MERCY_RULES.fx;
-  for (let i = 0; i < cfg.dustCount; i++) {
-    const angle = i * cfg.goldenAngle, distance = Math.sqrt((i + 1) / cfg.dustCount) * size / 2;
-    smoke(x + Math.cos(angle) * distance, y + Math.sin(angle) * distance, cfg.dustSize, cfg.dustLife);
-  }
-}
-function mercyBurrow(e, eye) {
-  const life = MERCY_RULES.spare.burrow, size = e.size || MERCY_RULES.grudge.size;
-  const fx = { kind: 'burrow', x: e.x, y: e.y, ang: e.ang || 0, size, eye, life, max: life,
-    mercyRig: mercyRig(e.mercyRig?.parts || e.parts || G.mercy.parts, e.x, e.y, e.ang || 0, size) };
-  if (G.mercy.fx.length >= MERCY_RULES.fx.cap) G.mercy.fx.shift();
-  G.mercy.fx.push(fx); mercyDust(e.x, e.y, size);
-}
-function mercySpareVisual(e) {
-  mercyBurrow(e, e.kneel.eye);
-  const duration = MERCY_RULES.presentation.bannerLife;
-  G.banner = { kind: 'info', title: MERCY_TEXT.spare, sub: e.kneel.eye === 'red' ? MERCY_TEXT.redSpare : MERCY_TEXT.greenSpare,
-    t: duration, max: duration, col: MERCY_RULES.eyes[e.kneel.eye] };
-}
-function mercyExtraCoins(x, y, coins) {
-  const cfg = MERCY_RULES.spare, count = Math.ceil(coins / cfg.coinValue);
-  for (let i = 0; i < count; i++) {
-    const angle = i * MERCY_RULES.fx.goldenAngle, r = cfg.coinSpread * Math.sqrt((i + 1) / count);
-    drop('coin', x + Math.cos(angle) * r, y + Math.sin(angle) * r, Math.min(cfg.coinValue, coins - i * cfg.coinValue));
-  }
-}
-function mercySpareDrop(e) {
-  G.mercy.token = { eye: e.kneel.eye }; G.mercy.salvage = bossSalvage(e);
-  G.mercy.parts = (e.parts || []).map(q => ({ ...q }));
-  mercyExtraCoins(e.x, e.y, MERCY_RULES.spare.coins);
-}
-function mercyCanRepayBoss(e) {
-  return !!e && !e.dead && e.hp > 0 && !e.emperor && !e.entering && !e.burrowing && !e.underground && !bossHeld(e);
-}
-function mercySummonAlly(trigger) {
-  const state = G.mercy, stats = G.mercyStats.ally, cfg = MERCY_RULES.ally, p = G.player;
-  if (state.ally || (cfg.extraTrigger ? (stats.visits?.length || 0) >= cfg.maxVisits : stats.at !== null)) return false;
-  const angle = p.angle || 0, x = p.x - Math.cos(angle) * cfg.emergeDistance, y = p.y - Math.sin(angle) * cfg.emergeDistance;
-  state.ally = { x, y, angle, ang: angle, size: cfg.size, r: cfg.radius, age: 0, life: cfg.duration,
-    phase: 'emerge', phaseT: cfg.emerge, chargeIndex: 0, target: null, hit: new Set(), hitBoss: false,
-    mercyRig: mercyRig(state.parts, x, y, angle, cfg.size) };
-  if (stats.at === null) { stats.at = G.t; stats.trigger = trigger; }
-  if (cfg.extraTrigger) {
-    if (!stats.visits) stats.visits = [];
-    stats.visits.push({ at: G.t, trigger, charges: 0, bossHits: 0, bossDamage: 0, kills: 0, finalBossHits: 0 });
-  }
-  mercyDust(x, y, cfg.size);
-  if (G.banner?.kind === 'warn' || G.banner?.kind === 'boss') toast({ text: MERCY_TEXT.repay + ' · ' + MERCY_TEXT.repaySub, t: MERCY_RULES.presentation.bannerLife, priority: 3 });
-  else G.banner = { kind: 'info', title: MERCY_TEXT.repay, sub: MERCY_TEXT.repaySub, t: MERCY_RULES.presentation.bannerLife, max: MERCY_RULES.presentation.bannerLife, col: MERCY_RULES.eyes.green };
-  return true;
-}
-function mercyAllyLaneHalfWidth() {
-  const cfg = MERCY_RULES.ally;
-  return cfg.extraTrigger ? cfg.laneHalfWidth : cfg.legacyLaneHalfWidth;
-}
-function mercyAllyRecord(key, amount = 1) {
-  const stats = G.mercyStats.ally;
-  if (key !== 'finalBossHits') stats[key] += amount;
-  if (MERCY_RULES.ally.extraTrigger && stats.visits?.length) stats.visits[stats.visits.length - 1][key] += amount;
-}
-function mercyLaneDistance(x, y, x0, y0, x1, y1) {
-  const dx = x1 - x0, dy = y1 - y0, len = dx * dx + dy * dy;
-  const t = len > 0 ? Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / len)) : 0;
-  return Math.hypot(x - x0 - dx * t, y - y0 - dy * t);
-}
-function mercyChargeAim(a) {
-  const cfg = MERCY_RULES.ally, boss = G.boss;
-  a.target = mercyCanRepayBoss(boss) ? boss : null;
-  if (a.target) { a.angle = Math.atan2(boss.y - a.y, boss.x - a.x); return; }
-  let best = -1, angle = G.player.angle || 0;
-  for (let i = 0; i < cfg.directions; i++) {
-    const direction = i * TAU / cfg.directions, x1 = a.x + Math.cos(direction) * cfg.chargeSpeed * cfg.chargeDuration, y1 = a.y + Math.sin(direction) * cfg.chargeSpeed * cfg.chargeDuration;
-    let count = 0;
-    for (const e of G.enemies) if (!e.boss && !e.dead && !e.entering && (!cfg.extraTrigger || Math.hypot(e.x - a.x, e.y - a.y) <= cfg.aimRadius) && mercyLaneDistance(e.x, e.y, a.x, a.y, x1, y1) < mercyAllyLaneHalfWidth() + e.r) count++;
-    if (count > best) { best = count; angle = direction; }
-  }
-  a.angle = angle;
-}
-function mercyChargeHit(a, oldX, oldY) {
-  const cfg = MERCY_RULES.ally, stats = G.mercyStats.ally;
-  for (const e of G.enemies) {
-    if (e.dead || e.entering || a.hit.has(e) || e.colossusJoint || mercyLaneDistance(e.x, e.y, oldX, oldY, a.x, a.y) > mercyAllyLaneHalfWidth() + e.r) continue;
-    if (e.boss) {
-      if (a.hitBoss || !mercyCanRepayBoss(e)) continue;
-      a.hitBoss = true; a.hit.add(e);
-      const hp = e.hp;
-      hitEnemy(e, e.maxHp * cfg.bossHpRatio, { source: 'ally:mercy', flat: true, crit: false });
-      mercyAllyRecord('bossHits'); mercyAllyRecord('bossDamage', Math.max(0, hp - Math.max(0, e.hp)));
-      if (e.final) mercyAllyRecord('finalBossHits');
-      if (e.kind === 'queen' && !(e.vulnerableT > 0) && e.st !== 'gaze') openBossWeakPoint(e, 0, cfg.weakTime);
-      a.x = e.x - Math.cos(a.angle) * (e.r + a.r); a.y = e.y - Math.sin(a.angle) * (e.r + a.r);
-      a.phase = 'clamp'; a.phaseT = cfg.clamp;
-      floatText(e.x, e.y - e.r, MERCY_TEXT.clamp, MERCY_RULES.eyes.green, MERCY_RULES.presentation.titleSize, MERCY_RULES.presentation.textLife);
-    } else {
-      a.hit.add(e);
-      hitEnemy(e, allyDamage(e, cfg.damage), { source: 'ally:mercy', crit: false, kx: Math.cos(a.angle) * cfg.knock, ky: Math.sin(a.angle) * cfg.knock });
-      if (e.dead) mercyAllyRecord('kills');
-    }
-  }
-}
-function mercyFollow(a, dt) {
-  const p = G.player, cfg = MERCY_RULES.ally, angle = p.angle || 0;
-  const x = p.x - Math.cos(angle) * cfg.followDistance, y = p.y - Math.sin(angle) * cfg.followDistance, distance = Math.hypot(x - a.x, y - a.y);
-  if (!(distance > 0)) return;
-  const move = Math.min(distance, cfg.followSpeed * dt), direction = Math.atan2(y - a.y, x - a.x);
-  a.x += Math.cos(direction) * move; a.y += Math.sin(direction) * move; a.angle = direction;
-}
-function mercyUpdateAlly(pdt) {
-  const state = G.mercy, a = state.ally, cfg = MERCY_RULES.ally;
-  if (!a || !(pdt > 0)) return;
-  if (G.won || G.escaped || G.emperor || G.player.hp <= 0 || G.endT > 0) { a.phase = 'leave'; a.ang = a.angle; mercyBurrow(a, 'green'); state.ally = null; return; }
-  // 按状态边界分步；大步长与正常帧率同样只冲三次，不跨过瞄准或钳住时间。
-  let left = pdt;
-  while (left > 1e-9 && a.age < cfg.duration) {
-    if (a.age >= cfg.leaveAt - 1e-9 && a.phase !== 'leave') { a.age = Math.max(a.age, cfg.leaveAt); a.phase = 'leave'; a.phaseT = cfg.duration - a.age; mercyDust(a.x, a.y, a.size); }
-    if (a.phase !== 'leave' && a.chargeIndex < cfg.chargeAt.length && a.age >= cfg.chargeAt[a.chargeIndex] - 1e-9) {
-      a.chargeIndex++; mercyAllyRecord('charges'); a.phase = 'aim'; a.phaseT = cfg.aim; a.hit.clear(); a.hitBoss = false; mercyChargeAim(a);
-    }
-    let boundary = Math.min(cfg.duration, a.phase === 'leave' ? cfg.duration : cfg.leaveAt);
-    if (a.phase !== 'leave' && a.chargeIndex < cfg.chargeAt.length) boundary = Math.min(boundary, cfg.chargeAt[a.chargeIndex]);
-    if (a.phaseT > 0) boundary = Math.min(boundary, a.age + a.phaseT);
-    const dt = Math.min(left, Math.max(0, boundary - a.age));
-    if (!(dt > 0)) break;
-    const phaseAtStep = a.phase;
-    if (a.phase === 'aim' && mercyCanRepayBoss(a.target)) a.angle = Math.atan2(a.target.y - a.y, a.target.x - a.x);
-    if (a.phase === 'charge') {
-      const oldX = a.x, oldY = a.y;
-      a.x += Math.cos(a.angle) * cfg.chargeSpeed * dt; a.y += Math.sin(a.angle) * cfg.chargeSpeed * dt;
-      mercyChargeHit(a, oldX, oldY);
-      // 击杀最终首领会在这一击里启动谢幕；立即收走实体，免得下一帧谢幕暂停更新后还留着冲锋。
-      if (G.won || G.escaped || G.emperor || G.player.hp <= 0 || G.endT > 0) { a.phase = 'leave'; a.ang = a.angle; mercyBurrow(a, 'green'); state.ally = null; return; }
-    } else if (a.phase === 'follow') mercyFollow(a, dt);
-    a.age += dt; left -= dt; a.life = Math.max(0, cfg.duration - a.age);
-    if (a.phase === phaseAtStep && a.phaseT > 0) a.phaseT = Math.max(0, a.phaseT - dt);
-    if (a.phaseT <= 1e-9) {
-      if (a.phase === 'aim') { if (cfg.extraTrigger) mercyChargeAim(a); a.phase = 'charge'; a.phaseT = cfg.chargeDuration; }
-      else if (a.phase !== 'leave') { a.phase = 'follow'; a.phaseT = 0; }
-    }
-  }
-  a.ang = a.angle;
-  Object.assign(a.mercyRig, { x: a.x, y: a.y, ang: a.angle, st: a.phase === 'charge' ? 'charge' : 'walk', sub: a.phase === 'charge' ? 1 : 0 });
-  if (a.age >= cfg.duration - 1e-9) state.ally = null;
-}
-function mercySpawnGrudge() {
-  const state = G.mercy, stats = G.mercyStats.grudge, cfg = MERCY_RULES.grudge, p = G.player;
-  if (stats.at !== null || stats.skipped || stats.escaped || stats.killed) return false;
-  const angle = p.angle || 0, e = spawnEnemy('charger', p.x - Math.cos(angle) * cfg.distance, p.y - Math.sin(angle) * cfg.distance, { elite: true });
-  if (!e) { state.grudgeRetryAt = G.t + cfg.retry; return false; }
-  e.mercyGrudge = true; e.name = MERCY_TEXT.grudge; e.img = 'boss_scorpion'; e.size = cfg.size; e.r = cfg.radius; e.col = cfg.color;
-  e.hp *= cfg.eliteHpMul; e.maxHp = e.hp; e.speed *= cfg.speedMul; e.stunT = cfg.emerge; e.mercyEmergeT = cfg.emerge;
-  e.deadline = Math.min(G.t + cfg.duration, mercyFinalWarnAt());
-  e.mercyRig = mercyRig(state.parts, e.x, e.y, e.ang, e.size);
-  state.grudge = e; stats.at = G.t; stats.hp = e.hp;
-  if (cfg.burrowing) {
-    e.mercyNextBurrow = 1 - cfg.healthStep; e.mercyHintUntil = G.t + cfg.hintDuration;
-    mercyStartGrudgeBurrow(e, true);
-  }
-  mercyDust(e.x, e.y, e.size);
-  toast({ text: MERCY_TEXT.grudge + ' · ' + MERCY_TEXT.grudgeSub, priority: 3 });
-  return true;
-}
-function mercyGrudgeKilled(e) {
-  if (!e?.mercyGrudge || G.mercyStats.grudge.killed) return;
-  const stats = G.mercyStats.grudge;
-  stats.killed = true; stats.ttk = Math.max(0, G.t - stats.at);
-  drop('chest', e.x, e.y, GROWTH.bossChestMinItems, G.mercy.salvage);
-  mercyExtraCoins(e.x, e.y, MERCY_RULES.grudge.coins);
-  floatText(e.x, e.y - e.r, MERCY_TEXT.grudgeKilled, MERCY_RULES.eyes.green, MERCY_RULES.presentation.titleSize, MERCY_RULES.presentation.textLife);
-}
-function mercyGrudgeInvulnerable(e) {
-  return !!(MERCY_RULES.grudge.burrowing && e?.mercyGrudge && e.mercyBurrowT > 0);
-}
-function mercyGrudgeDamageMul(e, angle) {
-  if (!MERCY_RULES.grudge.burrowing || !e?.mercyGrudge) return 1;
-  return bossPartZone(e, angle) === 'back' ? 1 : MERCY_RULES.grudge.bodyDamageMul;
-}
-function mercyStartGrudgeBurrow(e, entry = false) {
-  const cfg = MERCY_RULES.grudge;
-  e.mercyBurrowT = entry ? cfg.entryBurrow : cfg.hurtBurrow;
-  e.mercyBurrowEntry = entry; e.underground = true; e.entering = true;
-  e.kx = 0; e.ky = 0; e.stunT = 0; e.st = 'walk'; e.stT = 0;
-  mercyDust(e.x, e.y, e.size);
-  if (!entry) {
-    const angle = rand(0, TAU), distance = rand(cfg.relocateMin, cfg.relocateMax);
-    e.x = G.player.x + Math.cos(angle) * distance; e.y = G.player.y + Math.sin(angle) * distance;
-    e.ang = Math.atan2(G.player.y - e.y, G.player.x - e.x);
-  }
-}
-function mercyGrudgeAfterHit(e) {
-  const cfg = MERCY_RULES.grudge;
-  if (!cfg.burrowing || !e?.mercyGrudge || e.dead || !(e.hp > 0) || mercyGrudgeInvulnerable(e)) return;
-  if (e.mercyNextBurrow > 1e-9 && e.hp <= e.maxHp * e.mercyNextBurrow) {
-    e.mercyNextBurrow -= cfg.healthStep;
-    mercyStartGrudgeBurrow(e);
-  }
-}
-function mercyStepGrudgeBurrow(e, dt) {
-  const cfg = MERCY_RULES.grudge;
-  if (!mercyGrudgeInvulnerable(e)) { mercyGrudgeAfterHit(e); return; }
-  e.mercyBurrowT = Math.max(0, e.mercyBurrowT - dt);
-  if (e.mercyBurrowT > 1e-9) return;
-  e.mercyBurrowT = 0; e.underground = false; e.entering = false;
-  mercyDust(e.x, e.y, e.size);
-  // 后半段地下红圈已预告落点，冒出当刻只结算一次毒尾扫。
-  if (!e.mercyBurrowEntry) {
-    if (Math.hypot(G.player.x - e.x, G.player.y - e.y) <= cfg.sweepRadius + G.player.r) {
-      hurtPlayer(cfg.sweepDamage * cfg.sweepDamageMul, e.x, e.y, 'enemy:mercy');
-    }
-    e.mercySweepAt = G.t;
-  }
-}
-function mercyUpdateGrudge(dt) {
-  const state = G.mercy, stats = G.mercyStats.grudge, cfg = MERCY_RULES.grudge, e = state.grudge;
-  if (e && !e.dead) {
-    if (!cfg.burrowing) {
-      e.mercyEmergeT = Math.max(0, e.mercyEmergeT - dt);
-      Object.assign(e.mercyRig, { x: e.x, y: e.y, ang: e.ang, st: e.st, sub: e.sub });
-    }
-    if (G.t >= e.deadline || G.warn || G.won || G.escaped || G.player.hp <= 0) {
-      e.dead = true; stats.escaped = true; mercyBurrow(e, 'red'); toast({ text: MERCY_TEXT.grudgeEscaped, priority: 3 });
-      return;
-    }
-    if (cfg.burrowing) {
-      mercyStepGrudgeBurrow(e, dt);
-      e.mercyEmergeT = Math.max(0, e.mercyEmergeT - dt);
-      Object.assign(e.mercyRig, { x: e.x, y: e.y, ang: e.ang, st: e.st, sub: e.sub });
-    }
-    return;
-  }
-  if (stats.at !== null || stats.skipped || state.act3At === null) return;
-  const warnAt = mercyFinalWarnAt();
-  if (G.t >= warnAt - cfg.skipBeforeWarn) { stats.skipped++; return; }
-  const appearAt = Math.min(state.act3At + cfg.delay, warnAt - cfg.duration);
-  if (G.t < appearAt || G.t < state.grudgeRetryAt || G.boss || G.warn || G.finale || G.won || G.escaped || G.emperor || G.player.hp <= 0) return;
-  mercySpawnGrudge();
-}
-function updateMercy(pdt, dt) {
-  if (!mercyEnabled()) return;
-  const state = G.mercy, stats = G.mercyStats, p = G.player;
-  for (const fx of state.fx) fx.life -= pdt;
-  compact(state.fx, fx => fx.life > 0);
-  if (state.act3At === null && currentZoneIndex() >= 2 && (!MERCY_RULES.ally.extraTrigger || G.t >= BOSS_TIMES[1])) state.act3At = G.t;
-  if (state.finalSeenAt === null && G.boss?.final && !G.boss.entering && !G.boss.dead) state.finalSeenAt = G.t;
-  if (state.token?.eye === 'green' && state.act3At !== null && (MERCY_RULES.ally.extraTrigger || stats.ally.at === null) && !G.won && !G.escaped && !G.emperor && p.hp > 0 && !(G.endT > 0)) {
-    const cfg = MERCY_RULES.ally, visits = stats.ally.visits || [];
-    const finalDue = state.finalSeenAt !== null && G.t - state.finalSeenAt >= cfg.finalDelay;
-    const trigger = cfg.extraTrigger
-      ? finalDue && !visits.some(v => v.trigger === 'final') ? 'final'
-        : visits.length === 0 ? p.hp < p.maxHp * cfg.hpRatio ? 'hp' : G.t - state.act3At >= cfg.act3Delay ? 'act3' : null : null
-      : p.hp < p.maxHp * cfg.hpRatio ? 'hp' : finalDue ? 'final' : null;
-    if (trigger) mercySummonAlly(trigger);
-  }
-  mercyUpdateAlly(pdt);
-  if (state.token?.eye === 'red') mercyUpdateGrudge(Math.max(0, dt));
-}
-function mercyDashView(view) { return bossBegging(G?.boss) ? { ...view, label: MERCY_TEXT.dash, mercy: true } : view; }
-function mercySheetText() {
-  if (!G?.mercy?.token) return '';
-  const stats = G.mercyStats;
-  if (stats.ally.at !== null) return MERCY_TEXT.repaidSheet;
-  if (stats.grudge.killed) return MERCY_TEXT.reclaimedSheet;
-  if (stats.grudge.escaped || stats.grudge.skipped) return MERCY_TEXT.escapedSheet;
-  return G.mercy.token.eye === 'red' ? MERCY_TEXT.redSheet : MERCY_RULES.ally.extraTrigger ? MERCY_TEXT.greenExtraSheet : MERCY_TEXT.greenSheet;
-}
-function mercyEndText(run) {
-  const stats = run?.mercyStats;
-  if (!stats?.outcome) return '';
-  if (stats.outcome === 'ride') return BOSS_RIDE_TEXT.mercyEnd;
-  if (stats.outcome === 'finish') return MERCY_TEXT.finishEnd;
-  if (stats.ally.at !== null) return MERCY_TEXT.repayEnd;
-  if (stats.grudge.killed) return MERCY_TEXT.reclaimedEnd;
-  if (stats.grudge.escaped || stats.grudge.skipped) return MERCY_TEXT.escapedEnd;
-  return MERCY_TEXT.spareEnd;
-}
-function debugMercy(cmd) {
-  if (!G?.mercy) return false;
-  G.mercyEnabled = true;
-  const state = G.mercy, boss = G.boss;
-  if (cmd === 'kneel') {
-    if (!boss || boss.kind !== 'scorpion' || boss.dead) return false;
-    mercyArmBoss(boss);
-    if (!boss.kneel || boss.kneel.phase !== 'armed') return false;
-    boss.hp = boss.kneel.lockHp; boss.kneel.pending = true;
-    return beginBossKneel(boss);
-  }
-  if (cmd === 'green' || cmd === 'red') {
-    state.forceEye = cmd;
-    if (boss?.kind === 'scorpion' && !boss.dead && boss.kneel?.phase !== 'done') {
-      if (!boss.kneel) mercyArmBoss(boss);
-      if (boss.kneel.phase === 'armed') { boss.hp = boss.kneel.lockHp; boss.kneel.pending = true; beginBossKneel(boss); }
-      if (bossBegging(boss)) { boss.kneel.eye = cmd; mercySpare(boss); return true; }
-    }
-    state.token = { eye: cmd };
-    state.parts = BOSS_PARTS.scorpion.map((q, i) => ({ id: q.id, zone: q.zone, acc: cmd === 'red' && i < MERCY_RULES.eyes.redParts ? q.threshold : 0, max: q.threshold, broken: cmd === 'red' && i < MERCY_RULES.eyes.redParts, brokenAt: null, smokeT: 0, smokeAcc: 0 }));
-    state.salvage = { kind: 'scorpion', parts: state.parts.filter(q => q.broken).map(q => q.id) };
-    G.mercyStats.outcome = 'spare'; G.mercyStats.eye = cmd; G.mercyStats.parts = state.salvage.parts.slice();
-    return true;
-  }
-  if (cmd === 'repay') { if (!state.token) debugMercy('green'); return mercySummonAlly('debug'); }
-  if (cmd === 'grudge') { if (!state.token) debugMercy('red'); return mercySpawnGrudge(); }
-  return false;
-}
-
-// ---- src/game/boss-kneel.js ----
-// 首领跪地底座：一次性锁血、暂停招式、冲刺接触和按结局分派
-
-function armBossKneel(e, { owner, lockRatio, duration }) {
-  if (!e?.boss || e.dead || e.kneel || !(e.maxHp > 0)) return false;
-  e.kneel = { owner, phase: 'armed', lockHp: e.maxHp * lockRatio, duration, left: duration,
-    at: null, dashSerial: null, eye: null, pending: false, outcome: null };
-  return true;
-}
-function bossKneeling(e) { return e?.kneel?.phase === 'down'; }
-function bossHeld(e) { return bossKneeling(e) || e?.kneel?.phase === 'ridden'; }
-function kneelUntargetable(e) { return e?.kneel?.phase === 'ridden' || bossKneeling(e) && MERCY_RULES.kneel.retarget; }
-function bossBegging(e) { return e?.kneel?.phase === 'down' && e.kneel.owner === 'mercy'; }
-// 分派在调用时读取，避免构建和模拟拼接导入环时碰到尚未初始化的常量。
-function kneelHandler(e) { return e.kneel.owner === 'mercy' ? MERCY_KNEEL : e.kneel.owner === 'ride' ? RIDE_KNEEL : null; }
-function kneelClampDamage(e, dmg) {
-  const k = e?.kneel;
-  if (!k || k.phase !== 'armed' || kneelHandler(e)?.allow?.(e) === false) return dmg;
-  const room = Math.max(0, e.hp - k.lockHp);
-  if (dmg > room) { k.pending = true; return room; }
-  return dmg;
-}
-function kneelClearState(e) {
-  for (const key of ['vulnerableT', 'weakWindow', 'weakMul', 'flinchT', 'stunT', 'blindT', 'overheat', 'clashDownUntil']) e[key] = 0;
-  e.kx = 0; e.ky = 0;
-}
-function beginBossKneel(e) {
-  const k = e?.kneel;
-  if (!k || k.phase !== 'armed' || e.dead || e.entering || !(e.hp > 0)) return false;
-  if (kneelHandler(e)?.allow?.(e) === false) { k.pending = false; return false; }
-  k.pending = false; k.phase = 'down'; k.left = k.duration; k.at = G.t;
-  k.dashSerial = G.report?.actions?.dash || 0;
-  e.st = 'mercy'; e.stT = 0; e.sub = 0; kneelClearState(e);
-  for (const b of G.ebullets) if (b.source === 'boss') b.dead = true;
-  kneelHandler(e)?.begin?.(e);
-  return true;
-}
-function updateBossKneel(e, dt) {
-  if (e?.kneel?.phase === 'ridden') return true;
-  if (e?.kneel?.pending) beginBossKneel(e);
-  if (!bossKneeling(e)) return false;
-  const k = e.kneel;
-  if (Number.isFinite(dt) && dt > 0) k.left = Math.max(0, k.left - dt);
-  if (k.left <= 0) kneelHandler(e)?.timeout?.(e);
-  return true;
-}
-function kneelTouches(x0, y0, x1, y1, e, radius) {
-  const dx = x1 - x0, dy = y1 - y0, length2 = dx * dx + dy * dy;
-  const t = length2 > 0 ? Math.max(0, Math.min(1, ((e.x - x0) * dx + (e.y - y0) * dy) / length2)) : 0;
-  return (e.x - x0 - dx * t) ** 2 + (e.y - y0 - dy * t) ** 2 <= radius ** 2;
-}
-function kneelDashContact(x0, y0, x1, y1) {
-  const e = G?.boss, p = G?.player;
-  if (!p || !bossKneeling(e) || e.dead || (G.report?.actions?.dash || 0) <= e.kneel.dashSerial) return false;
-  if (!kneelTouches(x0, y0, x1, y1, e, e.r + p.r + MERCY_RULES.kneel.pad)) return false;
-  kneelHandler(e)?.contact?.(e);
-  return true;
-}
-function standUpBoss(e) {
-  if (!e?.kneel || e.dead || !(e.hp > 0)) return false;
-  const pushPlayer = e.kneel.phase === 'ridden' || e.kneel.owner === 'ride';
-  e.kneel.phase = 'done'; e.kneel.pending = false; e.kneel.left = 0; e.kneel.outcome = 'stand';
-  kneelClearState(e); nextBossPhase(e);
-  // 骑乘中断或本线跪地超时都避免贴身撞伤；旧饶命站起行为保留。
-  if (pushPlayer && G?.player) {
-    const p = G.player, angle = Math.atan2(p.y - e.y, p.x - e.x), distance = e.r + p.r + BOSS_RIDE.standPad;
-    if (Math.hypot(p.x - e.x, p.y - e.y) < distance) { p.x = e.x + Math.cos(angle) * distance; p.y = e.y + Math.sin(angle) * distance; }
-    p.invuln = Math.max(p.invuln, BOSS_RIDE.dismountInvuln);
-  }
-  return true;
-}
-function kneelLeft(e) { return bossKneeling(e) ? Math.max(0, e.kneel.left) : 0; }
-
 // ---- src/data/cord.js ----
 // 导爆索独立规则：距离采样、闭环门槛、引爆反馈与进化火海，不影响公共战斗数值
 const CORD_RULES = Object.freeze({
@@ -12094,15 +11485,906 @@ function spawnBoss(i) {
   return true;
 }
 
+// ---- src/game/mercy.js ----
+// 毒蝎求饶的两种结局：补刀、放走后的绿眼报恩和红眼记仇
+
+function initMercy() {
+  G.mercyEnabled = MERCY_RULES.enabled && !G.practice && (meta?.wins || 0) >= MERCY_RULES.winsRequired;
+  G.mercy = { token: null, salvage: null, parts: null, act3At: null, finalSeenAt: null, ally: null, grudge: null, fx: [], forceEye: null, grudgeRetryAt: 0 };
+  G.mercyStats = { kneels: 0, kneelAt: null, eye: null, parts: [], outcome: null, finishDelay: null, armAt: null, endAt: null,
+    ally: { at: null, trigger: null, charges: 0, bossHits: 0, bossDamage: 0, kills: 0 },
+    grudge: { at: null, hp: null, killed: false, ttk: null, escaped: false, skipped: 0 } };
+}
+function mercyEnabled() { return !!G?.mercy && !G.practice && !!G.mercyEnabled; }
+function mercyArmBoss(e) {
+  if (!mercyEnabled() || e?.final || !MERCY_RULES.bosses.includes(e?.kind)) return false;
+  if (!armBossKneel(e, { owner: 'mercy', lockRatio: MERCY_RULES.kneel.lockRatio, duration: MERCY_RULES.kneel.duration })) return false;
+  G.mercyStats.armAt = G.t;
+  return true;
+}
+function mercyKneelCue(e) { return rideCanMount(e) ? BOSS_RIDE_TEXT.redCue : e.kneel.eye === 'red' ? MERCY_TEXT.redCue : MERCY_TEXT.greenCue; }
+function mercyKneelHint(e) {
+  if (!bossBegging(e) || G.practice) return;
+  if (rideCanMount(e)) { rideKneelHint(e); return; }
+  const hints = meta.hints && typeof meta.hints === 'object' ? meta.hints : (meta.hints = {});
+  if (hints.mercyKneel) return;
+  hints.mercyKneel = true; saveMeta();
+  toast({ text: MERCY_TEXT.hint, t: MERCY_RULES.presentation.hintLife, priority: 3 });
+}
+function mercyBegin(e) {
+  const k = e.kneel, state = G.mercy, stats = G.mercyStats, cfg = MERCY_RULES.presentation;
+  const broken = (e.parts || []).filter(q => q.broken);
+  k.eye = state.forceEye || (broken.length >= MERCY_RULES.eyes.redParts ? 'red' : 'green');
+  state.parts = (e.parts || []).map(q => ({ ...q })); state.salvage = bossSalvage(e);
+  stats.kneels++; stats.kneelAt = G.t; stats.eye = k.eye; stats.parts = broken.map(q => q.id);
+  const y = e.y - e.size / 2 - cfg.textLift, color = MERCY_RULES.eyes[k.eye];
+  floatText(e.x, y, MERCY_TEXT.kneel, color, cfg.titleSize, cfg.textLife);
+  floatText(e.x, y - cfg.textLift, mercyKneelCue(e), color, cfg.cueSize, cfg.textLife);
+  mercyKneelHint(e);
+}
+function mercyFinish(e) {
+  if (rideCanMount(e)) { G.mercyStats.outcome = 'ride'; return rideMount(e); }
+  e.kneel.outcome = 'finish'; e.kneel.phase = 'done'; e.kneel.left = 0;
+  G.mercyStats.outcome = 'finish'; G.mercyStats.finishDelay = Math.max(0, G.t - e.kneel.at); G.mercyStats.endAt = G.t;
+  feedback('execute', { x: e.x, y: e.y, angle: Math.atan2(e.y - G.player.y, e.x - G.player.x) });
+  floatText(e.x, e.y - e.r - MERCY_RULES.presentation.textLift, MERCY_TEXT.finish, MERCY_RULES.eyes.red, MERCY_RULES.presentation.titleSize, MERCY_RULES.presentation.textLife);
+  finishBossBy(e, 'mercy:finish');
+}
+function mercySpare(e) {
+  e.kneel.outcome = 'spare'; e.kneel.phase = 'done'; e.kneel.left = 0;
+  G.mercyStats.outcome = 'spare'; G.mercyStats.endAt = G.t;
+  finishBossBy(e, 'mercy:spare');
+}
+const MERCY_KNEEL = { begin: mercyBegin, contact: mercyFinish, timeout: mercySpare };
+function mercyFinalWarnAt() { return BOSS_TIMES[2] - 3; }
+function mercyBossSpared(e) { return e?.kneel?.owner === 'mercy' && e.kneel.outcome === 'spare'; }
+function mercyRig(parts, x, y, angle, size) {
+  return { kind: 'scorpion', x, y, ang: angle, size, st: 'walk', sub: 0, vulnerableT: 0, stunT: 0,
+    parts: (parts || BOSS_PARTS.scorpion.map(q => ({ id: q.id, zone: q.zone, acc: 0, max: q.threshold, broken: false }))).map(q => ({ smokeT: 0, smokeAcc: 0, brokenAt: null, ...q })) };
+}
+function mercyDust(x, y, size) {
+  const cfg = MERCY_RULES.fx;
+  for (let i = 0; i < cfg.dustCount; i++) {
+    const angle = i * cfg.goldenAngle, distance = Math.sqrt((i + 1) / cfg.dustCount) * size / 2;
+    smoke(x + Math.cos(angle) * distance, y + Math.sin(angle) * distance, cfg.dustSize, cfg.dustLife);
+  }
+}
+function mercyBurrow(e, eye) {
+  const life = MERCY_RULES.spare.burrow, size = e.size || MERCY_RULES.grudge.size;
+  const fx = { kind: 'burrow', x: e.x, y: e.y, ang: e.ang || 0, size, eye, life, max: life,
+    mercyRig: mercyRig(e.mercyRig?.parts || e.parts || G.mercy.parts, e.x, e.y, e.ang || 0, size) };
+  if (G.mercy.fx.length >= MERCY_RULES.fx.cap) G.mercy.fx.shift();
+  G.mercy.fx.push(fx); mercyDust(e.x, e.y, size);
+}
+function mercySpareVisual(e) {
+  mercyBurrow(e, e.kneel.eye);
+  const duration = MERCY_RULES.presentation.bannerLife;
+  G.banner = { kind: 'info', title: MERCY_TEXT.spare, sub: e.kneel.eye === 'red' ? MERCY_TEXT.redSpare : MERCY_TEXT.greenSpare,
+    t: duration, max: duration, col: MERCY_RULES.eyes[e.kneel.eye] };
+}
+function mercyExtraCoins(x, y, coins) {
+  const cfg = MERCY_RULES.spare, count = Math.ceil(coins / cfg.coinValue);
+  for (let i = 0; i < count; i++) {
+    const angle = i * MERCY_RULES.fx.goldenAngle, r = cfg.coinSpread * Math.sqrt((i + 1) / count);
+    drop('coin', x + Math.cos(angle) * r, y + Math.sin(angle) * r, Math.min(cfg.coinValue, coins - i * cfg.coinValue));
+  }
+}
+function mercySpareDrop(e) {
+  G.mercy.token = { eye: e.kneel.eye }; G.mercy.salvage = bossSalvage(e);
+  G.mercy.parts = (e.parts || []).map(q => ({ ...q }));
+  mercyExtraCoins(e.x, e.y, MERCY_RULES.spare.coins);
+}
+function mercyCanRepayBoss(e) {
+  return !!e && !e.dead && e.hp > 0 && !e.emperor && !e.entering && !e.burrowing && !e.underground && !bossHeld(e);
+}
+function mercySummonAlly(trigger) {
+  const state = G.mercy, stats = G.mercyStats.ally, cfg = MERCY_RULES.ally, p = G.player;
+  if (state.ally || (cfg.extraTrigger ? (stats.visits?.length || 0) >= cfg.maxVisits : stats.at !== null)) return false;
+  const angle = p.angle || 0, x = p.x - Math.cos(angle) * cfg.emergeDistance, y = p.y - Math.sin(angle) * cfg.emergeDistance;
+  state.ally = { x, y, angle, ang: angle, size: cfg.size, r: cfg.radius, age: 0, life: cfg.duration,
+    phase: 'emerge', phaseT: cfg.emerge, chargeIndex: 0, target: null, hit: new Set(), hitBoss: false,
+    mercyRig: mercyRig(state.parts, x, y, angle, cfg.size) };
+  if (stats.at === null) { stats.at = G.t; stats.trigger = trigger; }
+  if (cfg.extraTrigger) {
+    if (!stats.visits) stats.visits = [];
+    stats.visits.push({ at: G.t, trigger, charges: 0, bossHits: 0, bossDamage: 0, kills: 0, finalBossHits: 0 });
+  }
+  mercyDust(x, y, cfg.size);
+  if (G.banner?.kind === 'warn' || G.banner?.kind === 'boss') toast({ text: MERCY_TEXT.repay + ' · ' + MERCY_TEXT.repaySub, t: MERCY_RULES.presentation.bannerLife, priority: 3 });
+  else G.banner = { kind: 'info', title: MERCY_TEXT.repay, sub: MERCY_TEXT.repaySub, t: MERCY_RULES.presentation.bannerLife, max: MERCY_RULES.presentation.bannerLife, col: MERCY_RULES.eyes.green };
+  return true;
+}
+function mercyAllyLaneHalfWidth() {
+  const cfg = MERCY_RULES.ally;
+  return cfg.extraTrigger ? cfg.laneHalfWidth : cfg.legacyLaneHalfWidth;
+}
+function mercyAllyRecord(key, amount = 1) {
+  const stats = G.mercyStats.ally;
+  if (key !== 'finalBossHits') stats[key] += amount;
+  if (MERCY_RULES.ally.extraTrigger && stats.visits?.length) stats.visits[stats.visits.length - 1][key] += amount;
+}
+function mercyLaneDistance(x, y, x0, y0, x1, y1) {
+  const dx = x1 - x0, dy = y1 - y0, len = dx * dx + dy * dy;
+  const t = len > 0 ? Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / len)) : 0;
+  return Math.hypot(x - x0 - dx * t, y - y0 - dy * t);
+}
+function mercyChargeAim(a) {
+  const cfg = MERCY_RULES.ally, boss = G.boss;
+  a.target = mercyCanRepayBoss(boss) ? boss : null;
+  if (a.target) { a.angle = Math.atan2(boss.y - a.y, boss.x - a.x); return; }
+  let best = -1, angle = G.player.angle || 0;
+  for (let i = 0; i < cfg.directions; i++) {
+    const direction = i * TAU / cfg.directions, x1 = a.x + Math.cos(direction) * cfg.chargeSpeed * cfg.chargeDuration, y1 = a.y + Math.sin(direction) * cfg.chargeSpeed * cfg.chargeDuration;
+    let count = 0;
+    for (const e of G.enemies) if (!e.boss && !e.dead && !e.entering && (!cfg.extraTrigger || Math.hypot(e.x - a.x, e.y - a.y) <= cfg.aimRadius) && mercyLaneDistance(e.x, e.y, a.x, a.y, x1, y1) < mercyAllyLaneHalfWidth() + e.r) count++;
+    if (count > best) { best = count; angle = direction; }
+  }
+  a.angle = angle;
+}
+function mercyChargeHit(a, oldX, oldY) {
+  const cfg = MERCY_RULES.ally, stats = G.mercyStats.ally;
+  for (const e of G.enemies) {
+    if (e.dead || e.entering || a.hit.has(e) || e.colossusJoint || mercyLaneDistance(e.x, e.y, oldX, oldY, a.x, a.y) > mercyAllyLaneHalfWidth() + e.r) continue;
+    if (e.boss) {
+      if (a.hitBoss || !mercyCanRepayBoss(e)) continue;
+      a.hitBoss = true; a.hit.add(e);
+      const hp = e.hp;
+      hitEnemy(e, e.maxHp * cfg.bossHpRatio, { source: 'ally:mercy', flat: true, crit: false });
+      mercyAllyRecord('bossHits'); mercyAllyRecord('bossDamage', Math.max(0, hp - Math.max(0, e.hp)));
+      if (e.final) mercyAllyRecord('finalBossHits');
+      if (e.kind === 'queen' && !(e.vulnerableT > 0) && e.st !== 'gaze') openBossWeakPoint(e, 0, cfg.weakTime);
+      a.x = e.x - Math.cos(a.angle) * (e.r + a.r); a.y = e.y - Math.sin(a.angle) * (e.r + a.r);
+      a.phase = 'clamp'; a.phaseT = cfg.clamp;
+      floatText(e.x, e.y - e.r, MERCY_TEXT.clamp, MERCY_RULES.eyes.green, MERCY_RULES.presentation.titleSize, MERCY_RULES.presentation.textLife);
+    } else {
+      a.hit.add(e);
+      hitEnemy(e, allyDamage(e, cfg.damage), { source: 'ally:mercy', crit: false, kx: Math.cos(a.angle) * cfg.knock, ky: Math.sin(a.angle) * cfg.knock });
+      if (e.dead) mercyAllyRecord('kills');
+    }
+  }
+}
+function mercyFollow(a, dt) {
+  const p = G.player, cfg = MERCY_RULES.ally, angle = p.angle || 0;
+  const x = p.x - Math.cos(angle) * cfg.followDistance, y = p.y - Math.sin(angle) * cfg.followDistance, distance = Math.hypot(x - a.x, y - a.y);
+  if (!(distance > 0)) return;
+  const move = Math.min(distance, cfg.followSpeed * dt), direction = Math.atan2(y - a.y, x - a.x);
+  a.x += Math.cos(direction) * move; a.y += Math.sin(direction) * move; a.angle = direction;
+}
+function mercyUpdateAlly(pdt) {
+  const state = G.mercy, a = state.ally, cfg = MERCY_RULES.ally;
+  if (!a || !(pdt > 0)) return;
+  if (G.won || G.escaped || G.emperor || G.player.hp <= 0 || G.endT > 0) { a.phase = 'leave'; a.ang = a.angle; mercyBurrow(a, 'green'); state.ally = null; return; }
+  // 按状态边界分步；大步长与正常帧率同样只冲三次，不跨过瞄准或钳住时间。
+  let left = pdt;
+  while (left > 1e-9 && a.age < cfg.duration) {
+    if (a.age >= cfg.leaveAt - 1e-9 && a.phase !== 'leave') { a.age = Math.max(a.age, cfg.leaveAt); a.phase = 'leave'; a.phaseT = cfg.duration - a.age; mercyDust(a.x, a.y, a.size); }
+    if (a.phase !== 'leave' && a.chargeIndex < cfg.chargeAt.length && a.age >= cfg.chargeAt[a.chargeIndex] - 1e-9) {
+      a.chargeIndex++; mercyAllyRecord('charges'); a.phase = 'aim'; a.phaseT = cfg.aim; a.hit.clear(); a.hitBoss = false; mercyChargeAim(a);
+    }
+    let boundary = Math.min(cfg.duration, a.phase === 'leave' ? cfg.duration : cfg.leaveAt);
+    if (a.phase !== 'leave' && a.chargeIndex < cfg.chargeAt.length) boundary = Math.min(boundary, cfg.chargeAt[a.chargeIndex]);
+    if (a.phaseT > 0) boundary = Math.min(boundary, a.age + a.phaseT);
+    const dt = Math.min(left, Math.max(0, boundary - a.age));
+    if (!(dt > 0)) break;
+    const phaseAtStep = a.phase;
+    if (a.phase === 'aim' && mercyCanRepayBoss(a.target)) a.angle = Math.atan2(a.target.y - a.y, a.target.x - a.x);
+    if (a.phase === 'charge') {
+      const oldX = a.x, oldY = a.y;
+      a.x += Math.cos(a.angle) * cfg.chargeSpeed * dt; a.y += Math.sin(a.angle) * cfg.chargeSpeed * dt;
+      mercyChargeHit(a, oldX, oldY);
+      // 击杀最终首领会在这一击里启动谢幕；立即收走实体，免得下一帧谢幕暂停更新后还留着冲锋。
+      if (G.won || G.escaped || G.emperor || G.player.hp <= 0 || G.endT > 0) { a.phase = 'leave'; a.ang = a.angle; mercyBurrow(a, 'green'); state.ally = null; return; }
+    } else if (a.phase === 'follow') mercyFollow(a, dt);
+    a.age += dt; left -= dt; a.life = Math.max(0, cfg.duration - a.age);
+    if (a.phase === phaseAtStep && a.phaseT > 0) a.phaseT = Math.max(0, a.phaseT - dt);
+    if (a.phaseT <= 1e-9) {
+      if (a.phase === 'aim') { if (cfg.extraTrigger) mercyChargeAim(a); a.phase = 'charge'; a.phaseT = cfg.chargeDuration; }
+      else if (a.phase !== 'leave') { a.phase = 'follow'; a.phaseT = 0; }
+    }
+  }
+  a.ang = a.angle;
+  Object.assign(a.mercyRig, { x: a.x, y: a.y, ang: a.angle, st: a.phase === 'charge' ? 'charge' : 'walk', sub: a.phase === 'charge' ? 1 : 0 });
+  if (a.age >= cfg.duration - 1e-9) state.ally = null;
+}
+function mercySpawnGrudge() {
+  const state = G.mercy, stats = G.mercyStats.grudge, cfg = MERCY_RULES.grudge, p = G.player;
+  if (stats.at !== null || stats.skipped || stats.escaped || stats.killed) return false;
+  const angle = p.angle || 0, e = spawnEnemy('charger', p.x - Math.cos(angle) * cfg.distance, p.y - Math.sin(angle) * cfg.distance, { elite: true });
+  if (!e) { state.grudgeRetryAt = G.t + cfg.retry; return false; }
+  e.mercyGrudge = true; e.name = MERCY_TEXT.grudge; e.img = 'boss_scorpion'; e.size = cfg.size; e.r = cfg.radius; e.col = cfg.color;
+  e.hp *= cfg.eliteHpMul; e.maxHp = e.hp; e.speed *= cfg.speedMul; e.stunT = cfg.emerge; e.mercyEmergeT = cfg.emerge;
+  e.deadline = Math.min(G.t + cfg.duration, mercyFinalWarnAt());
+  e.mercyRig = mercyRig(state.parts, e.x, e.y, e.ang, e.size);
+  state.grudge = e; stats.at = G.t; stats.hp = e.hp;
+  if (cfg.burrowing) {
+    e.mercyNextBurrow = 1 - cfg.healthStep; e.mercyHintUntil = G.t + cfg.hintDuration;
+    mercyStartGrudgeBurrow(e, true);
+  }
+  mercyDust(e.x, e.y, e.size);
+  toast({ text: MERCY_TEXT.grudge + ' · ' + MERCY_TEXT.grudgeSub, priority: 3 });
+  return true;
+}
+function mercyGrudgeKilled(e) {
+  if (!e?.mercyGrudge || G.mercyStats.grudge.killed) return;
+  const stats = G.mercyStats.grudge;
+  stats.killed = true; stats.ttk = Math.max(0, G.t - stats.at);
+  drop('chest', e.x, e.y, GROWTH.bossChestMinItems, G.mercy.salvage);
+  mercyExtraCoins(e.x, e.y, MERCY_RULES.grudge.coins);
+  floatText(e.x, e.y - e.r, MERCY_TEXT.grudgeKilled, MERCY_RULES.eyes.green, MERCY_RULES.presentation.titleSize, MERCY_RULES.presentation.textLife);
+}
+function mercyGrudgeInvulnerable(e) {
+  return !!(MERCY_RULES.grudge.burrowing && e?.mercyGrudge && e.mercyBurrowT > 0);
+}
+function mercyGrudgeDamageMul(e, angle) {
+  if (!MERCY_RULES.grudge.burrowing || !e?.mercyGrudge) return 1;
+  return bossPartZone(e, angle) === 'back' ? 1 : MERCY_RULES.grudge.bodyDamageMul;
+}
+function mercyStartGrudgeBurrow(e, entry = false) {
+  const cfg = MERCY_RULES.grudge;
+  e.mercyBurrowT = entry ? cfg.entryBurrow : cfg.hurtBurrow;
+  e.mercyBurrowEntry = entry; e.underground = true; e.entering = true;
+  e.kx = 0; e.ky = 0; e.stunT = 0; e.st = 'walk'; e.stT = 0;
+  mercyDust(e.x, e.y, e.size);
+  if (!entry) {
+    const angle = rand(0, TAU), distance = rand(cfg.relocateMin, cfg.relocateMax);
+    e.x = G.player.x + Math.cos(angle) * distance; e.y = G.player.y + Math.sin(angle) * distance;
+    e.ang = Math.atan2(G.player.y - e.y, G.player.x - e.x);
+  }
+}
+function mercyGrudgeAfterHit(e) {
+  const cfg = MERCY_RULES.grudge;
+  if (!cfg.burrowing || !e?.mercyGrudge || e.dead || !(e.hp > 0) || mercyGrudgeInvulnerable(e)) return;
+  if (e.mercyNextBurrow > 1e-9 && e.hp <= e.maxHp * e.mercyNextBurrow) {
+    e.mercyNextBurrow -= cfg.healthStep;
+    mercyStartGrudgeBurrow(e);
+  }
+}
+function mercyStepGrudgeBurrow(e, dt) {
+  const cfg = MERCY_RULES.grudge;
+  if (!mercyGrudgeInvulnerable(e)) { mercyGrudgeAfterHit(e); return; }
+  e.mercyBurrowT = Math.max(0, e.mercyBurrowT - dt);
+  if (e.mercyBurrowT > 1e-9) return;
+  e.mercyBurrowT = 0; e.underground = false; e.entering = false;
+  mercyDust(e.x, e.y, e.size);
+  // 后半段地下红圈已预告落点，冒出当刻只结算一次毒尾扫。
+  if (!e.mercyBurrowEntry) {
+    if (Math.hypot(G.player.x - e.x, G.player.y - e.y) <= cfg.sweepRadius + G.player.r) {
+      hurtPlayer(cfg.sweepDamage * cfg.sweepDamageMul, e.x, e.y, 'enemy:mercy');
+    }
+    e.mercySweepAt = G.t;
+  }
+}
+function mercyUpdateGrudge(dt) {
+  const state = G.mercy, stats = G.mercyStats.grudge, cfg = MERCY_RULES.grudge, e = state.grudge;
+  if (e && !e.dead) {
+    if (!cfg.burrowing) {
+      e.mercyEmergeT = Math.max(0, e.mercyEmergeT - dt);
+      Object.assign(e.mercyRig, { x: e.x, y: e.y, ang: e.ang, st: e.st, sub: e.sub });
+    }
+    if (G.t >= e.deadline || G.warn || G.won || G.escaped || G.player.hp <= 0) {
+      e.dead = true; stats.escaped = true; mercyBurrow(e, 'red'); toast({ text: MERCY_TEXT.grudgeEscaped, priority: 3 });
+      return;
+    }
+    if (cfg.burrowing) {
+      mercyStepGrudgeBurrow(e, dt);
+      e.mercyEmergeT = Math.max(0, e.mercyEmergeT - dt);
+      Object.assign(e.mercyRig, { x: e.x, y: e.y, ang: e.ang, st: e.st, sub: e.sub });
+    }
+    return;
+  }
+  if (stats.at !== null || stats.skipped || state.act3At === null) return;
+  const warnAt = mercyFinalWarnAt();
+  if (G.t >= warnAt - cfg.skipBeforeWarn) { stats.skipped++; return; }
+  const appearAt = Math.min(state.act3At + cfg.delay, warnAt - cfg.duration);
+  if (G.t < appearAt || G.t < state.grudgeRetryAt || G.boss || G.warn || G.finale || G.won || G.escaped || G.emperor || G.player.hp <= 0) return;
+  mercySpawnGrudge();
+}
+function updateMercy(pdt, dt) {
+  if (!mercyEnabled()) return;
+  const state = G.mercy, stats = G.mercyStats, p = G.player;
+  for (const fx of state.fx) fx.life -= pdt;
+  compact(state.fx, fx => fx.life > 0);
+  if (state.act3At === null && currentZoneIndex() >= 2 && (!MERCY_RULES.ally.extraTrigger || G.t >= BOSS_TIMES[1])) state.act3At = G.t;
+  if (state.finalSeenAt === null && G.boss?.final && !G.boss.entering && !G.boss.dead) state.finalSeenAt = G.t;
+  if (state.token?.eye === 'green' && state.act3At !== null && (MERCY_RULES.ally.extraTrigger || stats.ally.at === null) && !G.won && !G.escaped && !G.emperor && p.hp > 0 && !(G.endT > 0)) {
+    const cfg = MERCY_RULES.ally, visits = stats.ally.visits || [];
+    const finalDue = state.finalSeenAt !== null && G.t - state.finalSeenAt >= cfg.finalDelay;
+    const trigger = cfg.extraTrigger
+      ? finalDue && !visits.some(v => v.trigger === 'final') ? 'final'
+        : visits.length === 0 ? p.hp < p.maxHp * cfg.hpRatio ? 'hp' : G.t - state.act3At >= cfg.act3Delay ? 'act3' : null : null
+      : p.hp < p.maxHp * cfg.hpRatio ? 'hp' : finalDue ? 'final' : null;
+    if (trigger) mercySummonAlly(trigger);
+  }
+  mercyUpdateAlly(pdt);
+  if (state.token?.eye === 'red') mercyUpdateGrudge(Math.max(0, dt));
+}
+function mercyDashView(view) { return bossBegging(G?.boss) ? { ...view, label: MERCY_TEXT.dash, mercy: true } : view; }
+function mercySheetText() {
+  if (!G?.mercy?.token) return '';
+  const stats = G.mercyStats;
+  if (stats.ally.at !== null) return MERCY_TEXT.repaidSheet;
+  if (stats.grudge.killed) return MERCY_TEXT.reclaimedSheet;
+  if (stats.grudge.escaped || stats.grudge.skipped) return MERCY_TEXT.escapedSheet;
+  return G.mercy.token.eye === 'red' ? MERCY_TEXT.redSheet : MERCY_RULES.ally.extraTrigger ? MERCY_TEXT.greenExtraSheet : MERCY_TEXT.greenSheet;
+}
+function mercyEndText(run) {
+  const stats = run?.mercyStats;
+  if (!stats?.outcome) return '';
+  if (stats.outcome === 'ride') return BOSS_RIDE_TEXT.mercyEnd;
+  if (stats.outcome === 'finish') return MERCY_TEXT.finishEnd;
+  if (stats.ally.at !== null) return MERCY_TEXT.repayEnd;
+  if (stats.grudge.killed) return MERCY_TEXT.reclaimedEnd;
+  if (stats.grudge.escaped || stats.grudge.skipped) return MERCY_TEXT.escapedEnd;
+  return MERCY_TEXT.spareEnd;
+}
+function debugMercy(cmd) {
+  if (!G?.mercy) return false;
+  G.mercyEnabled = true;
+  const state = G.mercy, boss = G.boss;
+  if (cmd === 'kneel') {
+    if (!boss || boss.kind !== 'scorpion' || boss.dead) return false;
+    mercyArmBoss(boss);
+    if (!boss.kneel || boss.kneel.phase !== 'armed') return false;
+    boss.hp = boss.kneel.lockHp; boss.kneel.pending = true;
+    return beginBossKneel(boss);
+  }
+  if (cmd === 'green' || cmd === 'red') {
+    state.forceEye = cmd;
+    if (boss?.kind === 'scorpion' && !boss.dead && boss.kneel?.phase !== 'done') {
+      if (!boss.kneel) mercyArmBoss(boss);
+      if (boss.kneel.phase === 'armed') { boss.hp = boss.kneel.lockHp; boss.kneel.pending = true; beginBossKneel(boss); }
+      if (bossBegging(boss)) { boss.kneel.eye = cmd; mercySpare(boss); return true; }
+    }
+    state.token = { eye: cmd };
+    state.parts = BOSS_PARTS.scorpion.map((q, i) => ({ id: q.id, zone: q.zone, acc: cmd === 'red' && i < MERCY_RULES.eyes.redParts ? q.threshold : 0, max: q.threshold, broken: cmd === 'red' && i < MERCY_RULES.eyes.redParts, brokenAt: null, smokeT: 0, smokeAcc: 0 }));
+    state.salvage = { kind: 'scorpion', parts: state.parts.filter(q => q.broken).map(q => q.id) };
+    G.mercyStats.outcome = 'spare'; G.mercyStats.eye = cmd; G.mercyStats.parts = state.salvage.parts.slice();
+    return true;
+  }
+  if (cmd === 'repay') { if (!state.token) debugMercy('green'); return mercySummonAlly('debug'); }
+  if (cmd === 'grudge') { if (!state.token) debugMercy('red'); return mercySpawnGrudge(); }
+  return false;
+}
+
+// ---- src/game/boss-kneel.js ----
+// 首领跪地底座：一次性锁血、暂停招式、冲刺接触和按结局分派
+
+function armBossKneel(e, { owner, lockRatio, duration }) {
+  if (!e?.boss || e.dead || e.kneel || !(e.maxHp > 0)) return false;
+  e.kneel = { owner, phase: 'armed', lockHp: e.maxHp * lockRatio, duration, left: duration,
+    at: null, dashSerial: null, eye: null, pending: false, outcome: null };
+  return true;
+}
+function bossKneeling(e) { return e?.kneel?.phase === 'down'; }
+function bossHeld(e) { return bossKneeling(e) || e?.kneel?.phase === 'ridden'; }
+function kneelUntargetable(e) { return e?.kneel?.phase === 'ridden' || bossKneeling(e) && MERCY_RULES.kneel.retarget; }
+function bossBegging(e) { return e?.kneel?.phase === 'down' && e.kneel.owner === 'mercy'; }
+// 分派在调用时读取，避免构建和模拟拼接导入环时碰到尚未初始化的常量。
+function kneelHandler(e) { return e.kneel.owner === 'mercy' ? MERCY_KNEEL : e.kneel.owner === 'ride' ? RIDE_KNEEL : null; }
+function kneelClampDamage(e, dmg) {
+  const k = e?.kneel;
+  if (!k || k.phase !== 'armed' || kneelHandler(e)?.allow?.(e) === false) return dmg;
+  const room = Math.max(0, e.hp - k.lockHp);
+  if (dmg > room) { k.pending = true; return room; }
+  return dmg;
+}
+function kneelClearState(e) {
+  for (const key of ['vulnerableT', 'weakWindow', 'weakMul', 'flinchT', 'stunT', 'blindT', 'overheat', 'clashDownUntil']) e[key] = 0;
+  e.kx = 0; e.ky = 0;
+}
+function beginBossKneel(e) {
+  const k = e?.kneel;
+  if (!k || k.phase !== 'armed' || e.dead || e.entering || !(e.hp > 0)) return false;
+  if (kneelHandler(e)?.allow?.(e) === false) { k.pending = false; return false; }
+  k.pending = false; k.phase = 'down'; k.left = k.duration; k.at = G.t;
+  k.dashSerial = G.report?.actions?.dash || 0;
+  e.st = 'mercy'; e.stT = 0; e.sub = 0; kneelClearState(e);
+  for (const b of G.ebullets) if (b.source === 'boss') b.dead = true;
+  kneelHandler(e)?.begin?.(e);
+  return true;
+}
+function updateBossKneel(e, dt) {
+  if (e?.kneel?.phase === 'ridden') return true;
+  if (e?.kneel?.pending) beginBossKneel(e);
+  if (!bossKneeling(e)) return false;
+  const k = e.kneel;
+  if (Number.isFinite(dt) && dt > 0) k.left = Math.max(0, k.left - dt);
+  if (k.left <= 0) kneelHandler(e)?.timeout?.(e);
+  return true;
+}
+function kneelTouches(x0, y0, x1, y1, e, radius) {
+  const dx = x1 - x0, dy = y1 - y0, length2 = dx * dx + dy * dy;
+  const t = length2 > 0 ? Math.max(0, Math.min(1, ((e.x - x0) * dx + (e.y - y0) * dy) / length2)) : 0;
+  return (e.x - x0 - dx * t) ** 2 + (e.y - y0 - dy * t) ** 2 <= radius ** 2;
+}
+function kneelDashContact(x0, y0, x1, y1) {
+  const e = G?.boss, p = G?.player;
+  if (!p || !bossKneeling(e) || e.dead || (G.report?.actions?.dash || 0) <= e.kneel.dashSerial) return false;
+  if (!kneelTouches(x0, y0, x1, y1, e, e.r + p.r + MERCY_RULES.kneel.pad)) return false;
+  kneelHandler(e)?.contact?.(e);
+  return true;
+}
+function standUpBoss(e) {
+  if (!e?.kneel || e.dead || !(e.hp > 0)) return false;
+  const pushPlayer = e.kneel.phase === 'ridden' || e.kneel.owner === 'ride';
+  e.kneel.phase = 'done'; e.kneel.pending = false; e.kneel.left = 0; e.kneel.outcome = 'stand';
+  kneelClearState(e); nextBossPhase(e);
+  // 骑乘中断或本线跪地超时都避免贴身撞伤；旧饶命站起行为保留。
+  if (pushPlayer && G?.player) {
+    const p = G.player, angle = Math.atan2(p.y - e.y, p.x - e.x), distance = e.r + p.r + BOSS_RIDE.standPad;
+    if (Math.hypot(p.x - e.x, p.y - e.y) < distance) { p.x = e.x + Math.cos(angle) * distance; p.y = e.y + Math.sin(angle) * distance; }
+    p.invuln = Math.max(p.invuln, BOSS_RIDE.dismountInvuln);
+  }
+  return true;
+}
+function kneelLeft(e) { return bossKneeling(e) ? Math.max(0, e.kneel.left) : 0; }
+
+// ---- src/data/allies.js ----
+// 援军的触发、机动、火力与台词；伤害均沿用技能的逐目标成长口径
+const ALLY_RULES = Object.freeze({
+  maxCalls: 3, cooldown: 40, duration: 15, landingDuration: .45, leaveDuration: 1, landingDistance: 110,
+  rank: 4, rescueHp: .3, damageMul: 3.5, weaponCooldownMul: .15, landingRadius: 160, landingDamage: 60, landingKnock: 400,
+  cutinDuration: 2, followMin: 60, followMax: 180, followSpeed: 205, thinkInterval: .4,
+  dashInterval: 2.5, dashDuration: .18, dashSpeed: 720, targetRange: 520, clusterRadius: 95,
+  beamLength: 820, droneCount: 2, droneOrbit: 46, shotLife: .14, blastLife: .4, fxCap: 90,
+  assault: { count: 12, damage: 20, radius: 40 },
+  heavy: { offset: 42, duration: 8, interval: .3, range: 360, damage: 16 },
+  phantom: { length: 260, width: 54, damage: 65 },
+  storm: { count: 3, interval: 1, radius: 180, damage: 16 },
+  lancer: { length: 820, width: 24, damage: 104 },
+  engineer: { count: 2, radius: 65, damage: 40 },
+});
+const ALLY_LINES = Object.freeze({
+  assault: '先锋到位，一起突围！', heavy: '别退，火力交给我！', phantom: '你的身后，我来守。',
+  storm: '雷霆接入，清出一条路！', lancer: '目标锁定，掩护你前进。', engineer: '蜂巢上线，援护就位！',
+});
+
+// ---- src/game/allies.js ----
+// 援军触发、安全空降和独立协战：不进入玩家、敌人或拾取物的碰撞流程
+
+function initAllies() {
+  G.allies = { count: 0, lastAt: -Infinity, used: [], styleActs: [], bosses: [], pending: [], active: null, cutin: null };
+}
+function allyLive() { return !!G?.allies && !G.practice && G.state === 'playing' && G.player.hp > 0 && !(G.endT > 0) && !G.won; }
+function allyUnlocked() { return MECHS.filter(m => meta.unlocked?.[m.id]); }
+function allyAct() { if (zonesEnabled()) return currentZoneIndex(); let index = 0; for (let i = 1; i < BATTLEFIELD_ACTS.length; i++) if (G.t >= BATTLEFIELD_ACTS[i].start) index = i; return index; }
+// 复用穿身的安全检查，包含冲锋车道、凝视瞄准线、迫击落点及行动走廊。
+function allyLandingPoint() {
+  const p = G.player, angle = p.angle || 0, start = Math.random() * TAU;
+  for (let i = 0; i < 12; i++) {
+    const a = start + i * TAU / 12, x = p.x + Math.cos(a) * ALLY_RULES.landingDistance, y = p.y + Math.sin(a) * ALLY_RULES.landingDistance;
+    if (blinkLandingSafe(x, y, p)) return { x, y };
+  }
+  return { x: p.x - Math.cos(angle) * ALLY_RULES.landingDistance, y: p.y - Math.sin(angle) * ALLY_RULES.landingDistance };
+}
+function allyDamage(e, base) { return base * ALLY_RULES.damageMul * G.stats.dmg * (e.boss ? 1 : enemyHpMul(G.t) * runMul('enemyHp')); }
+function allyHit(e, base, a, knock = 0) {
+  if (!e || e.dead || e.entering || !(e.hp > 0)) return;
+  const angle = Math.atan2(e.y - a.y, e.x - a.x), force = e.boss ? 1 : knock;
+  hitEnemy(e, allyDamage(e, base), { source: 'ally:' + a.id, crit: false, kx: Math.cos(angle) * force, ky: Math.sin(angle) * force });
+}
+function allyEffect(a, kind, fields) {
+  if (a.fx.length >= ALLY_RULES.fxCap) a.fx.shift();
+  const max = kind === 'blast' ? ALLY_RULES.blastLife : ALLY_RULES.shotLife;
+  a.fx.push({ kind, x: a.x, y: a.y, col: a.col, life: max, max, ...fields });
+}
+function allyCircle(a, x, y, radius, damage, knock = 0) {
+  for (const e of G.enemies) if (!e.dead && !e.entering && d2(x, y, e.x, e.y) <= (radius + e.r) ** 2) allyHit(e, damage, { id: a.id, x, y }, knock);
+  allyEffect(a, 'blast', { x, y, r: radius });
+}
+function allyTargets(a, range = ALLY_RULES.targetRange) {
+  return G.enemies.filter(e => !e.dead && !e.entering && !e.kicked && !kneelUntargetable(e) && e.hp > 0 && d2(a.x, a.y, e.x, e.y) < range ** 2).sort((e, f) => d2(a.x, a.y, e.x, e.y) - d2(a.x, a.y, f.x, f.y));
+}
+function allyDenseTarget(a) {
+  const targets = allyTargets(a); let best = null, count = -1;
+  for (let i = 0; i < targets.length; i += Math.max(1, Math.floor(targets.length / 16))) {
+    const e = targets[i]; let n = 0;
+    for (const f of targets) if (d2(e.x, e.y, f.x, f.y) < ALLY_RULES.clusterRadius ** 2) n++;
+    if (n > count) { best = e; count = n; }
+  }
+  return best;
+}
+function allyLine(a, angle, length, width, damage, clear = false) {
+  const ux = Math.cos(angle), uy = Math.sin(angle), x2 = a.x + ux * length, y2 = a.y + uy * length;
+  const touches = (x, y, r) => { const along = Math.max(0, Math.min(length, (x - a.x) * ux + (y - a.y) * uy)); return d2(x, y, a.x + ux * along, a.y + uy * along) < (width / 2 + r) ** 2; };
+  for (const e of G.enemies) if (!e.dead && !e.entering && touches(e.x, e.y, e.r)) allyHit(e, damage, a);
+  if (clear) for (const b of G.ebullets) if (!b.dead && touches(b.x, b.y, b.r || 0)) b.dead = true;
+  allyEffect(a, 'beam', { x2, y2, r: width });
+}
+function allyLevel(id) {
+  const weapons = G.player.weapons, own = weapons.find(w => w.id === id);
+  return Math.max(1, Math.min(WDEF[id].lv.length, own?.lv || Math.max(1, ...weapons.map(w => w.lv))));
+}
+// 战场行动的「援军空降」卡：不看次数和冷却，只要还有别的已解锁机甲、场上没有援军（选卡界面里也能判断）
+function allyForceReady() {
+  return !!G?.allies && !G.practice && !G.allies.active && allyUnlocked().some(m => m.id !== G.mech.id);
+}
+// force：行动奖励叫来的援军，不占援军次数、不重置冷却
+function summonAlly(reason = 'style', { force = false } = {}) {
+  if (!allyLive()) return false;
+  const state = G.allies, unlocked = allyUnlocked();
+  const calls = G.weekly?.mods.allyCalls ?? 1; // 周规则「援军之周」：次数上限 ×2、冷却减半
+  if (unlocked.length < 2 || state.active) return false;
+  if (!force && (state.count >= ALLY_RULES.maxCalls * calls || G.t - state.lastAt < ALLY_RULES.cooldown / calls)) return false;
+  const pool = unlocked.filter(m => m.id !== G.mech.id), fresh = pool.filter(m => !state.used.includes(m.id)), choices = fresh.length ? fresh : pool;
+  if (!choices.length) return false;
+  const mech = choices[Math.floor(Math.random() * choices.length)], point = allyLandingPoint(), lv = allyLevel(mech.weapon);
+  const a = { id: mech.id, ...point, angle: G.player.angle, legA: G.player.angle, ph: 0, age: 0, life: ALLY_RULES.duration,
+    landingT: ALLY_RULES.landingDuration, fromX: point.x - 300, fromY: point.y - 620, col: RIG_CFG[mech.id].flame,
+    dashT: 0, dashCd: ALLY_RULES.dashInterval, weaponId: mech.weapon, weaponLv: lv, cd: 0, thinkT: 0, target: null, fx: [], turrets: [], pulseLeft: 0, pulseT: 0, reason };
+  if (!force) { state.count++; state.lastAt = G.t; }
+  state.used.push(mech.id); state.active = a;
+  state.cutin = { id: mech.id, t: ALLY_RULES.cutinDuration, max: ALLY_RULES.cutinDuration };
+  return true;
+}
+function allyQueueTriggers() {
+  const s = G.allies, act = allyAct(), boss = G.boss;
+  // 高评级每幕呼叫一次；援军之周每幕两次（上一次还在排队时不再加）
+  const stylePerAct = G.weekly?.mods.allyCalls ?? 1;
+  if (G.styleRank?.rank >= ALLY_RULES.rank && s.styleActs.filter(x => x === act).length < stylePerAct && !s.pending.some(q => q.act === act)) { s.styleActs.push(act); s.pending.push({ reason: 'style', act }); }
+  if (boss && !boss.dead && !boss.entering && G.player.hp < G.player.maxHp * ALLY_RULES.rescueHp && !s.bosses.includes(boss)) {
+    s.bosses.push(boss); s.pending.push({ reason: 'rescue', boss });
+  }
+  // 冷却中出现的同幕/同战机会保留，跨幕或首领战结束后失效，不把旧救援带进下一战。
+  s.pending = s.pending.filter(q => q.boss ? q.boss === G.boss && !q.boss.dead : q.act === act);
+}
+onHurt('allies', () => { if (allyLive()) allyQueueTriggers(); });
+function allyLand(a) {
+  allyCircle(a, a.x, a.y, ALLY_RULES.landingRadius, ALLY_RULES.landingDamage, ALLY_RULES.landingKnock);
+  const cfg = ALLY_RULES[a.id], targets = allyTargets(a), target = allyDenseTarget(a);
+  if (target) a.angle = Math.atan2(target.y - a.y, target.x - a.x);
+  if (a.id === 'assault') for (let i = 0; i < cfg.count && targets.length; i++) { const e = targets[i % targets.length]; if (!e.dead) allyCircle(a, e.x, e.y, cfg.radius, cfg.damage); }
+  if (a.id === 'heavy') for (const side of [-1, 1]) a.turrets.push({ x: a.x + side * cfg.offset, y: a.y, life: cfg.duration, cd: 0 });
+  if (a.id === 'phantom') allyLine(a, a.angle, cfg.length, cfg.width, cfg.damage);
+  if (a.id === 'storm') { a.pulseLeft = cfg.count; a.pulseT = 0; }
+  if (a.id === 'lancer') allyLine(a, a.angle, cfg.length, cfg.width, cfg.damage, true);
+  if (a.id === 'engineer') for (let i = 0; i < cfg.count && targets.length; i++) { const e = targets[i % targets.length]; if (!e.dead) allyCircle(a, e.x, e.y, cfg.radius, cfg.damage); allyEffect(a, 'drone', { x: e.x, y: e.y, r: cfg.radius }); }
+}
+function allyFire(a) {
+  const cfg = WDEF[a.weaponId].lv[a.weaponLv - 1], targets = allyTargets(a), first = targets[0];
+  if (!first) return false;
+  a.angle = Math.atan2(first.y - a.y, first.x - a.x);
+  if (a.weaponId === 'missile') for (let i = 0; i < cfg.n; i++) { const e = targets[i % targets.length]; if (!e.dead) allyCircle(a, e.x, e.y, cfg.rad, cfg.dmg); }
+  else if (a.weaponId === 'rail') for (let i = 0; i < cfg.b; i++) allyLine(a, a.angle + i * TAU / cfg.b, ALLY_RULES.beamLength, cfg.w, cfg.dmg);
+  else if (a.weaponId === 'tesla') {
+    let from = a; const seen = new Set();
+    for (let i = 0; i < cfg.c; i++) {
+      const e = targets.filter(e => !e.dead && !seen.has(e)).sort((e, f) => d2(from.x, from.y, e.x, e.y) - d2(from.x, from.y, f.x, f.y))[0];
+      if (!e) break;
+      seen.add(e); allyHit(e, cfg.dmg, a); allyEffect(a, 'arc', { x: from.x, y: from.y, x2: e.x, y2: e.y }); from = e;
+    }
+  } else if (a.weaponId === 'saw') {
+    for (const e of targets) if (d2(a.x, a.y, e.x, e.y) <= (cfg.rad + cfg.size + e.r) ** 2) allyHit(e, cfg.dmg, a, cfg.knock);
+  } else {
+    const count = a.weaponId === 'drone' ? ALLY_RULES.droneCount : cfg.n;
+    for (let i = 0; i < count; i++) {
+      const e = targets.find(e => !e.dead); if (!e) break;
+      allyHit(e, cfg.dmg, a); allyEffect(a, 'shot', { x2: e.x, y2: e.y });
+    }
+  }
+  return true;
+}
+function allySpecialUpdate(a, dt) {
+  if (a.pulseLeft > 0) { a.pulseT -= dt; if (a.pulseT <= 0) { const cfg = ALLY_RULES.storm; allyCircle(a, a.x, a.y, cfg.radius, cfg.damage); a.pulseLeft--; a.pulseT += cfg.interval; } }
+  for (const t of a.turrets) {
+    const cfg = ALLY_RULES.heavy; t.life -= dt; t.cd -= dt;
+    if (t.life <= 0) continue;
+    allyEffect(a, 'turret', { x: t.x, y: t.y, r: 15 });
+    if (t.cd <= 0) { const target = allyTargets(t, cfg.range)[0]; if (target) { allyHit(target, cfg.damage, { id: a.id, x: t.x, y: t.y }); allyEffect(a, 'shot', { x: t.x, y: t.y, x2: target.x, y2: target.y }); t.cd += cfg.interval; } }
+  }
+  compact(a.turrets, t => t.life > 0);
+}
+function updateAllies(pdt, dt) {
+  if (!G?.allies || G.state !== 'playing' || !(pdt > 0)) return;
+  const state = G.allies;
+  if (state.cutin) { state.cutin.t -= pdt; if (state.cutin.t <= 0) state.cutin = null; }
+  if (!allyLive()) { state.active = null; return; }
+  allyQueueTriggers();
+  if (state.pending.length && summonAlly(state.pending[0].reason)) state.pending.shift();
+  const a = state.active; if (!a) return;
+  a.age += pdt;
+  for (const f of a.fx) f.life -= pdt;
+  compact(a.fx, f => f.life > 0);
+  // 飞入和协战均走玩家一侧时钟，时停不冻结；落地剩余步长才计入 15 秒。
+  if (a.landingT > 0) {
+    const elapsed = Math.min(pdt, a.landingT); a.landingT = Math.max(0, a.landingT - elapsed); pdt -= elapsed;
+    if (a.landingT > 1e-9) return;
+    a.landingT = 0; if (!rideHoldingFire()) allyLand(a);
+  }
+  const elapsed = Math.min(a.life, pdt); a.life = Math.max(0, a.life - elapsed);
+  if (a.life <= 1e-9) { state.active = null; return; }
+  if (rideHoldingFire()) return; // 停止协战攻击，但不延长援军的在场时间。
+  a.thinkT -= elapsed; a.dashCd -= elapsed;
+  if (a.thinkT <= 0) { a.target = allyDenseTarget(a); a.thinkT = ALLY_RULES.thinkInterval; }
+  const p = G.player, target = a.target && !a.target.dead ? a.target : null;
+  if (target && a.dashCd <= 0) { a.dashT = ALLY_RULES.dashDuration; a.dashCd += ALLY_RULES.dashInterval; a.dashAngle = Math.atan2(target.y - a.y, target.x - a.x); }
+  const dir = target ? Math.atan2(target.y - p.y, target.x - p.x) : p.angle + Math.PI;
+  const dash = a.dashT > 0, oldX = a.x, oldY = a.y;
+  if (dash) {
+    const move = ALLY_RULES.dashSpeed * Math.min(elapsed, a.dashT);
+    a.x += Math.cos(a.dashAngle) * move; a.y += Math.sin(a.dashAngle) * move;
+  } else {
+    // 沿玩家周围的圆环换侧，避免直穿中心后被最小跟随半径卡在原侧。
+    const radius = Math.max(ALLY_RULES.followMin, Math.hypot(a.x - p.x, a.y - p.y));
+    const from = Math.atan2(a.y - p.y, a.x - p.x), turn = Math.atan2(Math.sin(dir - from), Math.cos(dir - from));
+    const step = ALLY_RULES.followSpeed * elapsed, angle = from + Math.sign(turn) * Math.min(Math.abs(turn), step / radius);
+    const r = radius + Math.sign(ALLY_RULES.landingDistance - radius) * Math.min(Math.abs(ALLY_RULES.landingDistance - radius), step);
+    a.x = p.x + Math.cos(angle) * r; a.y = p.y + Math.sin(angle) * r;
+  }
+  a.dashT = Math.max(0, a.dashT - elapsed); a.legA = Math.atan2(a.y - oldY, a.x - oldX); a.ph += elapsed * 10;
+  const gap = Math.hypot(a.x - p.x, a.y - p.y);
+  if (gap > ALLY_RULES.followMax || gap < ALLY_RULES.followMin) {
+    const r = Math.max(ALLY_RULES.followMin, Math.min(ALLY_RULES.followMax, gap)), angle = gap < ALLY_RULES.followMin ? dir : Math.atan2(a.y - p.y, a.x - p.x);
+    a.x = p.x + Math.cos(angle) * r; a.y = p.y + Math.sin(angle) * r;
+  }
+  const cfg = WDEF[a.weaponId].lv[a.weaponLv - 1]; a.cd -= elapsed;
+  if (a.cd <= 0 && allyFire(a)) a.cd = (a.weaponId === 'saw' ? WDEF.saw.hitInterval : cfg.cd) * (G.stats.cd || 1) * ALLY_RULES.weaponCooldownMul;
+  if (a.weaponId === 'saw') for (let i = 0; i < cfg.n; i++) { const spin = a.age * cfg.spin + i * TAU / cfg.n; allyEffect(a, 'saw', { x: a.x + Math.cos(spin) * cfg.rad, y: a.y + Math.sin(spin) * cfg.rad, r: cfg.size, angle: spin }); }
+  if (a.weaponId === 'drone') for (let i = 0; i < ALLY_RULES.droneCount; i++) { const orbit = a.age + i * Math.PI; allyEffect(a, 'drone', { x: a.x + Math.cos(orbit) * ALLY_RULES.droneOrbit, y: a.y + Math.sin(orbit) * ALLY_RULES.droneOrbit, r: 12 }); }
+  allySpecialUpdate(a, elapsed);
+}
+
+// ---- src/game/relay-perks.js ----
+// 金边军械卡：只有完成战场行动才拿得到的奖励，替代原来的普通升级三选一
+// 原来那一步构筑由补给舱开舱时自动装配（grantRelayDropUpgrade）；卡全是爆发卡：火力全开、呼叫援军、轨道齐射、超载灌注，
+// 残血时紧急整备一定占一张，爆发卡凑不够三张时用定向改造（再推一步）补位
+
+const RELAY_PERK_TAG = '<em>行动专属</em>';
+const RELAY_BURST_KINDS = ['relayFirepower', 'relayAlly', 'relayBarrage', 'relayOvercharge'];
+
+// 本局的金边卡状态：火力全开剩余秒数、排队落地的援军、轨道齐射的炮击
+function relayPerkState() {
+  if (!G.relayPerks) G.relayPerks = { firepowerT: 0, allyQueued: false, barrageLeft: 0, barrageT: 0, strikes: [], picks: {} };
+  return G.relayPerks;
+}
+function isRelayPerk(o) { return typeof o?.kind === 'string' && o.kind.startsWith('relay') && Object.hasOwn(RELAY_PERK_DEFS, o.kind); }
+
+// 行动奖励三选一：残血时紧急整备排第一，其余从爆发卡里随机抽；凑不够三张时定向改造补位
+function buildRelayOptions(random = Math.random) {
+  const p = G.player, cfg = RELAY_PERKS, out = [];
+  if (p.hp < p.maxHp * cfg.repair.hpBelow && canApplyOpt({ kind: 'relayRepair' })) out.push({ kind: 'relayRepair' });
+  const pool = RELAY_BURST_KINDS.map(kind => ({ kind })).filter(canApplyOpt);
+  while (out.length < cfg.burstSlots && pool.length) out.push(pool.splice(Math.min(pool.length - 1, Math.floor(random() * pool.length)), 1)[0]);
+  if (out.length < cfg.burstSlots && canApplyOpt({ kind: 'relayRefit' })) out.push({ kind: 'relayRefit' });
+  return out;
+}
+// 补给舱开舱：自动装配一步定向升级（等同原来行动奖励的那一步构筑），返回写在奖励界面上的那句话
+function grantRelayDropUpgrade() {
+  if (!G?.player || !(G.player.hp > 0)) return '';
+  const steps = relayRefitSteps(RELAY_PERKS.dropSteps), text = relayRefitText(steps);
+  for (const step of steps) if (!canApplyOpt(step) || !applyOpt(step)) return '';
+  const p = G.player;
+  floatText(p.x, p.y - 84, `补给装配 · ${text}`, '255,214,110', 18, 1.6);
+  return text;
+}
+
+// 火力全开期间武器伤害翻倍：recalc() 末尾调用；结束时 updateRelayPerks 再 recalc 一次
+function applyRelayPerkStats(st) {
+  if (G?.relayPerks?.firepowerT > 0) st.dmg *= RELAY_PERKS.firepower.dmgMul;
+}
+// 顶部仪表的火力全开计时条（render/hud.js）
+function relayPerkHud() {
+  const t = G?.relayPerks?.firepowerT;
+  return t > 0 ? { label: `火力全开 · 伤害 ×${RELAY_PERKS.firepower.dmgMul}`, t, max: RELAY_PERKS.firepower.duration } : null;
+}
+
+// dt 是世界时间：时停里火力全开不掉秒，轨道炮也停在半空
+function updateRelayPerks(dt) {
+  const st = G?.relayPerks;
+  if (!st || G.state !== 'playing' || !(dt > 0)) return;
+  if (st.firepowerT > 0) {
+    st.firepowerT = Math.max(0, st.firepowerT - dt);
+    if (st.firepowerT <= 0) { recalc(); toast({ text: '火力全开结束', t: 2, priority: 1 }); }
+  }
+  if (st.allyQueued && summonAlly('relay', { force: true })) st.allyQueued = false;
+  if (st.barrageLeft > 0 || st.strikes.length) updateRelayBarrage(st, dt);
+}
+
+// ===== 轨道齐射：每隔一小段往附近最密的虫群砸一发，先亮落点再落炮 =====
+function relayBarrageTarget() {
+  const cfg = RELAY_PERKS.barrage, p = G.player, near = [];
+  for (const e of G.enemies) if (!e.dead && !e.entering && e.hp > 0 && !e.underground && d2(p.x, p.y, e.x, e.y) < cfg.range ** 2) near.push(e);
+  if (!near.length) { const a = Math.random() * TAU, d = rand(80, cfg.range * .6); return { x: p.x + Math.cos(a) * d, y: p.y + Math.sin(a) * d }; }
+  let best = near[0], count = -1;
+  for (let i = 0; i < near.length; i += Math.max(1, Math.floor(near.length / 20))) {
+    const e = near[i]; let n = 0;
+    for (const f of near) if (d2(e.x, e.y, f.x, f.y) < cfg.cluster ** 2) n++;
+    if (n > count) { best = e; count = n; }
+  }
+  return { x: best.x + rand(-16, 16), y: best.y + rand(-16, 16) };
+}
+function updateRelayBarrage(st, dt) {
+  const cfg = RELAY_PERKS.barrage;
+  st.barrageT -= dt;
+  while (st.barrageLeft > 0 && st.barrageT <= 0) {
+    const at = relayBarrageTarget();
+    st.strikes.push({ ...at, t: cfg.delay, max: cfg.delay, fired: false, life: .45, maxLife: .45 });
+    st.barrageLeft--; st.barrageT += cfg.interval;
+  }
+  for (const s of st.strikes) {
+    if (!s.fired) { s.t -= dt; if (s.t <= 0) { s.fired = true; relayBarrageStrike(s); } }
+    else s.life -= dt;
+  }
+  st.strikes = st.strikes.filter(s => !s.fired || s.life > 0);
+}
+function relayBarrageStrike(s) {
+  const cfg = RELAY_PERKS.barrage, base = cfg.damage * G.stats.dmg;
+  for (const e of G.enemies) {
+    if (e.dead || e.entering || !(e.hp > 0) || d2(s.x, s.y, e.x, e.y) > (cfg.radius + e.r) ** 2) continue;
+    const a = Math.atan2(e.y - s.y, e.x - s.x);
+    // 和援军一样按刷怪血量成长折算，首领只吃基础那一份
+    hitEnemy(e, e.boss ? base * 3 : base * enemyHpMul(G.t) * runMul('enemyHp'), { source: 'relayBarrage', kx: Math.cos(a) * 260, ky: Math.sin(a) * 260 });
+  }
+  G.waves.push({ x: s.x, y: s.y, r: cfg.radius * .25, maxR: cfg.radius, v: cfg.radius * 8, dmg: 0, knock: 0, hit: null, col: '255,214,110' });
+  for (let i = 0; i < 12; i++) { const a = Math.random() * TAU, v = rand(80, 280); part(s.x, s.y, Math.cos(a) * v, Math.sin(a) * v, rand(.25, .5), rand(6, 12), i % 2 ? '255,214,110' : '255,250,220'); }
+  feedback('explosion', { x: s.x, y: s.y, strength: 4, big: true });
+}
+
+// ===== 定向改造：按「能进化先进化 → 补配套芯片 → 最高等级武器升级 → 专精 → 火力训练」往前推（补给舱自动一步，补位卡再一步） =====
+// 配套芯片往往是进化的瓶颈：3 级以上的武器先把它的芯片补到 3 级，进化来得最快
+function relayRefitNext(v) {
+  const ready = v.weapons.find(w => canEvolve(v, w.id));
+  if (ready) return { kind: 'evo', id: ready.id };
+  for (const w of v.weapons.filter(x => !x.evo && Number.isInteger(x.lv) && x.lv >= 3).sort((a, b) => b.lv - a.lv)) {
+    const id = WDEF[w.id]?.evoWith, chip = v.passives.find(s => s.id === id);
+    if (!id || (chip?.lv || 0) >= 3) continue;
+    if (chip) return { kind: 'pup', id };
+    if (v.passives.length < 4) return { kind: 'pnew', id };
+  }
+  const grow = v.weapons.filter(w => !w.evo && Number.isInteger(w.lv) && w.lv < 5).sort((a, b) => b.lv - a.lv)[0];
+  if (grow) return { kind: 'wup', id: grow.id };
+  const master = v.weapons.filter(w => w.evo && w.lv === 5 && (w.mastery || 0) < MASTERY_MAX).sort((a, b) => (a.mastery || 0) - (b.mastery || 0))[0];
+  if (master) return { kind: 'mastery', id: master.id };
+  return { kind: 'training', id: 'power' };
+}
+// 在一份拷贝上推演，卡面写的和选完实际发生的一致
+function relayRefitSteps(count = RELAY_PERKS.refit.steps) {
+  const p = G.player, v = { ...p, weapons: p.weapons.map(w => ({ ...w })), passives: p.passives.map(s => ({ ...s })), training: { ...(p.training || {}) } };
+  const steps = [];
+  for (let i = 0; i < count; i++) {
+    const step = relayRefitNext(v);
+    steps.push(step);
+    const w = v.weapons.find(x => x.id === step.id), s = v.passives.find(x => x.id === step.id);
+    if (step.kind === 'evo') { w.evo = true; w.mastery = 0; }
+    else if (step.kind === 'wup') w.lv++;
+    else if (step.kind === 'pup') s.lv++;
+    else if (step.kind === 'pnew') v.passives.push({ id: step.id, lv: 1 });
+    else if (step.kind === 'mastery') w.mastery = (w.mastery || 0) + 1;
+    else v.training[step.id] = (v.training[step.id] || 0) + 1;
+  }
+  return steps;
+}
+function relayRefitText(steps) {
+  const p = G.player, parts = [];
+  for (let i = 0; i < steps.length;) {
+    const step = steps[i]; let n = 1;
+    while (i + n < steps.length && steps[i + n].id === step.id && (steps[i + n].kind === step.kind || step.kind === 'pnew' && steps[i + n].kind === 'pup')) n++;
+    const w = p.weapons.find(x => x.id === step.id), s = p.passives.find(x => x.id === step.id);
+    if (step.kind === 'evo') parts.push(`进化为${WDEF[step.id].evoName}`);
+    else if (step.kind === 'wup') { const lv = w.lv + steps.slice(0, i).filter(x => x.kind === 'wup' && x.id === step.id).length; parts.push(`${WDEF[step.id].name} 等级 ${lv}→${lv + n}`); }
+    else if (step.kind === 'pnew') parts.push(`装配${PDEF[step.id].name} ${n}级`);
+    else if (step.kind === 'pup') { const lv = s.lv; parts.push(`${PDEF[step.id].name} 等级 ${lv}→${lv + n}`); }
+    else if (step.kind === 'mastery') { const m = (w.mastery || 0) + steps.slice(0, i).filter(x => x.kind === 'mastery' && x.id === step.id).length; parts.push(`${WDEF[step.id].evoName} 专精 ${m}→${m + n}`); }
+    else parts.push(`火力训练 +${n} 阶`);
+    i += n;
+  }
+  return parts.join('，');
+}
+
+// 卡面统一金边（cls: relay-perk），tag 写「行动专属」
+const RELAY_PERK_DEFS = {
+  relayFirepower: {
+    can: () => !!G?.player,
+    info: () => ({ icon: 'relayFire', name: '火力全开', tag: RELAY_PERK_TAG, desc: `${RELAY_PERKS.firepower.duration} 秒内武器伤害 ×${RELAY_PERKS.firepower.dmgMul}`,
+      hint: G.relayPerks?.firepowerT > 0 ? '正在火力全开：时间重新计满' : '机体镀上金光，顶部显示剩余秒数', cls: 'relay-perk' }),
+    apply() { relayPerkState().firepowerT = RELAY_PERKS.firepower.duration; SFX.overload(); },
+    feedback: () => `火力全开 · ${RELAY_PERKS.firepower.duration} 秒伤害翻倍`,
+  },
+  relayAlly: {
+    can: () => allyForceReady() && !G.relayPerks?.allyQueued,
+    info: () => ({ icon: 'relayAlly', name: '呼叫援军', tag: RELAY_PERK_TAG, desc: '立刻空降一台友军机甲，落地冲击后协战 15 秒', hint: '不占援军次数，从已解锁的其他机甲里随机来一台', cls: 'relay-perk' }),
+    apply() { relayPerkState().allyQueued = true; },
+    feedback: () => '呼叫援军 · 友机正在空降',
+  },
+  relayBarrage: {
+    can: () => !!G?.player,
+    info: () => ({ icon: 'relayStrike', name: '轨道齐射', tag: RELAY_PERK_TAG, desc: `${RELAY_PERKS.barrage.strikes} 发轨道炮连续砸向附近最密的虫群`, hint: '先亮落点再落炮，约 3 秒打完', cls: 'relay-perk' }),
+    apply() { const st = relayPerkState(); st.barrageLeft += RELAY_PERKS.barrage.strikes; st.barrageT = Math.min(st.barrageT, .15); },
+    feedback: () => '轨道齐射 · 炮击坐标已锁定',
+  },
+  relayOvercharge: {
+    can: () => !!G?.player && !formActive() && !(G.player.overT > 0) && G.player.overload < 100,
+    info: () => ({ icon: 'relayCharge', name: '超载灌注', tag: RELAY_PERK_TAG, desc: `超载能量立刻充满（现在 ${Math.floor(G.player.overload || 0)}%）`, hint: '领完马上就能放超载', cls: 'relay-perk' }),
+    apply() { G.player.overload = 100; SFX.mechAwaken(); },
+    feedback: () => '超载灌注 · 能量已满',
+  },
+  relayRepair: {
+    can: () => !!G?.player && G.player.hp > 0 && G.player.hp < G.player.maxHp,
+    info: () => ({ icon: 'relayRepair', name: '紧急整备', tag: RELAY_PERK_TAG, desc: '生命立刻回满', hint: `并获得 ${RELAY_PERKS.repair.invuln} 秒无敌，先脱离包围`, cls: 'relay-perk' }),
+    apply() { const p = G.player; p.hp = p.maxHp; p.invuln = Math.max(p.invuln || 0, RELAY_PERKS.repair.invuln); },
+    feedback: () => '紧急整备 · 机体已修复',
+  },
+  relayRefit: {
+    can: () => !!G?.player && relayRefitSteps().length > 0,
+    info: () => ({ icon: 'relayRefit', name: '定向改造', tag: RELAY_PERK_TAG, desc: relayRefitText(relayRefitSteps()), hint: '在补给舱装配之外，再推一步构筑', cls: 'relay-perk' }),
+    // 每一步都走普通选卡的 applyOpt，进化特效、换算生命都和平常一样
+    apply() { for (const step of relayRefitSteps()) if (!canApplyOpt(step) || !applyOpt(step)) break; },
+    feedback: () => `定向改造：${relayRefitText(relayRefitSteps())}`,
+  },
+};
+for (const [kind, def] of Object.entries(RELAY_PERK_DEFS)) {
+  registerOptionKind(kind, { ...def, apply(o) { def.apply(o); const st = relayPerkState(); st.picks[kind] = (st.picks[kind] || 0) + 1; } });
+}
+// 领完卡给一句机体上方的飘字，选卡界面关掉后马上看得到
+function relayPerkClaimed(o) {
+  const p = G?.player, info = isRelayPerk(o) ? RELAY_PERK_DEFS[o.kind].info() : null;
+  if (p && info) floatText(p.x, p.y - 58, info.name, '255,214,110', 22, 1.3);
+}
+
+// ---- src/game/relay-drop.js ----
+// 战场行动完成演出：大圈收成光柱、补给舱从天砸下、慢放震屏、冲击波清掉圈内的虫，演完才弹金边奖励卡
+
+// 四种行动完成时都从这里开演：补给舱落在行动中心（围猎是目标倒下的位置）
+function startRelayDrop(relay) {
+  relay.drop = { t: 0, x: relay.x, y: relay.y, r: relay.r, landed: false, granted: false, grant: '', ready: false, cleared: 0 };
+  SFX.relayBeam();
+}
+// 奖励卡要等补给舱落地、慢放演完才弹；没有演出（旧存档里的行动、测试直接置标记）时立刻可领
+function relayDropReady() {
+  const drop = G?.relay?.drop;
+  return !drop || drop.ready;
+}
+// step 是真实秒数：慢放不拖慢演出，时停和变身定格时传 0 停住
+function updateRelayDrop(relay, step) {
+  const drop = relay?.drop;
+  if (!drop || drop.ready || !(step > 0)) return;
+  drop.t += step;
+  if (!drop.landed && drop.t >= RELAY_DROP.landAt) relayDropLand(drop);
+  // 开舱：自动装配一步定向升级（原来行动奖励的那一步构筑），写进奖励界面的副标题
+  if (drop.landed && !drop.granted && drop.t >= RELAY_DROP.landAt + RELAY_PERKS.grantAt) { drop.granted = true; drop.grant = grantRelayDropUpgrade(); }
+  if (drop.t >= RELAY_DROP.readyAt) drop.ready = true;
+}
+// 冲击波清圈内的虫：普通虫直接清掉，精英掉一截血，首领和巨兽、虫骸巨人这类大家伙不受影响
+function relayDropBlastTargets(x, y, r) {
+  return G.enemies.filter(e => !e.dead && !e.entering && e.hp > 0 && !e.boss && !e.colossusJoint && !e.amalgam && !e.mercyGrudge && !e.underground
+    && d2(x, y, e.x, e.y) <= (r + (e.r || 0)) ** 2);
+}
+function relayDropLand(drop) {
+  drop.landed = true;
+  const { x, y, r } = drop;
+  for (const e of relayDropBlastTargets(x, y, r)) {
+    const a = Math.atan2(e.y - y, e.x - x), knock = RELAY_DROP.knock;
+    const damage = e.elite ? e.maxHp * RELAY_DROP.eliteDamage : (e.hp + Math.max(0, e.shield || 0)) * 3 + 50;
+    hitEnemy(e, damage, { source: 'relayDrop', flat: true, crit: false, kx: Math.cos(a) * knock, ky: Math.sin(a) * knock });
+    if (e.dead) drop.cleared++;
+  }
+  for (const b of G.ebullets) if (!b.dead && d2(x, y, b.x, b.y) < r * r) b.dead = true;
+  // 两道环：金色冲击波推到圈外一点，青色余波收在圈边
+  G.waves.push({ x, y, r: 12, maxR: r * 1.18, v: RELAY_DROP.waveSpeed, dmg: 0, knock: 0, hit: null, col: '255,214,110' });
+  G.waves.push({ x, y, r: 6, maxR: r, v: RELAY_DROP.waveSpeed * .6, dmg: 0, knock: 0, hit: null, col: '112,216,212' });
+  for (let i = 0; i < 26; i++) { const a = Math.random() * TAU, s = rand(120, 420); part(x, y, Math.cos(a) * s, Math.sin(a) * s, rand(.3, .65), rand(6, 13), i % 3 ? '255,214,110' : '255,250,220'); }
+  for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; smoke(x + Math.cos(a) * 30, y + Math.sin(a) * 30, rand(16, 26), 1); }
+  G.slowT = Math.max(G.slowT || 0, RELAY_DROP.slowT);
+  G.shake = Math.max(G.shake || 0, RELAY_DROP.shake);
+  flash('255,226,150', RELAY_DROP.flash);
+  feedback('relayDrop', { x, y, r });
+  SFX.boom(true);
+  floatText(x, y - 64, drop.cleared ? `补给到达 · 清场 ${drop.cleared}` : '补给到达', '255,214,110', 24, 1.5);
+}
+
 // ---- src/game/objectives.js ----
 // 战场行动状态机：固定与移动回收、限时围猎、区域封锁和单次奖励
 
-function updateRelay(dt) {
+// rdt 是真实秒数，只给完成演出用（慢放中补给舱照常落下）；世界停住时 dt 为 0，演出也停住
+function updateRelay(dt, rdt = dt) {
   if (!G || G.state !== 'playing' || !(dt > 0) || !Number.isFinite(dt)) return;
   const p = G.player;
   if (p.hp <= 0 || G.endT > 0 || G.won || G.victoryT > 0) return;
   if (!G.relay) { if (!G.pendingRelay) offerRelay(); return; }
   const relay = G.relay, cfg = FIELD_EVENT_RULES[relay.type || 'relay'];
+  if (relay.status === 'complete' && relay.drop) updateRelayDrop(relay, Number.isFinite(rdt) && rdt > 0 ? rdt : dt);
+  // 奖励没领之前补给舱留在原地，领完再开始淡出
+  if (relay.status === 'complete' && G.pendingRelay) return;
   if (relay.status === 'complete' || relay.status === 'failed') {
     relay.timeLeft = Math.max(0, relay.timeLeft - dt);
     if (relay.timeLeft <= 0) G.relay = null;
@@ -12263,7 +12545,9 @@ function completeRelay() {
   if (relay.status !== 'active') return;
   relay.status = 'complete'; relay.progress = relay.required; relay.timeLeft = RELAY_CONFIG.resultFor; relay.hazards.length = 0;
   G.pendingRelay = true; G.relayClears++; recordRelayResult(relay);
-  toast({ text: (relay.type === 'hunt' ? '围猎成功' : '回收成功') + ' · 选择军械奖励', priority: 3 }); SFX.level();
+  // 收圈、补给舱落地、冲击波清场演完（relay-drop.js）才弹金边奖励卡；四种行动共用
+  startRelayDrop(relay);
+  toast({ text: (relay.type === 'hunt' ? '围猎成功' : relay.type === 'blackout' ? '封锁解除' : '回收成功') + ' · 补给舱投放中', priority: 3 });
 }
 function failRelay(reason) {
   const relay = G.relay;
@@ -12561,6 +12845,13 @@ const ICONS = {
   crit: '<circle cx="24" cy="24" r="15"/><path d="M24 4v11M24 33v11M4 24h11M33 24h11"/><circle cx="24" cy="24" r="3"/>',
   heal: '<path d="M18 6h12v12h12v12H30v12H18V30H6V18h12z"/>',
   gold: '<circle cx="24" cy="24" r="16"/><path d="M28 17h-6a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8h-7M24 13v4M24 33v3"/>',
+  // 战场行动的金边军械卡（game/relay-perks.js）
+  relayFire: '<path d="M6 16h20l4 4-4 4H6zM6 28h20l4 4-4 4H6z"/><path d="M34 14l8 8M42 14l-8 8M33 34h9"/>',
+  relayAlly: '<path d="M10 20a14 12 0 0 1 28 0z"/><path d="M10 20l12 14M38 20L26 34M24 20v14"/><rect x="19" y="34" width="10" height="8" rx="1"/>',
+  relayStrike: '<path d="M20 4h8v26h-8z"/><path d="M14 40l10-8 10 8M8 44h32M24 30v6"/>',
+  relayCharge: '<rect x="8" y="12" width="30" height="24" rx="2"/><path d="M38 20h4v8h-4M25 15l-7 10h6l-3 8 8-11h-6z"/>',
+  relayRepair: '<path d="M18 6h12v12h12v12H30v12H18V30H6V18h12z"/><path d="M38 6v8M34 10h8"/>',
+  relayRefit: '<circle cx="20" cy="28" r="12"/><circle cx="20" cy="28" r="4"/><path d="M20 12v4M20 40v4M4 28h4M32 28h4M36 18l6-8M42 10v7M42 10h-7"/>',
 };
 const svgI = k => `<svg class="i" viewBox="0 0 48 48" aria-hidden="true">${ICONS[k] || ''}</svg>`;
 
@@ -13901,6 +14192,7 @@ const CINEMA_SHOTS = Object.freeze({
   clash: Object.freeze({ priority: 3.6, zoom: 1.16, rise: .1, hold: 1.1, dur: 1.45, speedLines: 12 }),
   topple: Object.freeze({ priority: 3.2, zoom: 1.08, rise: .1, hold: .3, dur: 1.1 }),
   fall: Object.freeze({ priority: 3.3, zoom: 1.08, rise: .06, hold: .18, dur: .6 }),
+  relayDrop: Object.freeze({ priority: 2.5, zoom: 1.1, rise: .08, hold: .45, dur: 1.1 }), // 战场行动完成：补给舱砸地
   finale: Object.freeze({ priority: 5, zoom: 1.12, rise: .16, hold: 1.5, dur: 2.2, bars: .065 }),
 });
 const FINALE_RULES = Object.freeze({
@@ -15849,7 +16141,7 @@ $('#btnReroll').addEventListener('click', () => {
 });
 
 // ---- src/ui/relay.js ----
-// 战场行动奖励：复用构筑卡片，独立于升级次数且每次只能领取一次
+// 战场行动奖励：金边军械卡（game/relay-perks.js）三选一，独立于升级次数且每次只能领取一次
 
 let relayRewardOptions = [], relayRewardReadyAt = 0;
 function openRelayReward() {
@@ -15857,7 +16149,8 @@ function openRelayReward() {
   relayRewardOptions = buildRelayOptions().filter(o => isChoiceAvailable(o) && optInfo(o));
   if (!relayRewardOptions.length) return false;
   G.state = 'relay';
-  renderRelayChoices((G.relay?.title || '行动') + '完成 · 选择一项军械支援');
+  const grant = G.relay?.drop?.grant;
+  renderRelayChoices((G.relay?.title || '行动') + '完成 · ' + (grant ? `补给舱已装配：${grant}` : '补给舱已开启'));
   SFX.level(); show('relay'); return true;
 }
 function renderRelayChoices(feedback) {
@@ -15880,7 +16173,7 @@ $('#relayCards').addEventListener('click', e => {
   // 先锁定点击，应用成功后再消耗奖励；失败仍能重新选择。
   relayRewardReadyAt = Infinity;
   if (!applyOpt(o)) { refreshStaleRelayChoices(); return; }
-  G.pendingRelay = false; relayRewardOptions = []; SFX.click();
+  G.pendingRelay = false; relayRewardOptions = []; SFX.click(); relayPerkClaimed(o);
   $('#relayFeedback').textContent = feedback;
   toast({ text: feedback, t: 2.4, priority: 2 });
   G.player.invuln = Math.max(G.player.invuln, .6); G.state = 'playing'; show(null);
@@ -15969,6 +16262,7 @@ function recalc() {
   applyAnomalyStats(st); // 异常芯片的代价：冷却、冲刺冷却、关自然回复
   applyAbyssStats(st); // 深渊词条「冲刺迟滞」
   if (G.weekly?.mods.dmg) st.dmg *= G.weekly.mods.dmg; // 周规则：玻璃大炮 +50%、冲刺杀手 −30%
+  applyRelayPerkStats(st); // 战场行动金边卡「火力全开」：限时伤害翻倍
 }
 const halfDiag = () => Math.hypot(VW, VH) / 2;
 function update(rdt) {
@@ -16024,7 +16318,8 @@ function update(rdt) {
   if (G.props?.length) updateProps(dt);
   updateZoneHazards(dt, pdt);
   updateAbyss(dt); // 深渊毒圈、毒地、精英再生、黑潮（没有深渊规则时直接返回）
-  if (!G.practice) updateRelay(dt); // 中继落点先结算伤害，再拾取，避免致命伤被治疗包绕过。
+  if (!G.practice) updateRelay(dt, dt > 0 ? rdt : 0); // 中继落点先结算伤害，再拾取，避免致命伤被治疗包绕过；完成演出按真实时间走。
+  updateRelayPerks(dt); // 金边卡的限时效果：火力全开计时、援军落地、轨道齐射（排在援军更新之前）
   updateStyleRank();
   updateAllies(pdt, dt);
   updateMercy(pdt, dt);
@@ -16058,7 +16353,8 @@ function update(rdt) {
     }
   }
   // 进入整备面板后主循环停止更新，不能把这一帧尚未播出的击杀音留到玩家回来。
-  if (G.state === 'playing' && G.pendingRelay) { feedbackDiscardKills(); openRelayReward(); }
+  // 补给舱落地演完才弹金边奖励卡；演出期间不弹升级和补给箱，免得打断
+  if (G.state === 'playing' && G.pendingRelay) { if (relayDropReady()) { feedbackDiscardKills(); openRelayReward(); } }
   else if (G.state === 'playing' && G.pendingLevels > 0) { feedbackDiscardKills(); if (!anomalyBlindLevelUp()) openLevelUp(); } // 盲盒协议：直接拿卡不开界面
   else if (G.state === 'playing' && G.pendingChest > 0) { feedbackDiscardKills(); openChest(); }
   else if (G.state === 'playing' && G.pendingAnomaly > 0 && anomaliesEnabled()) { feedbackDiscardKills(); openAnomalyChoice(); }
@@ -18869,7 +19165,7 @@ const hudPanelBottom = () => hudSafeTop + 84 + hudPartRow() + hudBountyRow();
 // 世界到屏幕的缩放：屏幕适配的 ZOOM 乘镜头推近（render() 每帧写进 G.cam.zoom）
 const hudZoom = () => ZOOM * (G?.cam?.zoom || 1);
 function hudBattleBounds() {
-  const relay = G?.relay, relayVisible = relay && (relay.status === 'available' || relay.status === 'active');
+  const relay = G?.relay, relayVisible = relay && (relay.status === 'available' || relay.status === 'active') || !!relayPerkHud();
   // 技能区：底边距 24 + 冲刺按钮 84（随按钮大小设置缩放）+ 上方留白 24。
   const size = Number(G?.settings?.skillSize), scale = [100, 115, 130].includes(size) ? size / 100 : 1;
   const form = G?.form && hudFormVisible();
@@ -19029,8 +19325,19 @@ function hudBossParts(boss, left, y) {
     ctx.fillStyle = lit ? '#ffe6a3' : '#e0a95c'; ctx.fillRect(x + tw, y + 5, bw * k, 3);
   });
 }
+// 火力全开计时条：和行动状态条同一行，行动进行中让给行动
+function hudRelayPerk(y) {
+  const perk = relayPerkHud(); if (!perk) return;
+  const left = 14, width = W - 28, seconds = Math.max(0, Math.ceil(perk.t));
+  ctx.fillStyle = 'rgba(38,26,6,.93)'; ctx.fillRect(left - 5, y - 1, width + 10, 29);
+  ctx.font = '600 12px "PingFang SC",sans-serif'; ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.fillStyle = '#ffd56e';
+  ctx.fillText(perk.label, left + 2, y + 5);
+  ctx.textAlign = 'right'; ctx.fillStyle = seconds <= 5 ? '#ffab99' : '#fff1c8'; ctx.fillText(`${seconds}秒`, W - left - 2, y + 5);
+  ctx.fillStyle = '#4a3a17'; ctx.fillRect(left + 2, y + 24, width - 4, 2);
+  ctx.fillStyle = '#ffd56e'; ctx.fillRect(left + 2, y + 24, (width - 4) * clamp(perk.t / perk.max, 0, 1), 2);
+}
 function hudRelayStatus(y) {
-  const r = G.relay; if (!r || (r.status !== 'available' && r.status !== 'active')) return;
+  const r = G.relay; if (!r || (r.status !== 'available' && r.status !== 'active')) { hudRelayPerk(y); return; }
   const p = G.player, active = r.status === 'active', inside = (r.x - p.x) ** 2 + (r.y - p.y) ** 2 <= r.r * r.r;
   const left = 14, width = W - 28, seconds = Math.max(0, Math.ceil(r.timeLeft));
   const needed = r.required || RELAY_CONFIG.captureTime;
@@ -19526,12 +19833,55 @@ function relayGroundMarks(c, relay, color) {
   }
   c.stroke(); c.restore();
 }
+// 大圈上的进度环：深色底槽 + 按秒分格的刻度 + 发光的进度弧和弧头，离圈时换成琥珀色、变暗
+function relayProgressRing(c, relay, progress, inside, zoom) {
+  const x = relay.x, y = relay.y, r = relay.r, start = -Math.PI / 2, end = start + TAU * progress;
+  const color = inside ? '112,216,212' : '239,189,102', ticks = Math.max(1, Math.round(relay.required || RELAY_CONFIG.captureTime));
+  c.save();
+  c.lineCap = 'round';
+  c.strokeStyle = 'rgba(6,14,20,.55)'; c.lineWidth = 9 / zoom; relayCircle(c, x, y, r); c.stroke();
+  // 每秒一格：已经走过的格子亮起来
+  c.lineWidth = 2 / zoom; c.beginPath();
+  for (let i = 0; i < ticks; i++) {
+    const a = start + i / ticks * TAU, nx = Math.cos(a), ny = Math.sin(a);
+    c.moveTo(x + nx * (r - 7 / zoom), y + ny * (r - 7 / zoom)); c.lineTo(x + nx * (r + 7 / zoom), y + ny * (r + 7 / zoom));
+  }
+  c.strokeStyle = 'rgba(200,230,232,.32)'; c.stroke();
+  if (progress > 0) {
+    c.strokeStyle = `rgba(${color},.28)`; c.lineWidth = 14 / zoom; c.beginPath(); c.arc(x, y, r, start, end); c.stroke();
+    c.strokeStyle = `rgb(${color})`; c.lineWidth = 6 / zoom; c.beginPath(); c.arc(x, y, r, start, end); c.stroke();
+    c.fillStyle = '#f4ffff'; c.beginPath(); c.arc(x + Math.cos(end) * r, y + Math.sin(end) * r, 5 / zoom, 0, TAU); c.fill();
+  }
+  c.restore();
+}
+// 还要在圈里待几秒：屏幕上字号固定；最后三秒放大闪一下，离圈时换琥珀色提示返回
+function relayCountdown(c, x, y, seconds, inside, zoom, time) {
+  const n = Math.max(0, Math.ceil(seconds - 1e-9)), urgent = inside && n <= 3 && n > 0;
+  const pulse = urgent ? 1 + .12 * Math.max(0, Math.sin(time * 9)) : 1;
+  c.save(); c.translate(x, y); c.scale(pulse / zoom, pulse / zoom); c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  c.font = '700 30px Teko,"Arial Narrow",sans-serif';
+  const num = String(n), nw = c.measureText(num).width;
+  c.font = '600 12px "PingFang SC",sans-serif';
+  const unit = inside ? '秒' : '秒 · 返回圈内', uw = c.measureText(unit).width, total = nw + 3 + uw;
+  c.fillStyle = 'rgba(7,14,20,.72)'; c.fillRect(-total / 2 - 8, -27, total + 16, 32);
+  c.fillStyle = inside ? '#e9ffff' : '#f3d08e'; c.font = '700 30px Teko,"Arial Narrow",sans-serif'; c.textAlign = 'left';
+  c.fillText(num, -total / 2, 0);
+  c.fillStyle = inside ? '#9ce5e8' : '#efbd66'; c.font = '600 12px "PingFang SC",sans-serif'; c.fillText(unit, -total / 2 + nw + 3, -4);
+  c.restore();
+}
 function relayLabel(c, x, y, label, color, zoom) {
   c.save(); c.translate(x, y); c.scale(1 / zoom, 1 / zoom); c.textAlign = 'center'; c.textBaseline = 'middle';
   c.font = '600 12px "PingFang SC",sans-serif';
   const width = c.measureText(label).width + 12;
   c.fillStyle = 'rgba(7,14,20,.85)'; c.fillRect(-width / 2, -9, width, 18);
   c.fillStyle = color; c.fillText(label, 0, 0); c.restore();
+}
+// 还要待几秒：挂在大圈正上方，不压机甲和回收装置；画在敌人上面（world.js 前景层），虫群挡不住
+function drawRelayCountdown(c, relay, player, visible, zoom, labelVisible = true) {
+  if (!labelVisible || relay?.status !== 'active' || relay.type === 'hunt' || !visible(relay.x, relay.y, relay.r + 55)) return;
+  const inside = (player.x - relay.x) ** 2 + (player.y - relay.y) ** 2 <= relay.r ** 2;
+  const needed = relay.required || RELAY_CONFIG.captureTime;
+  relayCountdown(c, relay.x, relay.y - relay.r - 14 / zoom, needed - (relay.progress || 0), inside, zoom, relay.timeLeft || 0);
 }
 function drawRelayObjective(c, relay, player, visible, zoom, labelVisible = true) {
   if (!relay) return;
@@ -19558,29 +19908,170 @@ function drawRelayObjective(c, relay, player, visible, zoom, labelVisible = true
         }
 
       } else if (relay.status === 'active') {
+        const needed = relay.required || RELAY_CONFIG.captureTime, progress = Math.min(1, relay.progress / needed);
         c.fillStyle = inside ? 'rgba(67,154,153,.045)' : 'rgba(217,170,91,.03)'; relayCircle(c, relay.x, relay.y, relay.r); c.fill();
+        // 能量从中心往外注满：已回收的比例画成一片更亮的圆
+        if (inside && progress > 0) { c.fillStyle = 'rgba(112,216,212,.07)'; relayCircle(c, relay.x, relay.y, relay.r * progress); c.fill(); }
         c.strokeStyle = inside ? 'rgba(112,216,212,.5)' : 'rgba(239,189,102,.55)'; c.stroke();
-        const progress = Math.min(1, relay.progress / (relay.required || RELAY_CONFIG.captureTime));
-        c.lineWidth = 3 / zoom; c.strokeStyle = inside ? color : '#efbd66'; c.beginPath();
-        c.arc(relay.x, relay.y, relay.r, -Math.PI / 2, -Math.PI / 2 + TAU * progress); c.stroke();
+        relayProgressRing(c, relay, progress, inside, zoom);
         title = relay.type === 'hunt' ? '围猎' : inside ? relay.type === 'convoy' ? '跟随' : relay.type === 'blackout' ? '解锁' : '回收' : '返回';
-      } else {
+      } else if (!relay.drop) {
         c.strokeStyle = color; c.globalAlpha = .35; relayCircle(c, relay.x, relay.y, RELAY_CONFIG.activationRadius); c.stroke(); c.globalAlpha = 1;
         title = relay.status === 'complete' ? '回收完成' : '中继离线';
 
       }
-      relayGroundMarks(c, relay, color); relayDevice(c, relay);
+      // 完成演出里补给舱落地后盖住回收装置（render/relay-drop.js），不再画装置和标签
+      const podLanded = relay.drop?.landed;
+      if (!podLanded) { relayGroundMarks(c, relay, color); relayDevice(c, relay); }
       if (relay.type === 'convoy' && relay.status === 'active') {
         const angle = relay.route?.angle || 0;
         c.save(); c.translate(relay.x, relay.y); c.rotate(angle); c.strokeStyle = 'rgba(112,216,212,.48)'; c.lineWidth = 1.6 / zoom;
         c.beginPath(); c.moveTo(47, -6); c.lineTo(55, 0); c.lineTo(47, 6); c.stroke(); c.restore();
       }
       if (relay.status === 'active') { c.strokeStyle = color; c.lineWidth = 2.5 / zoom; c.beginPath(); c.arc(relay.x, relay.y, 35, -Math.PI / 2, -Math.PI / 2 + TAU * Math.min(1, (relay.progress || 0) / (relay.required || RELAY_CONFIG.captureTime))); c.stroke(); }
-      if (labelVisible) relayLabel(c, relay.x, relay.y + 45, title, color, zoom);
+      if (labelVisible && !relay.drop) relayLabel(c, relay.x, relay.y + 45, title, color, zoom);
     }
   }
   // 落点在场景内独立裁剪，中继本体离屏也不会漏掉危险预警。
   drawRelayHazardTelegraphs(c, relay, player, visible, zoom); c.restore();
+}
+
+// ---- src/render/relay-drop.js ----
+// 战场行动完成演出和金边卡效果的绘制：收圈光柱、补给舱落下与开舱、落地弹坑、火力全开金光、轨道齐射
+
+const RELAY_GOLD = '255,214,110', RELAY_CYAN = '112,216,212';
+const relayEase = k => 1 - (1 - k) ** 3;
+const relayClamp = k => Math.max(0, Math.min(1, k));
+// 补给舱下落进度：0 还在天上，1 落地；先慢后快
+function relayPodFall(drop) { return relayClamp((drop.t - RELAY_DROP.collapseAt) / (RELAY_DROP.landAt - RELAY_DROP.collapseAt)) ** 2; }
+// 选完奖励后补给舱跟着行动结果一起淡出
+function relayPodAlpha(relay) { return relay.drop?.ready && relay.timeLeft < RELAY_DROP.podFade ? relayClamp(relay.timeLeft / RELAY_DROP.podFade) : 1; }
+
+// 地面层：收拢的大圈、落点标记和阴影、落地后的弹坑；火力全开的金色脚下光环；轨道炮落点
+function drawRelayDropGround(c, G, { visible, zoom, settings }) {
+  const relay = G.relay, drop = relay?.status === 'complete' ? relay.drop : null;
+  if (drop && visible(drop.x, drop.y, drop.r + 40)) {
+    const { x, y, r } = drop, t = drop.t;
+    c.save(); c.lineCap = 'round';
+    if (!drop.landed) {
+      // 大圈收成光柱：圈越收越小、越亮
+      const k = relayEase(relayClamp(t / RELAY_DROP.collapseAt)), ring = 10 + (r - 10) * (1 - k);
+      c.fillStyle = `rgba(${RELAY_CYAN},${.1 * (1 - k)})`; c.beginPath(); c.arc(x, y, ring, 0, TAU); c.fill();
+      c.strokeStyle = `rgba(${k > .6 ? '235,255,255' : RELAY_CYAN},${.55 + .45 * k})`; c.lineWidth = (4 + 6 * k) / zoom; c.beginPath(); c.arc(x, y, ring, 0, TAU); c.stroke();
+      // 落点：补给舱越近，阴影越大越实
+      const f = relayPodFall(drop), pulse = settings.flashes === false ? 0 : Math.sin(t * 22) * .5 + .5;
+      c.fillStyle = `rgba(0,0,0,${.12 + .38 * f})`; c.beginPath(); c.ellipse(x, y + 6, 14 + 22 * f, 10 + 16 * f, 0, 0, TAU); c.fill();
+      c.strokeStyle = `rgba(${RELAY_GOLD},${.45 + .4 * pulse})`; c.lineWidth = 2.5 / zoom; c.beginPath(); c.arc(x, y, 34 - 10 * f, 0, TAU); c.stroke();
+    } else {
+      // 弹坑：深色焦痕、八道放射裂纹、金色余烬圈
+      const age = Math.max(0, t - RELAY_DROP.landAt), fade = relayPodAlpha(relay);
+      c.globalAlpha = .5 * fade; c.fillStyle = '#0b0d10'; c.beginPath(); c.ellipse(x, y + 3, 46, 36, 0, 0, TAU); c.fill();
+      c.globalAlpha = .55 * fade; c.strokeStyle = '#151a1f'; c.lineWidth = 3; c.beginPath();
+      for (let i = 0; i < 8; i++) { const a = i * TAU / 8 + .2, l = 56 + (i % 3) * 14; c.moveTo(x + Math.cos(a) * 30, y + Math.sin(a) * 24); c.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l * .8); }
+      c.stroke();
+      const ember = relayClamp(1 - age / 1.2);
+      if (ember > 0) { c.globalAlpha = ember * fade; c.strokeStyle = `rgb(${RELAY_GOLD})`; c.lineWidth = (3 + 6 * ember) / zoom; c.beginPath(); c.arc(x, y, 40 + (r - 40) * (1 - ember), 0, TAU); c.stroke(); }
+    }
+    c.restore();
+  }
+  const perks = G.relayPerks;
+  if (!perks) return;
+  // 火力全开：机甲脚下转动的金色光环，最后五秒闪烁提醒
+  if (perks.firepowerT > 0 && G.player.hp > 0) {
+    const p = G.player, late = perks.firepowerT < 5, blink = late && settings.flashes !== false && Math.sin(G.rt * 14) < 0;
+    if (!blink) {
+      c.save(); c.translate(p.x, p.y); c.rotate(G.rt * 1.6);
+      c.strokeStyle = `rgba(${RELAY_GOLD},.75)`; c.lineWidth = 3 / zoom; c.beginPath();
+      for (let i = 0; i < 3; i++) { const a = i * TAU / 3; c.moveTo(Math.cos(a) * 44, Math.sin(a) * 44); c.arc(0, 0, 44, a, a + 1.4); }
+      c.stroke();
+      c.globalCompositeOperation = 'lighter'; c.fillStyle = `rgba(${RELAY_GOLD},.07)`; c.beginPath(); c.arc(0, 0, 50, 0, TAU); c.fill();
+      c.restore();
+    }
+  }
+  // 轨道炮落点：金色圈从外往里收，收到底就落炮
+  for (const s of perks.strikes || []) {
+    if (s.fired || !visible(s.x, s.y, RELAY_PERKS.barrage.radius)) continue;
+    const k = relayClamp(1 - s.t / s.max), radius = RELAY_PERKS.barrage.radius;
+    c.save(); c.strokeStyle = `rgba(${RELAY_GOLD},${.35 + .5 * k})`; c.lineWidth = 2 / zoom;
+    c.beginPath(); c.arc(s.x, s.y, radius, 0, TAU); c.stroke();
+    c.lineWidth = 3 / zoom; c.beginPath(); c.arc(s.x, s.y, radius * (1 - k * .85), 0, TAU); c.stroke();
+    c.fillStyle = `rgba(${RELAY_GOLD},${.06 + .1 * k})`; c.beginPath(); c.arc(s.x, s.y, radius, 0, TAU); c.fill();
+    c.restore();
+  }
+}
+
+// 补给舱俯视：四片尾翼、八角舱盖、金色环带；开舱后四片舱盖翻开、中间冒金光
+function drawRelayPod(c, x, y, scale, open, alpha, glow) {
+  c.save(); c.translate(x, y); c.scale(scale, scale); c.globalAlpha = alpha;
+  c.fillStyle = '#34424c'; c.strokeStyle = '#8c9ca5'; c.lineWidth = 1.2;
+  for (let i = 0; i < 4; i++) { c.save(); c.rotate(i * TAU / 4 + TAU / 8); c.fillRect(-4, -31, 8, 12); c.strokeRect(-4, -31, 8, 12); c.restore(); }
+  c.beginPath();
+  for (let i = 0; i < 8; i++) { const a = i * TAU / 8 + TAU / 16; c[i ? 'lineTo' : 'moveTo'](Math.cos(a) * 23, Math.sin(a) * 23); }
+  c.closePath(); c.fillStyle = '#222e37'; c.fill(); c.strokeStyle = '#a3b3bb'; c.lineWidth = 1.6; c.stroke();
+  c.strokeStyle = '#ffc94f'; c.lineWidth = 3; c.beginPath(); c.arc(0, 0, 16, 0, TAU); c.stroke();
+  if (open) {
+    c.fillStyle = '#fff2c2'; c.beginPath(); c.arc(0, 0, 11, 0, TAU); c.fill();
+    c.fillStyle = '#3d4b55';
+    for (let i = 0; i < 4; i++) { c.save(); c.rotate(i * TAU / 4); c.beginPath(); c.moveTo(-7, -13); c.lineTo(7, -13); c.lineTo(10, -24); c.lineTo(-10, -24); c.closePath(); c.fill(); c.restore(); }
+  } else {
+    c.fillStyle = '#4a5964'; c.beginPath(); c.arc(0, 0, 11, 0, TAU); c.fill();
+    c.strokeStyle = '#1a242b'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-11, 0); c.lineTo(11, 0); c.moveTo(0, -11); c.lineTo(0, 11); c.stroke();
+    c.fillStyle = '#ffd56e'; c.fillRect(-2, -2, 4, 4);
+  }
+  if (glow > 0) {
+    c.globalCompositeOperation = 'lighter'; c.globalAlpha = alpha * glow;
+    const g = c.createRadialGradient(0, 0, 4, 0, 0, 46);
+    g.addColorStop(0, 'rgba(255,240,190,.9)'); g.addColorStop(.4, `rgba(${RELAY_GOLD},.35)`); g.addColorStop(1, `rgba(${RELAY_GOLD},0)`);
+    c.fillStyle = g; c.beginPath(); c.arc(0, 0, 46, 0, TAU); c.fill();
+  }
+  c.restore();
+}
+// 一根往屏幕上方伸出去的光柱（叠加混合），轨道炮也用它
+function drawRelayBeam(c, x, y, width, height, alpha, rgb) {
+  if (!(alpha > 0) || !(width > 0)) return;
+  c.save(); c.globalCompositeOperation = 'lighter';
+  const g = c.createLinearGradient(0, y - height, 0, y);
+  g.addColorStop(0, `rgba(${rgb},0)`); g.addColorStop(.7, `rgba(${rgb},${.35 * alpha})`); g.addColorStop(1, `rgba(${rgb},${.8 * alpha})`);
+  // 三层叠出柔和的边：外晕、主体、白芯
+  c.globalAlpha = .35; c.fillStyle = g; c.fillRect(x - width, y - height, width * 2, height);
+  c.globalAlpha = 1; c.fillRect(x - width / 2, y - height, width, height);
+  c.fillStyle = `rgba(255,255,245,${.7 * alpha})`; c.fillRect(x - width * .15, y - height, width * .3, height);
+  c.restore();
+}
+
+// 空中层（画在敌人和机甲上面）：光柱、下落的补给舱、落地后开舱的金光、轨道炮光束
+function drawRelayDropAir(c, G, { visible, zoom, settings }) {
+  const relay = G.relay, drop = relay?.status === 'complete' ? relay.drop : null;
+  if (drop && visible(drop.x, drop.y, drop.r + 40)) {
+    const { x, y } = drop, t = drop.t, height = Math.max(900, 900 / zoom);
+    // 光柱：收圈时变粗，补给舱落地后迅速散掉
+    const grow = relayEase(relayClamp(t / RELAY_DROP.collapseAt)), gone = relayClamp((t - RELAY_DROP.landAt) / .35);
+    drawRelayBeam(c, x, y, 10 + 34 * grow * (1 - gone), height, (drop.landed ? 1 - gone : .5 + .5 * grow), RELAY_CYAN);
+    if (!drop.landed) {
+      const f = relayPodFall(drop), lift = RELAY_DROP.fallHeight * (1 - f);
+      if (t >= RELAY_DROP.collapseAt * .5) {
+        // 下落尾迹：舱体上方几道拉长的金线
+        c.save(); c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(${RELAY_GOLD},.55)`; c.lineWidth = 2.5 / zoom; c.beginPath();
+        for (const dx of [-14, 0, 14]) { c.moveTo(x + dx, y - lift - 30); c.lineTo(x + dx * 1.3, y - lift - 30 - 90 * (1 - f * .4)); }
+        c.stroke(); c.restore();
+        drawRelayPod(c, x, y - lift, 1 + .8 * (1 - f), false, 1, .55);
+      }
+    } else {
+      const age = t - RELAY_DROP.landAt, open = drop.granted || drop.ready;
+      const bounce = age < .2 ? Math.sin(age / .2 * Math.PI) * 6 : 0;
+      const shine = settings.flashes === false ? .6 : .6 + .3 * Math.sin(G.rt * 5);
+      drawRelayPod(c, x, y - bounce, 1, open, relayPodAlpha(relay), open ? shine : .2);
+    }
+  }
+  const perks = G.relayPerks;
+  if (!perks?.strikes?.length) return;
+  for (const s of perks.strikes) {
+    if (!visible(s.x, s.y, 80)) continue;
+    const height = Math.max(900, 900 / zoom);
+    // 落炮前最后一小段先下来一道细光，炸开后变粗再淡掉
+    if (!s.fired && s.t < .12) drawRelayBeam(c, s.x, s.y, 6, height, 1 - s.t / .12, RELAY_GOLD);
+    else if (s.fired) drawRelayBeam(c, s.x, s.y, 30 * (s.life / s.maxLife) + 6, height, s.life / s.maxLife, RELAY_GOLD);
+  }
 }
 
 // ---- src/render/props.js ----
@@ -23549,6 +24040,7 @@ function render(rdt) {
   }
   // 区域外由方向箭头和顶部状态说明，避免世界标签与箭头重叠。
   drawRelayObjective(ctx, G.relay, p, vis, Z, relayLabelVisible);
+  drawRelayDropGround(ctx, G, { visible: vis, zoom: Z, settings }); // 行动完成的收圈和弹坑、火力全开光环、轨道炮落点
   // 烟雾（普通混合）：颜色固定，只在第一缕烟时设置
   if (budget.detail) {
     let smokeStyled = false;
@@ -23764,6 +24256,8 @@ function render(rdt) {
   drawNight(ctx, x0, y0, x1, y1, { visible: vis, zoom: Z, settings, budget });
   drawZoneFront(ctx, { visible: vis, zoom: Z, settings, budget });
   drawAnomalies(ctx, { visible: vis, zoom: Z, settings, budget });
+  drawRelayDropAir(ctx, G, { visible: vis, zoom: Z, settings }); // 光柱、补给舱、轨道炮光束画在敌人和机甲上面
+  drawRelayCountdown(ctx, G.relay, p, vis, Z, relayLabelVisible); // 行动大圈上方的剩余秒数
   // 已锁定/临近引爆的边界高于火力；只重描线，不增加危险填色。
   drawCombatTelegraphs(ctx, G.enemies, p, vis, Z, true);
   drawRelayHazardTelegraphs(ctx, G.relay, p, vis, Z, true);
