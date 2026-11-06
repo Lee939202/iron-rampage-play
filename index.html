@@ -1248,6 +1248,8 @@ const RIG_PARTS = ['rig_assault_torso', 'rig_assault_legs', 'rig_heavy_torso', '
 const BOSS_PART_IMAGES = ['module_pincer_arm', 'module_hydraulic_legs', 'module_venom_stinger', 'module_parasite_nest', 'module_spore_ring', 'module_neural_link', 'pincer_arm', 'ally_parasite', 'fx_smoke', 'fx_venom', 'fx_spark'];
 // 武器挂件（每种武器都有普通、进化两版）：开局贴图到齐后再后台加载，没到的挂件先不画，不挡开局
 const MOUNT_IMAGES = ['mount_gatling', 'mount_gatling_evo', 'mount_missile', 'mount_missile_evo', 'mount_tesla', 'mount_tesla_evo', 'mount_saw', 'mount_saw_evo', 'mount_rail', 'mount_rail_evo', 'mount_drone', 'mount_drone_evo', 'mount_cord', 'mount_cord_evo', 'mount_snowball', 'mount_snowball_evo'];
+// 武器弹道和坠落碎石（导弹、曳光弹、磁轨光束、导弹火球、熔岩陨石）：和挂件一起后台加载，没到时照旧用代码画
+const FX_IMAGES = ['proj_missile', 'proj_missile_evo', 'fx_tracer_amber', 'fx_tracer_cyan', 'fx_beam_cyan', 'fx_beam_gold', 'fx_fireball', 'fall_rock_a', 'fall_rock_b', 'fall_rock_c'];
 // 超载切入立绘（每台机甲一张半身像）：对局里只在要用时请求当前机甲那一张，没到就只放大字和口号
 const CUTIN_IMAGES = ['cutin_assault', 'cutin_heavy', 'cutin_phantom', 'cutin_storm', 'cutin_lancer', 'cutin_engineer'];
 // 变身躯干：由变身绘制层后台请求，不加入菜单或开局等待清单
@@ -2042,13 +2044,13 @@ function loadImgList(list, onProg) {
 const loadMenuAssets = (onProg = () => { }) => loadImgList(MENU_IMAGES, onProg);
 let gameAssetLoad = null, gameAssetDone = false, gameAssetProgress = 0;
 const gameAssetListeners = new Set();
-// 开局需要的全部贴图；幕地面都到了就不再请求旧地面，只在缺图时兜底；武器挂件等这批到齐后再后台加载，不算进开局进度
+// 开局需要的全部贴图；幕地面都到了就不再请求旧地面，只在缺图时兜底；武器挂件、弹道贴图等这批到齐后再后台加载，不算进开局进度
 function loadGameAssets() {
   if (gameAssetLoad) return gameAssetLoad;
   const list = [...SPRITES, ...RIG_PARTS, ...BOSS_PART_IMAGES, ...SCENE_IMAGES.filter(k => !MENU_IMAGES.includes(k) && k !== GROUND_FALLBACK)];
   gameAssetLoad = loadImgList(list, k => { gameAssetProgress = k; for (const fn of gameAssetListeners) fn(k); })
     .then(() => SCENE_IMAGES.some(k => k.startsWith(GROUND_FALLBACK + '_') && !IMG[k]) ? loadImg(GROUND_FALLBACK) : true)
-    .then(() => { gameAssetDone = true; for (const k of [...EMPEROR_IMAGES, ...MOUNT_IMAGES]) loadImg(k); });
+    .then(() => { gameAssetDone = true; for (const k of [...EMPEROR_IMAGES, ...MOUNT_IMAGES, ...FX_IMAGES]) loadImg(k); });
   return gameAssetLoad;
 }
 const gameAssetsReady = () => gameAssetDone;
@@ -2647,6 +2649,14 @@ const COMBAT_VISUALS = Object.freeze({
   damage: Object.freeze({ window: .2, life: .6, defaultCap: 30, crowdedBulletCount: 150, normalSize: 14, critSize: 19, pulseTime: .12, pulseScale: .13, blockedColor: '150,162,176', blockedOffset: .9 }),
   bullet: Object.freeze({ lengthMin: 14, lengthMax: 20, velocityScale: .025, tracerLengthScale: 1.3, width: 2.4, droneWidth: 2.2, tracerWidth: 3, evolvedWidth: 3.5, evolvedColor: '255,205,71' }),
 });
+// 武器弹道贴图（Codex 生图）的画面尺寸，单位是世界像素；只管画面，不进玩法。贴图没加载到时各处照旧用代码画。
+const PROJECTILE_LOOK = Object.freeze({
+  missile: Object.freeze({ length: 31, evoLength: 34, flame: 20, flameWidth: 9, streak: 52, glow: 32 }),
+  tracer: Object.freeze({ width: 3.1, bigWidth: 1.5, evoWidth: 1.25, length: 1.9, alpha: .95 }),
+  beam: Object.freeze({ core: 1.7, halo: 3.2, haloAlpha: .3, flare: 2.6, evoAlpha: .8 }),
+  fireball: Object.freeze({ life: .42, from: 1.05, to: 2.6, spin: 1.6 }),
+  smoke: Object.freeze({ alpha: .3, scale: 3.1 }),
+});
 const DAMAGE_NUMBER_FONTS = Object.freeze({ normal: '600 14px Teko,"Arial Narrow",sans-serif', crit: '600 19px Teko,"Arial Narrow",sans-serif' });
 function combatDamageTextCap(value) {
   return Number.isFinite(value) ? Math.max(0, Math.min(COMBAT_VISUALS.damage.defaultCap, Math.floor(value))) : COMBAT_VISUALS.damage.defaultCap;
@@ -2860,6 +2870,8 @@ function fxPolishWatch() {
   if (!watch) { watch = { waves: new WeakSet(), beams: new WeakSet(), bolts: new WeakSet(), bullets: new WeakSet(), evolvedArcs: new WeakSet(), missiles: new WeakMap() }; fxPolishWatches.set(G, watch); }
   return watch;
 }
+// 画面层查询：这枚导弹是不是进化武器打出来的（开火钩子记下的），只读，不建记录。
+function fxPolishMissileEvo(missile) { return !!(G && fxPolishWatches.get(G)?.missiles.get(missile)); }
 function fxPolishEvent(kind, options = {}) {
   if (!G || !fxPolishSpecs[kind]) return null;
   const [baseLife, particles] = fxPolishSpecs[kind], life = kind === 'arc' && Number.isFinite(options.duration) ? Math.max(.1, Math.min(1, options.duration)) : baseLife;
@@ -4983,6 +4995,12 @@ const ACT_FALL = Object.freeze({
   debrisInterval: .45, debrisWarning: .6, debrisSpeed: 370, debrisRadius: 22, debrisDamage: 15,
   landingRadius: 220, landingDamage: 120, landingKnock: 600, clearRadius: 300,
   crackWidth: 13, crackCount: 5, crackSegments: 7,
+});
+// 坠落战纯画面参数（不进玩法）：崩落、竖井、抵达和落地余波的时长与井底光色
+const ACT_FALL_LOOK = Object.freeze({
+  collapse: 1, rings: 12, ringSpeed: .28, revealAt: 4.7, landFx: 2.2, burst: .5,
+  glow: Object.freeze({ industrial: '255,166,86', armory: '255,196,110', polluted: '150,255,120', hive: '255,112,124', frost: '150,220,255',
+    forge: '255,122,44', storm: '120,170,255', dark: '176,150,255', nest: '255,84,104' }),
 });
 // 有界线段距离，裂缝与高速子弹共用，避免跨帧穿透。
 function actFallSegmentDistance(x, y, ax, ay, bx, by) {
@@ -18292,6 +18310,131 @@ function juggleCombatTexts(texts) {
   return count < 2 ? texts : texts.filter((text, i) => i === latest || !text.str?.startsWith('空连 ×'));
 }
 
+// ---- src/render/projectile-art.js ----
+// 武器弹道贴图层：导弹、曳光弹、磁轨光束、导弹火球都用 Codex 画的小贴图（data/sprites.js 的 FX_IMAGES，后台加载）。
+// 贴图没到时每个函数返回 false，调用方照旧用代码画；只读对局状态，不写任何字段、不抽随机数。
+// 发光类贴图（曳光、光束、火球）是黑底转透明的，用叠加混合画；导弹本体是普通透明贴图。
+
+const PROJ_ART_HALF_PI = Math.PI / 2;
+let projArtFlameTex = null;
+// 导弹尾焰：白芯、橙焰、往后收尖，代码预渲染一次
+function projArtFlame() {
+  if (projArtFlameTex) return projArtFlameTex;
+  const cv = offscreen(32, 96), g = cv.getContext('2d'), outer = g.createLinearGradient(0, 0, 0, 96), inner = g.createLinearGradient(0, 0, 0, 60);
+  outer.addColorStop(0, 'rgba(255,190,90,1)'); outer.addColorStop(.35, 'rgba(255,110,40,.7)'); outer.addColorStop(1, 'rgba(255,60,20,0)');
+  inner.addColorStop(0, 'rgba(255,255,240,1)'); inner.addColorStop(.6, 'rgba(255,230,150,.6)'); inner.addColorStop(1, 'rgba(255,200,120,0)');
+  g.fillStyle = outer; g.beginPath(); g.moveTo(3, 0); g.quadraticCurveTo(16, -4, 29, 0); g.quadraticCurveTo(23, 52, 16, 96); g.quadraticCurveTo(9, 52, 3, 0); g.fill();
+  g.fillStyle = inner; g.beginPath(); g.moveTo(10, 0); g.quadraticCurveTo(16, -2, 22, 0); g.quadraticCurveTo(19, 34, 16, 60); g.quadraticCurveTo(13, 34, 10, 0); g.fill();
+  return projArtFlameTex = cv;
+}
+// 取当前变换矩阵；画布不支持（或取到怪值）时返回 null，退回逐发 save/translate/rotate/restore
+function projArtMatrix(c) {
+  const m = typeof c.getTransform === 'function' ? c.getTransform() : null;
+  return m && Number.isFinite(m.a) && Number.isFinite(m.e) ? m : null;
+}
+// 在 (x, y) 处按 angle 旋转后画一张图，画完变换复原；有矩阵时用 setTransform 拼，省掉每发一次 save/restore
+function projArtDraw(c, m, im, x, y, angle, dx, dy, w, h) {
+  if (!m) { c.save(); c.translate(x, y); c.rotate(angle); c.drawImage(im, dx, dy, w, h); c.restore(); return; }
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  c.setTransform(m.a * cos + m.c * sin, m.b * cos + m.d * sin, m.c * cos - m.a * sin, m.d * cos - m.b * sin, m.a * x + m.c * y + m.e, m.b * x + m.d * y + m.f);
+  c.drawImage(im, dx, dy, w, h);
+  c.setTransform(m);
+}
+const projArtImgReady = im => !!im && (im.naturalWidth || im.width) > 0;
+
+// 导弹：先叠加画尾焰、尾迹光和尾部光团，再画机体贴图（机头朝速度方向）
+function drawMissileArt(c, missiles, { glowScale = 1, flashes = true, visible, rt = 0 } = {}) {
+  const body = IMG.proj_missile;
+  if (!missiles?.length || !projArtImgReady(body)) return false;
+  const evoBody = projArtImgReady(IMG.proj_missile_evo) ? IMG.proj_missile_evo : body, streak = IMG.fx_tracer_amber;
+  const cfg = PROJECTILE_LOOK.missile, flame = projArtFlame(), m = projArtMatrix(c), glow = Math.max(.35, glowScale);
+  c.save();
+  c.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < missiles.length; i++) {
+    const mi = missiles[i];
+    if (visible && !visible(mi.x, mi.y, 60)) continue;
+    const evo = fxPolishMissileEvo(mi), length = evo ? cfg.evoLength : cfg.length, speed = Math.min(1, (mi.spd || 0) / 640);
+    const flick = flashes ? .82 + .18 * Math.sin(rt * 47 + i * 2.1) : .9, ux = Math.cos(mi.ang), uy = Math.sin(mi.ang);
+    const tx = mi.x - ux * length * .46, ty = mi.y - uy * length * .46;
+    c.globalAlpha = .55 * glow; c.drawImage(gl(evo ? '255,205,71' : '255,140,50'), tx - cfg.glow / 2, ty - cfg.glow / 2, cfg.glow, cfg.glow);
+    const back = mi.ang + PROJ_ART_HALF_PI; // 局部 +y 朝导弹后方
+    if (projArtImgReady(streak)) { c.globalAlpha = .32 * speed; projArtDraw(c, m, streak, tx, ty, back, -cfg.flameWidth * .45, -cfg.streak * .1, cfg.flameWidth * .9, cfg.streak); }
+    const fl = cfg.flame * (.55 + .45 * speed) * flick;
+    c.globalAlpha = .95; projArtDraw(c, m, flame, tx, ty, back, -cfg.flameWidth / 2, -1, cfg.flameWidth, fl);
+  }
+  c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
+  for (const mi of missiles) {
+    if (visible && !visible(mi.x, mi.y, 40)) continue;
+    const evo = fxPolishMissileEvo(mi), im = evo ? evoBody : body, length = evo ? cfg.evoLength : cfg.length;
+    const width = length * (im.naturalWidth || im.width) / (im.naturalHeight || im.height);
+    projArtDraw(c, m, im, mi.x, mi.y, mi.ang + PROJ_ART_HALF_PI, -width / 2, -length / 2, width, length);
+  }
+  c.restore();
+  return true;
+}
+
+// 曳光弹：弹头在贴图顶端、拖尾朝下；叠加混合，橙金色（加特林、进化）和青色（僚机等）两套
+function drawTracerArt(c, bullets, { visible } = {}) {
+  const amber = IMG.fx_tracer_amber, cyan = IMG.fx_tracer_cyan;
+  if (!bullets?.length || !projArtImgReady(amber)) return false;
+  const cfg = PROJECTILE_LOOK.tracer, look = COMBAT_VISUALS.bullet, m = projArtMatrix(c), cyanReady = projArtImgReady(cyan);
+  c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = cfg.alpha;
+  for (const b of bullets) {
+    if (visible && !visible(b.x, b.y, 40)) continue;
+    const speed = Math.hypot(b.vx || 0, b.vy || 0), r = b.r || 3;
+    const tex = !b.evo && cyanReady && projArtCool(b.col) ? cyan : amber;
+    if (!(speed > 0)) { const s = r * 4; c.drawImage(gl(b.evo ? '255,205,71' : b.col || '255,200,90'), b.x - s / 2, b.y - s / 2, s, s); continue; }
+    const width = r * cfg.width * (b.big ? cfg.bigWidth : 1) * (b.evo ? cfg.evoWidth : 1);
+    const length = Math.max(look.lengthMin, Math.min(look.lengthMax, speed * look.velocityScale)) * cfg.length * (b.tracer || b.big || b.evo ? 1.25 : 1);
+    projArtDraw(c, m, tex, b.x, b.y, Math.atan2(b.vy, b.vx) + PROJ_ART_HALF_PI, -width / 2, -length * .08, width, length);
+  }
+  c.restore();
+  return true;
+}
+// 颜色偏青蓝的弹用青色曳光（僚机、完美闪避、冲刺弹幕）；其余用橙金
+const projArtCoolCache = new Map();
+function projArtCool(col) {
+  if (!col) return false;
+  let v = projArtCoolCache.get(col);
+  if (v === undefined) { const [r, , b] = col.split(',').map(Number); v = b > r; if (projArtCoolCache.size < 64) projArtCoolCache.set(col, v); }
+  return v;
+}
+
+// 磁轨光束：光束贴图沿射线拉伸，外层再叠一道更宽更淡的；起点一团炮口闪光
+function drawBeamArt(c, beams, { glowScale = 1 } = {}) {
+  const cyan = IMG.fx_beam_cyan;
+  if (!beams?.length || !projArtImgReady(cyan)) return false;
+  const gold = projArtImgReady(IMG.fx_beam_gold) ? IMG.fx_beam_gold : cyan, cfg = PROJECTILE_LOOK.beam, m = projArtMatrix(c);
+  c.save(); c.globalCompositeOperation = 'lighter';
+  for (const b of beams) {
+    const t = Math.max(0, Math.min(1, b.life / (b.max || 1))), dx = b.ex - b.x, dy = b.ey - b.y, length = Math.hypot(dx, dy);
+    if (!(length > 0)) continue;
+    const tex = b.evo ? gold : cyan, core = b.w * cfg.core * (.45 + .55 * t), halo = b.w * cfg.halo * (1.15 - .35 * t);
+    const angle = Math.atan2(dy, dx);
+    c.globalAlpha = t * cfg.haloAlpha * Math.max(.3, glowScale); projArtDraw(c, m, tex, b.x, b.y, angle, 0, -halo / 2, length, halo);
+    c.globalAlpha = Math.min(1, t * 1.25) * (b.evo ? cfg.evoAlpha : 1); projArtDraw(c, m, tex, b.x, b.y, angle, 0, -core / 2, length, core);
+    const flare = b.w * cfg.flare * (.6 + .4 * t);
+    c.globalAlpha = t * .8; c.drawImage(gl(b.evo ? '255,215,110' : '150,235,255'), b.x - flare, b.y - flare, flare * 2, flare * 2);
+  }
+  c.restore();
+  return true;
+}
+
+// 导弹落点火球：两层火球贴图错开角度放大、淡出；没贴图返回 false
+function drawFireballArt(c, x, y, r, age, { evo = false, glowScale = 1, seed = 0 } = {}) {
+  const im = IMG.fx_fireball, cfg = PROJECTILE_LOOK.fireball;
+  if (!projArtImgReady(im) || !(age < cfg.life)) return projArtImgReady(im);
+  const k = age / cfg.life, grow = 1 - (1 - k) * (1 - k), fade = (1 - k) * (1 - k * .4);
+  const size = r * (cfg.from + (cfg.to - cfg.from) * grow), m = projArtMatrix(c);
+  c.save(); c.globalCompositeOperation = 'lighter';
+  // 叠加层的透明度都乘画质的光晕比例（和其它光晕一致）
+  c.globalAlpha = fade * glowScale; projArtDraw(c, m, im, x, y, seed + age * cfg.spin, -size / 2, -size / 2, size, size);
+  c.globalAlpha = fade * .55 * glowScale; projArtDraw(c, m, im, x, y, seed * 1.7 + 2.1 - age * cfg.spin, -size * .36, -size * .36, size * .72, size * .72);
+  if (evo) { c.globalAlpha = fade * .5 * glowScale; c.drawImage(gl('255,215,90'), x - size * .4, y - size * .4, size * .8, size * .8); }
+  c.restore();
+  return true;
+}
+
 // ---- src/game/camera-target.js ----
 // 战斗镜头的纯目标计算：渲染与模拟共用，登场微偏结束后恢复玩家前视
 
@@ -19791,6 +19934,8 @@ function battlefieldCachedAct(c, act) {
   if (!entry || entry.source !== source) { entry = buildBattlefieldTile(c, act, source); fieldActCache.set(act.id, entry); }
   return entry;
 }
+// 某一幕的地面平铺纹理（坠落战崩落的地板块、井底迎面放大的新战区用）
+function battlefieldActPattern(c, act) { return act ? battlefieldCachedAct(c, act).pattern || act.base : '#10141a'; }
 function drawBattlefieldGround(c, x, y, width, height, time = 0, override = null) {
   const mix = override || battlefieldMixAt(time), from = battlefieldCachedAct(c, mix.from), to = battlefieldCachedAct(c, mix.to);
   let pattern = to.pattern;
@@ -22620,8 +22765,10 @@ function fxPolishPaintMissile(c, fx, age, fade, options, detail, zoom, glow) {
   fxPolishPaintRing(c, fx.x, fx.y, r * (.23 + Math.min(1, age / .28) * .9), (1 + fade * 3) / zoom, color, fade * .75);
   if (!detail) return;
   const size = r * (1.1 + Math.min(1, age / .3) * .6);
+  // 有火球贴图（Codex 生图）就画火球，光团压暗一半垫底；没有照旧只画光团
+  const fireball = drawFireballArt(c, fx.x, fx.y, r, age, { evo: fx.evo, glowScale: glow, seed: fx.x * .37 + fx.y * .11 });
   if (glow > 0 && age < .38) {
-    c.globalCompositeOperation = 'lighter'; c.globalAlpha = fade * .7 * glow;
+    c.globalCompositeOperation = 'lighter'; c.globalAlpha = fade * (fireball ? .35 : .7) * glow;
     c.drawImage(gl(fx.evo ? '255,195,55' : '255,115,35'), fx.x - size / 2, fx.y - size / 2, size, size); c.globalCompositeOperation = 'source-over';
   }
   if (first && options.settings?.flashes !== false && age < .12) {
@@ -22629,7 +22776,14 @@ function fxPolishPaintMissile(c, fx, age, fade, options, detail, zoom, glow) {
   }
   // 烟团走普通混合，避免照亮危险弹幕；中档按粒子预算减少团数。
   const count = fxPolishPaintCount(fx, 5, options.budget || {});
-  if (age > .035) {
+  const smoke = IMG.fx_smoke;
+  if (age > .035 && smoke && (smoke.naturalWidth || smoke.width) > 0) {
+    // 软烟贴图：几团往外推、慢慢变大变淡
+    for (let i = 0; i < count; i++) {
+      const a = i * 2.399963 + (fx.angle || 0), travel = r * (.22 + age * .7), x = fx.x + Math.cos(a) * travel, y = fx.y + Math.sin(a) * travel - age * 15, s = r * (.5 + age * .9);
+      c.globalAlpha = fade * .3; c.drawImage(smoke, x - s / 2, y - s / 2, s, s);
+    }
+  } else if (age > .035) {
     c.globalAlpha = fade * .19; c.fillStyle = '#43464b'; c.beginPath();
     for (let i = 0; i < count; i++) {
       const a = i * 2.399963 + (fx.angle || 0), travel = r * (.22 + age * .7), x = fx.x + Math.cos(a) * travel, y = fx.y + Math.sin(a) * travel - age * 15, smokeR = r * (.15 + age * .28);
@@ -23549,7 +23703,368 @@ function drawAmalgam(ctx, visible, zoom = 1, detail = true) {
 }
 
 // ---- src/render/act-fall.js ----
-// 坠落战程序绘制：发光裂缝、深井透视、同坠虫群、推进尾焰与红边碎石
+// 坠落战程序绘制：地缝熔光、旧地图碎块崩落、斜视竖井、熔岩石块与碎裂、新战区迎面放大、重着陆弹坑（纯画面，不改逻辑）
+
+// 确定性小噪声：画面抖动不碰战斗随机序列
+const fallHash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+const fallClamp = k => k < 0 ? 0 : k > 1 ? 1 : k;
+const fallSmooth = k => k * k * (3 - 2 * k);
+const fallOut = k => 1 - (1 - k) * (1 - k);
+function fallRgb(hex) {
+  const n = parseInt(String(hex || '').slice(1, 7), 16);
+  return Number.isFinite(n) ? [(n >> 16) & 255, (n >> 8) & 255, n & 255] : [20, 24, 30];
+}
+const fallLerp = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+const fallCss = (rgb, alpha = 1) => `rgba(${Math.round(rgb[0])},${Math.round(rgb[1])},${Math.round(rgb[2])},${alpha})`;
+const fallGlow = act => ACT_FALL_LOOK.glow[act?.id] || ACT_FALL_LOOK.glow.industrial;
+const fallActs = game => zoneActs(game.zoneRoute);
+
+// 每局一份画面状态：碎石最后位置（消失时碎裂）、碎裂火花、落点余波、崩落地板块缓存
+const FALL_FX = new WeakMap();
+function fallFx(game) {
+  let s = FALL_FX.get(game);
+  if (!s) FALL_FX.set(game, s = { seen: new Map(), bursts: [], land: null, landKey: -1, slabs: null, slabKey: null });
+  return s;
+}
+// 每帧开头对一次账：新落地记下落点；碎石不是飞出井口而是消失（被打碎、撞上机甲、落地清场）就碎一下
+function fallSync(game, s) {
+  const f = game.actFall, rt = game.rt || 0;
+  if (f?.phase === 'landing' && s.landKey !== f.landed) {
+    s.landKey = f.landed;
+    s.land = { x: game.player.x, y: game.player.y, rt: rt - (f.elapsed || 0), glow: fallGlow(fallActs(game)[f.landed]) };
+  }
+  if (s.land && rt - s.land.rt > ACT_FALL_LOOK.landFx) s.land = null;
+  const live = f?.phase === 'falling' ? f.debris : null;
+  for (const [serial, last] of s.seen) {
+    if (live?.some(b => b.serial === serial && !b.dead)) continue;
+    s.seen.delete(serial);
+    if (!last.warn && f && last.y > f.y - VH * .55) s.bursts.push({ x: last.x, y: last.y, r: last.r, rt, serial });
+  }
+  if (live) for (const b of live) if (!b.dead) s.seen.set(b.serial, { x: b.x, y: b.y, r: b.r, warn: b.warning > 0 });
+  let n = 0;
+  for (const b of s.bursts) if (rt - b.rt < ACT_FALL_LOOK.burst) s.bursts[n++] = b;
+  s.bursts.length = n;
+}
+
+// ===== 预警：锯齿地缝、熔光、支裂、火星 =====
+const FALL_CRACKS = new WeakMap();
+function fallCrackShapes(cracks) {
+  let shapes = FALL_CRACKS.get(cracks);
+  if (shapes) return shapes;
+  shapes = cracks.map((points, ci) => {
+    const line = [];
+    for (let j = 0; j < points.length; j++) {
+      const a = points[j], b = points[j + 1];
+      line.push({ x: a.x, y: a.y, up: .45 + fallHash(ci * 41 + j * 7) * .7, down: .45 + fallHash(ci * 43 + j * 9) * .7, main: true });
+      if (!b) break;
+      for (let m = 1; m < 3; m++) {
+        const t = m / 3 + (fallHash(ci * 13 + j * 5 + m) - .5) * .14;
+        line.push({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t + (fallHash(ci * 17 + j * 3 + m * 11) - .5) * 18,
+          up: .25 + fallHash(ci * 29 + j + m) * .6, down: .25 + fallHash(ci * 31 + j + m * 5) * .6, main: false });
+      }
+    }
+    line[0].up = line[0].down = line[line.length - 1].up = line[line.length - 1].down = .12;
+    const branches = [];
+    for (let j = 1; j < points.length - 1; j++) for (const side of [-1, 1]) {
+      if (fallHash(ci * 53 + j * 19 + side * 3) < .3) continue;
+      const a = points[j], angle = side * Math.PI / 2 + (fallHash(ci * 61 + j * 23 + side) - .5) * 1.4, length = 26 + fallHash(ci * 67 + j * 29 + side) * 48;
+      const bend = (fallHash(ci * 71 + j * 31 + side) - .5) * .9;
+      branches.push([a.x, a.y, a.x + Math.cos(angle) * length * .5, a.y + Math.sin(angle) * length * .5,
+        a.x + Math.cos(angle + bend) * length, a.y + Math.sin(angle + bend) * length]);
+    }
+    return { line, branches };
+  });
+  FALL_CRACKS.set(cracks, shapes);
+  return shapes;
+}
+function fallLinePath(c, line) {
+  c.beginPath();
+  for (let i = 0; i < line.length; i++) i ? c.lineTo(line[i].x, line[i].y) : c.moveTo(line[i].x, line[i].y);
+}
+function fallFissurePath(c, line, width) {
+  c.beginPath();
+  for (let i = 0; i < line.length; i++) { const q = line[i]; i ? c.lineTo(q.x, q.y - width * q.up) : c.moveTo(q.x, q.y - width * q.up); }
+  for (let i = line.length - 1; i >= 0; i--) { const q = line[i]; c.lineTo(q.x, q.y + width * q.down); }
+  c.closePath();
+}
+function fallDrawWarning(c, game, f, { budget, flashes }) {
+  const k = fallClamp(f.elapsed / ACT_FALL.warning), open = fallSmooth(k), shapes = fallCrackShapes(f.cracks), rt = game.rt || 0;
+  const pulse = flashes ? .78 + .22 * Math.sin(rt * 19) : .9, width = 2 + 9 * open;
+  c.save(); c.lineJoin = 'round'; c.lineCap = 'round';
+  // 地缝下沿那块地板开始往下沉，压出一道越来越宽的暗边
+  c.fillStyle = `rgba(0,0,0,${.2 + .35 * open})`;
+  for (const { line } of shapes) {
+    c.beginPath();
+    for (let i = 0; i < line.length; i++) i ? c.lineTo(line[i].x, line[i].y) : c.moveTo(line[i].x, line[i].y);
+    for (let i = line.length - 1; i >= 0; i--) c.lineTo(line[i].x, line[i].y + width * line[i].down + 4 + 14 * open);
+    c.closePath(); c.fill();
+  }
+  // 支裂：从主缝往上下爬
+  const grow = fallClamp(k * 1.7 - .15);
+  if (grow > 0) {
+    c.beginPath();
+    for (const { branches } of shapes) for (const [ax, ay, bx, by, ex, ey] of branches) {
+      c.moveTo(ax, ay); c.lineTo(ax + (bx - ax) * Math.min(1, grow * 2), ay + (by - ay) * Math.min(1, grow * 2));
+      if (grow > .5) c.lineTo(bx + (ex - bx) * (grow - .5) * 2, by + (ey - by) * (grow - .5) * 2);
+    }
+    c.strokeStyle = '#040508'; c.lineWidth = 3.4; c.stroke();
+    c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(255,120,52,${.55 * grow * pulse})`; c.lineWidth = 1.3; c.stroke();
+    c.globalCompositeOperation = 'source-over';
+  }
+  // 地缝本体：上下两条锯齿边围成的黑缝
+  c.fillStyle = '#030406';
+  for (const { line } of shapes) { fallFissurePath(c, line, width); c.fill(); }
+  // 缝里的熔光：宽的橙红、细的亮芯，再沿主缝铺一串光晕
+  c.globalCompositeOperation = 'lighter';
+  for (const { line } of shapes) {
+    fallLinePath(c, line);
+    c.strokeStyle = `rgba(255,86,26,${(.3 + .45 * open) * pulse})`; c.lineWidth = width * 1.1; c.stroke();
+    c.strokeStyle = `rgba(255,214,140,${.45 + .55 * k})`; c.lineWidth = Math.max(1.2, width * .3); c.stroke();
+  }
+  const glowScale = budget.glowScale ?? 1;
+  if (glowScale > 0) {
+    const glow = gl('255,110,40'), size = 46 + 90 * open;
+    c.globalAlpha = (.22 + .4 * open) * pulse * glowScale;
+    for (const { line } of shapes) for (const q of line) if (q.main) c.drawImage(glow, q.x - size / 2, q.y - size / 2, size, size);
+  }
+  // 火星：沿缝往上飘，越到后面越多
+  const count = budget.detail ? 54 : 20;
+  for (let pass = 0; pass < 2; pass++) {
+    c.beginPath();
+    for (let i = 0; i < count; i++) {
+      if (fallHash(i * 9.1) > k + .2) continue;
+      const line = shapes[i % shapes.length].line, q = line[Math.floor(fallHash(i * 7.3) * line.length)];
+      const life = (f.elapsed * (.7 + fallHash(i * 3.1) * .9) + fallHash(i * 5.7)) % 1;
+      if ((life < .5) !== (pass === 0)) continue;
+      const x = q.x + (fallHash(i * 2.3) - .5) * 24 + Math.sin(life * 7 + i) * 6, y = q.y - life * (40 + 80 * fallHash(i * 4.9)), size = (1 - life) * (1.6 + fallHash(i * 1.7) * 2);
+      c.rect(x - size / 2, y - size, size, size * 2);
+    }
+    c.globalAlpha = pass ? .45 : .95; c.fillStyle = pass ? '#ff8a3c' : '#ffd98c'; c.fill();
+  }
+  c.restore();
+  game.shake = Math.max(game.shake || 0, .3 + .45 * k); // 地面越来越抖
+}
+
+// ===== 崩落：旧地图沿地缝碎成地板块，翻转缩小掉进井里 =====
+function fallSlabPieces(s, f) {
+  if (s.slabKey === f.cracks) return s.slabs;
+  const ext = points => [{ x: points[0].x - VW * .7, y: points[0].y }, ...points, { x: points[points.length - 1].x + VW * .7, y: points[points.length - 1].y }];
+  const lines = f.cracks.map(ext);
+  if (!lines.length) { s.slabKey = f.cracks; return (s.slabs = []); }
+  const top = Math.min(...lines.flat().map(q => q.y)) - VH, bottom = Math.max(...lines.flat().map(q => q.y)) + VH;
+  lines.unshift(lines[0].map(q => ({ x: q.x, y: top }))); lines.push(lines[0].map(q => ({ x: q.x, y: bottom })));
+  const pieces = [], last = lines[0].length - 1;
+  for (let b = 0; b < lines.length - 1; b++) {
+    const upper = lines[b], lower = lines[b + 1], cuts = [0, 2 + b % 3, 5 + b % 2, last];
+    for (let i = 0; i < cuts.length - 1; i++) {
+      const from = cuts[i], to = cuts[i + 1], pts = [];
+      for (let j = from; j <= to; j++) pts.push(upper[j]);
+      // 竖向切口带一个折点，不是直上直下
+      if (to < last) pts.push({ x: (upper[to].x + lower[to].x) / 2 + (fallHash(b * 37 + i * 11) - .5) * 30, y: (upper[to].y + lower[to].y) / 2 });
+      for (let j = to; j >= from; j--) pts.push(lower[j]);
+      if (from > 0) pts.push({ x: (upper[from].x + lower[from].x) / 2 + (fallHash(b * 37 + (i - 1) * 11) - .5) * 30, y: (upper[from].y + lower[from].y) / 2 });
+      const cx = pts.reduce((a, q) => a + q.x, 0) / pts.length, cy = Math.max(top + VH * .55, Math.min(bottom - VH * .55, pts.reduce((a, q) => a + q.y, 0) / pts.length));
+      const distance = Math.hypot(cx - f.x, (cy - f.y) * 1.2);
+      pieces.push({ pts, cx, cy, delay: Math.min(.32, distance / VH * .42) + fallHash(b * 13 + i * 7) * .08, spin: (fallHash(b * 19 + i * 5) - .5) * 1.4, hot: b > 0 && b < lines.length - 2 });
+    }
+  }
+  s.slabKey = f.cracks; s.slabs = pieces;
+  return pieces;
+}
+function fallPiecePath(c, pts, dy = 0) {
+  c.beginPath();
+  for (let i = 0; i < pts.length; i++) i ? c.lineTo(pts[i].x, pts[i].y + dy) : c.moveTo(pts[i].x, pts[i].y + dy);
+  c.closePath();
+}
+function fallDrawCollapse(c, game, f, s, view, { simple }) {
+  const t = f.elapsed, span = ACT_FALL_LOOK.collapse - .38;
+  if (t >= ACT_FALL_LOOK.collapse) return;
+  const pattern = battlefieldActPattern(c, fallActs(game)[f.index]), pieces = fallSlabPieces(s, f);
+  // 缝隙里透出井底的熔光
+  c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .75 * (1 - t / ACT_FALL_LOOK.collapse);
+  c.drawImage(gl('255,118,46'), view.x - VW * .8, view.y - VH * .9, VW * 1.6, VH * 1.3); c.restore();
+  // 先画远的（已经掉下去的），后画还没动的
+  for (let pass = 0; pass < 2; pass++) for (const piece of pieces) {
+    const k = fallClamp((t - piece.delay) / span), e = k * k;
+    if (e >= 1 || (pass === 0) !== (k > 0)) continue;
+    c.save();
+    if (simple) c.globalAlpha = 1 - k;
+    else {
+      const sc = 1 - .8 * e;
+      c.translate(view.x, view.y); c.scale(sc, sc); c.translate(-view.x, -view.y);
+      c.translate(piece.cx, piece.cy); c.rotate(piece.spin * e); c.translate(-piece.cx, -piece.cy);
+      c.globalAlpha = e > .7 ? (1 - e) / .3 : 1;
+    }
+    // 板子侧面的厚度，再铺地面纹理，越往下越暗
+    c.fillStyle = '#07090c'; fallPiecePath(c, piece.pts, 9 + 10 * e); c.fill();
+    c.fillStyle = pattern; fallPiecePath(c, piece.pts); c.fill();
+    c.fillStyle = `rgba(0,0,0,${.12 + .7 * e})`; c.fill();
+    if (piece.hot) { c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(255,120,48,${.75 * (1 - e)})`; c.lineWidth = 3; c.stroke(); }
+    c.restore();
+  }
+}
+
+// ===== 竖井：斜着往下看，一圈圈岩层从井底迎面扑来 =====
+function fallShaftView(game, f) {
+  const p = game.player, k = fallClamp((f.elapsed - ACT_FALL_LOOK.revealAt) / (ACT_FALL.duration - ACT_FALL_LOOK.revealAt));
+  const m = fallSmooth(k), vx = f.x, vy = f.y + VH * .3;
+  return { x: vx + (p.x - vx) * m, y: vy + (p.y - vy) * m, reveal: k };
+}
+function fallRingPath(c, cx, cy, rx, ry, seed, sides = 18) {
+  c.beginPath();
+  for (let i = 0; i < sides; i++) {
+    const a = i / sides * TAU, j = .84 + fallHash(seed * 31 + i) * .24 + (i % 4 === 0 ? .07 : 0);
+    const x = cx + Math.cos(a) * rx * j, y = cy + Math.sin(a) * ry * j;
+    i ? c.lineTo(x, y) : c.moveTo(x, y);
+  }
+  c.closePath();
+}
+// 竖井岩壁纹理：一次性画好的斑驳岩面，四边环绕着画，平铺不露缝
+function fallBuildRockTile() {
+  const size = 256, cv = offscreen(size, size), g = cv.getContext('2d');
+  g.fillStyle = '#55585e'; g.fillRect(0, 0, size, size);
+  const wrap = (draw, x, y, r) => { for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) if (x + ox > -r && x + ox < size + r && y + oy > -r && y + oy < size + r) draw(x + ox, y + oy); };
+  for (let i = 0; i < 260; i++) {
+    const x = fallHash(i * 1.3) * size, y = fallHash(i * 2.7) * size, r = 4 + fallHash(i * 3.9) ** 2 * 30, shade = fallHash(i * 5.1);
+    g.fillStyle = shade > .55 ? `rgba(150,150,155,${.08 + .1 * shade})` : `rgba(10,10,14,${.12 + .2 * (1 - shade)})`;
+    wrap((px, py) => { g.beginPath(); g.ellipse(px, py, r, r * (.5 + .5 * fallHash(i * 6.3)), fallHash(i * 7.7) * TAU, 0, TAU); g.fill(); }, x, y, r);
+  }
+  // 地层纹：横向的细层理和几道裂缝
+  g.lineCap = 'round';
+  for (let i = 0; i < 26; i++) {
+    const y = fallHash(i * 8.1) * size, x = fallHash(i * 9.3) * size, l = 30 + fallHash(i * 4.4) * 90;
+    g.strokeStyle = i % 3 ? 'rgba(12,12,16,.45)' : 'rgba(170,170,175,.18)'; g.lineWidth = i % 3 ? 1.6 : 1;
+    wrap((px, py) => { g.beginPath(); g.moveTo(px, py); g.lineTo(px + l * .5, py + (fallHash(i * 3.3) - .5) * 10); g.lineTo(px + l, py + (fallHash(i * 2.1) - .5) * 14); g.stroke(); }, x, y, l);
+  }
+  return cv;
+}
+function fallRockPattern(c) {
+  const sprites = fallSpriteSet();
+  if (!sprites.rockPattern) sprites.rockPattern = c.createPattern(sprites.rockTile, 'repeat') || '#4a4d53';
+  return sprites.rockPattern;
+}
+const fallRingList = [];
+const FALL_RING_BASE = 250;
+function fallDrawShaft(c, game, f, view, { x0, y0, x1, y1, budget, simple }) {
+  const acts = fallActs(game), from = acts[f.index], to = acts[f.index + 1] || from, look = ACT_FALL_LOOK;
+  const glow = fallGlow(to), glowRgb = glow.split(',').map(Number), depth = fallClamp(f.elapsed / ACT_FALL.duration);
+  const rock = fallLerp(fallRgb(from?.base), fallRgb(to?.base), depth), near = fallLerp(rock, [0, 0, 0], .45), far = fallLerp(rock, glowRgb, .7);
+  const pattern = fallRockPattern(c), glowScale = budget.glowScale ?? 1;
+  c.save();
+  c.fillStyle = fallCss(near); c.fillRect(x0, y0, x1 - x0, y1 - y0);
+  // 岩层圈：q 从 0（井底）长到 1（擦身而过），按远近排好，近的先画；岩面纹理跟着圈一起放大，越近越粗
+  const n = budget.detail ? look.rings : 6, phase = simple ? .37 : f.elapsed * look.ringSpeed;
+  let count = 0;
+  for (let i = 0; i < n; i++) {
+    const raw = i / n + phase, q = raw % 1;
+    fallRingList[count++] = { q, seed: i + n * Math.floor(raw), tone: i % 3 };
+  }
+  fallRingList.length = count;
+  fallRingList.sort((a, b) => b.q - a.q);
+  for (const ring of fallRingList) {
+    const q = ring.q, d = 1 - q, sc = (.045 + 1.5 * q ** 2.3) * VW * .62 / FALL_RING_BASE, cx = view.x, cy = view.y - VH * .62 * q ** 1.5;
+    const tone = ring.tone === 1 ? fallLerp(rock, [255, 236, 210], .08) : ring.tone === 2 ? fallLerp(rock, [0, 0, 0], .2) : rock;
+    const col = fallLerp(fallLerp(tone, [0, 0, 0], .55 + .2 * q), far, d ** 1.7);
+    c.save(); c.translate(cx, cy); c.scale(sc, sc * .7); c.rotate(ring.seed * .9 + (simple ? 0 : f.elapsed * .12));
+    fallRingPath(c, 0, 0, FALL_RING_BASE, FALL_RING_BASE, ring.seed);
+    c.fillStyle = pattern; c.fill();
+    c.fillStyle = fallCss(col, .6 + .32 * d); c.fill();
+    // 岩层边缘被井底的光照亮，背光一侧压一道影子
+    c.lineJoin = 'round';
+    c.strokeStyle = `rgba(0,0,0,${.45 * q})`; c.lineWidth = 26; c.stroke();
+    c.strokeStyle = `rgba(${glow},${(.4 + .5 * d) * fallClamp(q * 6)})`; c.lineWidth = 4 + 5 * d; c.stroke();
+    c.globalCompositeOperation = 'lighter'; c.strokeStyle = `rgba(255,248,232,${.25 * fallClamp(q * 4) * (1 - q * .6)})`; c.lineWidth = 1.5; c.stroke(); c.globalCompositeOperation = 'source-over';
+    // 嵌在岩层边上的发光晶体，掠过时一闪
+    if (q > .12 && glowScale > 0) {
+      c.globalCompositeOperation = 'lighter';
+      for (let k = 0; k < 3; k++) {
+        const a = fallHash(ring.seed * 7 + k) * TAU, r = FALL_RING_BASE * (.9 + fallHash(ring.seed * 3 + k) * .1), x = Math.cos(a) * r, y = Math.sin(a) * r, size = 34 + 26 * fallHash(ring.seed + k * 5);
+        c.globalAlpha = (.35 + .5 * q) * glowScale; c.drawImage(gl(glow), x - size, y - size, size * 2, size * 2);
+        c.globalAlpha = .9; c.fillStyle = 'rgb(255,250,236)'; c.beginPath(); c.moveTo(x, y - size * .35); c.lineTo(x + size * .12, y); c.lineTo(x, y + size * .35); c.lineTo(x - size * .12, y); c.closePath(); c.fill();
+      }
+      c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
+    }
+    c.restore();
+  }
+  // 井口四周压暗、井底透亮，看起来才像往洞里掉
+  const shade = c.createRadialGradient(view.x, view.y, VW * .12, view.x, view.y, Math.hypot(VW, VH) * .8);
+  shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(.45, 'rgba(0,0,0,.25)'); shade.addColorStop(1, 'rgba(0,0,0,.72)');
+  c.fillStyle = shade; c.fillRect(x0, y0, x1 - x0, y1 - y0);
+  // 井底的光：越接近落地越亮越大
+  c.globalCompositeOperation = 'lighter';
+  const size = VW * (.7 + .8 * depth);
+  c.globalAlpha = (.65 + .35 * depth) * Math.max(.4, glowScale); c.drawImage(gl(glow), view.x - size / 2, view.y - size * .4, size, size * .8);
+  c.globalAlpha = .85 * Math.max(.4, glowScale); c.drawImage(gl('255,250,235'), view.x - size * .16, view.y - size * .12, size * .32, size * .24);
+  // 速度线和碎屑：从井底往外喷
+  const streaks = budget.detail ? 40 : 16, reach = Math.hypot(VW, VH) * .75, rt = game.rt || 0;
+  for (let pass = 0; pass < 2; pass++) {
+    c.beginPath();
+    for (let i = pass; i < streaks; i += 2) {
+      const a = fallHash(i * 3.7) * TAU, speed = .5 + fallHash(i * 5.3) * .6, life = (fallHash(i * 2.9) + (simple ? rt * .35 : f.elapsed) * speed) % 1;
+      const r = life * life * reach, l = 14 + r * .28, ca = Math.cos(a), sa = Math.sin(a) * .72;
+      c.moveTo(view.x + ca * r, view.y + sa * r); c.lineTo(view.x + ca * (r + l), view.y + sa * (r + l));
+    }
+    c.globalAlpha = pass ? .32 : .22; c.strokeStyle = pass ? `rgb(${glow})` : 'rgb(205,230,255)'; c.lineWidth = pass ? 2.2 : 1.4; c.stroke();
+  }
+  c.restore();
+}
+
+// ===== 抵达：新战区的地面从井底迎面放大，落地那一刻正好铺满 =====
+function fallDrawReveal(c, game, f, view, { simple }) {
+  const k = view.reveal;
+  if (k <= 0) return;
+  const to = fallActs(game)[f.index + 1];
+  if (!to) return;
+  const p = game.player, e = k * k * k, sc = simple ? 1 : .06 + .94 * e, glow = fallGlow(to), radius = Math.hypot(VW, VH) * .66;
+  c.save();
+  if (simple) c.globalAlpha = fallSmooth(k);
+  else { c.translate(view.x, view.y); c.scale(sc, sc); c.translate(-p.x, -p.y); }
+  fallRingPath(c, p.x, p.y, radius, radius, 997, 22);
+  c.fillStyle = battlefieldActPattern(c, to); c.fill();
+  // 井口外是被照亮的新战区：先提亮一层战区光，再压一圈井口岩唇和亮边
+  c.globalCompositeOperation = 'lighter'; c.fillStyle = `rgba(${glow},${(.12 + .6 * (1 - k)) * (1 - k)})`; c.fill();
+  c.globalCompositeOperation = 'source-over'; c.lineJoin = 'round';
+  c.strokeStyle = `rgba(4,5,8,${.4 * (1 - e)})`; c.lineWidth = 30; c.stroke();
+  c.globalCompositeOperation = 'lighter';
+  c.strokeStyle = `rgba(${glow},${.9 * (1 - k * .5)})`; c.lineWidth = 8; c.stroke();
+  c.strokeStyle = `rgba(255,250,235,${.6 * (1 - k * .5)})`; c.lineWidth = 2.5; c.stroke();
+  // 井口一圈翻滚的尘雾
+  const dust = gl('235,238,245'), puff = 260;
+  c.globalAlpha = .28 * (1 - k * .5);
+  for (let i = 0; i < 12; i++) {
+    const a = i / 12 * TAU + fallHash(i * 7) + f.elapsed * .4, rr = radius * (.95 + fallHash(i * 3) * .1);
+    c.drawImage(dust, p.x + Math.cos(a) * rr - puff / 2, p.y + Math.sin(a) * rr - puff / 2, puff, puff);
+  }
+  c.restore();
+  // 机甲的影子：地面越近越小越实
+  const size = 150 - 92 * e;
+  c.globalAlpha = .12 + .55 * e; c.drawImage(SHADOW, p.x - size / 2, p.y - size / 2 + 8, size, size); c.globalAlpha = 1;
+}
+
+// ===== 落地弹坑：焦黑、放射裂纹、慢慢冷却的熔光 =====
+function fallDrawCrater(c, game, s) {
+  const land = s.land;
+  if (!land) return;
+  const age = (game.rt || 0) - land.rt, fade = fallClamp((ACT_FALL_LOOK.landFx - age) / .9), heat = fallClamp(1 - age / 1.5);
+  if (fade <= 0) return;
+  c.save(); c.lineCap = 'round'; c.lineJoin = 'round';
+  c.globalAlpha = .75 * fade; c.drawImage(SHADOW, land.x - 130, land.y - 110, 260, 220);
+  c.beginPath();
+  for (let i = 0; i < 14; i++) {
+    const a = i / 14 * TAU + fallHash(i * 5.1) * .35, length = 50 + fallHash(i * 3.3) * 85, bend = (fallHash(i * 8.7) - .5) * .7;
+    c.moveTo(land.x + Math.cos(a) * 24, land.y + Math.sin(a) * 20);
+    c.lineTo(land.x + Math.cos(a + bend * .4) * length * .4, land.y + Math.sin(a + bend * .4) * length * .38);
+    c.lineTo(land.x + Math.cos(a - bend * .3) * length * .7, land.y + Math.sin(a - bend * .3) * length * .66);
+    c.lineTo(land.x + Math.cos(a + bend) * length, land.y + Math.sin(a + bend) * length * .9);
+  }
+  c.globalAlpha = .6 * fade; c.strokeStyle = '#06070a'; c.lineWidth = 3; c.stroke();
+  if (heat > 0) {
+    c.globalCompositeOperation = 'lighter';
+    c.globalAlpha = heat; c.strokeStyle = 'rgba(255,128,50,.85)'; c.lineWidth = 2; c.stroke();
+    c.globalAlpha = .65 * heat; c.drawImage(gl('255,140,60'), land.x - 80, land.y - 70, 160, 140);
+  }
+  c.restore();
+}
 
 function actFallEnemyPose(game, enemy, settings) {
   const f = game.actFall;
@@ -23561,67 +24076,244 @@ function actFallEnemyPose(game, enemy, settings) {
 }
 function drawActFallGround(c, game, { x0, y0, x1, y1, settings, budget }) {
   const f = game.actFall;
-  if (!f || !['warning', 'falling'].includes(f.phase)) return;
+  if (!f) return;
+  const s = fallFx(game), simple = settings.cinema === false, flashes = settings.flashes !== false;
+  fallSync(game, s);
+  if (f.phase === 'warning') fallDrawWarning(c, game, f, { budget, flashes });
+  else if (f.phase === 'falling') {
+    const view = fallShaftView(game, f);
+    fallDrawShaft(c, game, f, view, { x0, y0, x1, y1, budget, simple });
+    fallDrawCollapse(c, game, f, s, view, { simple });
+    fallDrawReveal(c, game, f, view, { simple });
+    if (f.elapsed < .4) game.shake = Math.max(game.shake || 0, 1.05 * (1 - f.elapsed / .4));
+  }
+  fallDrawCrater(c, game, s);
+}
+
+// ===== 前景：反推尾焰、碎石、碎裂、落地冲击 =====
+let fallSprites = null;
+function fallShade(lit) { return fallCss(fallLerp([28, 31, 37], [112, 118, 128], lit)); }
+function fallBuildRock(v) {
+  const size = 112, cv = offscreen(size, size), g = cv.getContext('2d'), mid = size / 2, n = 9 + v % 3, pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = i / n * TAU + fallHash(v * 17 + i) * .35, r = 33 + fallHash(v * 23 + i * 3) * 13;
+    pts.push([mid + Math.cos(a) * r, mid + Math.sin(a) * r]);
+  }
+  const outline = () => { g.beginPath(); for (let i = 0; i < n; i++) i ? g.lineTo(pts[i][0], pts[i][1]) : g.moveTo(pts[i][0], pts[i][1]); g.closePath(); };
+  // 外圈红热辉光
+  g.save(); g.shadowColor = 'rgba(255,72,40,.95)'; g.shadowBlur = 14; outline(); g.fillStyle = '#2a2d33'; g.fill(); g.restore();
+  // 多面体：从偏心点扇开，朝左上的面亮，背光面暗
+  const fx = mid + (fallHash(v * 5) - .5) * 16, fy = mid + (fallHash(v * 7) - .5) * 16;
+  for (let i = 0; i < n; i++) {
+    const [ax, ay] = pts[i], [bx, by] = pts[(i + 1) % n], facing = Math.atan2((ay + by) / 2 - fy, (ax + bx) / 2 - fx);
+    g.beginPath(); g.moveTo(fx, fy); g.lineTo(ax, ay); g.lineTo(bx, by); g.closePath();
+    g.fillStyle = fallShade(Math.cos(facing + 2.36) * .45 + .45 + fallHash(v * 11 + i) * .12); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,.07)'; g.lineWidth = 1; g.stroke();
+  }
+  // 发光裂纹
+  g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath();
+  for (let k = 0; k < 2 + v % 2; k++) {
+    const a = fallHash(v * 13 + k * 7) * TAU, l = 26 + fallHash(v * 19 + k) * 10;
+    g.moveTo(fx + Math.cos(a) * 4, fy + Math.sin(a) * 4);
+    g.lineTo(fx + Math.cos(a + .4) * l * .5, fy + Math.sin(a + .4) * l * .5);
+    g.lineTo(fx + Math.cos(a - .1) * l, fy + Math.sin(a - .1) * l);
+  }
+  g.strokeStyle = '#120a08'; g.lineWidth = 4; g.stroke();
+  g.strokeStyle = '#ff7a2e'; g.lineWidth = 2; g.stroke();
+  g.strokeStyle = '#ffe0a0'; g.lineWidth = .8; g.stroke();
+  outline(); g.strokeStyle = '#ff5b3d'; g.lineWidth = 3.2; g.stroke();
+  return cv;
+}
+function fallBuildTrail() {
+  const cv = offscreen(32, 128), g = cv.getContext('2d'), grad = g.createLinearGradient(0, 0, 0, 128);
+  grad.addColorStop(0, 'rgba(255,170,96,.75)'); grad.addColorStop(.35, 'rgba(255,96,48,.35)'); grad.addColorStop(1, 'rgba(255,60,30,0)');
+  g.fillStyle = grad; g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(16, 10, 32, 0); g.lineTo(18, 128); g.lineTo(14, 128); g.closePath(); g.fill();
+  return cv;
+}
+function fallBuildFlame() {
+  const cv = offscreen(32, 128), g = cv.getContext('2d'), outer = g.createLinearGradient(0, 0, 0, 128), inner = g.createLinearGradient(0, 0, 0, 90);
+  outer.addColorStop(0, 'rgba(120,210,255,.95)'); outer.addColorStop(.45, 'rgba(50,140,255,.55)'); outer.addColorStop(1, 'rgba(40,90,255,0)');
+  inner.addColorStop(0, 'rgba(255,255,255,1)'); inner.addColorStop(.6, 'rgba(190,240,255,.7)'); inner.addColorStop(1, 'rgba(160,230,255,0)');
+  g.fillStyle = outer; g.beginPath(); g.moveTo(2, 0); g.quadraticCurveTo(16, -6, 30, 0); g.quadraticCurveTo(24, 70, 16, 128); g.quadraticCurveTo(8, 70, 2, 0); g.fill();
+  g.fillStyle = inner; g.beginPath(); g.moveTo(9, 0); g.quadraticCurveTo(16, -3, 23, 0); g.quadraticCurveTo(19, 50, 16, 90); g.quadraticCurveTo(13, 50, 9, 0); g.fill();
+  return cv;
+}
+function fallSpriteSet() {
+  return fallSprites || (fallSprites = { rocks: Array.from({ length: 6 }, (_, i) => fallBuildRock(i)), trail: fallBuildTrail(), flame: fallBuildFlame(), rockTile: fallBuildRockTile(), rockPattern: null });
+}
+// Codex 画的三块熔岩陨石（FX_IMAGES）到齐就用它们，略缩一点让石块本体和碰撞半径一样大；没到齐用上面代码画的六块
+const FALL_ROCK_IMAGES = ['fall_rock_a', 'fall_rock_b', 'fall_rock_c'];
+let fallRockArtCache = null;
+function fallRockArt(sprites) {
+  if (fallRockArtCache) return fallRockArtCache;
+  const list = FALL_ROCK_IMAGES.map(k => IMG[k]).filter(im => im && (im.naturalWidth || im.width) > 0);
+  if (list.length < FALL_ROCK_IMAGES.length) return { list: sprites.rocks, scale: 1 };
+  return fallRockArtCache = { list, scale: .9 };
+}
+function fallDrawMech(c, game, f, view, { flashes, glowScale }) {
+  const p = game.player, rt = game.rt || 0, sprites = fallSpriteSet(), flick = flashes ? Math.sin(rt * 41) * .5 + .5 : .5;
+  const brake = fallClamp((f.elapsed - (ACT_FALL.duration - .9)) / .9), glow = fallGlow(fallActs(game)[f.index + 1]);
+  c.save(); c.globalCompositeOperation = 'lighter';
+  // 机身被井底的光从下面照亮
+  c.globalAlpha = .3 * Math.max(.4, glowScale); c.drawImage(gl(glow), p.x - 80, p.y - 64, 160, 160);
+  // 两道反推尾焰朝井底喷，快落地时猛推一下
+  for (const side of [-1, 1]) {
+    const nx = p.x + side * 13, ny = p.y + 14, length = (44 + 16 * flick) * (1 + .7 * brake), width = 16 + 6 * brake;
+    c.globalAlpha = .95; c.drawImage(sprites.flame, nx - width / 2, ny, width, length);
+    c.globalAlpha = .6; c.drawImage(gl('90,200,255'), nx - 18, ny - 10, 36, 36);
+  }
+  // 身下一道迎风的弧光和两侧往上掠过的气流
+  c.globalAlpha = .3 + .25 * flick; c.strokeStyle = 'rgb(170,225,255)'; c.lineWidth = 2.5;
+  c.beginPath(); c.arc(p.x, p.y - 6, 34, .18 * Math.PI, .82 * Math.PI); c.stroke();
+  c.globalAlpha = .35; c.lineWidth = 1.4; c.beginPath();
+  for (let i = 0; i < 8; i++) {
+    const side = i % 2 ? 1 : -1, x = p.x + side * (24 + fallHash(i * 3.3) * 18), life = (rt * (1.8 + fallHash(i) * 1.4) + fallHash(i * 7.7)) % 1;
+    const y = p.y + 50 - life * 130, l = 16 + fallHash(i * 5.5) * 22;
+    c.moveTo(x, y); c.lineTo(x, y + l);
+  }
+  c.stroke();
+  c.restore();
+}
+function fallDrawDebris(c, game, f, { zoom, flashes, glowScale }) {
+  const sprites = fallSpriteSet(), rocks = fallRockArt(sprites), rt = game.rt || 0, top = f.y - f.halfHeight - 30;
   c.save();
-  if (f.phase === 'warning') {
-    const progress = Math.min(1, f.elapsed / ACT_FALL.warning);
-    c.lineJoin = 'round';
-    for (const points of f.cracks) {
-      for (let layer = 0; layer < 3; layer++) {
-        c.beginPath(); c.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) c.lineTo(points[i].x, points[i].y);
-        c.strokeStyle = ['#070a10', '#dc7035', '#ffdda4'][layer];
-        c.lineWidth = [24, 8, 2][layer] * (.4 + progress * .6);
-        c.globalAlpha = layer === 1 ? .45 : .9; c.stroke();
+  for (const b of f.debris) {
+    if (b.dead) continue;
+    const spin = (fallHash(b.serial * 3.1) - .5) * 5, sprite = rocks.list[b.serial % rocks.list.length];
+    if (b.warning > 0) {
+      // 预警：一道往上淡出的光道、往上爬的箭头、石块从井底浮上来
+      const k = fallClamp(1 - b.warning / ACT_FALL.debrisWarning), blink = flashes ? .5 + .5 * Math.sin(rt * 24) : .6;
+      const beam = c.createLinearGradient(0, b.y, 0, top);
+      beam.addColorStop(0, `rgba(255,70,52,${.22 + .14 * blink})`); beam.addColorStop(.55, 'rgba(255,70,52,.05)'); beam.addColorStop(1, 'rgba(255,70,52,0)');
+      c.fillStyle = beam; c.fillRect(b.x - b.r * .55, top, b.r * 1.1, b.y - top);
+      const edge = c.createLinearGradient(0, b.y, 0, top);
+      edge.addColorStop(0, `rgba(255,120,96,${.7 + .3 * blink})`); edge.addColorStop(.6, 'rgba(255,120,96,.12)'); edge.addColorStop(1, 'rgba(255,120,96,0)');
+      c.strokeStyle = edge; c.lineWidth = 1.4 / zoom; c.beginPath(); c.moveTo(b.x - b.r, b.y); c.lineTo(b.x - b.r, top); c.moveTo(b.x + b.r, b.y); c.lineTo(b.x + b.r, top); c.stroke();
+      c.strokeStyle = `rgba(255,170,140,${.55 + .35 * blink})`; c.lineWidth = 3 / zoom; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath();
+      for (let i = 0; i < 3; i++) {
+        const ph = (k * 1.4 + i / 3) % 1, y = b.y - 34 - ph * Math.max(0, b.y - top - 80), w = b.r * .5;
+        c.moveTo(b.x - w, y + w * .7); c.lineTo(b.x, y); c.lineTo(b.x + w, y + w * .7);
       }
+      c.stroke();
+      const size = b.r * 2.5 * rocks.scale * (.3 + .7 * k * k);
+      c.globalCompositeOperation = 'lighter'; c.globalAlpha = (.3 + .4 * k) * Math.max(.4, glowScale);
+      c.drawImage(gl('255,80,48'), b.x - size, b.y - size, size * 2, size * 2);
+      c.globalCompositeOperation = 'source-over'; c.globalAlpha = .35 + .65 * k;
+      c.save(); c.translate(b.x, b.y); c.rotate(b.serial * 1.9); c.drawImage(sprite, -size / 2, -size / 2, size, size); c.restore();
+      c.globalAlpha = 1;
+      continue;
     }
-    c.restore(); return;
-  }
-  c.fillStyle = '#080e19'; c.fillRect(x0, y0, x1 - x0, y1 - y0);
-  const centerX = f.x, centerY = f.y - 70, simple = settings.cinema === false;
-  // 井壁四层框和径向支撑梁让深度可读；关闭演出只留下平移层和直线。
-  c.strokeStyle = '#263944'; c.lineWidth = 3;
-  for (let i = 0; i < 6; i++) {
-    const z = ((i / 6 + f.elapsed * .3) % 1), scale = .12 + z * z * 1.65;
-    const w = (x1 - x0) * scale, h = (y1 - y0) * scale;
-    c.globalAlpha = .16 + z * .55;
-    if (simple) { const y = y0 + z * (y1 - y0); c.beginPath(); c.moveTo(x0, y); c.lineTo(x1, y + 20); c.stroke(); }
-    else c.strokeRect(centerX - w / 2, centerY - h / 2, w, h);
-  }
-  const count = budget.detail ? 24 : 10;
-  for (let i = 0; i < count; i++) {
-    const phase = ((i * .618 + f.elapsed * .65) % 1), x = x0 + ((i * .3819) % 1) * (x1 - x0), y = y0 + phase * (y1 - y0);
-    c.globalAlpha = .2 + phase * .3; c.strokeStyle = i % 4 ? '#7d9ca9' : '#ffa967'; c.lineWidth = i % 3 ? 1 : 2;
-    c.beginPath(); c.moveTo(x, y); c.lineTo(simple ? x : x + (x - centerX) * .06, y - 35 - phase * 65); c.stroke();
+    // 飞行：身后一条热尾、底下一团光，石块自转
+    const size = b.r * 2.5 * rocks.scale;
+    c.globalCompositeOperation = 'lighter';
+    c.globalAlpha = .8; c.drawImage(sprites.trail, b.x - b.r * .95, b.y + b.r * .1, b.r * 1.9, b.r * 3.6);
+    c.globalAlpha = .45 * Math.max(.4, glowScale); c.drawImage(gl('255,110,50'), b.x - size * .8, b.y - size * .55, size * 1.6, size * 1.6);
+    c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
+    c.save(); c.translate(b.x, b.y); c.rotate(b.serial * 1.9 + f.elapsed * spin); c.drawImage(sprite, -size / 2, -size / 2, size, size); c.restore();
   }
   c.restore();
 }
-function drawActFallFront(c, game, { settings, zoom }) {
-  const f = game.actFall;
-  if (f?.phase !== 'falling') return;
-  const p = game.player;
+function fallDrawBursts(c, game, s, { glowScale }) {
+  if (!s.bursts.length) return;
+  const rt = game.rt || 0, sprites = fallSpriteSet();
   c.save();
-  // 推进器固定朝屏幕下方喷焰，和朝敌人旋转的炮塔分开。
-  for (const side of [-1, 1]) {
-    const x = p.x + side * 16, length = 43 + (settings.flashes === false ? 0 : Math.sin(f.elapsed * 31) * 8);
-    c.fillStyle = '#207da3'; c.beginPath(); c.moveTo(x - 7, p.y + 18); c.lineTo(x, p.y + 18 + length); c.lineTo(x + 7, p.y + 18); c.fill();
-    c.fillStyle = '#b4f6ff'; c.beginPath(); c.moveTo(x - 3, p.y + 18); c.lineTo(x, p.y + 18 + length * .65); c.lineTo(x + 3, p.y + 18); c.fill();
-  }
-  for (const b of f.debris) {
-    if (b.dead) continue;
-    if (b.warning > 0) {
-      c.globalAlpha = .17; c.fillStyle = '#ff544d'; c.fillRect(b.x - b.r, f.y - f.halfHeight, b.r * 2, b.y - f.y + f.halfHeight);
-      c.globalAlpha = .85; c.strokeStyle = '#ff7d68'; c.lineWidth = 1.5 / zoom;
-      c.setLineDash([5, 6]); c.beginPath(); c.moveTo(b.x, b.y); c.lineTo(b.x, f.y - f.halfHeight); c.stroke(); c.setLineDash([]);
-      c.fillStyle = '#ffd3ad'; c.font = 'bold 20px sans-serif'; c.textAlign = 'center'; c.fillText('↑', b.x, b.y - 28);
-      c.globalAlpha = 1;
+  for (const burst of s.bursts) {
+    const age = rt - burst.rt, a = fallClamp(age / ACT_FALL_LOOK.burst), size = burst.r * (2.6 + 2.4 * a);
+    c.globalCompositeOperation = 'lighter'; c.globalAlpha = (1 - a) * .9 * Math.max(.4, glowScale);
+    c.drawImage(gl('255,170,90'), burst.x - size, burst.y - size, size * 2, size * 2);
+    c.globalAlpha = 1 - a; c.strokeStyle = 'rgb(255,214,150)'; c.lineWidth = 2; c.beginPath();
+    for (let i = 0; i < 9; i++) {
+      const angle = i / 9 * TAU + fallHash(burst.serial * 7 + i), r = burst.r * .5 + a * (60 + 50 * fallHash(burst.serial + i * 3));
+      c.moveTo(burst.x + Math.cos(angle) * r, burst.y + Math.sin(angle) * r);
+      c.lineTo(burst.x + Math.cos(angle) * (r + 16 * (1 - a)), burst.y + Math.sin(angle) * (r + 16 * (1 - a)));
     }
-    c.save(); c.translate(b.x, b.y); c.rotate(b.serial * 1.9 + (b.warning > 0 ? 0 : f.elapsed));
-    c.fillStyle = '#333d49'; c.strokeStyle = b.warning > 0 ? '#ffb483' : '#ff625b'; c.lineWidth = 3 / zoom;
-    c.beginPath(); for (let i = 0; i < 7; i++) { const a = i * Math.PI * 2 / 7, r = b.r * (i % 2 ? .82 : 1); if (!i) c.moveTo(Math.cos(a) * r, Math.sin(a) * r); else c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.fill(); c.stroke();
-    c.strokeStyle = '#8c9195'; c.lineWidth = 1.3 / zoom; c.beginPath(); c.moveTo(-b.r * .5, -b.r * .3); c.lineTo(b.r * .2, -b.r * .5); c.lineTo(b.r * .5, b.r * .1); c.stroke(); c.restore();
+    c.stroke();
+    // 碎片：石块贴图切小块，往外飞、继续往上带
+    c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1 - a * a;
+    const rocks = fallRockArt(sprites), sprite = rocks.list[burst.serial % rocks.list.length];
+    for (let i = 0; i < 7; i++) {
+      const angle = i / 7 * TAU + fallHash(burst.serial * 5 + i) * .8, speed = 120 + 170 * fallHash(burst.serial * 3 + i * 11), piece = burst.r * (.5 + .35 * fallHash(i * 13 + burst.serial));
+      const x = burst.x + Math.cos(angle) * speed * age, y = burst.y + Math.sin(angle) * speed * age - 160 * age;
+      c.save(); c.translate(x, y); c.rotate(age * (fallHash(i * 17) - .5) * 14); c.drawImage(sprite, -piece / 2, -piece / 2, piece, piece); c.restore();
+    }
   }
   c.restore();
+}
+function fallDrawLanding(c, game, s, { x0, y0, x1, y1, flashes, glowScale, detail }) {
+  const land = s.land;
+  if (!land) return;
+  const age = (game.rt || 0) - land.rt;
+  if (age > 1.3) return;
+  if (age < .12) game.shake = Math.max(game.shake || 0, 1.2);
+  c.save();
+  // 落地闪白
+  if (flashes && age < .3) { c.globalAlpha = .7 * (1 - age / .3); c.fillStyle = `rgb(${land.glow})`; c.globalCompositeOperation = 'lighter'; c.fillRect(x0, y0, x1 - x0, y1 - y0); }
+  c.globalCompositeOperation = 'lighter';
+  // 两道冲击环：白热的粗环在前，战区颜色的细环跟着
+  for (const [delay, color, widthMax] of [[0, '255,240,214', 22], [.09, land.glow, 10]]) {
+    const k = fallClamp((age - delay) / .6);
+    if (k <= 0 || k >= 1) continue;
+    const r = 24 + 560 * fallOut(k);
+    c.globalAlpha = (1 - k) * .95; c.strokeStyle = `rgb(${color})`; c.lineWidth = 2 + widthMax * (1 - k);
+    c.beginPath(); c.ellipse(land.x, land.y, r, r * .9, 0, 0, TAU); c.stroke();
+  }
+  if (age < .5) { const size = 220 + 200 * age; c.globalAlpha = (1 - age / .5) * Math.max(.4, glowScale); c.drawImage(gl('255,200,130'), land.x - size / 2, land.y - size / 2, size, size); }
+  // 火星往外溅
+  if (age < .7) {
+    c.globalAlpha = 1 - age / .7; c.strokeStyle = 'rgb(255,200,120)'; c.lineWidth = 2; c.beginPath();
+    for (let i = 0; i < 18; i++) {
+      const angle = i / 18 * TAU + fallHash(i * 4.4), r = 30 + age * (360 + 240 * fallHash(i * 2.2));
+      c.moveTo(land.x + Math.cos(angle) * r, land.y + Math.sin(angle) * r); c.lineTo(land.x + Math.cos(angle) * (r + 26), land.y + Math.sin(angle) * (r + 26));
+    }
+    c.stroke();
+  }
+  // 烟尘一圈往外推
+  c.globalCompositeOperation = 'source-over';
+  const dustK = fallClamp(age / 1.2);
+  if (dustK < 1) {
+    const puffs = detail ? 22 : 12, dist = 40 + 250 * fallOut(dustK);
+    c.globalAlpha = .4 * (1 - dustK); c.fillStyle = '#7d7268'; c.beginPath();
+    for (let i = 0; i < puffs; i++) {
+      const angle = i / puffs * TAU + fallHash(i * 6.1) * .3, d = dist * (.75 + .3 * fallHash(i * 2.7)), r = 16 + 36 * dustK * (.7 + .5 * fallHash(i));
+      const x = land.x + Math.cos(angle) * d, y = land.y + Math.sin(angle) * d * .9;
+      c.moveTo(x + r, y); c.arc(x, y, r, 0, TAU);
+    }
+    c.fill();
+  }
+  // 碎石块抛出去再落地
+  const rocks = fallRockArt(fallSpriteSet());
+  if (age < 1.1) for (let i = 0; i < 12; i++) {
+    const angle = i / 12 * TAU + fallHash(i * 9.3) * .5, speed = 160 + 220 * fallHash(i * 3.9), height = Math.max(0, 260 * age - 420 * age * age), size = 9 + 12 * fallHash(i * 1.3);
+    const reach = 46 + speed * age, x = land.x + Math.cos(angle) * reach, y = land.y + Math.sin(angle) * reach * .9 - height;
+    c.globalAlpha = fallClamp((1.1 - age) / .3);
+    c.save(); c.translate(x, y); c.rotate(age * (fallHash(i * 7) - .5) * 12); c.drawImage(rocks.list[i % rocks.list.length], -size / 2, -size / 2, size, size); c.restore();
+  }
+  c.restore();
+}
+function drawActFallFront(c, game, { settings, zoom, budget = { detail: 1, glowScale: 1 }, x0, y0, x1, y1 }) {
+  const f = game.actFall;
+  if (!f) return;
+  const s = fallFx(game), flashes = settings.flashes !== false, glowScale = budget.glowScale ?? 1, rt = game.rt || 0;
+  if (x0 === undefined) { const cam = game.cam || game.player; x0 = cam.x - VW / 2 - 60; y0 = cam.y - VH / 2 - 60; x1 = x0 + VW + 120; y1 = y0 + VH + 120; }
+  if (f.phase === 'warning') {
+    // 屏幕四周泛起一圈警示红光
+    const k = fallClamp(f.elapsed / ACT_FALL.warning), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    const edge = c.createRadialGradient(cx, cy, Math.min(VW, VH) * .32, cx, cy, Math.hypot(VW, VH) * .6);
+    edge.addColorStop(0, 'rgba(255,70,30,0)'); edge.addColorStop(1, `rgba(255,70,30,${(.12 + .2 * k) * (flashes ? .7 + .3 * Math.sin(rt * 10) : .8)})`);
+    c.save(); c.fillStyle = edge; c.fillRect(x0, y0, x1 - x0, y1 - y0); c.restore();
+  }
+  if (f.phase === 'falling') {
+    const view = fallShaftView(game, f);
+    fallDrawMech(c, game, f, view, { flashes, glowScale });
+    fallDrawDebris(c, game, f, { zoom, flashes, glowScale });
+    // 地面塌下去那一下的闪光
+    if (flashes && f.elapsed < .3) {
+      c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .35 * (1 - f.elapsed / .3);
+      c.fillStyle = 'rgb(255,170,96)'; c.fillRect(x0, y0, x1 - x0, y1 - y0); c.restore();
+    }
+  }
+  fallDrawBursts(c, game, s, { glowScale });
+  fallDrawLanding(c, game, s, { x0, y0, x1, y1, flashes, glowScale, detail: budget.detail });
 }
 
 // ---- src/render/finale.js ----
@@ -24159,10 +24851,13 @@ function render(rdt) {
   drawRelayObjective(ctx, G.relay, p, vis, Z, relayLabelVisible);
   drawRelayDropGround(ctx, G, { visible: vis, zoom: Z, settings }); // 行动完成的收圈和弹坑、火力全开光环、轨道炮落点
   // 烟雾（普通混合）：颜色固定，只在第一缕烟时设置
+  // 有烟雾贴图时画成一团团软烟（导弹尾烟、爆炸烟），没有就画灰圆
   if (budget.detail) {
     let smokeStyled = false;
+    const smokeTex = worldSmokeTexture(), smokeLook = PROJECTILE_LOOK.smoke;
     for (const q of G.parts) {
       if (q.k !== 1 || !vis(q.x, q.y, q.size)) continue; const t = q.life / q.max;
+      if (smokeTex) { const s = q.size * (1.6 - t * .6) * smokeLook.scale; ctx.globalAlpha = t * smokeLook.alpha; ctx.drawImage(smokeTex, q.x - s / 2, q.y - s / 2, s, s); continue; }
       if (!smokeStyled) { ctx.fillStyle = '#3a3f47'; smokeStyled = true; }
       ctx.globalAlpha = t * .24; ctx.beginPath(); ctx.arc(q.x, q.y, q.size * (1.6 - t * .6), 0, TAU); ctx.fill();
     }
@@ -24208,6 +24903,7 @@ function render(rdt) {
     if (e.weakFlashT > 0) fl = Math.max(fl, Math.min(1, e.weakFlashT / BOSS_PRESENTATION.weakFlashDuration));
     if (e.fuse > 0) { const k = 1 - Math.min(1, e.fuse / .45); fl = Math.max(fl, .2 + .35 * k); size *= 1 + .08 * k; }
     if (e.type === 'charger' && e.st === 'aim') fl = Math.max(fl, .12 + .23 * Math.min(1, e.stT / ENEMY_CHARGE.normal.aimTime));
+    if (fallPose) fl = 0; // 坠落时世界冻结，受击白闪不会消退，跟着掉的虫不闪白
     // 程序动画：爬行抖动、扇翅、蓄力颤抖、冲锋拉伸、受击收缩
     let sx = 1, sy = 1, ang = e.ang; const ph = G.t + e.wob;
     switch (e.type) {
@@ -24336,8 +25032,9 @@ function render(rdt) {
     for (const o of G.pickups) if (o.kind === 'chest' && vis(o.x, o.y, 45)) ctx.drawImage(gl('255,205,71'), o.x - 28, o.y - 28, 56, 56);
   }
   ctx.globalAlpha = 1;
-  drawPlayerBullets(ctx, G.pbullets, budget.glowScale, vis);
-  if (G.missiles.length) {
+  // 弹道贴图（Codex 生图）到了就用贴图画曳光、导弹和光束，没到照旧用代码画
+  if (!drawTracerArt(ctx, G.pbullets, { visible: vis })) drawPlayerBullets(ctx, G.pbullets, budget.glowScale, vis);
+  if (G.missiles.length && !drawMissileArt(ctx, G.missiles, { glowScale: budget.glowScale, flashes: settings.flashes, visible: vis, rt: G.rt })) {
     const glow = gl('255,150,60');
     ctx.globalAlpha = .6 * budget.glowScale;
     for (const mi of G.missiles) ctx.drawImage(glow, mi.x - 9, mi.y - 9, 18, 18);
@@ -24348,7 +25045,7 @@ function render(rdt) {
   // 光束和电弧：透明度用 globalAlpha，颜色串固定
   drawVentBeams(ctx, budget.glowScale);
   if (G.beams.length) ctx.lineCap = 'round';
-  for (const b of G.beams) {
+  if (!drawBeamArt(ctx, G.beams, { glowScale: budget.glowScale })) for (const b of G.beams) {
     const t = b.life / b.max;
     ctx.globalAlpha = t * (b.evo ? .32 : .28) * budget.glowScale; ctx.strokeStyle = b.evo ? 'rgb(255,205,71)' : 'rgb(63,230,255)';
     ctx.lineWidth = b.w * (1.6 - t * .4); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.ex, b.ey); ctx.stroke();
@@ -24358,8 +25055,14 @@ function render(rdt) {
   for (const b of G.bolts) {
     const t = b.life / b.max;
     ctx.beginPath(); ctx.moveTo(b.pts[0], b.pts[1]); for (let i = 2; i < b.pts.length; i += 2) ctx.lineTo(b.pts[i], b.pts[i + 1]);
+    // 电弧三层：最外一圈淡蓝辉光、中间青色电流、白芯；两端各一团电光
+    if (budget.detail) { ctx.globalAlpha = t * .14 * budget.glowScale; ctx.strokeStyle = 'rgb(70,170,255)'; ctx.lineWidth = b.wide ? 16 : 11; ctx.stroke(); }
     ctx.globalAlpha = t * .3 * budget.glowScale; ctx.strokeStyle = 'rgb(90,200,255)'; ctx.lineWidth = b.wide ? 6 : 4; ctx.stroke();
     ctx.globalAlpha = t; ctx.strokeStyle = 'rgb(230,250,255)'; ctx.lineWidth = b.wide ? 2.4 : 1.5; ctx.stroke();
+    if (budget.detail && budget.glowScale > .2) {
+      const n = b.pts.length, s = b.wide ? 34 : 24; ctx.globalAlpha = t * .55 * budget.glowScale;
+      ctx.drawImage(gl('120,210,255'), b.pts[0] - s / 2, b.pts[1] - s / 2, s, s); ctx.drawImage(gl('150,225,255'), b.pts[n - 2] - s / 2, b.pts[n - 1] - s / 2, s, s);
+    }
   }
   for (const q of G.parts) { if (q.k !== 0 || (q.kind && q.kind !== 'glow') || !vis(q.x, q.y, q.size)) continue; const t = q.life / q.max, s = q.size * (.4 + t); ctx.globalAlpha = t * .65 * budget.glowScale; ctx.drawImage(gl(q.col), q.x - s, q.y - s, s * 2, s * 2); }
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -24396,7 +25099,7 @@ function render(rdt) {
   drawCombatTexts(ctx, juggleCombatTexts(G.texts), { mode: settings.damageNumbers, enemyBulletCount: G.ebullets.length, textCap: budget.textCap,
     detail: budget.detail, now: G.t, zoom: Z, camera: G.cam, height: H, banner: G.banner, screenOffsetY: sy, isVisible: vis });
   ctx.globalAlpha = 1;
-  drawActFallFront(ctx, G, { settings, zoom: Z });
+  drawActFallFront(ctx, G, { settings, zoom: Z, budget, x0, y0, x1, y1 });
   // ===== 屏幕空间 =====
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   drawIndicators();
@@ -24420,6 +25123,16 @@ function render(rdt) {
   drawAllyCutin(); drawFinale(); drawEmperorOverlay();
 }
 
+// 烟雾贴图压成偏暖的烟灰色后缓存一份（原图是中性灰，直接画在深色地面上发白）
+let worldSmokeTex = null;
+function worldSmokeTexture() {
+  if (worldSmokeTex || !IMG.fx_smoke) return worldSmokeTex;
+  const im = IMG.fx_smoke, w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+  if (!(w > 0)) return null;
+  const cv = offscreen(w, h), x = cv.getContext('2d');
+  x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(58,56,58,.45)'; x.fillRect(0, 0, w, h);
+  return worldSmokeTex = cv;
+}
 // 曳光用三段稳定线芯表现头亮尾暗；画质只改变外层光晕，不削弱弹道。
 // 整批绘制：叠加混合下先后顺序不影响结果，按光晕、外层、内层、线芯分层，同层只在样式变化时改状态。
 // 两层半透明曳光仍逐发描边，保留多发重叠处的亮度；不透明线芯按类型合并成一条路径。
