@@ -326,7 +326,7 @@ footer.foot{flex-shrink:0}
 .mech-ability h4{margin:0 0 5px;font-size:14px;font-weight:600;color:#c8e5ec}
 .mech-ability p{margin:0;font-size:13px;line-height:1.65;color:#b7c5d2}
 .mech-ability.over h4{color:#efbd82}
-.mech-equip{margin-top:20px;display:grid;gap:7px}
+.mech-equip{margin-top:14px;display:grid;gap:7px}
 .mech-equip .btn{min-height:48px;font-size:21px}
 .mech-equip .unlock{color:#fce1a1;border-color:#a78546;background:#352916}
 .selection-status{margin:0;font-size:12px;line-height:1.6;color:#b7c8d5;min-height:19px}
@@ -521,7 +521,7 @@ button.goal-line{cursor:pointer}
 .ach.on b{color:#f1d899}
 .ach span{display:block;margin-top:2px;font-size:11px;line-height:1.5;color:#9fb0bd}
 .ach-skin{display:inline-block;margin-top:4px;font-style:normal;font-size:11px;color:#c8d39c}
-.skin-section{margin-top:14px}
+.skin-section{margin-top:24px}
 .tier-section{margin-top:14px}
 .tier-section .sec{margin:0 0 8px}
 .tier-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -650,7 +650,7 @@ button.goal-line{cursor:pointer}
 .cosmetic-preview canvas{display:block;width:100%;height:100%}
 .cosmetic-section .section-note,.skin-section .section-note{min-height:2.8em}
 @media (hover:hover){.mech-thumb:hover{background:#21333e}.talent-choice:hover:not(:disabled){border-color:#9f805a}.btn:hover:not(:disabled),.chip:hover:not(:disabled),.buy:hover:not(:disabled){filter:brightness(1.12)}}
-@media (min-width:760px){.hangar-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;padding-top:24px}.hangar-machine{align-self:start;position:sticky;top:12px}.preview-stage{height:330px}.up-list{grid-template-columns:1fr 1fr}.hangar-launch{flex-direction:row;align-items:center;justify-content:space-between;max-width:1080px;gap:24px}.hangar-launch p{text-align:left}.hangar-launch .btn{width:280px!important;margin:0!important}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.stat.gold,.stat.record{grid-column:span 2}.end-content .build{grid-template-columns:repeat(4,minmax(0,1fr))}.menu-bottom{max-width:470px}.title-block{margin:0}.title{font-size:104px}}
+@media (min-width:760px){.hangar-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;padding-top:24px}.hangar-machine{align-self:start}.preview-stage{height:330px}.up-list{grid-template-columns:1fr 1fr}.hangar-launch{flex-direction:row;align-items:center;justify-content:space-between;max-width:1080px;gap:24px}.hangar-launch p{text-align:left}.hangar-launch .btn{width:280px!important;margin:0!important}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.stat.gold,.stat.record{grid-column:span 2}.end-content .build{grid-template-columns:repeat(4,minmax(0,1fr))}.menu-bottom{max-width:470px}.title-block{margin:0}.title{font-size:104px}}
 @media (max-width:350px){.scroll{padding-left:12px;padding-right:12px}.bar{padding-left:12px;padding-right:12px}.menu-bottom{padding-left:12px;padding-right:12px}.menu-stats{font-size:11px}.menu-stats b{font-size:21px}.tag{font-size:12px;line-height:1.6}.preview-stage{height:220px}.mech-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.mech-thumb{min-height:78px;display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:1fr 1fr;padding:6px;text-align:left;gap:1px 2px}.mech-thumb img{grid-row:1/3;width:42px;height:52px}.mech-thumb b{align-self:end;font-size:12px}.mech-thumb small{align-self:start;font-size:10px}.mech-stats>div{padding:10px 5px}.mech-stats dd{font-size:24px}.mech-stats dd small{font-size:9px}.settings-row{grid-template-columns:minmax(0,1fr) 112px;gap:10px}.end-title{font-size:38px}.deployment{gap:8px;padding:8px}.deployment img{width:48px;height:48px}.deployment .chip{padding:0 10px}}
 @media (max-height:620px){.menu{gap:18px}.menu-top{padding-top:calc(var(--safe-top) + 8px)}.title{font-size:64px}.title-block{margin-top:0}.menu-bottom{margin-top:0}.bar{padding-top:calc(var(--safe-top) + 8px);padding-bottom:8px}.bar h2{font-size:25px}.preview-stage{height:210px}.hangar-launch .btn{min-height:48px!important}.foot{padding-top:8px!important;padding-bottom:calc(var(--safe-bottom) + 10px)!important}#scrEnd .btn-col{grid-template-columns:1fr 1fr;gap:7px}#scrEnd .btn.primary{grid-column:1/-1;min-height:46px}#scrEnd .btn:not(.primary){font-size:13px;padding:0 10px}.end-content{padding-top:14px}.end-title{font-size:36px}}
 @media (prefers-reduced-motion:reduce){.btn,.mech-thumb{transition:none}}
@@ -763,13 +763,16 @@ input.settings-control[type="range"]{min-width:0}
 @media (max-width:360px){.anomaly-card{grid-template-columns:42px minmax(0,1fr);gap:8px;padding:10px}.anomaly-card .anomaly-icon{width:42px;height:42px;font-size:20px}.anomaly-swap{grid-template-columns:36px minmax(0,1fr);gap:8px;padding:9px 10px}.anomaly-swap .anomaly-icon{width:36px;height:36px;font-size:17px}.anomaly-slot .anomaly-icon.small{width:24px;font-size:13px}}
 
 /* 初始武器：沿用机库材质，图标与文字共同表达已选和解锁状态 */
-.start-weapon-section{margin-top:22px;border-top:1px solid #344451}
+.start-weapon-section{margin-top:16px;border-top:1px solid #344451}
 .start-weapon-section .sec{margin-bottom:5px}
-.start-weapon-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:8px}
-.start-weapon-choice{min-width:0;min-height:82px;padding:10px;text-align:left;background:#111b24;border:1px solid #344451;color:#e4edf3}
-.start-weapon-choice svg{width:24px;height:24px;vertical-align:middle;margin-right:6px}
-.start-weapon-choice b{font-size:13px;line-height:1.6}
-.start-weapon-choice span{display:block;color:#b7c6d2;font-size:12px;line-height:1.6;margin-top:4px}
+.hangar-loadout-mech{float:right;font-family:var(--f-body);font-weight:600;font-size:13px;letter-spacing:.05em;color:#f1d899}
+/* 放在机甲列表正下方，一行三把，少占竖向空间；窄屏退回两列 */
+.start-weapon-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:8px}
+.start-weapon-choice{min-width:0;min-height:62px;padding:8px 7px;text-align:left;background:#111b24;border:1px solid #344451;color:#e4edf3}
+.start-weapon-choice svg{width:20px;height:20px;vertical-align:middle;margin-right:4px}
+.start-weapon-choice b{font-size:13px;line-height:1.5}
+.start-weapon-choice span{display:block;color:#b7c6d2;font-size:11px;line-height:1.5;margin-top:3px}
+@media (max-width:350px){.start-weapon-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .start-weapon-choice[aria-pressed="true"]{border-color:#ba8a4e;background:#2b231a}
 .start-weapon-choice[aria-pressed="true"] span{color:#dac8b0}
 .start-weapon-choice:disabled{cursor:not-allowed;color:#a8bac9}
@@ -851,15 +854,10 @@ input.settings-control[type="range"]{min-width:0}
           </div>
           <div class="demo-controls"><button id="hgDemo" class="chip">演示能力</button><p id="hgDemoStatus" aria-live="polite">展示机体武器与作战动作</p></div>
           <div id="mechList" class="mech-list" aria-label="预览机体"></div>
-          <section class="skin-section" aria-labelledby="skinTitle"><h3 id="skinTitle" class="sec"><span>涂装</span></h3><div class="preview-stage cosmetic-preview"><canvas id="skinPreviewCanvas" role="img" aria-label="涂装预览"></canvas></div><div id="skinList" class="skin-list"></div><p id="skinStatus" class="section-note" aria-live="polite"></p></section>
-          <section class="cosmetic-section" aria-labelledby="cosmeticTitle">
-            <h3 id="cosmeticTitle" class="sec"><span>特效</span></h3>
-            <div class="preview-stage cosmetic-preview"><canvas id="cosmeticPreviewCanvas" role="img" aria-label="特效预览"></canvas></div>
-            <div id="cosmeticList"></div>
-            <p id="cosmeticStatus" class="section-note" aria-live="polite"></p>
-          </section>
+          <div class="mech-equip"><button id="hgSelect" class="btn">装备机体</button><button id="hgUnlock" class="btn unlock" hidden>解锁机体</button><button id="hgGoal" type="button" class="chip goal-chip" hidden>设为下一个目标</button><p id="hgSelectionStatus" class="selection-status" aria-live="polite"></p></div>
+          <section class="start-weapon-section" aria-labelledby="startWeaponTitle"><h3 id="startWeaponTitle" class="sec"><span>初始武器</span><b id="startWeaponMech" class="hangar-loadout-mech"></b></h3><p class="section-note">开局自带 · 每台机甲各选各的；解锁一台机甲，它的招牌武器所有机甲都能带</p><div id="startWeaponList" class="start-weapon-list"></div><div id="startWeaponNote" class="start-weapon-note" aria-live="polite"></div><p id="startWeaponStatus" class="selection-status" aria-live="polite"></p></section>
+          <section class="talent-section" aria-labelledby="talentTitle"><h3 id="talentTitle" class="sec"><span>战术协议</span><b id="talentMech" class="hangar-loadout-mech"></b></h3><p class="section-note">三选一 · 决定本局路线，出击后固定</p><div id="talentList" class="talent-list"></div><p id="talentStatus" class="selection-status" aria-live="polite"></p></section>
           <section class="tier-section" aria-labelledby="tierTitle"><h3 id="tierTitle" class="sec"><span>深渊层级</span></h3><div id="tierList" class="tier-list"></div><p id="tierStatus" class="section-note"></p><div id="tierRules" class="tier-rules" hidden></div></section>
-          <section class="codex-section" aria-labelledby="codexTitle" hidden><h3 id="codexTitle" class="sec"><span>图鉴</span></h3><div id="zoneCodex"></div><div id="anomalyCodex"></div></section>
         </div>
         <div class="hangar-specification">
           <p id="hgPreviewDescription" class="mech-description"></p>
@@ -867,9 +865,14 @@ input.settings-control[type="range"]{min-width:0}
           <p id="hgRecord" class="mech-record"></p>
           <p class="section-note">基础属性 · 永久改装与协议效果在出击时生效</p>
           <div id="hgAbilities" class="mech-abilities"></div>
-          <div class="mech-equip"><button id="hgSelect" class="btn">装备机体</button><button id="hgUnlock" class="btn unlock" hidden>解锁机体</button><button id="hgGoal" type="button" class="chip goal-chip" hidden>设为下一个目标</button><p id="hgSelectionStatus" class="selection-status" aria-live="polite"></p></div>
-          <section class="talent-section" aria-labelledby="talentTitle"><h3 id="talentTitle" class="sec"><span>战术协议</span></h3><p class="section-note">三选一 · 决定本局路线，出击后固定</p><div id="talentList" class="talent-list"></div><p id="talentStatus" class="selection-status" aria-live="polite"></p></section>
-          <section class="start-weapon-section" aria-labelledby="startWeaponTitle"><h3 id="startWeaponTitle" class="sec"><span>初始武器</span></h3><p class="section-note">开局自带 · 解锁机甲后，它的招牌武器所有机甲都能带</p><div id="startWeaponList" class="start-weapon-list"></div><div id="startWeaponNote" class="start-weapon-note" aria-live="polite"></div><p id="startWeaponStatus" class="selection-status" aria-live="polite"></p></section>
+          <section class="skin-section" aria-labelledby="skinTitle"><h3 id="skinTitle" class="sec"><span>涂装</span></h3><div class="preview-stage cosmetic-preview"><canvas id="skinPreviewCanvas" role="img" aria-label="涂装预览"></canvas></div><div id="skinList" class="skin-list"></div><p id="skinStatus" class="section-note" aria-live="polite"></p></section>
+          <section class="cosmetic-section" aria-labelledby="cosmeticTitle">
+            <h3 id="cosmeticTitle" class="sec"><span>特效</span></h3>
+            <div class="preview-stage cosmetic-preview"><canvas id="cosmeticPreviewCanvas" role="img" aria-label="特效预览"></canvas></div>
+            <div id="cosmeticList"></div>
+            <p id="cosmeticStatus" class="section-note" aria-live="polite"></p>
+          </section>
+          <section class="codex-section" aria-labelledby="codexTitle" hidden><h3 id="codexTitle" class="sec"><span>图鉴</span></h3><div id="zoneCodex"></div><div id="anomalyCodex"></div></section>
         </div>
       </div>
       <section class="bounty-section" aria-labelledby="bountyTitle"><p id="bountyConfig" class="bounty-config"></p><h3 id="bountyTitle" class="sec"><span>出击悬赏</span></h3><p id="bountyHelp" class="section-note"></p><div id="bountyList" class="bounty-list"></div><div id="bountyStakes" class="bounty-stakes" role="group" aria-label="选择悬赏押金"></div><p id="bountyStatus" class="bounty-status" aria-live="polite"></p></section>
@@ -13699,9 +13702,11 @@ function renderHangar() {
   $('#hgGoal').textContent = isGoal ? '已是下一个目标' : '设为下一个目标';
   const upgradable = affordableUpgradeCount(meta);
   $('#hgUpJump').hidden = !upgradable; $('#hgUpJump').textContent = `永久改装 · 可升级 ${upgradable} 项`;
-  $('#hgSelectionStatus').textContent = equipped ? '出击将使用这台机体与下方协议。' : unlocked ? `当前预览 ${m.name}；出击机体仍是 ${selected.name}。` : meta.coins < m.cost ? `还差 ${m.cost - meta.coins} 金币；可以先预览能力与协议。` : '解锁后可装备；只有点击解锁按钮才会消耗金币。';
+  $('#hgSelectionStatus').textContent = equipped ? '出击将使用这台机体和下方的初始武器、协议。' : unlocked ? `当前预览 ${m.name}；出击机体仍是 ${selected.name}。` : meta.coins < m.cost ? `还差 ${m.cost - meta.coins} 金币；可以先预览能力与协议。` : '解锁后可装备；只有点击解锁按钮才会消耗金币。';
   $('#talentList').innerHTML = getTalentOptions(m.id).map(option => `<button type="button" class="talent-choice ${option.id === talent.id ? 'selected' : ''}" data-talent="${option.id}" aria-pressed="${option.id === talent.id}" ${unlocked ? '' : 'disabled'}><b>${option.name}${option.id === talent.id ? ' · 已选' : ''}</b><span>${option.description}</span>${meta.achievements?.['proto:' + option.id] ? '<em class="talent-medal">已突围</em>' : ''}</button>`).join('');
   $('#talentStatus').textContent = unlocked ? `${m.name}已选 ${talent.name}；每台机体分别保存。` : '解锁机体后可选择协议。';
+  // 初始武器、协议紧挨着机甲列表，标题右边写当前预览的机甲，换机甲时一眼看出这台带什么
+  $('#startWeaponMech').textContent = m.name; $('#talentMech').textContent = m.name;
   renderStartWeapons(m, talent, unlocked);
   const launchWeapon = startWeaponFor(meta, selected.id);
   const launchTalent = getSelectedTalent(selected.id, meta.talents);
