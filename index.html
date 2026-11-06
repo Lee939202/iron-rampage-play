@@ -713,10 +713,35 @@ input.settings-control[type="range"]{min-width:0}
 
 /* 线四：异常芯片二选一（好处绿字、代价红字、档位角标、顶上三个异常槽）、技能一览和图鉴 */
 .anomaly-kicker{color:#c9a6ff}
-.anomaly-slots{display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#c5d3dc;font-size:13px}
-.anomaly-slot{display:grid;place-items:center;width:40px;height:40px;box-sizing:border-box;padding:0;background:#0b1016;border:1px solid #3d4b57}
-.anomaly-slot.filled{border-color:#b996ff}.anomaly-slots.replacing .anomaly-slot.filled{border-color:#ff8fa3;box-shadow:0 0 0 2px rgba(255,120,150,.35);cursor:pointer}
-.anomaly-slots.replacing .anomaly-slot.filled.locked,.anomaly-slot.filled.locked{border-color:#ff9a4a;border-style:dashed;box-shadow:none;cursor:default;opacity:.75}
+.anomaly-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#c5d3dc;font-size:13px}
+.anomaly-slots-label{grid-column:1/-1;display:flex;justify-content:space-between;font-size:12px;color:#9fb0bf}.anomaly-slots-count{color:#c5d3dc;font-variant-numeric:tabular-nums}
+.anomaly-slot{display:flex;align-items:center;gap:4px;min-width:0;height:44px;box-sizing:border-box;padding:0 6px 0 2px;background:#0b1016;border:1px solid #3d4b57}
+.anomaly-slot.filled{border-color:#b996ff}.anomaly-slot.empty{justify-content:center;border-style:dashed}
+.anomaly-slot.filled.locked{border-color:#ff9a4a;border-style:dashed}
+.anomaly-slot-copy{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.anomaly-slot-copy b{font-size:12.5px;font-weight:700;color:#e6edf3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anomaly-slot-copy small{font-size:10.5px;color:#9fb0bf}.anomaly-slot.locked .anomaly-slot-copy small{color:#ffb27a}
+/* 槽满换芯片：选中的新卡在上，下面每个旧芯片一张得失卡（失去 / 甩掉 / 本局 / 搭配冲突），周赛锁定的灰掉 */
+.anomaly-slots.replacing{grid-template-columns:minmax(0,1fr);gap:8px;padding:10px 0 4px;border-bottom:0}
+.anomaly-replacing #anomalySlots{order:1}.anomaly-replacing #anomalySkip{order:2}
+.anomaly-swap-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;color:#9fb0bf}.anomaly-swap-head b{font-size:15px;color:#ffd0da}
+.anomaly-swap{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:start;width:100%;box-sizing:border-box;padding:10px 12px;text-align:left;background:linear-gradient(100deg,#2a1520,#141a22 70%);border:1px solid #ff8fa3;box-shadow:0 0 0 1px rgba(255,120,150,.18)}
+.anomaly-swap:active{filter:brightness(1.25)}
+.anomaly-swap.locked{background:#10151b;border-color:#ff9a4a;border-style:dashed;box-shadow:none;opacity:.8}
+.anomaly-swap .anomaly-icon{width:44px;height:44px;font-size:20px}
+.anomaly-swap-copy{display:flex;flex-direction:column;gap:3px;min-width:0;overflow-wrap:anywhere}
+.anomaly-swap-name{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;font-size:15px;font-weight:700;color:#f3f6f9}
+.anomaly-swap-name em{font-style:normal;font-size:11px;font-weight:600;color:#c9a6ff}.anomaly-swap.locked .anomaly-swap-name em{color:#ffb27a}
+.anomaly-swap-go{margin-left:auto;font-size:11px;font-weight:700;padding:1px 7px;background:#ff8fa3;color:#2a0711}
+.anomaly-swap-copy small{font-size:11.5px;color:#ffb27a}
+.anomaly-line{display:grid;grid-template-columns:30px minmax(0,1fr);gap:6px;align-items:start;font-size:12px;line-height:1.45}
+.anomaly-line>i{font-style:normal;font-size:11px;font-weight:600;text-align:center;border-radius:2px;line-height:17px}
+.anomaly-line[data-kind="loss"]>i{background:#55202a;color:#ffadb7}.anomaly-line[data-kind="loss"]>span{color:#ffc7cd}
+.anomaly-line[data-kind="gain"]>i{background:#1f4a2e;color:#9ef0b0}.anomaly-line[data-kind="gain"]>span{color:#c8f2d2}
+.anomaly-line[data-kind="warn"]>i{background:#4d3a12;color:#ffd979}.anomaly-line[data-kind="warn"]>span{color:#f3d9a0}
+.anomaly-line[data-kind="keep"]>i{background:#2a3440;color:#c5d0da}.anomaly-line[data-kind="keep"]>span{color:#aebccb}
+.anomaly-incoming{font-family:var(--f-body);font-size:11px;font-weight:700;padding:1px 7px;background:#ff8fa3;color:#2a0711}
+.anomaly-card .ht.anomaly-now{color:#f3d9a0}
 .anomaly-icon{display:grid;place-items:center;width:44px;height:44px;box-sizing:border-box;border:1px solid rgb(var(--chip));color:rgb(var(--chip));background:rgba(var(--chip),.08);font-size:20px;font-weight:700}
 .anomaly-icon.small{width:30px;height:30px;font-size:15px;border:0;background:none}
 .anomaly-card{position:relative;grid-template-columns:52px minmax(0,1fr);min-height:118px;border-color:#5a4a78}
@@ -735,7 +760,7 @@ input.settings-control[type="range"]{min-width:0}
 .anomaly-codex-grid .mech-ability{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:start}
 .anomaly-codex-grid .anomaly-icon{width:30px;height:30px;font-size:15px}
 .anomaly-codex-grid .unknown .anomaly-icon{--chip:120,135,150}
-@media (max-width:360px){.anomaly-card{grid-template-columns:42px minmax(0,1fr);gap:8px;padding:10px}.anomaly-card .anomaly-icon{width:42px;height:42px;font-size:20px}}
+@media (max-width:360px){.anomaly-card{grid-template-columns:42px minmax(0,1fr);gap:8px;padding:10px}.anomaly-card .anomaly-icon{width:42px;height:42px;font-size:20px}.anomaly-swap{grid-template-columns:36px minmax(0,1fr);gap:8px;padding:9px 10px}.anomaly-swap .anomaly-icon{width:36px;height:36px;font-size:17px}.anomaly-slot .anomaly-icon.small{width:24px;font-size:13px}}
 
 /* 初始武器：沿用机库材质，图标与文字共同表达已选和解锁状态 */
 .start-weapon-section{margin-top:22px;border-top:1px solid #344451}
@@ -3436,6 +3461,23 @@ const ANOMALIES = {
     get cost() { return ANOMALY_RULES.timeDebtRebalance.enabled ? '每次时停结束扣 5% 最大生命' : '每次时停结束扣 8% 最大生命'; } },
   blind: { id: 'blind', name: '盲盒协议', tier: 'mad', icon: '盲', color: '255,100,120', benefit: '每次升级直接拿 2 张随机卡', cost: '不能选卡，也不能刷新' },
 };
+// 两枚异常芯片同时在槽里会互相影响的地方：槽满换芯片时，按换前、换后的组合提示「搭配 / 冲突 / 注意」，拆开时提示「拆散 / 解除」
+// kind：good 是搭配（互相成全），bad 是冲突（代价叠加或拖后腿），warn 两样都有；broken(拆掉的, 留下的) 可以改写拆开时的说法
+const ANOMALY_COMBOS = [
+  { ids: ['laststand', 'sacrifice'], kind: 'warn', text: '背水的回血代价被献祭盖过（都不自然回复、治疗包变经验），但献祭回满会清掉背水的加伤',
+    broken: (gone, stay) => stay === 'sacrifice' ? { kind: 'keep', text: '献祭协议还在：照样不自然回复，治疗包照样变经验' } : { kind: 'warn', text: '背水还在：照样不自然回复，治疗包最多回到半血' } },
+  { ids: ['sacrifice', 'blood'], kind: 'good', text: '治疗包变成经验，血债的回复减半不起作用',
+    broken: (gone, stay) => stay === 'blood' ? { kind: 'bad', text: '治疗包恢复回血，但血债让回复减半' } : { kind: 'keep', text: '献祭协议还在：治疗包照样变经验，血债这条代价本来就没影响' } },
+  { ids: ['sacrifice', 'egg'], kind: 'bad', text: '治疗包掉率减半，献祭换到的经验也跟着少' },
+  { ids: ['blood', 'egg'], kind: 'bad', text: '治疗包掉得少、回得也少，回血只剩约四分之一' },
+  { ids: ['blood', 'laststand'], kind: 'bad', text: '治疗包回复减半，还最多回到半血' },
+  { ids: ['egg', 'laststand'], kind: 'bad', text: '治疗包掉得少，还最多回到半血' },
+  { ids: ['shell', 'timeDebt'], kind: 'bad', text: '弹壳风暴让极限闪避判定变窄，时间债的时停更难触发' },
+  { ids: ['shadow', 'shell'], kind: 'bad', text: '冲刺冷却变长，弹壳风暴甩导弹的次数也变少' },
+  { ids: ['hunter', 'greed'], kind: 'bad', text: '两个都少拿经验，升级会明显变慢' },
+  { ids: ['laststand', 'timeDebt'], kind: 'good', text: '时间债扣的血会抬高背水的加伤' },
+  { ids: ['sacrifice', 'timeDebt'], kind: 'good', text: '献祭回满能补回时间债扣的血' },
+];
 
 // ---- src/game/report.js ----
 // 战斗复盘：记录有效伤害、归因及基于实际表现的一条建议
@@ -6128,6 +6170,49 @@ function anomalyContributionText(row) {
   if (row.damage > 0) return `伤害 ${Math.round(row.damage)}`;
   if (!row.label) return '';
   return `${row.label} ${row.label.endsWith('秒') ? row.stat.toFixed(1) : Math.round(row.stat)}`;
+}
+
+// ===== 槽满换芯片：每个旧芯片换掉后的得失 =====
+const ANOMALY_COMBO_TAGS = { gain: '搭配', loss: '冲突', warn: '注意' };
+const ANOMALY_COMBO_KINDS = { good: 'gain', bad: 'loss', warn: 'warn', keep: 'keep' };
+const anomalyComboOn = (set, combo) => combo.ids.every(id => set.includes(id));
+function anomalyHeldText(seconds) {
+  const s = Math.max(0, Math.round(seconds)), m = Math.floor(s / 60);
+  return m ? `${m} 分 ${s % 60} 秒` : `${s} 秒`;
+}
+// 背水按现在的生命算的加伤（百分数）
+function anomalyLaststandBonus() { return G?.player ? Math.round((anomalyLaststandMul() - 1) * 100) : 0; }
+// 随对局状态变的数字：背水现在加多少伤；已装的献祭还差几只回满、贪婪还能换多少
+function anomalyNowText(id) {
+  const a = G?.anomaly, p = G?.player; if (!a || !p) return '';
+  if (id === 'laststand') return `按现在生命 ${Math.round(Math.max(0, p.hp) / (p.maxHp || 1) * 100)}% 算，伤害 +${anomalyLaststandBonus()}%`;
+  if (!a.on[id]) return '';
+  if (id === 'sacrifice') return `再杀 ${Math.max(0, ANOMALY_RULES.sacrificeKills - (a.sacrificeKills || 0))} 只回满`;
+  if (id === 'greed') return `还能换 ${Math.max(0, ANOMALY_RULES.greedCap - (a.stats.greed || 0))} 枚金币`;
+  return '';
+}
+// 换掉 oldId、换上 newId 的得失清单：失去旧芯片的好处、甩掉它的代价、它本局起过多大作用、换后组合新出现或拆开的搭配和冲突
+// 每行 { kind: gain/loss/warn/keep, tag, text }；周赛强制芯片返回 locked
+function anomalySwapInfo(oldId, newId) {
+  const a = G?.anomaly, d = ANOMALIES[oldId];
+  if (!a || !d || !ANOMALIES[newId] || !a.slots.includes(oldId)) return null;
+  if (G.weekly?.chips?.includes(oldId)) return { id: oldId, locked: true, lines: [] };
+  const before = a.slots, after = before.filter(id => id !== oldId).concat(newId);
+  const lines = [{ kind: 'loss', tag: '失去', text: d.benefit }, { kind: 'gain', tag: '甩掉', text: d.cost }];
+  const row = anomalySummary().find(r => r.id === oldId), pick = [...a.picks].reverse().find(x => x.id === oldId);
+  const done = row && (row.damage > 0 || row.stat > 0) ? anomalyContributionText(row) : '';
+  lines.push({ kind: 'keep', tag: '本局', text: (done || '还没起过作用') + (pick ? ` · 装了 ${anomalyHeldText((G.t || 0) - pick.t)}` : '') });
+  const now = anomalyNowText(oldId); if (now) lines.push({ kind: 'keep', tag: '现在', text: now });
+  for (const combo of ANOMALY_COMBOS) {
+    const was = anomalyComboOn(before, combo), will = anomalyComboOn(after, combo);
+    if (will && !was) { const kind = ANOMALY_COMBO_KINDS[combo.kind]; lines.push({ kind, tag: ANOMALY_COMBO_TAGS[kind], text: combo.text }); }
+    else if (was && !will) {
+      const alt = combo.broken?.(oldId, combo.ids.find(id => id !== oldId));
+      if (alt) lines.push({ kind: ANOMALY_COMBO_KINDS[alt.kind], tag: '注意', text: alt.text });
+      else lines.push(combo.kind === 'good' ? { kind: 'loss', tag: '拆散', text: combo.text } : { kind: combo.kind === 'bad' ? 'gain' : 'keep', tag: '解除', text: combo.text });
+    }
+  }
+  return { id: oldId, locked: false, lines };
 }
 
 // ===== 属性与倍率入口 =====
@@ -15425,31 +15510,56 @@ if (typeof window !== 'undefined') {
 }
 
 // ---- src/ui/anomaly.js ----
-// 异常芯片二选一界面：顶上 3 个异常槽，两张芯片卡（好处绿字、代价红字、档位角标），可以放弃；槽满时选中后再点一个旧芯片换掉
+// 异常芯片二选一界面：顶上 3 个异常槽（图标、名字、档位），两张芯片卡（好处绿字、代价红字、档位角标），可以放弃；
+// 槽满时先选新卡，界面换成「换上谁 / 换掉哪一个」：每个旧芯片列出失去的好处、甩掉的代价、本局起过的作用和换后组合的搭配冲突，点哪个换哪个
 
 let anomalyReadyAt = 0, anomalyPending = null;
 const anomalyIconBox = (id, cls = '') => { const d = ANOMALIES[id]; return `<span class="anomaly-icon ${cls}" style="--chip:${d.color}" aria-hidden="true">${d.icon}</span>`; };
+const anomalyFull = () => G.anomaly.slots.length >= ANOMALY_RULES.slots;
+const anomalyLocked = id => !!G.weekly?.chips?.includes(id); // 每周异变赛的强制芯片换不下来
+const anomalyLine = l => `<span class="anomaly-line" data-kind="${l.kind}"><i>${l.tag}</i><span>${l.text}</span></span>`;
 function anomalyCardMarkup(id, index) {
-  const d = ANOMALIES[id], on = anomalyPending === id;
-  return `<button type="button" class="card anomaly-card tier-${d.tier}${on ? ' sel' : ''}" data-anomaly="${id}" aria-pressed="${on}">${anomalyIconBox(id)}<span class="choice-copy"><span class="nm">${d.name}<span class="anomaly-tier">${ANOMALY_TIER_NAMES[d.tier]}</span></span><span class="ds anomaly-good"><b>好处</b> ${d.benefit}</span><span class="ds anomaly-cost"><b>代价</b> ${d.cost}</span><span class="ht">异常槽 · 不占武器或芯片槽</span></span><span class="zone-key" aria-hidden="true">${index + 1}</span></button>`;
+  const d = ANOMALIES[id], on = anomalyPending === id, full = anomalyFull(), now = full && on ? anomalyNowText(id) : '';
+  const note = on && full ? '换上的就是它 · 再点一下改选' : full ? '槽满了 · 选它之后再挑一个旧芯片换掉' : '异常槽 · 不占武器或芯片槽';
+  return `<button type="button" class="card anomaly-card tier-${d.tier}${on ? ' sel' : ''}" data-anomaly="${id}" aria-pressed="${on}">${anomalyIconBox(id)}<span class="choice-copy"><span class="nm">${on && full ? '<span class="anomaly-incoming">换上</span>' : ''}${d.name}<span class="anomaly-tier">${ANOMALY_TIER_NAMES[d.tier]}</span></span><span class="ds anomaly-good"><b>好处</b> ${d.benefit}</span><span class="ds anomaly-cost"><b>代价</b> ${d.cost}</span>${now ? `<span class="ht anomaly-now">现在 · ${now}</span>` : ''}<span class="ht">${note}</span></span><span class="zone-key" aria-hidden="true">${index + 1}</span></button>`;
+}
+// 平时：一排三个小格，图标 + 名字 + 档位（周赛强制的写「周赛锁定」）
+function anomalySlotTile(id) {
+  if (!id) return '<span class="anomaly-slot empty"><span class="anomaly-slot-copy"><small>空槽</small></span></span>';
+  const d = ANOMALIES[id], locked = anomalyLocked(id);
+  return `<span class="anomaly-slot filled${locked ? ' locked' : ''}" title="${d.name}${locked ? '（周赛锁定）' : ''}">${anomalyIconBox(id, 'small')}<span class="anomaly-slot-copy"><b>${d.name}</b><small>${locked ? '周赛锁定' : ANOMALY_TIER_NAMES[d.tier]}</small></span></span>`;
+}
+// 槽满换芯片：每个旧芯片一张卡，写清换掉它的得失；周赛强制的照样列出好处代价，但点不了
+function anomalySwapOption(oldId) {
+  const d = ANOMALIES[oldId], info = anomalySwapInfo(oldId, anomalyPending);
+  if (!info || info.locked) {
+    return `<div class="anomaly-swap locked">${anomalyIconBox(oldId)}<span class="anomaly-swap-copy"><span class="anomaly-swap-name">${d.name}<em>周赛锁定</em></span>${anomalyLine({ kind: 'keep', tag: '好处', text: d.benefit })}${anomalyLine({ kind: 'keep', tag: '代价', text: d.cost })}<small>本周异变赛指定的芯片，换不下来</small></span></div>`;
+  }
+  return `<button type="button" class="anomaly-swap tier-${d.tier}" data-anomaly-slot="${oldId}">${anomalyIconBox(oldId)}<span class="anomaly-swap-copy"><span class="anomaly-swap-name">${d.name}<em>${ANOMALY_TIER_NAMES[d.tier]}</em><span class="anomaly-swap-go">换掉它</span></span>${info.lines.map(anomalyLine).join('')}</span></button>`;
 }
 function renderAnomalySlots() {
-  const slots = G.anomaly.slots, replacing = !!anomalyPending && slots.length >= ANOMALY_RULES.slots;
-  let html = '<span class="anomaly-slots-label">异常槽</span>';
-  for (let i = 0; i < ANOMALY_RULES.slots; i++) {
-    const id = slots[i];
-    const locked = !!G.weekly?.chips?.includes(id); // 每周异变赛的强制芯片换不下来
-    html += id ? `<button type="button" class="anomaly-slot filled${replacing && !locked ? ' swap' : ''}${locked ? ' locked' : ''}" data-anomaly-slot="${id}" title="${ANOMALIES[id].name}${locked ? '（周赛锁定）' : ''}" ${replacing && !locked ? '' : 'tabindex="-1"'}${locked ? ' disabled' : ''}>${anomalyIconBox(id, 'small')}</button>` : '<span class="anomaly-slot"></span>';
+  const slots = G.anomaly.slots, replacing = !!anomalyPending && anomalyFull(), box = $('#anomalySlots');
+  if (replacing) {
+    const free = slots.filter(id => !anomalyLocked(id)).length;
+    // 能换的排前面：手机竖屏放不下全部时，先看到能点的
+    const order = slots.filter(id => !anomalyLocked(id)).concat(slots.filter(anomalyLocked));
+    box.innerHTML = `<span class="anomaly-swap-head"><b>换掉哪一个？</b><span>${free < slots.length ? `能换的 ${free} 个 · ` : ''}点一下就换</span></span>` + order.map(anomalySwapOption).join('');
+  } else {
+    let tiles = '';
+    for (let i = 0; i < ANOMALY_RULES.slots; i++) tiles += anomalySlotTile(slots[i]);
+    box.innerHTML = `<span class="anomaly-slots-label">异常槽<span class="anomaly-slots-count">${slots.length}/${ANOMALY_RULES.slots}</span></span>${tiles}`;
   }
-  $('#anomalySlots').innerHTML = html + `<span class="anomaly-slots-count">${slots.length}/${ANOMALY_RULES.slots}</span>`;
-  $('#anomalySlots').classList.toggle('replacing', replacing);
+  box.classList.toggle('replacing', replacing);
+  $('#scrAnomaly').classList.toggle('anomaly-replacing', replacing);
 }
 function renderAnomalyChoice() {
-  const offer = G.anomaly.offer, full = G.anomaly.slots.length >= ANOMALY_RULES.slots;
-  $('#anomalySource').textContent = anomalyPending && full ? `槽满了 · 点上面一个旧芯片换成「${ANOMALIES[anomalyPending].name}」` : `${ANOMALY_SOURCE_NAMES[offer.source] || '异常信号'} · 拿一个，或者放弃`;
-  $('#anomalyCards').innerHTML = offer.choices.map(anomalyCardMarkup).join('');
-  $('#anomalySkip').textContent = anomalyPending && full ? '返 回' : '放 弃';
+  const offer = G.anomaly.offer, full = anomalyFull(), replacing = !!anomalyPending && full;
+  $('#anomalySource').textContent = replacing ? `槽满了 · 换上「${ANOMALIES[anomalyPending].name}」要拆掉一个旧芯片` : `${ANOMALY_SOURCE_NAMES[offer.source] || '异常信号'} · 拿一个，或者放弃`;
+  // 换芯片时只留选中的那张，下面接三个旧芯片的得失；「返回」回到两张都在
+  $('#anomalyCards').innerHTML = offer.choices.map((id, i) => replacing && id !== anomalyPending ? '' : anomalyCardMarkup(id, i)).join('');
+  $('#anomalySkip').textContent = replacing ? '返 回' : '放 弃';
   renderAnomalySlots();
+  $('#scrAnomaly .ol-inner').scrollTop = 0;
 }
 function openAnomalyChoice() {
   if (!beginAnomalyChoice()) return;
@@ -15464,7 +15574,9 @@ function pickAnomaly(id) {
   if (G?.state !== 'anomaly' || performance.now() < anomalyReadyAt || !G.anomaly.offer?.choices.includes(id)) return;
   SFX.click();
   if (G.anomaly.slots.length < ANOMALY_RULES.slots) { if (takeAnomaly(id)) closeAnomalyChoice(`异常芯片：${ANOMALIES[id].name}`); return; }
-  anomalyPending = anomalyPending === id ? null : id; renderAnomalyChoice();
+  anomalyPending = anomalyPending === id ? null : id;
+  if (anomalyPending) anomalyReadyAt = performance.now() + 300; // 换芯片的卡会出现在刚点的位置下面，挡掉连点误换
+  renderAnomalyChoice();
 }
 function replaceAnomaly(oldId) {
   if (G?.state !== 'anomaly' || !anomalyPending || performance.now() < anomalyReadyAt) return;
