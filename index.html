@@ -464,6 +464,8 @@ input.settings-control[type="range"]{width:100%;min-height:44px;margin:0;cursor:
 .end-cause-advice{margin:6px 0 0;font-size:13px;line-height:1.7;color:#e3dccb}
 .end-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 .end-stats .rec{display:table;margin:4px 0 0;vertical-align:0}
+.end-abyss-note{grid-column:1/-1;margin:0;padding:7px 10px;font-size:12px;line-height:1.65;color:#e2d2ff;background:#120f1c;border:1px solid #3a2d52}
+.end-abyss-note.reward{border-color:rgb(190,120,255);color:#f0e6ff}
 .end-more{margin-top:10px;font-size:13px;background:#0d131bd9;border:1px solid #2d3947}
 .end-more summary{padding:10px 14px;cursor:pointer;color:#d1dce6;touch-action:manipulation}
 .end-more summary:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px}
@@ -503,6 +505,9 @@ button.goal-line{cursor:pointer}
 .medal-row b{font-size:13px;font-weight:600}
 .medal{padding:6px 2px;font-size:12px;text-align:center;color:#6f7d89;background:#101720;border:1px solid #26323d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .medal.on{color:#1b1206;background:linear-gradient(180deg,#ffe08a,var(--gold));border-color:#ffe9a8}
+.medal-depth i{display:grid;place-items:center;width:32px;height:32px;box-sizing:border-box;font-style:normal;font-size:15px;font-weight:700;color:rgb(190,120,255);border:1px solid #3a2d52;background:#120f1c}
+.medal-depth .medal{grid-column:3/-1}
+.medal-depth .medal.on{color:#140a22;background:linear-gradient(180deg,#e2ccff,rgb(190,120,255));border-color:#eadcff}
 .ach-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
 .ach{padding:8px 10px;background:#101720;border:1px solid #26323d;opacity:.6}
 .ach.on{opacity:1;border-color:#8a7440;background:#1d1b12}
@@ -521,6 +526,22 @@ button.goal-line{cursor:pointer}
 .tier-choice.selected small{color:#d8c2ff}
 .tier-choice:disabled{cursor:default}
 .tier-choice.locked{opacity:.5}
+.tier-deep{grid-column:1/-1;display:grid;grid-template-columns:44px minmax(0,1fr) 44px minmax(0,1fr);gap:6px}
+.tier-step,.tier-deep-now,.tier-deep-max{display:grid;justify-items:center;align-content:center;gap:2px;min-height:52px;padding:7px 2px 5px;font:inherit;color:var(--fg);background:#120f1c;border:1px solid #3a2d52;cursor:pointer;touch-action:manipulation}
+.tier-step{font-size:16px;color:#d8c2ff}
+.tier-deep-now b,.tier-deep-max b{font-size:13px;font-weight:600}
+.tier-deep-now small,.tier-deep-max small{min-height:14px;font-size:10px;color:#9fb0bd}
+.tier-deep-now.selected,.tier-deep-max.selected{border-color:#b98cff;background:#1b1626}
+.tier-deep-now.selected small{color:#d8c2ff}
+.tier-step:disabled,.tier-deep-max:disabled,.tier-deep-now:disabled{cursor:default;opacity:.45}
+.tier-deep-max.selected:disabled{opacity:1}
+.tier-rules{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:-4px 0 12px}
+.tier-rules[hidden]{display:none}
+.tier-rules-head{font-size:11px;color:var(--muted);margin-right:2px}
+.tier-rule{padding:2px 7px;font-size:11px;line-height:1.5;color:#c9bde0;background:#151122;border:1px solid #33294a}
+.tier-rule.affix{color:#b9c4d6;border-color:#2b3446;background:#10151e}
+.tier-rule.newest{color:#140a22;background:rgb(190,120,255);border-color:rgb(190,120,255);font-weight:600}
+.tier-rules-note{flex-basis:100%;font-size:11px;line-height:1.55;color:#d8c2ff}
 .menu-stats em{font-style:normal}
 .daily-line{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:9px 12px;text-align:left;color:var(--fg);font:inherit;background:rgba(14,20,34,.86);border:1px solid #3d5a78;cursor:pointer;touch-action:manipulation}
 .daily-line .daily-text{display:grid;gap:1px;min-width:0}
@@ -533,6 +554,72 @@ button.goal-line{cursor:pointer}
 .daily-share{display:flex;gap:6px}
 .daily-share{align-items:stretch}
 .daily-share textarea{flex:1;min-width:0;padding:6px 8px;font:inherit;font-size:12px;line-height:1.5;color:#c9d6e0;background:#0b1117;border:1px solid #2c3a46;resize:none}
+/* ---------- 每周异变赛：主菜单入口、说明卡、暂停页一节、结算周分、勋章墙周章 ---------- */
+.weekly-line{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;margin-top:6px;padding:8px 12px;text-align:left;color:var(--fg);font:inherit;background:rgba(30,18,10,.86);border:1px solid #7a5232;cursor:pointer;touch-action:manipulation}
+.weekly-text{display:grid;gap:1px;min-width:0;flex:1}
+.weekly-text small{font-size:12px;color:#ffb36a}
+.weekly-text b{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.weekly-chips{display:flex;gap:4px;flex:none}
+.weekly-chips .weekly-chip-icon{width:30px;height:30px;font-size:15px}
+.weekly-note{font-size:12px;color:var(--gold);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.weekly-brief{display:grid;gap:4px;padding-bottom:6px}
+.weekly-week{margin:4px 0 6px;font-size:12px;color:var(--muted)}
+.weekly-rule{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;padding:12px;background:linear-gradient(90deg,rgba(255,150,60,.16),rgba(255,150,60,.03));border:1px solid #8a5a32}
+.weekly-rule small{font-size:12px;color:#ffb36a}
+.weekly-rule b{display:block;margin:1px 0 3px;font-family:var(--f-display);font-weight:400;font-size:22px;letter-spacing:.08em}
+.weekly-rule p{margin:0;font-size:13px;line-height:1.55;color:#e3d6c8}
+.weekly-rule-icon{display:grid;place-items:center;width:48px;height:48px;font-family:var(--f-display);font-size:26px;color:#1d1006;background:linear-gradient(180deg,#ffc27a,#ff8a2a)}
+.weekly-sec{margin:14px 0 6px;font-size:14px;font-weight:600;letter-spacing:.06em;color:var(--fg)}
+.weekly-loadout{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;padding:10px;background:var(--steel);border:1px solid var(--line)}
+.weekly-loadout b{font-size:14px;font-weight:600}
+.weekly-loadout p{margin:3px 0 0;font-size:12px;line-height:1.55;color:#c9d6e0}
+.weekly-warn{color:#ffb36a!important}
+.weekly-muted{margin:4px 0 0;font-size:12px;line-height:1.55;color:var(--muted)!important}
+.weekly-chip-list{display:grid;gap:6px}
+.weekly-chip{display:grid;grid-template-columns:30px minmax(0,1fr);gap:9px;align-items:start;padding:9px 10px;background:var(--steel);border:1px solid var(--line)}
+.weekly-chip .weekly-chip-icon{width:30px;height:30px;font-size:15px}
+.weekly-chip b{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:14px;font-weight:600}
+.weekly-chip em{font-style:normal;font-size:11px;font-weight:400;color:#ffb36a}
+.weekly-chip p{margin:3px 0 0;font-size:12px;line-height:1.5}
+.weekly-good{color:#bfe6c4}
+.weekly-cost{color:#f2a5a7}
+.weekly-route{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.weekly-act{display:grid;gap:2px;padding:8px 10px;background:var(--steel);border-left:3px solid #8a5a32}
+.weekly-act small{font-size:11px;color:var(--muted)}
+.weekly-act b{font-size:14px;font-weight:600}
+.weekly-act span{font-size:12px;line-height:1.5;color:#c9d6e0}
+.weekly-formula{margin:0;font-size:12px;line-height:1.6;color:#c9d6e0}
+.weekly-lines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:6px}
+.weekly-lines span{display:grid;justify-items:center;padding:7px 2px;font-family:var(--f-num);font-size:20px;font-weight:600;background:var(--steel);border:1px solid currentColor}
+.weekly-lines small{font-family:var(--f-body);font-size:11px;font-weight:400;color:var(--muted)}
+.weekly-medal-bronze{color:#e0a172}
+.weekly-medal-silver{color:#d4dee6}
+.weekly-medal-gold{color:var(--gold)}
+.weekly-medal-none{color:#7c8996}
+.weekly-best{margin:8px 0 0;font-size:13px;color:var(--fg)}
+.weekly-medal{display:inline-block;margin-left:6px;padding:1px 7px;font-size:12px;font-weight:600;border:1px solid currentColor}
+.weekly-pause{grid-column:1/-1;padding:10px 12px;background:#24170e;border:1px solid #7a5232;font-size:12px;line-height:1.6;color:#e3d6c8}
+.weekly-pause h3{margin:0 0 4px;font-size:14px;font-weight:600;color:#ffb36a}
+.weekly-pause p{margin:2px 0 0}
+.weekly-end{display:grid;gap:6px;margin-top:10px;padding:10px 12px;background:var(--steel);border:1px solid #7a5232}
+.weekly-end>small{font-size:12px;color:#ffb36a}
+.weekly-end-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:0}
+.weekly-total{font-family:var(--f-num);font-size:24px;font-weight:600;line-height:1}
+.weekly-rec{padding:1px 6px;font-size:11px;color:#1b1206;background:var(--gold)}
+.weekly-sub{flex-basis:100%;font-size:12px;line-height:1.5;color:#c9d6e0}
+.weekly-score{display:grid;gap:2px}
+.weekly-score-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed #2c3a46;font-size:13px}
+.weekly-score-row small{margin-left:6px;font-size:11px;color:var(--muted)}
+.weekly-score-row b{font-family:var(--f-num);font-size:16px;font-weight:600}
+.weekly-share{display:flex;gap:6px;align-items:stretch}
+.weekly-share textarea{flex:1;min-width:0;padding:6px 8px;font:inherit;font-size:12px;line-height:1.5;color:#c9d6e0;background:#0b1117;border:1px solid #2c3a46;resize:none}
+.weekly-medals{margin-top:28px;border-top:1px solid #344451;padding-top:3px}
+.weekly-medals .sec{margin-bottom:6px}
+.weekly-wall-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.weekly-cell{display:grid;justify-items:center;padding:5px 1px;background:#101720;border:1px solid #26323d}
+.weekly-cell small{font-family:var(--f-num);font-size:13px;color:var(--muted)}
+.weekly-cell b{font-size:12px;font-weight:600}
+.weekly-empty,.weekly-older{margin:6px 0 0;font-size:12px;line-height:1.6;color:var(--muted)}
 .skin-section .sec{margin:0 0 8px}
 .skin-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .skin-choice{display:grid;justify-items:center;gap:3px;min-height:72px;padding:8px 2px 6px;font:inherit;color:var(--fg);background:#101720;border:1px solid #26323d;cursor:pointer;touch-action:manipulation}
@@ -623,6 +710,7 @@ input.settings-control[type="range"]{min-width:0}
 .anomaly-slots{display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#c5d3dc;font-size:13px}
 .anomaly-slot{display:grid;place-items:center;width:40px;height:40px;box-sizing:border-box;padding:0;background:#0b1016;border:1px solid #3d4b57}
 .anomaly-slot.filled{border-color:#b996ff}.anomaly-slots.replacing .anomaly-slot.filled{border-color:#ff8fa3;box-shadow:0 0 0 2px rgba(255,120,150,.35);cursor:pointer}
+.anomaly-slots.replacing .anomaly-slot.filled.locked,.anomaly-slot.filled.locked{border-color:#ff9a4a;border-style:dashed;box-shadow:none;cursor:default;opacity:.75}
 .anomaly-icon{display:grid;place-items:center;width:44px;height:44px;box-sizing:border-box;border:1px solid rgb(var(--chip));color:rgb(var(--chip));background:rgba(var(--chip),.08);font-size:20px;font-weight:700}
 .anomaly-icon.small{width:30px;height:30px;font-size:15px;border:0;background:none}
 .anomaly-card{position:relative;grid-template-columns:52px minmax(0,1fr);min-height:118px;border-color:#5a4a78}
@@ -634,6 +722,9 @@ input.settings-control[type="range"]{min-width:0}
 .anomaly-card .anomaly-good{color:#b7ebad}.anomaly-card .anomaly-cost{color:#ffaaa8}.anomaly-card .ds b{font-weight:700;margin-right:2px}
 .anomaly-skip{min-height:48px;font-size:20px}
 .sheet-row.anomaly-row .anomaly-icon{width:28px;height:28px;font-size:14px}.sheet-row.anomaly-row .anomaly-cost{color:#f2a5a7}
+.sheet-row.abyss-row{color:rgb(190,120,255);border-color:#3a2d52;background:#120f1c}.sheet-row.abyss-row.newest{border-color:rgb(190,120,255)}
+.abyss-badge{display:grid;place-items:center;width:28px;height:28px;box-sizing:border-box;border:1px solid currentColor;font:600 12px var(--f-num);font-variant-numeric:tabular-nums}
+.sheet-main small.abyss-new{color:#d8c2ff}
 .anomaly-codex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .anomaly-codex-grid .mech-ability{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:start}
 .anomaly-codex-grid .anomaly-icon{width:30px;height:30px;font-size:15px}
@@ -703,6 +794,7 @@ input.settings-control[type="range"]{min-width:0}
       <button id="btnRookie" class="btn primary rookie-start" hidden>新兵训练 · 约 30 秒</button>
       <div class="menu-actions"><button id="btnStartAlt" class="btn" hidden>直接出击</button><button id="btnHangar" class="btn">机库改装</button><button id="btnTraining" class="btn ghost">安全训练</button></div>
       <button id="menuDaily" type="button" class="daily-line" hidden></button>
+      <button id="menuWeekly" type="button" class="weekly-line" hidden></button>
       <button id="menuGoal" type="button" class="goal-line" hidden></button>
       <p id="mFastest" class="menu-record">最快突围 · 等待首次胜利</p>
       <details class="howto-details"><summary>操作说明</summary><ul class="howto">
@@ -735,7 +827,7 @@ input.settings-control[type="range"]{min-width:0}
             <div id="cosmeticList"></div>
             <p id="cosmeticStatus" class="section-note" aria-live="polite"></p>
           </section>
-          <section class="tier-section" aria-labelledby="tierTitle"><h3 id="tierTitle" class="sec"><span>深渊层级</span></h3><div id="tierList" class="tier-list"></div><p id="tierStatus" class="section-note"></p></section>
+          <section class="tier-section" aria-labelledby="tierTitle"><h3 id="tierTitle" class="sec"><span>深渊层级</span></h3><div id="tierList" class="tier-list"></div><p id="tierStatus" class="section-note"></p><div id="tierRules" class="tier-rules" hidden></div></section>
           <section class="codex-section" aria-labelledby="codexTitle" hidden><h3 id="codexTitle" class="sec"><span>图鉴</span></h3><div id="zoneCodex"></div><div id="anomalyCodex"></div></section>
         </div>
         <div class="hangar-specification">
@@ -751,7 +843,7 @@ input.settings-control[type="range"]{min-width:0}
       </div>
       <section class="bounty-section" aria-labelledby="bountyTitle"><p id="bountyConfig" class="bounty-config"></p><h3 id="bountyTitle" class="sec"><span>出击悬赏</span></h3><p id="bountyHelp" class="section-note"></p><div id="bountyList" class="bounty-list"></div><div id="bountyStakes" class="bounty-stakes" role="group" aria-label="选择悬赏押金"></div><p id="bountyStatus" class="bounty-status" aria-live="polite"></p></section>
       <section class="permanent-section" aria-labelledby="upgradeTitle"><h3 id="upgradeTitle" class="sec"><span>永久改装</span></h3><p class="section-note">所有已解锁机体共享</p><div id="upList" class="up-list"></div></section>
-      <section class="achievement-section" aria-labelledby="achTitle"><h3 id="achTitle" class="sec"><span>勋章与成就</span><b id="achCount" class="ach-count"></b></h3><p class="section-note">协议勋章：用这个协议突围一次点亮</p><div id="medalWall" class="medal-wall"></div><section class="bounty-medals" aria-labelledby="bountyMedalTitle"><h4 id="bountyMedalTitle" class="sec"><span>悬赏勋章</span><b id="bountyMedalCount" class="ach-count"></b></h4><p class="section-note">每台机甲首次完成对应悬赏时点亮。</p><div id="bountyMedalWall"></div></section><div id="achList" class="ach-list"></div></section>
+      <section class="achievement-section" aria-labelledby="achTitle"><h3 id="achTitle" class="sec"><span>勋章与成就</span><b id="achCount" class="ach-count"></b></h3><p class="section-note">协议勋章：用这个协议突围一次点亮</p><div id="medalWall" class="medal-wall"></div><section class="bounty-medals" aria-labelledby="bountyMedalTitle"><h4 id="bountyMedalTitle" class="sec"><span>悬赏勋章</span><b id="bountyMedalCount" class="ach-count"></b></h4><p class="section-note">每台机甲首次完成对应悬赏时点亮。</p><div id="bountyMedalWall"></div></section><section class="weekly-medals" aria-labelledby="weeklyMedalTitle"><h4 id="weeklyMedalTitle" class="sec"><span>周赛</span><b id="weeklyMedalCount" class="ach-count"></b></h4><p class="section-note">每周异变赛拿到的周章：最近 12 周按周列出，更早的只记总数。</p><div id="weeklyWall" class="weekly-wall"></div></section><div id="achList" class="ach-list"></div></section>
     </div></div>
     <footer class="foot"><div class="hangar-launch"><div class="hangar-launch-copy"><p id="hgLaunchLabel"></p><p id="hgBountyLaunch" hidden></p></div><button id="hgStart" class="btn primary">出击</button></div></footer>
   </section>
@@ -857,6 +949,12 @@ input.settings-control[type="range"]{min-width:0}
     </div>
   </section>
 
+  <section id="scrWeekly" class="screen panel-screen" hidden aria-labelledby="weeklyTitle">
+    <header class="bar"><button id="weeklyBack" class="chip">返回</button><h2 id="weeklyTitle">每周异变赛</h2><div class="coins">金币<b id="weeklyCoins">0</b></div></header>
+    <div class="scroll"><div class="scroll-in"><div id="weeklyBrief" class="weekly-brief"></div></div></div>
+    <footer class="foot"><div class="btn-col"><button id="weeklyGo" class="btn primary">出 击</button></div></footer>
+  </section>
+
   <section id="scrPause" class="screen panel-screen" hidden>
     <header class="bar"><h2>暂停</h2><div class="coins">本局金币<b id="psCoins">0</b></div></header>
     <div class="scroll"><div class="scroll-in">
@@ -880,6 +978,7 @@ input.settings-control[type="range"]{min-width:0}
       <div id="endStats" class="stats end-stats"></div>
       <div id="endGoal" class="end-goal" hidden><div id="endGoalLine" class="goal-line"></div><button id="endGoalGo" type="button" class="chip goal-chip" hidden>去解锁</button></div>
       <div id="endDaily" class="end-daily" hidden><small>每日挑战</small><p id="endDailyLine"></p><div class="daily-share"><textarea id="endDailyShare" rows="2" readonly aria-label="可复制的战绩"></textarea><button id="endDailyCopy" type="button" class="chip">复制战绩</button></div></div>
+      <div id="endWeekly" class="weekly-end" hidden><small>每周异变赛</small><p id="endWeeklyLine" class="weekly-end-line"></p><div id="endWeeklyRows" class="weekly-score"></div><div class="weekly-share"><textarea id="endWeeklyShare" rows="2" readonly aria-label="可复制的周赛战绩"></textarea><button id="endWeeklyCopy" type="button" class="chip">复制战绩</button></div></div>
       <div id="endAch" class="end-ach" hidden><small>新成就</small><div id="endAchList" class="ach-chips"></div></div>
       <details id="endMore" class="end-more"><summary>更多数据</summary><div id="endMoreStats" class="stats"></div></details>
       <section class="report-section" aria-labelledby="endReportTitle"><h3 id="endReportTitle" class="sec"><span>战斗复盘</span></h3><div id="endDamage" class="damage-report"></div><p id="endDamageNote" class="section-note"></p><dl id="endInjuries" class="injury-report"></dl></section>
@@ -1009,12 +1108,20 @@ const COSMETICS = [
   { id: 'kill:pixel', type: 'killFx', name: '像素碎裂', cost: 1500, color: '116,244,182' },
   { id: 'kill:plasma', type: 'killFx', name: '电浆环', cost: 1500, color: '164,144,255' },
 ];
-const cosmeticById = id => COSMETICS.find(item => item.id === id);
+// 深渊外观：第一次通关深渊 abyss 层送（发放见 data/abyss.js 的 ABYSS_REWARDS 和 game/persistence.js），不进金币商店；颜色用深渊紫
+const ABYSS_SKIN = { name: '深渊之主', abyss: 30, h: 272, s: .62, l: .24, panel: [190, 120, 255], panelK: .6, glow: { h: 272, s: .95, l: .72 } };
+const ABYSS_COSMETICS = [
+  ...['assault', 'heavy', 'phantom', 'storm', 'lancer', 'engineer'].map(mech => ({ id: `skin:${mech}:abyss`, type: 'skin', mech, ...ABYSS_SKIN, glow: { ...ABYSS_SKIN.glow } })),
+  { id: 'trail:abyss', type: 'trail', name: '渊火', abyss: 15, color: '190,120,255' },
+  { id: 'kill:abyss', type: 'killFx', name: '渊裂', abyss: 20, color: '190,120,255' },
+];
+const ALL_COSMETICS = [...COSMETICS, ...ABYSS_COSMETICS];
+const cosmeticById = id => ALL_COSMETICS.find(item => item.id === id);
 const cosmeticOwned = (source, id) => !!cosmeticById(id) && Object.hasOwn(source?.cosmetics?.owned || {}, id) && source.cosmetics.owned[id] === true;
 function normalizeCosmetics(value) {
   const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
   const ownedSource = source.owned && typeof source.owned === 'object' && !Array.isArray(source.owned) ? source.owned : {};
-  const owned = Object.fromEntries(COSMETICS.filter(item => Object.hasOwn(ownedSource, item.id) && ownedSource[item.id] === true).map(item => [item.id, true]));
+  const owned = Object.fromEntries(ALL_COSMETICS.filter(item => Object.hasOwn(ownedSource, item.id) && ownedSource[item.id] === true).map(item => [item.id, true]));
   const selected = (type, id) => typeof id === 'string' && owned[id] === true && cosmeticById(id)?.type === type ? id : '';
   return { owned, trail: selected('trail', source.trail), killFx: selected('killFx', source.killFx) };
 }
@@ -1164,6 +1271,130 @@ function normalizeSettingsSnapshot(value, reducedMotion = false) {
   return normalized;
 }
 
+// ---- src/data/abyss.js ----
+// 深渊无底：总开关、层级倍率参数、6～10 层固定规则、11 层起按固定顺序叠加的深渊词条、深渊外观奖励；只放数据和纯函数
+// 规则从它那层起一直生效（深渊 8 有 6、7、8 三条）；第 11 层拿第 1 条词条、第 12 层再加第 2 条……前面的保留，16 条叠满以后每层只涨倍率。
+const ABYSS_RULES = Object.freeze({
+  enabled: true, // 关掉即回到深渊 10 封顶、没有规则和词条、通关不看虫皇的旧版（同种子同机甲的模拟和改动前逐字段一致）
+  ruleFrom: 6, affixFrom: 11, gateTier: 10, // gateTier 起只有打败虫皇才记通关、解锁下一层
+  // tierMods：1～5 层照旧；6～10 层敌人、首领血量每层加多少（有规则了，比原来的 +12% / +15% 低）；11 层起每层加多少；结算金币封顶
+  tierStep: Object.freeze({ enemyHp: .09, bossHp: .12 }),
+  deepStep: Object.freeze({ enemyHp: .04, bossHp: .05, dmgTaken: .02, coins: .05 }), coinsCap: 3,
+  // 虫皇在深渊 10 起的血量再乘这个数（整只虫皇打折，不只打深渊倍率那部分）
+  emperorHpMul: .75,
+  // 深渊毒圈（精英前压留下的、毒地词条冒出的）：预告结束后每 tick 秒判一次，站在圈里挨 damage 点（再乘受到伤害倍率）
+  pool: Object.freeze({ warn: 1, tick: 1, damage: 6, cap: 8 }),
+  fastestCap: 30, // 各层最快突围只记到 30 层，防存档膨胀
+  color: '190,120,255',
+});
+
+// 6～10 层的固定规则
+const ABYSS_TIER_RULES = Object.freeze([
+  Object.freeze({ tier: 6, id: 'formations', name: '编队全开', text: '三种敌军编队都会出现，第一幕 40 秒起就排轻量编队', picks: 3, lightFrom: 40 }),
+  Object.freeze({ tier: 7, id: 'elites', name: '精英前压', text: '词缀精英提前到 2:00 起出现，同屏多 1 只；精英死后留下毒圈', from: 120, capAdd: 1, poolR: 70, poolLife: 4 }),
+  Object.freeze({ tier: 8, id: 'bossRage', name: '首领狂暴', text: '首领血量低于 30% 进狂暴：移速 +20%，出招间隔 ×0.8（虫皇不吃）', hpBelow: .3, speed: 1.2, tempo: 1.25 }),
+  Object.freeze({ tier: 9, id: 'longNight', name: '长夜', text: '黑潮夜袭必定出现一次，夜晚持续 65 秒', maxDuration: 65 }),
+  Object.freeze({ tier: 10, id: 'emperor', name: '虫皇降临', text: '狂怒母巢倒下后虫皇必定登场，打败虫皇才算通关' }),
+]);
+
+// 11 层起的深渊词条，轻的在前；顺序就是叠加顺序，所有人的「深渊 13」都一样
+// 顺序按深渊 11 单开一条的模拟排（六机 × 939202）：每分钟受伤 − 3 ×（突围局数 − 2），取整后小的在前，一样的按计划原顺序；见计划线一「进度与结论」
+const ABYSS_AFFIXES = Object.freeze([
+  Object.freeze({ id: 'swarmSpeed', name: '虫群加速', text: '普通敌人移速 +10%', speed: 1.1 }),
+  Object.freeze({ id: 'split', name: '裂变', text: '爬虫死时 25% 分裂成两只小爬虫', chance: .25, count: 2, size: .72, hp: .4 }),
+  Object.freeze({ id: 'hardShell', name: '硬壳', text: '重甲虫和精英受到伤害 −15%', damage: .85 }),
+  Object.freeze({ id: 'surge', name: '狂潮', text: '同屏刷怪上限 +15%', cap: 1.15 }),
+  Object.freeze({ id: 'bossGuard', name: '首领护卫', text: '每只首领登场时带 2 只精英', count: 2 }),
+  Object.freeze({ id: 'dashLag', name: '冲刺迟滞', text: '冲刺冷却 +20%', cd: 1.2 }),
+  Object.freeze({ id: 'overloadSlow', name: '超载迟缓', text: '超载充能 −15%', mul: .85 }),
+  Object.freeze({ id: 'twoChoice', name: '二选一', text: '升级三选一变二选一（刷新次数不变）', count: 2 }),
+  Object.freeze({ id: 'eliteRegen', name: '精英再生', text: '精英 5 秒没挨打，每秒回 2% 最大生命', delay: 5, rate: .02 }),
+  Object.freeze({ id: 'blackTide', name: '黑潮', text: '第三幕每 60 秒一波小虫潮', interval: 60, count: 18 }),
+  Object.freeze({ id: 'healDelay', name: '血包延迟', text: '治疗包落地 1.5 秒后才能捡', delay: 1.5 }),
+  Object.freeze({ id: 'weakNarrow', name: '破绽收窄', text: '首领破绽时长 −30%', mul: .7 }),
+  Object.freeze({ id: 'toxicGround', name: '毒地', text: '每 30 秒在你附近冒一片毒圈（1 秒预告），持续 8 秒', interval: 30, r: 90, life: 8, near: 140 }),
+  Object.freeze({ id: 'xpTax', name: '回收税', text: '经验球 10 秒没捡就消失', life: 10 }),
+  Object.freeze({ id: 'mortarVolley', name: '迫击齐射', text: '迫击虫刷新间隔减半，同屏多 1 只', interval: .5, capAdd: 1 }),
+  Object.freeze({ id: 'bulletRain', name: '弹雨', text: '敌弹速度 +20%', speed: 1.2 }),
+]);
+
+// 深渊外观：第一次通关第 tier 层送，不进商店（商店里写「通关深渊 N 解锁」）
+const ABYSS_REWARDS = Object.freeze([
+  Object.freeze({ tier: 15, ids: Object.freeze(['trail:abyss']), name: '冲刺拖尾「渊火」' }),
+  Object.freeze({ tier: 20, ids: Object.freeze(['kill:abyss']), name: '击杀特效「渊裂」' }),
+  Object.freeze({ tier: 30, ids: Object.freeze(['assault', 'heavy', 'phantom', 'storm', 'lancer', 'engineer'].map(mech => `skin:${mech}:abyss`)), name: '涂装「深渊之主」（六台机体各一套）' }),
+]);
+
+const abyssDefs = () => [...ABYSS_TIER_RULES.map(d => ({ ...d, kind: 'rule' })), ...ABYSS_AFFIXES.map((d, i) => ({ ...d, kind: 'affix', tier: ABYSS_RULES.affixFrom + i }))];
+// 第 tier 层生效的全部规则和词条（按生效层排好）；总开关关着时为空
+function abyssRuleList(tier) {
+  if (!ABYSS_RULES.enabled || !Number.isInteger(tier) || tier < ABYSS_RULES.ruleFrom) return [];
+  return abyssDefs().filter(d => d.tier <= tier);
+}
+// 这一层新加的那一条（规则或词条）；16 条词条叠满以后没有新的，返回 null
+function abyssNewest(tier) {
+  return abyssRuleList(tier).find(d => d.tier === tier) || null;
+}
+// 这一层起要打败虫皇才算通关
+const abyssEmperorGate = tier => ABYSS_RULES.enabled && Number.isInteger(tier) && tier >= ABYSS_RULES.gateTier;
+// 这一局记不记通关：突围，并且（不到虫皇关口，或打败了虫皇）
+const abyssClearCounts = (tier, won, emperorDefeated) => !!won && (!abyssEmperorGate(tier) || emperorDefeated === true);
+
+// ---- src/data/tiers.js ----
+// 深渊层级：全账号共享解锁与出击选择；按机体保留最高通关战绩，每层叠加倍率（6 层起另有规则和词条，见 data/abyss.js）
+
+// 存档、快照、悬赏合同校验用的层级上限（实际等于不封顶）；深渊总开关关着时可选层仍到 10 为止
+const TIER_CAP = 99;
+const TIER_OLD_MAX = 10;
+const tierLimit = () => ABYSS_RULES.enabled ? TIER_CAP : TIER_OLD_MAX;
+// 第 L 层的倍率（L=0 为普通，全是 1）；数值用 simulate-balance.mjs --tier 校准，记录见 iron-rampage-plan.md 和 abyss-weekly-plan.md 的平衡记录
+// 1～5 层和原来逐位相同；6～10 层血量每层加得少一点（这几层有规则了）；11 层起每层只加一点血和受伤，刷怪、治疗不再变，金币封顶
+function tierMods(L) {
+  if (!ABYSS_RULES.enabled) return { enemyHp: 1 + .12 * L, bossHp: 1 + .15 * L, dmgTaken: 1 + .08 * L, spawn: 1 + .05 * L, heal: Math.max(.2, 1 - .08 * L), coins: 1 + .15 * L };
+  const low = Math.min(L, 5), mid = Math.max(0, Math.min(L, TIER_OLD_MAX) - 5), deep = Math.max(0, L - TIER_OLD_MAX), top = Math.min(L, TIER_OLD_MAX);
+  const step = ABYSS_RULES.tierStep, more = ABYSS_RULES.deepStep;
+  return {
+    enemyHp: 1 + .12 * low + step.enemyHp * mid + more.enemyHp * deep, bossHp: 1 + .15 * low + step.bossHp * mid + more.bossHp * deep,
+    dmgTaken: 1 + .08 * top + more.dmgTaken * deep, spawn: 1 + .05 * top, heal: Math.max(.2, 1 - .08 * top),
+    coins: Math.min(Math.max(1 + .15 * top, ABYSS_RULES.coinsCap), 1 + .15 * top + more.coins * deep),
+  };
+}
+const tierName = L => L > 0 ? `深渊 ${L}` : '普通';
+const tierPct = (label, k) => `${label} ${k >= 1 ? '+' : '-'}${Math.round(Math.abs(k - 1) * 100)}%`;
+// 只列倍率
+function tierModsOnlyText(L) {
+  if (!L) return '标准难度，没有额外加成';
+  const m = tierMods(L);
+  return [tierPct('敌人血量', m.enemyHp), tierPct('首领血量', m.bossHp), tierPct('受到伤害', m.dmgTaken), tierPct('刷怪', m.spawn), tierPct('治疗掉率', m.heal), tierPct('结算金币', m.coins)].join(' · ');
+}
+// 倍率后面接本层生效的规则和词条（6 层起才有）
+function tierModsText(L) {
+  const rules = abyssRuleList(L);
+  return tierModsOnlyText(L) + (rules.length ? `；规则：${rules.map(d => d.name).join('、')}` : '');
+}
+// 出击横幅用：本层新加的那条规则或词条的名字
+const tierNewestName = L => abyssNewest(L)?.name || '';
+const tierValid = v => Number.isInteger(v) && v >= 0;
+// 这台机体的最高通关层，-1 表示还没突围过；D3 起按机体记过突围的视为通关普通层
+function tierCleared(meta, mechId) {
+  const v = meta.tierClear?.[mechId];
+  return Math.max(tierValid(v) ? Math.min(tierLimit(), v) : -1, meta.mechStats?.[mechId]?.wins > 0 ? 0 : -1);
+}
+const tierMaxSelectable = meta => Math.min(tierLimit(), bestTierCleared(meta) + 1);
+// 出击用的层级：存的选择超过可选上限时按上限算
+function selectedTier(meta) {
+  const v = meta.tierPick;
+  return Number.isInteger(v) && v > 0 ? Math.min(v, tierMaxSelectable(meta)) : 0;
+}
+// 所有机体里最高的通关层，-1 表示还没突围过
+const bestTierCleared = meta => Math.max(-1, ...Object.keys({ ...meta.tierClear, ...meta.mechStats }).map(id => tierCleared(meta, id)));
+
+// 并列时取调用方列表中靠前的机体；没有突围记录时不显示机体。
+function bestTierMech(meta, mechIds) {
+  const best = bestTierCleared(meta);
+  return best < 0 ? undefined : mechIds.find(id => tierCleared(meta, id) === best);
+}
+
 // ---- src/data/bounties.js ----
 // 出击悬赏的数据、固定批次抽选、合同校验与只读达成判定
 const BOUNTY_STAKES = [200, 500, 1000];
@@ -1191,21 +1422,21 @@ function bountyOffers(runs) {
 }
 function bountyMultiplier(id, tier = 0) {
   const def = bountyById(id); if (!def) return 0;
-  const level = Number.isInteger(tier) ? Math.max(0, Math.min(10, tier)) : 0;
-  // 普通层和深渊三层分别校准；中间线性插值，更高层暂沿用三层倍率。
+  const level = Number.isInteger(tier) ? Math.max(0, Math.min(TIER_OLD_MAX, tier)) : 0;
+  // 普通层和深渊三层分别校准；中间线性插值，更高层暂沿用三层倍率；按 min(10, 层级) 算，深渊 10 以上不再涨。
   return Math.max(BOUNTY_MIN_MULTIPLIER, Math.round((def.multipliers[0] + (def.multipliers[3] - def.multipliers[0]) * Math.min(3, level) / 3) * 100) / 100);
 }
 function normalizeBountyContract(value, runId) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   if (typeof value.runId !== 'string' || !value.runId || value.runId.length > 200 || ['__proto__', 'constructor', 'prototype'].includes(value.runId) || (runId !== undefined && value.runId !== runId)) return null;
-  if (!bountyById(value.id) || !BOUNTY_STAKES.includes(value.stake) || !Number.isInteger(value.tier) || value.tier < 0 || value.tier > 10 || !['assault', 'heavy', 'phantom', 'storm', 'lancer', 'engineer'].includes(value.mech)) return null;
+  if (!bountyById(value.id) || !BOUNTY_STAKES.includes(value.stake) || !Number.isInteger(value.tier) || value.tier < 0 || value.tier > TIER_CAP || !['assault', 'heavy', 'phantom', 'storm', 'lancer', 'engineer'].includes(value.mech)) return null;
   const contract = { runId: value.runId, id: value.id, stake: value.stake, tier: value.tier, mech: value.mech, met: value.met === true };
   // 扣押时锁定报价；之后调倍率不会抹掉历史收据，也不会改掉恢复快照的承诺返还。
   if (Number.isSafeInteger(value.lockedReturn) && value.lockedReturn >= 0) contract.lockedReturn = value.lockedReturn;
   return contract;
 }
 function bountyReturn(contract) {
-  return contract && bountyById(contract.id) && BOUNTY_STAKES.includes(contract.stake) && Number.isInteger(contract.tier) && contract.tier >= 0 && contract.tier <= 10
+  return contract && bountyById(contract.id) && BOUNTY_STAKES.includes(contract.stake) && Number.isInteger(contract.tier) && contract.tier >= 0 && contract.tier <= TIER_CAP
     ? Number.isSafeInteger(contract.lockedReturn) && contract.lockedReturn >= 0 ? contract.lockedReturn : Math.floor(contract.stake * bountyMultiplier(contract.id, contract.tier)) : 0;
 }
 function evaluateBounty(id, metrics, win = false) {
@@ -1235,10 +1466,26 @@ function saveCopy(value) { return value === undefined ? undefined : JSON.parse(J
 function saveEqual(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 function saveEntries(value, keep) { return Object.fromEntries(Object.entries(saveRecord(value)).filter(([, v]) => keep(v))); }
 const saveCount = v => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : 0);
+// 深渊层级：非负整数，超过存档上限 TIER_CAP 的夹到上限；各层最快突围只留到 30 层
+const saveTier = v => Math.min(TIER_CAP, v);
+function saveTierEntries(value) { return Object.fromEntries(Object.entries(saveEntries(value, v => Number.isInteger(v) && v >= 0)).map(([id, v]) => [id, saveTier(v)])); }
+function saveTierFastest(value) {
+  return saveEntries(Object.fromEntries(Object.entries(saveRecord(value)).filter(([tier]) => /^\d+$/.test(tier) && Number(tier) <= ABYSS_RULES.fastestCap)), v => typeof v === 'number' && Number.isFinite(v) && v > 0);
+}
 // 每日挑战纪录：date 是 YYYY-MM-DD，其余字段坏值按 0 / false
 function normalizeDaily(value) {
   const d = saveRecord(value);
   return { date: typeof d.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.date) ? d.date : '', bestT: saveCount(d.bestT), kills: saveCount(d.kills), win: d.win === true, rewarded: d.rewarded === true };
+}
+// 每周异变赛纪录：key 是 ISO 周（2026-W45），best 本周最高周分，medal 0～3；history 只留最近 12 周，更早的累加进 totals
+const saveWeekKey = v => typeof v === 'string' && /^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/.test(v);
+const saveMedal = v => (Number.isInteger(v) && v >= 0 && v <= 3 ? v : 0);
+function normalizeWeekly(value) {
+  const w = saveRecord(value), totals = saveRecord(w.totals), history = {};
+  for (const [key, medal] of Object.entries(saveRecord(w.history))) if (saveWeekKey(key)) history[key] = saveMedal(medal);
+  const key = saveWeekKey(w.key) ? w.key : '';
+  return { key, best: key ? Math.floor(saveCount(w.best)) : 0, medal: key ? saveMedal(w.medal) : 0, rewarded: !!key && w.rewarded === true, history,
+    totals: { bronze: Math.floor(saveCount(totals.bronze)), silver: Math.floor(saveCount(totals.silver)), gold: Math.floor(saveCount(totals.gold)) } };
 }
 // 存档代号：恢复备份时换新。旧存档没有这个字段，按空串处理。
 function saveEpochOf(snapshot) { return typeof snapshot?.saveEpoch === 'string' ? snapshot.saveEpoch : ''; }
@@ -1278,13 +1525,13 @@ function saveBountyReceipt(value, contract) {
 // 旧档沿用当时装备机体的选择；显式坏值回落普通层，不复活旧选择。
 function saveLegacyTierPick(source) {
   const v = Object.hasOwn(source, 'tierPick') ? source.tierPick : saveRecord(source.tierSel)[source.sel || 'assault'];
-  return Number.isInteger(v) && v >= 0 ? v : 0;
+  return Number.isInteger(v) && v >= 0 ? saveTier(v) : 0;
 }
 function normalizeMeta(source) {
   source = saveRecord(source);
   let reducedMotion = false;
   try { reducedMotion = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; } catch (_) { }
-  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {}, goal: '', achievements: {}, mechStats: {}, skins: {}, startWeapon: {}, tierClear: {}, tierSel: {}, tierPick: 0, tierFastest: {}, hints: {}, zoneCodex: {}, anomalyCodex: {}, daily: { date: '', bestT: 0, kills: 0, win: false, rewarded: false } };
+  const d = { coins: 0, unlocked: { assault: true }, sel: 'assault', up: {}, best: 0, bestKills: 0, wins: 0, runs: 0, sound: true, tutorial: false, fastestWin: 0, talents: {}, goal: '', achievements: {}, mechStats: {}, skins: {}, startWeapon: {}, tierClear: {}, tierSel: {}, tierPick: 0, tierFastest: {}, hints: {}, zoneCodex: {}, anomalyCodex: {}, daily: { date: '', bestT: 0, kills: 0, win: false, rewarded: false }, abyssRewards: {}, weekly: normalizeWeekly({}) };
   const settings = normalizeSettingsSnapshot(source.settings, reducedMotion);
   // 仅旧格式的总静音映射为双通道静音；新格式以已保存的独立音量为准。
   if (!Object.keys(saveRecord(source.settings)).length && source.sound === false) { settings.musicVolume = 0; settings.sfxVolume = 0; }
@@ -1308,11 +1555,14 @@ function normalizeMeta(source) {
     skins: Object.fromEntries(Object.entries(saveRecord(source.skins)).filter(([, v]) => typeof v === 'string')),
     startWeapon: Object.fromEntries(Object.entries(saveRecord(source.startWeapon)).filter(([, v]) => typeof v === 'string')),
     cosmetics: normalizeCosmetics(source.cosmetics),
-    // 深渊层级：通关层和所选层是非负整数，各层最快突围是正数；坏值丢弃
-    tierClear: saveEntries(source.tierClear, v => Number.isInteger(v) && v >= 0), tierSel: saveEntries(source.tierSel, v => Number.isInteger(v) && v >= 0),
+    // 深渊层级：通关层和所选层是非负整数（夹到 TIER_CAP），各层最快突围是正数（只留 30 层以内）；坏值丢弃
+    tierClear: saveTierEntries(source.tierClear), tierSel: saveTierEntries(source.tierSel),
     tierPick: saveLegacyTierPick(source),
-    tierFastest: saveEntries(source.tierFastest, v => typeof v === 'number' && Number.isFinite(v) && v > 0),
+    tierFastest: saveTierFastest(source.tierFastest),
+    // 深渊外观：已领的外观 id → 领取时间；旧存档没有就是空对象
+    abyssRewards: saveEntries(source.abyssRewards, v => typeof v === 'number' && Number.isFinite(v) && v > 0),
     daily: normalizeDaily(source.daily),
+    weekly: normalizeWeekly(source.weekly),
     // 一次性玩法提示（如第一次遇到毒蝎的绕后提示）：记录对象，旧存档没有就是空对象
     hints: { ...saveRecord(source.hints) },
     // 图鉴：战区（线一，id → { seen, wins, rewarded }）与异常芯片（线四，id → { seen, picks }）；旧存档为空对象
@@ -1443,11 +1693,25 @@ function mergeMetaSnapshots(base, local, fresh) {
   for (const [id, v] of Object.entries(saveRecord(local.tierClear))) if (Number.isInteger(v) && !(merged.tierClear[id] >= v)) merged.tierClear[id] = v;
   merged.tierFastest = { ...saveRecord(fresh.tierFastest) };
   for (const [tier, v] of Object.entries(saveRecord(local.tierFastest))) { const f = merged.tierFastest[tier]; if (v > 0 && !(f > 0 && f <= v)) merged.tierFastest[tier] = v; }
+  // 深渊外观的领取记录取并集，两边都有时留先领的时间
+  merged.abyssRewards = { ...saveRecord(fresh.abyssRewards) };
+  for (const [id, v] of Object.entries(saveRecord(local.abyssRewards))) if (v > 0 && !(merged.abyssRewards[id] > 0 && merged.abyssRewards[id] <= v)) merged.abyssRewards[id] = v;
   // 每日挑战：本页改过才合并；日期新的优先，同一天取更好的纪录，奖励标记取或（不会重复发奖）
   if (!saveEqual(local.daily, base.daily)) {
     const l = normalizeDaily(local.daily), f = normalizeDaily(fresh.daily);
     merged.daily = l.date !== f.date ? (l.date > f.date ? l : f)
       : { date: f.date, bestT: Math.max(l.bestT, f.bestT), kills: Math.max(l.kills, f.kills), win: l.win || f.win, rewarded: l.rewarded || f.rewarded };
+  }
+  // 每周异变赛：本页改过才合并；周新的优先，同一周取更高的分和章，奖励标记取或；历史每周取更好的章，总数取大
+  if (!saveEqual(local.weekly, base.weekly)) {
+    const l = normalizeWeekly(local.weekly), f = normalizeWeekly(fresh.weekly), history = { ...f.history };
+    for (const [key, medal] of Object.entries(l.history)) history[key] = Math.max(history[key] || 0, medal);
+    const older = l.key !== f.key ? (l.key > f.key ? f : l) : null; // 两页停在不同的周：旧的那周的章也进历史
+    if (older?.key) history[older.key] = Math.max(history[older.key] || 0, older.medal);
+    const week = older ? (older === f ? l : f) : { ...f, best: Math.max(l.best, f.best), medal: Math.max(l.medal, f.medal), rewarded: l.rewarded || f.rewarded };
+    // 历史照样只留最近 12 周（同 WEEKLY_RULES.historyWeeks）：挤出去的周已由结算那页算进它的总数，这里取两边总数的大者
+    const recent = Object.keys(history).sort().slice(-12);
+    merged.weekly = { ...week, history: Object.fromEntries(recent.map(key => [key, history[key]])), totals: Object.fromEntries(['bronze', 'silver', 'gold'].map(k => [k, Math.max(l.totals[k], f.totals[k])])) };
   }
   merged.unlocked = { ...saveRecord(fresh.unlocked) };
   for (const [key, value] of Object.entries(saveRecord(local.unlocked))) {
@@ -1573,6 +1837,7 @@ function purchaseCosmetic(id, expectedEpoch = saveEpochOf(saveBaseline)) {
         const selected = selectCosmetic(item.type, id);
         return selected.ok ? { ok: true, reason: 'owned', item } : selected;
       }
+      if (item.abyss) return { ok: false, reason: 'abyss' }; // 深渊外观只能通关深渊拿，不能用金币买
       if (meta.coins < item.cost) return { ok: false, reason: 'coins' };
       const before = saveCopy(meta);
       meta.coins -= item.cost; meta.cosmetics.owned[id] = true;
@@ -1687,6 +1952,12 @@ function dashCosmeticSilhouette(im, style) {
   } else if (style.shape === 'shadow') {
     x.globalCompositeOperation = 'destination-out';
     for (let i = 0; i < 4; i++) x.fillRect(0, height * (.25 + i * .15), width, Math.max(1, height * .025));
+  } else if (style.shape === 'abyss') {
+    // 渊火：四条紫色火舌往下拖，身上挖两道暗缝
+    x.fillStyle = `rgba(${style.color},.75)`;
+    for (let i = 0; i < 4; i++) { const a = width * (.24 + i * .17), b = height * (.6 - i % 2 * .1); x.beginPath(); x.moveTo(a - width * .06, b); x.lineTo(a + width * .01, height * .98); x.lineTo(a + width * .06, b); x.closePath(); x.fill(); }
+    x.globalCompositeOperation = 'destination-out';
+    for (let i = 0; i < 2; i++) x.fillRect(0, height * (.32 + i * .2), width, Math.max(1, height * .02));
   }
   return c;
 }
@@ -2351,6 +2622,7 @@ const DASH_COSMETIC_STYLES = Object.freeze({
   'trail:lightning': Object.freeze({ color: '126,211,255', shape: 'lightning' }),
   'trail:sakura': Object.freeze({ color: '245,153,192', shape: 'sakura' }),
   'trail:shadow': Object.freeze({ color: '139,116,188', shape: 'shadow' }),
+  'trail:abyss': Object.freeze({ color: '190,120,255', shape: 'abyss' }),
 });
 const DASH_DEFAULT_STYLE = Object.freeze({ id: '', shape: 'factory', step: 2, alpha: .32, blend: 'lighter' });
 function dashTrailStyle(mech, snapshot = {}, settings = {}, budget = {}, reducedMotion = false) {
@@ -2363,6 +2635,7 @@ const KILL_COSMETIC_STYLES = Object.freeze({
   'kill:gold': Object.freeze({ kind: 'cosmeticGold', color: '235,184,76' }),
   'kill:pixel': Object.freeze({ kind: 'cosmeticPixel', color: '150,225,209' }),
   'kill:plasma': Object.freeze({ kind: 'cosmeticPlasma', color: '150,180,240' }),
+  'kill:abyss': Object.freeze({ kind: 'cosmeticAbyss', color: '190,120,255' }),
 });
 function killFxStyle(snapshot = {}, settings = {}, reducedMotion = false) {
   const id = snapshot.cosmetics?.killFx, item = cosmeticById(id), style = KILL_COSMETIC_STYLES[id];
@@ -2485,9 +2758,10 @@ function feedback(kind, options = {}) {
 // 每个钩子注册时带一个名字：所在文件名，同一个文件里同一种钩子有两个时写成「文件名:用途」。
 // 执行顺序只看 HOOK_ORDER 里的先后，和哪个文件先被 import 无关，浏览器、构建版和平衡模拟一致。
 // 表按 2026-10-28 浏览器里的实际顺序填。新加钩子先在表里写明排在谁前面、谁后面；没登记的名字一注册就报错。
+// abyss-hazards（深渊无底）排在命中、击杀的最后：只记精英挨打时间、留毒圈、排下一帧的裂变，不改前面钩子看到的东西
 const HOOK_ORDER = {
-  hit: ['fx-polish', 'fusions', 'colossus', 'anomalies', 'mech-awaken'],
-  kill: ['fx-polish', 'night', 'style-rank', 'forms', 'skill-mods-2-dash', 'resonance', 'amalgam', 'anomalies', 'mech-awaken'],
+  hit: ['fx-polish', 'fusions', 'colossus', 'anomalies', 'mech-awaken', 'abyss-hazards'],
+  kill: ['fx-polish', 'night', 'style-rank', 'forms', 'skill-mods-2-dash', 'resonance', 'amalgam', 'anomalies', 'mech-awaken', 'abyss-hazards'],
   hurt: ['night', 'style-rank', 'allies'],
   fire: ['fx-polish', 'zone-storm-dark', 'fusions:blade', 'fusions:beacon', 'resonance', 'mech-awaken'],
   // 处决计数要先清零，变身后的风暴冲刺才按新的一次冲刺判定接触
@@ -2648,7 +2922,7 @@ function enemyDeathPart(e, index, vx, vy, life, size) {
   const style = !e.boss && killFxStyle(meta, G.settings, !!fxReducedMotionMq?.matches);
   if (!style) { part(e.x, e.y, vx, vy, life, size, e.col); return; }
   if (G.parts.length >= (G.effectBudget ?? EXPERIENCE.particleCap)) return;
-  const ring = style.kind === 'cosmeticPlasma' && index === 0 && !style.calm;
+  const ring = (style.kind === 'cosmeticPlasma' || style.kind === 'cosmeticAbyss') && index === 0 && !style.calm;
   // 即使降级后不绘制，也保留原寿命与预算占位，避免后续武器因空出预算而多抽随机数。
   G.parts.push({ x: e.x, y: e.y, vx: ring ? 0 : vx * (style.calm ? .2 : .7), vy: ring ? 0 : vy * (style.calm ? .2 : .7), life, max: life, size: ring ? Math.max(8, e.r) : size, col: style.color, k: 0, kind: style.kind, ring, calm: style.calm, index, angle: index * 2.399963 });
 }
@@ -3186,6 +3460,7 @@ function recordAction(name) {
 }
 function reportSourceName(source) {
   if (source === 'clawHammer') return '断钳';
+  if (source === 'weekly:ram') return '冲刺撞击';
   if (source === 'zone:lightning') return '战区落雷';
   if (source === 'zone:lava') return '岩浆裂缝';
   if (source === 'zone:slag') return '熔渣火池';
@@ -3221,6 +3496,7 @@ function reportCauseName(cause) {
   if (cause === 'anomaly:timeDebt') return '时间债';
   if (cause === 'amalgam:slam') return '虫骸巨人砸地';
   if (cause === 'fall:debris') return '坠落碎石';
+  if (cause === 'abyss:pool') return '深渊毒圈';
   if (cause?.startsWith('boss:emperor')) return '虫皇 · ' + ({ gravity: '重力井', mimic: '拟态', throne: '王座召唤', contact: '接触' }[cause.split(':')[2]] || '黑金王座');
   if (cause?.startsWith('boss:fortress')) return '巢穴炮垒' + ({ shell: ' · 孢子炮弹', fan: ' · 核心扇射' }[cause.split(':')[2]] || '');
   if (cause === 'colossus') return '行山者踩踏';
@@ -4014,6 +4290,108 @@ const AUTO_TARGETING = {
   ranges: { gatling: 480, missile: 560, tesla: 270, rail: 650, drone: 420, missileRetarget: 450, teslaChain: 165 },
 };
 
+// ---- src/game/abyss.js ----
+// 深渊无底：本局生效的 6～10 层规则和 11 层起的深渊词条的状态和查询（倍率、精英前压、首领狂暴判定、拾取、长夜、虫皇打折）
+// 总开关关着、普通层、深渊 1～5、训练和每日挑战时 G.abyss.on 为空：所有入口返回 1 / false / 原值，不排队、不消费任何随机数，对局与没有深渊规则时逐帧一致。
+// 要随机的（裂变、毒地的位置）用自己的随机源（前缀 abyss，照 game/formations.js 的写法），不消耗战斗随机序列。
+// 会刷怪、扣血、放特效的部分（毒圈、毒地、裂变、护卫、精英再生、黑潮）在 game/abyss-hazards.js，这里只依赖数据和对局状态。
+
+const ABYSS_DEFS = Object.fromEntries([...ABYSS_TIER_RULES, ...ABYSS_AFFIXES].map(d => [d.id, d]));
+const abyssDef = id => ABYSS_DEFS[id] || null;
+
+// 开局时（initRunModifiers 定好层级以后）调用；训练、每日挑战固定普通层，自然没有规则
+function initAbyss() {
+  const list = !G.practice && !G.daily && !G.weekly ? abyssRuleList(G.tier || 0) : [];
+  G.abyss = { tier: G.tier || 0, list: list.map(d => d.id), on: {}, mul: {}, pools: [], poolAt: null, tideAt: null, guardTurn: 0, random: null };
+  G.abyssStats = { pools: 0, poolHits: 0, poolDamage: 0, splits: 0, guards: 0, tides: 0, regen: 0, rages: 0, xpLost: 0, healWaits: 0 };
+  abyssApplyList(G.abyss.list);
+  // 开局第一次属性结算在定层级之前，冲刺迟滞在这里补上（以后每次 recalc 都由 applyAbyssStats 乘）
+  if (G.stats?.dashCd) G.stats.dashCd *= abyssMul('dashCd');
+  // 虫皇降临：复用模拟和调试用的强制开关，狂怒母巢倒下后虫皇必定登场
+  if (abyssHas('emperor')) G.emperorForce = true;
+}
+// 按 id 列表打开规则和词条，预先算好倍率（每帧只查表）
+function abyssApplyList(ids) {
+  const a = G.abyss;
+  a.on = Object.fromEntries(ids.map(id => [id, true]));
+  const mul = {}, set = (id, key, value) => { if (a.on[id]) mul[key] = value; };
+  set('swarmSpeed', 'enemySpeed', abyssDef('swarmSpeed').speed);
+  set('bulletRain', 'bulletSpeed', abyssDef('bulletRain').speed);
+  set('dashLag', 'dashCd', abyssDef('dashLag').cd);
+  set('mortarVolley', 'mortarInterval', abyssDef('mortarVolley').interval);
+  set('surge', 'spawnCap', abyssDef('surge').cap);
+  set('weakNarrow', 'weakTime', abyssDef('weakNarrow').mul);
+  a.mul = mul;
+}
+// 平衡模拟的单条词条对照、调试：6～10 层规则照旧，词条只开 ids 里的这几条
+function abyssSetAffixes(ids) {
+  if (!G?.abyss) return false;
+  const rules = abyssRuleList(G.abyss.tier).filter(d => d.kind === 'rule').map(d => d.id);
+  const affixes = ABYSS_AFFIXES.map(d => d.id).filter(id => ids.includes(id));
+  const before = G.abyss.mul.dashCd || 1;
+  G.abyss.list = [...rules, ...affixes];
+  abyssApplyList(G.abyss.list);
+  if (G.stats?.dashCd) G.stats.dashCd *= (G.abyss.mul.dashCd || 1) / before;
+  return true;
+}
+function abyssActive() { return !!G?.abyss?.list.length; }
+function abyssHas(id) { return !!G?.abyss?.on[id]; }
+// 倍率类：enemySpeed、bulletSpeed、dashCd、mortarInterval、spawnCap、weakTime；没开的是 1
+function abyssMul(key) { return G?.abyss?.mul[key] ?? 1; }
+function abyssRoll() {
+  const a = G.abyss;
+  if (!a.random) a.random = mulberry32(dailyHash(`abyss:${G.mech?.id || 'assault'}:${a.tier}:${zoneRunSeed()}`));
+  return a.random();
+}
+
+// 属性结算（recalc）末尾调用：冲刺迟滞
+function applyAbyssStats(st) { st.dashCd *= abyssMul('dashCd'); }
+
+// 精英前压：第一段精英（ENEMY_PHASES[0]）从 2:00 起就按它的节奏和词缀刷，同屏上限 +1
+function abyssElitePhase(t, phase) {
+  if (!abyssHas('elites')) return phase;
+  return phase || (t >= abyssDef('elites').from ? ENEMY_PHASES[0] : null);
+}
+function abyssEliteCap(cap) { return abyssHas('elites') ? cap + abyssDef('elites').capAdd : cap; }
+// 迫击齐射：同屏多 1 只
+function abyssMortarCap(cap) { return abyssHas('mortarVolley') ? cap + abyssDef('mortarVolley').capAdd : cap; }
+// 新普通敌人：虫群加速（精英、首领不吃）
+function abyssEnemySpawned(e, elite) { if (!elite) e.speed *= abyssMul('enemySpeed'); }
+// 硬壳：重甲虫和精英受到伤害 −15%（首领不算）
+function abyssDamageMul(e) { return abyssHas('hardShell') && !e.boss && (e.elite || e.type === 'brute') ? abyssDef('hardShell').damage : 1; }
+// 二选一：升级选卡少一张
+function abyssChoiceCount(count) { return abyssHas('twoChoice') ? count - 1 : count; }
+// 拾取：血包延迟（落地多久才能捡）、回收税（经验球多久没捡就消失）
+function abyssHealReady() { return abyssHas('healDelay') ? abyssDef('healDelay').delay : 0; }
+function abyssXpLife() { return abyssHas('xpTax') ? abyssDef('xpTax').life : Infinity; }
+function abyssXpLost() { G.abyssStats.xpLost++; }
+// 长夜：夜袭不看战区、必定出一次，夜晚持续上限 65 秒
+function abyssLongNight() { return abyssHas('longNight') ? abyssDef('longNight').maxDuration : 0; }
+// 虫皇在深渊 10 起单独打折
+function abyssEmperorHpMul() { return abyssHas('emperor') ? ABYSS_RULES.emperorHpMul : 1; }
+// 首领狂暴：首领血量低于 30% 起移速 +20%、招式计时 ×1.25（间隔 ×0.8）；返回招式计时倍率。虫皇走自己的更新，不经过这里
+function abyssBossTempo(e) {
+  if (!abyssHas('bossRage') || e.emperor) return 1;
+  const cfg = abyssDef('bossRage');
+  if (!e.abyssRage && e.hp < e.maxHp * cfg.hpBelow) {
+    e.abyssRage = true; G.abyssStats.rages++; // 飘字由 abyss-hazards.js 的每帧更新补上
+  }
+  return e.abyssRage ? cfg.tempo : 1;
+}
+function abyssBossSpeed(e) { return e.abyssRage ? abyssDef('bossRage').speed : 1; }
+// 超载迟缓：所有超载充能 −15%（只在 chargeOverload 里乘）
+onOverloadGain(() => abyssHas('overloadSlow') ? abyssDef('overloadSlow').mul : 1);
+
+// 暂停页、机库用：本局生效的规则和词条，新加的那条（等于本层）标出来
+function abyssRunRules(run = G) {
+  const tier = run?.abyss?.tier || 0;
+  return (run?.abyss?.list || []).map(id => {
+    const d = abyssDef(id), affixIndex = ABYSS_AFFIXES.indexOf(d);
+    const from = affixIndex >= 0 ? ABYSS_RULES.affixFrom + affixIndex : d.tier;
+    return { id, name: d.name, text: d.text, kind: affixIndex >= 0 ? 'affix' : 'rule', from, newest: from === tier };
+  });
+}
+
 // ---- src/game/boss-phases.js ----
 // 首领组合与破绽：本次登场固定招式顺序（最终首领用自己那份，带深渊凝视），破绽期间冻结下一招的计时
 
@@ -4062,7 +4440,7 @@ function openBossWeakPoint(e, extraDuration = 0, duration = BOSS_WEAK_POINTS[e?.
   nextBossPhase(e);
   const extra = Number.isFinite(extraDuration) ? Math.max(0, Math.min(BOSS_PRESENTATION.weakExtraMax, extraDuration)) : 0;
   e.overheat = false;
-  e.vulnerableT = (duration > 0 ? duration : cfg.duration) + extra; e.weakWindow = e.vulnerableT; e.weakMul = cfg.damageMul;
+  e.vulnerableT = ((duration > 0 ? duration : cfg.duration) + extra) * abyssMul('weakTime'); e.weakWindow = e.vulnerableT; e.weakMul = cfg.damageMul;
   e.weakFlashT = BOSS_PRESENTATION.weakFlashDuration;
   return true;
 }
@@ -4219,62 +4597,160 @@ function chooseFieldEvents(random = Math.random) {
   return order.slice(0, RELAY_CONFIG.times.length);
 }
 
-// ---- src/data/tiers.js ----
-// 深渊层级：全账号共享解锁与出击选择；按机体保留最高通关战绩，每层叠加倍率
-const TIER_MAX = 10;
-// 第 L 层的倍率（L=0 为普通，全是 1）；数值用 simulate-balance.mjs --tier 校准，记录见 iron-rampage-plan.md 的平衡记录
-function tierMods(L) {
-  return { enemyHp: 1 + .12 * L, bossHp: 1 + .15 * L, dmgTaken: 1 + .08 * L, spawn: 1 + .05 * L, heal: Math.max(.2, 1 - .08 * L), coins: 1 + .15 * L };
-}
-const tierName = L => L > 0 ? `深渊 ${L}` : '普通';
-const tierPct = (label, k) => `${label} ${k >= 1 ? '+' : '-'}${Math.round(Math.abs(k - 1) * 100)}%`;
-function tierModsText(L) {
-  if (!L) return '标准难度，没有额外加成';
-  const m = tierMods(L);
-  return [tierPct('敌人血量', m.enemyHp), tierPct('首领血量', m.bossHp), tierPct('受到伤害', m.dmgTaken), tierPct('刷怪', m.spawn), tierPct('治疗掉率', m.heal), tierPct('结算金币', m.coins)].join(' · ');
-}
-// 这台机体的最高通关层，-1 表示还没突围过；D3 起按机体记过突围的视为通关普通层
-function tierCleared(meta, mechId) {
-  const v = meta.tierClear?.[mechId];
-  return Math.max(Number.isInteger(v) && v >= 0 ? Math.min(TIER_MAX, v) : -1, meta.mechStats?.[mechId]?.wins > 0 ? 0 : -1);
-}
-const tierMaxSelectable = meta => Math.min(TIER_MAX, bestTierCleared(meta) + 1);
-// 出击用的层级：存的选择超过可选上限时按上限算
-function selectedTier(meta) {
-  const v = meta.tierPick;
-  return Number.isInteger(v) && v > 0 ? Math.min(v, tierMaxSelectable(meta)) : 0;
-}
-// 所有机体里最高的通关层，-1 表示还没突围过
-const bestTierCleared = meta => Math.max(-1, ...Object.keys({ ...meta.tierClear, ...meta.mechStats }).map(id => tierCleared(meta, id)));
+// ---- src/data/weekly.js ----
+// 每周异变赛：周键（北京时间周一 0 点换周的 ISO 周）、本周配置、八条周规则、周分与铜银金档线、分享文字
+// 本文件顶层只放常量和纯函数，不读别的模块的值，部分测试只拼几个文件也能加载。
 
-// 并列时取调用方列表中靠前的机体；没有突围记录时不显示机体。
-function bestTierMech(meta, mechIds) {
-  const best = bestTierCleared(meta);
-  return best < 0 ? undefined : mechIds.find(id => tierCleared(meta, id) === best);
+// 抽取池都写成固定名单：以后加机体、武器、芯片、战区不会改掉旧周的配置。改池子时写明从哪一周起生效。
+const WEEKLY_RULES = Object.freeze({
+  enabled: true, // 总开关：关掉后主菜单没有周赛入口，普通对局不受影响
+  tier: 5, // 周赛固定深渊 5：只用倍率，不吃深渊 6 层以上的规则
+  unlockWins: 1, // 首次突围后开放，和敌军编队一样
+  utcOffsetHours: 8, // 按北京时间周一 0 点换周，不看玩家所在时区
+  firstReward: 200, // 每周第一次结算
+  medalRewards: Object.freeze([100, 200, 300]), // 本周第一次达到铜、银、金各发一次；一局直接拿金则三档一起发
+  // 铜、银、金档线：满改装 move 机器人 2026-W45/W49/W50 × 六机 × 三种子共 54 局，合起来约 72%/35%/11% 能拿；
+  // 周与周差得多（冲刺杀手周最难、巨兽之周最易），数据见 docs/plan/weekly-simulation-data.json
+  medals: Object.freeze([8400, 9400, 11700]),
+  historyWeeks: 12, // 勋章墙列最近 12 周，更早的只记总数
+  score: Object.freeze({ perSecond: 2, killsPerPoint: 5, boss: 300, win: 1000, emperor: 1500, style: 1 }),
+  chips: 2, // 两枚强制异常芯片，第三槽照常可选
+  // 2026-W45 起生效的抽取池
+  mechPool: Object.freeze(['assault', 'heavy', 'phantom', 'storm', 'lancer', 'engineer']),
+  weaponPool: Object.freeze(['gatling', 'missile', 'saw', 'tesla', 'rail', 'drone', 'cord']),
+  chipPool: Object.freeze(['hunter', 'greed', 'echo', 'shadow', 'shell', 'chain', 'gravity', 'fervor', 'overheat', 'blood', 'egg', 'laststand', 'sacrifice', 'stasis', 'timeDebt', 'blind']),
+  // 互相打架的组合：狂热回路 + 过热炉心、背水 + 献祭协议；盲盒协议不和任何一枚疯狂档同时出
+  chipConflicts: Object.freeze([Object.freeze(['fervor', 'overheat']), Object.freeze(['laststand', 'sacrifice'])]),
+  openingPool: Object.freeze(['industrial', 'armory', 'polluted', 'hive', 'frost']),
+  routePool: Object.freeze(['armory', 'polluted', 'hive', 'frost', 'forge', 'storm', 'dark', 'nest']),
+  riskyMin: 3, // 第二、三幕至少一个危险 ≥ 3
+  ruleOrder: Object.freeze(['barrels', 'dashKill', 'colossus', 'longNight', 'allies', 'elites', 'glass', 'tides']),
+});
+// 周规则：mods 由对局各处直接读 G.weekly.mods（没有周赛时 G.weekly 为 null，各处按 1 / 关处理）
+const WEEKLY_MUTATIONS = Object.freeze({
+  barrels: { id: 'barrels', name: '油桶狂欢', icon: '桶', desc: '战场物件（油桶、弹药箱、毒沼、虫茧、熔渣罐）刷新 ×3', mods: Object.freeze({ propRate: 3 }) },
+  dashKill: { id: 'dashKill', name: '冲刺杀手', icon: '撞', desc: '冲刺撞上的敌人受到 3 倍撞击伤害（每次冲刺每只一次）；武器伤害 −30%',
+    mods: Object.freeze({ dmg: .7, dashRam: Object.freeze({ damage: 15, mul: 3, bossMul: 1, pad: 6, knock: 260 }) }) },
+  colossus: { id: 'colossus', name: '巨兽之周', icon: '兽', desc: '第二、三幕都会有行山者过境，不看战区',
+    mods: Object.freeze({ colossus: Object.freeze([Object.freeze({ act: 1, startAt: 195, giveUpAt: 225 }), Object.freeze({ act: 2, startAt: 310, giveUpAt: 325 })]) }) },
+  longNight: { id: 'longNight', name: '永夜之周', icon: '夜', desc: '第二、三幕都是整幕夜战（照永夜裂谷，车灯照到的虫受伤更多，精英掉照明弹）', mods: Object.freeze({ longNight: true }) },
+  allies: { id: 'allies', name: '援军之周', icon: '援', desc: '援军空降次数上限 ×2，冷却减半，每幕可因高评级呼叫两次', mods: Object.freeze({ allyCalls: 2 }) },
+  elites: { id: 'elites', name: '精英狂欢', icon: '精', desc: '精英刷新 ×2；精英补给箱照常开，另送一次异常芯片二选一', mods: Object.freeze({ eliteRate: 2, eliteChestAnomaly: true }) },
+  glass: { id: 'glass', name: '玻璃大炮', icon: '炮', desc: '伤害 +50%，最大生命 −40%', mods: Object.freeze({ dmg: 1.5, maxHp: .6 }) },
+  tides: { id: 'tides', name: '虫潮之周', icon: '潮', desc: '虫潮多两次：第一幕、第三幕各加一次',
+    mods: Object.freeze({ extraTides: Object.freeze([Object.freeze({ at: 75, until: 110, size: 0 }), Object.freeze({ at: 315, until: 395, size: 1 })]) }) },
+});
+const WEEKLY_MEDAL_NAMES = Object.freeze(['未得章', '铜章', '银章', '金章']);
+const WEEKLY_MEDAL_KEYS = Object.freeze(['none', 'bronze', 'silver', 'gold']);
+
+const WEEKLY_DAY_MS = 86400000;
+const weeklyPad = n => String(n).padStart(2, '0');
+const isWeekKey = v => typeof v === 'string' && /^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/.test(v);
+// 周键：先把时刻换成北京时间的日历日，再按 ISO 8601 取周（周一开始，含本周四的那一年）
+function weekKey(date = new Date()) {
+  const shifted = new Date(date.getTime() + WEEKLY_RULES.utcOffsetHours * 3600000);
+  const day = new Date(Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate()));
+  day.setUTCDate(day.getUTCDate() + 4 - (day.getUTCDay() || 7));
+  const year = day.getUTCFullYear(), week = Math.floor((day.getTime() - Date.UTC(year, 0, 1)) / WEEKLY_DAY_MS / 7) + 1;
+  return `${year}-W${weeklyPad(week)}`;
+}
+// 这一周周一的北京日历日（用 UTC 零点表示）；1 月 4 日一定在第 1 周
+function weekStartDay(key) {
+  const year = Number(key.slice(0, 4)), week = Number(key.slice(6)), jan4 = Date.UTC(year, 0, 4);
+  return jan4 - ((new Date(jan4).getUTCDay() || 7) - 1) * WEEKLY_DAY_MS + (week - 1) * 7 * WEEKLY_DAY_MS;
+}
+function weekLabel(key) {
+  const a = new Date(weekStartDay(key)), b = new Date(weekStartDay(key) + 6 * WEEKLY_DAY_MS);
+  return `${a.getUTCMonth() + 1}月${a.getUTCDate()}日～${b.getUTCMonth() + 1}月${b.getUTCDate()}日`;
+}
+// 离换周还有几天（向上取整，最后一天为 1）
+function weekDaysLeft(key, date = new Date()) {
+  const end = weekStartDay(key) + 7 * WEEKLY_DAY_MS - WEEKLY_RULES.utcOffsetHours * 3600000;
+  return Math.max(0, Math.ceil((end - date.getTime()) / WEEKLY_DAY_MS));
+}
+function weeklyChipsCompatible(a, b) {
+  if (a === b) return false;
+  if (WEEKLY_RULES.chipConflicts.some(pair => pair.includes(a) && pair.includes(b))) return false;
+  const mad = id => ANOMALIES[id]?.tier === 'mad';
+  return !((a === 'blind' && mad(b)) || (b === 'blind' && mad(a)));
+}
+// 本周配置：同一个周键永远得到同样的机体、协议、初始武器、三幕路线、两枚芯片、周规则和两个种子
+function weeklySetup(key) {
+  const random = mulberry32(dailyHash('iron-rampage:week:' + key));
+  const pick = list => list[Math.min(list.length - 1, Math.floor(random() * list.length))];
+  const rules = WEEKLY_RULES, mechId = pick(rules.mechPool), mech = MECHS.find(m => m.id === mechId);
+  const talentId = pick(getTalentOptions(mech.id)).id, weaponId = pick(rules.weaponPool);
+  const act1 = pick(rules.openingPool), rest = rules.routePool.filter(id => id !== act1);
+  const act2 = pick(rest), risky = id => ZONES[id].risk >= rules.riskyMin;
+  const act3 = pick(rest.filter(id => id !== act2 && (risky(act2) || risky(id))));
+  const chip1 = pick(rules.chipPool), chip2 = pick(rules.chipPool.filter(id => weeklyChipsCompatible(chip1, id)));
+  const rule = pick(rules.ruleOrder);
+  return { key, mechId, talentId, weaponId, route: [act1, act2, act3], chips: [chip1, chip2], rule,
+    relaySeed: Math.floor(random() * 4294967296), bossSeed: Math.floor(random() * 4294967296) };
+}
+const weeklyRouteOk = route => Array.isArray(route) && route.length === ZONE_RULES.actStarts.length && new Set(route).size === route.length && route.slice(1).some(id => ZONES[id]?.risk >= WEEKLY_RULES.riskyMin);
+// 周分：结算时算一次，各项向下取整
+function weeklyScore({ t = 0, kills = 0, bossKills = 0, won = false, emperorDefeated = false, style = 0 } = {}) {
+  const s = WEEKLY_RULES.score, seconds = Math.floor(Math.max(0, Number(t) || 0));
+  const rows = [
+    { id: 'time', label: '存活', detail: `${seconds} 秒 × ${s.perSecond}`, value: seconds * s.perSecond },
+    { id: 'kills', label: '击杀', detail: `${Math.max(0, kills | 0)} 只 ÷ ${s.killsPerPoint}`, value: Math.floor(Math.max(0, kills | 0) / s.killsPerPoint) },
+    { id: 'boss', label: '击破首领', detail: `${Math.max(0, bossKills | 0)} 只 × ${s.boss}`, value: Math.max(0, bossKills | 0) * s.boss },
+    { id: 'win', label: '突围', detail: won ? '成功' : '未突围', value: won ? s.win : 0 },
+    { id: 'emperor', label: '打败虫皇', detail: emperorDefeated ? '成功' : '—', value: emperorDefeated ? s.emperor : 0 },
+    { id: 'style', label: '评级高光', detail: `${Math.floor(Math.max(0, Number(style) || 0))} 分 × ${s.style}`, value: Math.floor(Math.max(0, Number(style) || 0) * s.style) },
+  ];
+  return { rows, total: rows.reduce((sum, row) => sum + row.value, 0) };
+}
+// 0 没章，1 铜，2 银，3 金
+function weeklyMedal(score) { return WEEKLY_RULES.medals.filter(line => score >= line).length; }
+// 从 from 档升到 to 档要补发的一次性奖励
+function weeklyMedalReward(from, to) {
+  let sum = 0;
+  for (let i = Math.max(0, from); i < Math.min(to, WEEKLY_RULES.medalRewards.length); i++) sum += WEEKLY_RULES.medalRewards[i];
+  return sum;
+}
+// 结算页可复制的一行战绩
+function weeklyShareText(key, ruleName, mechName, weaponName, run) {
+  return `钢铁暴走 每周异变赛 ${key} · ${ruleName} · ${mechName}/${weaponName} · ${run.win ? '突围' : '存活'} ${Math.floor(run.t / 60)}:${weeklyPad(Math.floor(run.t % 60))} · 击杀 ${run.kills} · 周分 ${run.score} · ${WEEKLY_MEDAL_NAMES[run.medal] || WEEKLY_MEDAL_NAMES[0]}`;
 }
 
 // ---- src/game/difficulty.js ----
-// 本局难度修正：深渊层级倍率与每日挑战的固定配置；刷怪、受伤、掉落各处只乘一个系数
+// 本局难度修正：深渊层级倍率、6 层起的深渊规则、每日挑战与每周异变赛的固定配置；刷怪、受伤、掉落各处只乘一个系数
 
 // 本局某项倍率；没有开局修正（测试里手搭的对局）时为 1
 const runMul = key => G?.mods?.[key] ?? 1;
-// 开局时调用：训练和每日挑战固定普通层；每日挑战的行动顺序按当天种子排好
-function initRunModifiers(daily = null) {
-  G.tier = G.practice || daily ? 0 : selectedTier(meta);
+// 开局时调用：训练和每日挑战固定普通层，每周异变赛固定深渊 5；每日挑战、周赛的行动顺序按种子排好
+function initRunModifiers(daily = null, weekly = null) {
+  G.tier = G.practice || daily ? 0 : weekly ? WEEKLY_RULES.tier : selectedTier(meta);
   G.mods = tierMods(G.tier);
   G.daily = daily;
+  G.weekly = initWeeklyModifiers(weekly);
+  if (G.weekly) { initAbyss(); return; } // 周赛固定深渊 5，没有深渊规则；照样初始化深渊状态
   if (daily) {
     G.relayOrder = chooseFieldEvents(mulberry32(daily.relaySeed));
     G.banner = { kind: 'info', title: '每日挑战', sub: `${dailyLabel(daily.key)} · ${G.mech.name} · ${G.talent?.name || ''}`, t: 2.6, max: 2.6, col: '120,220,255' };
   } else if (G.tier) {
-    G.banner = { kind: 'info', title: tierName(G.tier), sub: `敌人更强 · 结算金币 ×${G.mods.coins.toFixed(2).replace(/0$/, '')}`, t: 2.6, max: 2.6, col: '190,120,255' };
+    // 深渊 6 层起横幅后面接本层新加的那条规则或词条
+    const newest = tierNewestName(G.tier);
+    G.banner = { kind: 'info', title: tierName(G.tier), sub: `敌人更强${newest ? ` · 新规则：${newest}` : ''} · 结算金币 ×${G.mods.coins.toFixed(2).replace(/0$/, '')}`, t: 2.6, max: 2.6, col: '190,120,255' };
   }
+  initAbyss(); // 深渊 6 层起的规则和词条：要在层级定好以后
+}
+// 每周异变赛：深渊 5 的倍率，本周规则的开关放进 G.weekly.mods；行动顺序按本周种子，出击横幅写本周规则
+function initWeeklyModifiers(weekly) {
+  if (!weekly || G.practice) return null;
+  const rule = WEEKLY_MUTATIONS[weekly.rule];
+  G.relayOrder = chooseFieldEvents(mulberry32(weekly.relaySeed));
+  G.banner = { kind: 'info', title: '每周异变赛', sub: `${rule?.name || '本周规则'} · ${G.mech.name} · ${tierName(G.tier)}`, t: 2.6, max: 2.6, col: '255,170,90' };
+  return { ...weekly, route: [...weekly.route], chips: [...weekly.chips], mods: { ...(rule?.mods || {}) } };
 }
 // 新敌人生成后调用：按层级放大血量；每日挑战的首领按当天种子固定招式组
 function applyRunModifiers(e) {
   const k = runMul(e.boss ? 'bossHp' : 'enemyHp');
   e.hp *= k; if (e.maxHp) e.maxHp *= k;
   if (e.boss && G.daily) bossAttackSequence(e, mulberry32(G.daily.bossSeed ^ dailyHash(e.kind)));
+  if (e.boss && G.weekly) bossAttackSequence(e, mulberry32(G.weekly.bossSeed ^ dailyHash(e.kind))); // 周赛的首领按本周种子固定招式组
 }
 
 // ---- src/data/props.js ----
@@ -5401,7 +5877,7 @@ function lateGrowthChoices(count = 3) {
 }
 function buildOptions() {
   const takeover = optionTakeover(); if (takeover) return takeover;
-  const count = 3 + Math.max(0, Math.floor(zoneReward('extraCard') || 0));
+  const count = abyssChoiceCount(3) + Math.max(0, Math.floor(zoneReward('extraCard') || 0)); // 深渊词条「二选一」少一张
   // 合体卡这类注册进来的新卡只进升级选卡；没有注册或开关关着时和原来完全一样
   const opts = [...growthOptions(), ...extraOptionOffers()], repair = blockedPairChoice();
   if (!opts.length && !repair) return lateGrowthChoices(count);
@@ -5583,7 +6059,7 @@ function beginAnomalyChoice() {
 function takeAnomaly(id, replaceId = null) {
   const a = G?.anomaly; if (!a || !ANOMALIES[id] || a.slots.includes(id)) return false;
   if (a.slots.length >= ANOMALY_RULES.slots) {
-    const i = a.slots.indexOf(replaceId); if (i < 0) return false;
+    const i = a.slots.indexOf(replaceId); if (i < 0 || G.weekly?.chips?.includes(replaceId)) return false; // 周赛的两枚强制芯片换不下来
     a.slots.splice(i, 1); anomalyRemoved(replaceId);
   }
   a.slots.push(id); a.on = Object.fromEntries(a.slots.map(x => [x, true]));
@@ -5670,6 +6146,11 @@ function anomalyHealToXp(p) {
 // 精英补给箱：掉落时打标记，拾取时按 8% × 战区倍率改成异常二选一
 function anomalyMarkEliteChest(o) { if (o && anomaliesEnabled()) o.eliteChest = true; }
 function anomalyChestPickup(o) {
+  // 周规则「精英狂欢」：精英补给箱照常开，另送一次异常芯片二选一（不再按 8% 把箱子换掉）
+  if (o.eliteChest && G.weekly?.mods.eliteChestAnomaly && anomaliesEnabled()) {
+    if (queueAnomaly('chest')) floatText(G.player.x, G.player.y - 40, '异常补给！', '200,150,255', 22, 1.1);
+    return false;
+  }
   if (!o.eliteChest || !anomaliesEnabled() || anomalyFxRoll() >= ANOMALY_RULES.eliteChestChance * zoneMul('anomalyChest')) return false;
   if (!queueAnomaly('chest')) return false;
   const p = G.player; floatText(p.x, p.y - 40, '异常补给！', '200,150,255', 22, 1.1);
@@ -6456,7 +6937,7 @@ function createRunIdentity() {
 function persistenceRecord(value) { return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
 // 押金先落盘再允许开局；失败时回滚本次交易，避免后续存档意外补扣。
 function reserveBounty(run, choice) {
-  if (!run || run.practice || run.daily || !run.runId) return false;
+  if (!run || run.practice || run.daily || run.weekly || !run.runId) return false;
   reloadMeta();
   if (!(meta.wins >= 1)) return false;
   const existing = normalizeBountyContract(meta.bounty.stakes[run.runId], run.runId);
@@ -6489,25 +6970,46 @@ function validRunSnapshot(value, id) {
   // 深渊层级和每日挑战日期随快照保存，恢复结算时金币倍率和每日奖励不丢
   const daily = typeof value.daily === 'string' ? value.daily : value.daily?.key;
   const mech = typeof value.mech === 'string' ? value.mech : value.mech?.id || '';
-  const tier = Number.isInteger(value.tier) && value.tier >= 0 && value.tier <= TIER_MAX ? value.tier : 0;
+  const tier = Number.isInteger(value.tier) && value.tier >= 0 && value.tier <= TIER_CAP ? value.tier : 0;
   const bounty = normalizeBountyContract(value.bounty, id);
+  // 每周异变赛：周键和评级高光入账分随快照保存，恢复结算时照样算周分（普通局不加这两个字段）
+  const weekKeyText = typeof value.weekly === 'string' ? value.weekly : value.weekly?.key;
+  const weekly = weekKeyText && isWeekKey(weekKeyText) ? weekKeyText : '';
+  const weeklyFields = weekly ? { weekly, weeklyStyle: Number.isFinite(value.weeklyStyle) && value.weeklyStyle >= 0 ? Math.floor(value.weeklyStyle) : 0 } : {};
   return { id, mech, t: value.t,
     coins: value.coins, kills: value.kills, bossKills: value.bossKills, won: value.won === true || value.escaped === true, emperorDefeated: value.emperorDefeated === true,
     styleBonus: Number.isSafeInteger(value.styleBonus) && value.styleBonus >= 0 ? Math.min(STYLE_RANK.bonusCap, value.styleBonus) : 0,
     zonesEnabled: value.zonesEnabled === true, zoneVisited: value.zonesEnabled === true ? normalizeZoneVisits(value.zoneVisited) : [],
     tier, daily: isDailyKey(daily) ? daily : '',
-    bounty: !isDailyKey(daily) && bounty?.mech === mech && bounty.tier === tier ? bounty : null,
+    bounty: !isDailyKey(daily) && !weekly && bounty?.mech === mech && bounty.tier === tier ? bounty : null,
+    ...weeklyFields,
     ended: value.ended === true,
     savedAt: Number.isFinite(value.savedAt) ? value.savedAt : Date.now() };
 }
 const snapshotEarned = snapshot => runReward(snapshot.coins, snapshot.kills, snapshot.bossKills, snapshot.won, tierMods(snapshot.tier).coins * (snapshot.zonesEnabled ? zoneCodexCoinMultiplier(snapshot.zoneVisited) : 1)).earned + snapshot.styleBonus + (snapshot.emperorDefeated ? EMPEROR.reward : 0);
+// 深渊外观：通关第 N 层（含更深）第一次结算时送，记进外观库存和 abyssRewards；返回本次新送的外观 id
+function grantAbyssRewards(tier) {
+  if (!ABYSS_RULES.enabled) return [];
+  const granted = [];
+  meta.abyssRewards = persistenceRecord(meta.abyssRewards);
+  meta.cosmetics = persistenceRecord(meta.cosmetics); meta.cosmetics.owned = persistenceRecord(meta.cosmetics.owned);
+  for (const reward of ABYSS_REWARDS) {
+    if (tier < reward.tier) continue;
+    for (const id of reward.ids) {
+      if (meta.cosmetics.owned[id] === true) continue;
+      meta.cosmetics.owned[id] = true; meta.abyssRewards[id] ||= Date.now(); granted.push(id);
+    }
+  }
+  return granted;
+}
 function snapshotRunProgress(run, win = run?.won) {
   if (!run || run.practice) return null;
   if (!run.runId) run.runId = createRunIdentity();
   win = !!(win || run.escaped);
   if (run.bounty) updateBountyProgress(run, win);
   // 奖金单列保存，恢复和续局共用同一幂等账本，不混入拾取金币或深渊倍率。
-  return validRunSnapshot({ ...run, styleBonus: styleRankBonusForSeconds(run.styleRank?.highSeconds), won: !!(win || run.escaped), savedAt: Date.now() }, run.runId);
+  const weeklyStyle = run.weekly ? { weeklyStyle: run.styleRank?.earnedScore || 0 } : {};
+  return validRunSnapshot({ ...run, styleBonus: styleRankBonusForSeconds(run.styleRank?.highSeconds), ...weeklyStyle, won: !!(win || run.escaped), savedAt: Date.now() }, run.runId);
 }
 function checkpointRun({ ended = false } = {}) {
   if (!G || G.practice || G.state === 'end') return false;
@@ -6535,20 +7037,28 @@ function settleRunSnapshot(snapshot, { recovering = false, includeBounty = true 
   const earned = snapshotEarned(snapshot);
   const previousPaid = Number.isSafeInteger(prior.earned) && prior.earned >= 0 ? prior.earned : 0;
   const credited = Math.max(0, earned - previousPaid), newBest = snapshot.t > meta.best;
-  // 最快突围按层级分开记：普通层沿用 fastestWin，深渊层记在 tierFastest
-  const tier = snapshot.tier, prevFastest = tier ? persistenceRecord(meta.tierFastest)[tier] : meta.fastestWin;
-  const fastest = snapshot.won && snapshot.t > 0 && (!prevFastest || snapshot.t < prevFastest);
+  // 最快突围按层级分开记：普通层沿用 fastestWin，深渊层记在 tierFastest；周赛不记层级纪录（countsTier）
+  const tier = snapshot.tier, prevFastest = tier ? persistenceRecord(meta.tierFastest)[tier] : meta.fastestWin, countsTier = !snapshot.weekly;
+  const fastest = countsTier && snapshot.won && snapshot.t > 0 && (!prevFastest || snapshot.t < prevFastest) && tier <= ABYSS_RULES.fastestCap;
   if (snapshot.emperorDefeated) { meta.achievements ||= {}; meta.achievements.emperor ||= Date.now(); }
   meta.coins += credited + zoneReceipt.reward; meta.best = Math.max(meta.best, snapshot.t); meta.bestKills = Math.max(meta.bestKills, snapshot.kills);
   if (snapshot.won && !prior.won) meta.wins++;
   if (fastest) { if (tier) meta.tierFastest = { ...persistenceRecord(meta.tierFastest), [tier]: snapshot.t }; else meta.fastestWin = snapshot.t; }
   // 保留单机战绩；只在超过全账号结算前最高层时提示解锁，避免本局已增加的 wins 干扰。
-  let tierUnlocked = 0;
-  if (snapshot.won && snapshot.mech) {
+  // 深渊 10 起（深渊总开关开着时）只有打败虫皇才记通关、解锁下一层；突围但虫皇逃走照常发金币，tierBlocked 给结算页写原因。
+  // 周赛固定深渊 5，不记通关层、不解锁、不领深渊外观。
+  let tierUnlocked = 0, tierRecord = 0, abyssRewards = [];
+  const tierBlocked = !!(countsTier && snapshot.won && snapshot.mech && !abyssClearCounts(tier, snapshot.won, snapshot.emperorDefeated));
+  if (countsTier && snapshot.won && snapshot.mech && !tierBlocked) {
     meta.tierClear = persistenceRecord(meta.tierClear);
     const previousBest = Math.max(-1, ...Object.values(meta.tierClear).filter(v => Number.isInteger(v) && v >= 0));
     const cleared = meta.tierClear[snapshot.mech];
-    if (!(Number.isInteger(cleared) && cleared >= tier)) { meta.tierClear[snapshot.mech] = tier; if (tier > previousBest && tier < TIER_MAX) tierUnlocked = tier + 1; }
+    if (!(Number.isInteger(cleared) && cleared >= tier)) {
+      meta.tierClear[snapshot.mech] = tier;
+      if (tier > previousBest && tier < tierLimit()) tierUnlocked = tier + 1;
+      if (tier > previousBest && tier > 0) tierRecord = tier;
+    }
+    abyssRewards = grantAbyssRewards(tier);
   }
   // 每日挑战：每天第一次结算发奖励；只更新当天或更新的日期，旧日期的中断局不覆盖今天的纪录
   let dailyReward = 0;
@@ -6560,13 +7070,14 @@ function settleRunSnapshot(snapshot, { recovering = false, includeBounty = true 
       meta.daily = { ...day, bestT: Math.max(day.bestT || 0, snapshot.t), kills: Math.max(day.kills || 0, snapshot.kills), win: !!(day.win || snapshot.won) };
     }
   }
+  const weekly = snapshot.weekly ? settleWeeklyRecord(snapshot) : null;
   let bounty = prior.bounty || null, bountyReward = 0;
   const contract = includeBounty ? normalizeBountyContract(meta.bounty.stakes[snapshot.id], snapshot.id) : null;
   const progress = normalizeBountyContract(snapshot.bounty, snapshot.id);
   // 快照不能凭空造出押金：只认已扣款账本里同机体、同层级、同条目的合同。
   if (!bounty && contract) {
     const matches = progress && ['id', 'stake', 'tier', 'mech'].every(key => progress[key] === contract[key]);
-    const met = !!(matches && progress.met && !snapshot.daily);
+    const met = !!(matches && progress.met && !snapshot.daily && !snapshot.weekly);
     // 另一页恢复未达成的快照时，原页可能只是暂停，不能据此提前封掉仍在玩的合同。
     // 只有真实终局或明确卸载的快照才封失败；后台暂停和往返缓存仍可能继续。
     if (!recovering || snapshot.ended || met) {
@@ -6585,11 +7096,37 @@ function settleRunSnapshot(snapshot, { recovering = false, includeBounty = true 
   const pending = meta.pendingSettlements[snapshot.id];
   if (!pending || pending.savedAt <= snapshot.savedAt) delete meta.pendingSettlements[snapshot.id];
   const saved = saveMeta();
-  return { earned, credited, previousPaid, zoneReward: zoneReceipt.reward, zoneAchievement: zoneReceipt.achievement, alreadyPaid: previousPaid >= earned, newBest, fastest, tierUnlocked, dailyReward, styleBonus: snapshot.styleBonus, bounty, bountyReward, bountyUnmetStake: !bounty && contract ? contract.stake : 0, saved };
+  return { earned, credited, previousPaid, zoneReward: zoneReceipt.reward, zoneAchievement: zoneReceipt.achievement, alreadyPaid: previousPaid >= earned, newBest, fastest, tierUnlocked, tierRecord, tierBlocked: tierBlocked && abyssEmperorGate(tier), abyssRewards, dailyReward, weekly, weeklyReward: weekly?.reward || 0, styleBonus: snapshot.styleBonus, bounty, bountyReward, bountyUnmetStake: !bounty && contract ? contract.stake : 0, saved };
+}
+// 每周异变赛：每周第一次结算发奖，本周第一次到铜、银、金各补发一次；只记最高分。
+// 只更新当周或更新的周：换到新的一周时旧周的章进历史；旧周的中断局不覆盖本周纪录，也不发奖。
+function settleWeeklyRecord(snapshot) {
+  const old = persistenceRecord(meta.weekly), same = old.key === snapshot.weekly;
+  const score = weeklyScore({ t: snapshot.t, kills: snapshot.kills, bossKills: snapshot.bossKills, won: snapshot.won, emperorDefeated: snapshot.emperorDefeated, style: snapshot.weeklyStyle });
+  const medal = weeklyMedal(score.total), receipt = { key: snapshot.weekly, score: score.total, rows: score.rows, medal, best: score.total, bestMedal: medal, newBest: false, firstReward: 0, medalReward: 0, reward: 0, stale: false };
+  if (!same && isWeekKey(old.key) && snapshot.weekly < old.key) { receipt.stale = true; return receipt; }
+  const history = { ...persistenceRecord(old.history) }, totals = { bronze: 0, silver: 0, gold: 0, ...persistenceRecord(old.totals) };
+  if (!same && isWeekKey(old.key)) history[old.key] = Math.max(history[old.key] || 0, old.medal || 0);
+  const week = same ? old : { key: snapshot.weekly, best: 0, medal: 0, rewarded: false };
+  if (!week.rewarded) receipt.firstReward = WEEKLY_RULES.firstReward;
+  receipt.medalReward = weeklyMedalReward(week.medal || 0, medal);
+  receipt.reward = receipt.firstReward + receipt.medalReward;
+  receipt.newBest = score.total > (week.best || 0);
+  receipt.best = Math.max(week.best || 0, score.total); receipt.bestMedal = Math.max(week.medal || 0, medal);
+  history[snapshot.weekly] = receipt.bestMedal;
+  // 历史只留最近 12 周，更早的按章累加进总数
+  const keys = Object.keys(history).filter(isWeekKey).sort();
+  for (const key of keys.slice(0, Math.max(0, keys.length - WEEKLY_RULES.historyWeeks))) {
+    const name = ['', 'bronze', 'silver', 'gold'][history[key]]; if (name) totals[name]++;
+    delete history[key];
+  }
+  meta.coins += receipt.reward;
+  meta.weekly = { key: snapshot.weekly, best: receipt.best, medal: receipt.bestMedal, rewarded: true, history, totals };
+  return receipt;
 }
 function settleRunProgress(run, win) {
   const snapshot = snapshotRunProgress(run, win);
-  return snapshot ? settleRunSnapshot(snapshot) : { earned: 0, credited: 0, previousPaid: 0, alreadyPaid: false, newBest: false, fastest: false, tierUnlocked: 0, dailyReward: 0, styleBonus: 0, bounty: null, bountyReward: 0, saved: false };
+  return snapshot ? settleRunSnapshot(snapshot) : { earned: 0, credited: 0, previousPaid: 0, alreadyPaid: false, newBest: false, fastest: false, tierUnlocked: 0, tierRecord: 0, tierBlocked: false, abyssRewards: [], dailyReward: 0, weekly: null, weeklyReward: 0, styleBonus: 0, bounty: null, bountyReward: 0, saved: false };
 }
 function recoverPendingRuns({ includeBounty = true } = {}) {
   reloadMeta();
@@ -6608,7 +7145,7 @@ function recoverPendingRuns({ includeBounty = true } = {}) {
     if (!snapshot) { delete meta.pendingSettlements[id]; continue; }
     const receipt = settleRunSnapshot(snapshot, { recovering: true, includeBounty });
     if (!receipt) continue;
-    result.credited += receipt.credited + receipt.dailyReward + receipt.bountyReward + (receipt.zoneReward || 0); result.recovered++; result.saved = result.saved && receipt.saved;
+    result.credited += receipt.credited + receipt.dailyReward + receipt.weeklyReward + receipt.bountyReward + (receipt.zoneReward || 0); result.recovered++; result.saved = result.saved && receipt.saved;
     if (includeBounty && receipt.bounty?.met === false) result.bountyLost += receipt.bounty.stake;
     result.bountyUnmet += receipt.bountyUnmetStake;
   }
@@ -6631,7 +7168,7 @@ function emperorEligible(enemy, run = G) {
 }
 function queueEmperor(enemy) {
   if (G.emperor || !emperorEligible(enemy)) return false;
-  G.emperor = { stage: 'waiting', t: 0, x: enemy.x, y: enemy.y, corpseAngle: enemy.ang || 0, corpseSize: enemy.size, hp: enemy.maxHp * EMPEROR.hpMul, hazards: [], cycle: 0 };
+  G.emperor = { stage: 'waiting', t: 0, x: enemy.x, y: enemy.y, corpseAngle: enemy.ang || 0, corpseSize: enemy.size, hp: enemy.maxHp * EMPEROR.hpMul * abyssEmperorHpMul(), hazards: [], cycle: 0 };
   return true;
 }
 function emperorOtherFreeze() {
@@ -8002,6 +8539,49 @@ function updateExecute(pdt) {
   if (s.left <= 1e-9) { state.steal = null; if (s.id === 'haste') recalc(); }
 }
 
+// ---- src/game/weekly.js ----
+// 每周异变赛的对局接入：开局固定路线、装上两枚强制芯片，冲刺撞击（冲刺杀手），本局周分
+// 各条周规则的倍率由对局各处直接读 G.weekly.mods；不是周赛时 G.weekly 为 null，所有入口原样返回。
+
+// newRun 在 initZones、initAnomalies 之后调用：三幕路线写进固定路线（选卡时只出一张），第一幕先落位，两枚芯片直接装上
+function initWeeklyRun() {
+  const w = G?.weekly; if (!w) return;
+  G.zoneFixedRoute = w.route.slice();
+  if (G.zoneRoute) G.zoneRoute[0] = w.route[0];
+  for (const id of w.chips) grantAnomaly(id);
+  recalc(); G.player.hp = G.player.maxHp; // 玻璃大炮的生命上限在这之后才算上
+  G.weeklyStats = { rams: 0, ramKills: 0 };
+}
+// 强制芯片锁在槽里：异常芯片槽满时只能换第三枚
+function weeklyChipLocked(id) { return !!G?.weekly?.chips?.includes(id); }
+function weeklyMutation(run = G) { return run?.weekly ? WEEKLY_MUTATIONS[run.weekly.rule] || null : null; }
+
+// 冲刺杀手：冲刺线段碰到的敌人受一次撞击伤害；伤害随时间和深渊倍率放大（像踢爆弹），首领只吃基础值
+function weeklyDashRam(x0, y0, x1, y1) {
+  const cfg = G?.weekly?.mods?.dashRam, p = G?.player; if (!cfg || !p) return;
+  const ram = G.weeklyRam ||= { dashT: 0, hit: new Set() };
+  if (p.dashT > ram.dashT + 1e-9) ram.hit.clear(); // 冲刺剩余时间变长了：是新的一次冲刺
+  ram.dashT = p.dashT;
+  const dx = x1 - x0, dy = y1 - y0, length2 = dx * dx + dy * dy;
+  if (!(length2 > 0)) return;
+  query((x0 + x1) / 2, (y0 + y1) / 2, Math.sqrt(length2) / 2 + p.r + cfg.pad, e => {
+    if (e.dead || e.entering || e.colossusJoint || ram.hit.has(e.id)) return;
+    const k = clamp(((e.x - x0) * dx + (e.y - y0) * dy) / length2, 0, 1);
+    if (d2(x0 + dx * k, y0 + dy * k, e.x, e.y) > (p.r + e.r + cfg.pad) ** 2) return;
+    ram.hit.add(e.id);
+    const scale = e.boss ? cfg.bossMul : enemyHpMul(Math.max(0, G.t || 0)) * runMul('enemyHp');
+    const alive = !e.dead, side = (e.x - p.x) * -p.ddy + (e.y - p.y) * p.ddx >= 0 ? 1 : -1;
+    hitEnemy(e, cfg.damage * cfg.mul * scale * G.stats.dmg, { source: 'weekly:ram', kx: (p.ddx - p.ddy * side) * cfg.knock, ky: (p.ddy + p.ddx * side) * cfg.knock });
+    const stats = G.weeklyStats ||= { rams: 0, ramKills: 0 };
+    stats.rams++; if (alive && e.dead) stats.ramKills++;
+  });
+}
+// 本局周分（结算页、模拟共用）：评级高光取暴走评级实际入账的分数
+function weeklyRunScore(run = G) {
+  const score = weeklyScore({ t: run?.t, kills: run?.kills, bossKills: run?.bossKills, won: !!(run?.won || run?.escaped), emperorDefeated: !!run?.emperorDefeated, style: run?.styleRank?.earnedScore || 0 });
+  return { ...score, medal: weeklyMedal(score.total) };
+}
+
 // ---- src/game/dash-contact.js ----
 // 冲刺接触：每帧沿冲刺线段先判跪地首领，再踢爆弹和打居合斩痕；主循环里推进落刀和踢飞物
 
@@ -8017,6 +8597,7 @@ function dashContact(step) {
   executeDashContact(x0, y0, p.x, p.y);
   mechDashContact(x0, y0, p.x, p.y);
   if (G.form?.active) formDashContact(x0, y0, p.x, p.y);
+  if (G.weekly?.mods.dashRam) weeklyDashRam(x0, y0, p.x, p.y); // 周规则「冲刺杀手」
   // 踢爆弹、处决和机甲特性先结算；幸存且未被踢走的接触目标才挑空。
   if (JUGGLE.sources.dash) {
     const dx = p.x - x0, dy = p.y - y0, length2 = dx * dx + dy * dy;
@@ -9113,7 +9694,8 @@ function allyLevel(id) {
 function summonAlly(reason = 'style') {
   if (!allyLive()) return false;
   const state = G.allies, unlocked = allyUnlocked();
-  if (unlocked.length < 2 || state.active || state.count >= ALLY_RULES.maxCalls || G.t - state.lastAt < ALLY_RULES.cooldown) return false;
+  const calls = G.weekly?.mods.allyCalls ?? 1; // 周规则「援军之周」：次数上限 ×2、冷却减半
+  if (unlocked.length < 2 || state.active || state.count >= ALLY_RULES.maxCalls * calls || G.t - state.lastAt < ALLY_RULES.cooldown / calls) return false;
   const pool = unlocked.filter(m => m.id !== G.mech.id), fresh = pool.filter(m => !state.used.includes(m.id)), choices = fresh.length ? fresh : pool;
   if (!choices.length) return false;
   const mech = choices[Math.floor(Math.random() * choices.length)], point = allyLandingPoint(), lv = allyLevel(mech.weapon);
@@ -9126,7 +9708,9 @@ function summonAlly(reason = 'style') {
 }
 function allyQueueTriggers() {
   const s = G.allies, act = allyAct(), boss = G.boss;
-  if (G.styleRank?.rank >= ALLY_RULES.rank && !s.styleActs.includes(act)) { s.styleActs.push(act); s.pending.push({ reason: 'style', act }); }
+  // 高评级每幕呼叫一次；援军之周每幕两次（上一次还在排队时不再加）
+  const stylePerAct = G.weekly?.mods.allyCalls ?? 1;
+  if (G.styleRank?.rank >= ALLY_RULES.rank && s.styleActs.filter(x => x === act).length < stylePerAct && !s.pending.some(q => q.act === act)) { s.styleActs.push(act); s.pending.push({ reason: 'style', act }); }
   if (boss && !boss.dead && !boss.entering && G.player.hp < G.player.maxHp * ALLY_RULES.rescueHp && !s.bosses.includes(boss)) {
     s.bosses.push(boss); s.pending.push({ reason: 'rescue', boss });
   }
@@ -10161,7 +10745,7 @@ function spawnProps(dt) {
   if (!act) return;
   // 首领与收尾期间不积压刷新，快进或大步长每次也最多处理一次小组。
   if (!propsCanSpawn()) { G.propSpawnT = Math.max(G.propSpawnT, act.firstDelay); return; }
-  G.propSpawnT -= Math.min(dt, PROP_RULES.maxStep) * zoneMul('propRate');
+  G.propSpawnT -= Math.min(dt, PROP_RULES.maxStep) * zoneMul('propRate') * (G.weekly?.mods.propRate ?? 1); // 周规则「油桶狂欢」×3
   if (G.propSpawnT > 0) return;
   G.propSpawnT = PROP_RULES.spawnRetry;
   if (!propsWithinBudget(act)) return;
@@ -10354,23 +10938,28 @@ function initNight() {
 }
 // 战区规则没开时完全照旧；调试切换战区（__IR.zone）会打开本局战区规则。
 function nightZoneRulesActive() { return zonesEnabled(); }
-function nightWholeZone() { return nightZoneRulesActive() && currentZone().id === 'dark'; }
-function nightZoneAllowed() { return !nightZoneRulesActive() || !!currentZone().events?.night; }
+// 永夜裂谷整幕夜战；周规则「永夜之周」让第二、三幕不论战区都整幕夜战
+function nightWholeZone() { return nightZoneRulesActive() && (currentZone().id === 'dark' || !!G.weekly?.mods.longNight && currentZoneIndex() >= 1); }
+// 深渊规则「长夜」：不看战区的 events.night，这局必定出一次；永夜裂谷照旧整幕夜里
+function nightZoneAllowed() { return !nightZoneRulesActive() || !!currentZone().events?.night || abyssLongNight() > 0; }
+// 夜晚持续上限：长夜规则下拉长，并且虫潮退了也不提前收夜
+const nightMaxDuration = () => abyssLongNight() || NIGHT_RULES.maxDuration;
 function nightActive() { return !!(G?.night?.active && !G.practice); }
 function nightRunAlive() { return G && !G.practice && G.player?.hp > 0 && !(G.endT > 0) && !G.won && !(G.victoryT > 0); }
 // 在夜袭前预留完整虫潮及溃散窗口，不能预约一段会被行动或首领切断的黑夜。
 function nightWindowOpen() {
   const warningAt = G.night?.active ? G.night.warningAt : Math.max(TIDE_RULES.times[1] - TIDE_RULES.warning, G.t + NIGHT_RULES.lead);
   const tideEnd = warningAt + TIDE_RULES.warning + TIDE_RULES.duration + TIDE_RULES.routDuration;
-  return !G.boss && !G.warn && !G.pendingRelay && !['active', 'available'].includes(G.relay?.status)
-    && tideEnd < (RELAY_CONFIG.times[G.relayIndex] ?? Infinity)
+  // 长夜规则下不给战场行动让路（必定出一次），首领照旧让
+  const relayClear = abyssLongNight() > 0 || !G.pendingRelay && !['active', 'available'].includes(G.relay?.status) && tideEnd < (RELAY_CONFIG.times[G.relayIndex] ?? Infinity);
+  return !G.boss && !G.warn && relayClear
     && tideEnd <= (BOSS_TIMES[G.bossIdx] ?? Infinity) - TIDE_RULES.bossWarning;
 }
 function nightBegin() {
   const n = G.night, cfg = NIGHT_RULES;
   n.active = true; n.startedAt = G.t; n.elapsed = 0; n.fadeOutAt = null;
   n.warningAt = Math.max(TIDE_RULES.times[1] - TIDE_RULES.warning, G.t + cfg.lead);
-  n.endAt = Math.min(G.t + cfg.maxDuration, n.warningAt + TIDE_RULES.warning + TIDE_RULES.duration + cfg.afterTide + cfg.fadeOut);
+  n.endAt = abyssLongNight() ? G.t + nightMaxDuration() : Math.min(G.t + cfg.maxDuration, n.warningAt + TIDE_RULES.warning + TIDE_RULES.duration + cfg.afterTide + cfg.fadeOut);
   n.event = { startedAt: G.t, endedAt: null, warningAt: n.warningAt, reason: null };
   G.nightStats.events.push(n.event);
   G.banner = { kind: 'info', title: '黑潮夜袭', sub: '车灯照到的虫受伤 +15%',
@@ -10409,7 +10998,7 @@ function nightFlareContains(x, y) {
 }
 function nightLitMul(e) {
   return nightActive() && (nightHeadlightContains(e.x, e.y) || nightFlareContains(e.x, e.y))
-    ? (nightWholeZone() ? currentZone().mods.litDamage : NIGHT_RULES.litMultiplier) : 1;
+    ? (nightWholeZone() ? currentZone().mods.litDamage ?? NIGHT_RULES.litMultiplier : NIGHT_RULES.litMultiplier) : 1;
 }
 // 只给真正处于暗处的普通刷怪加密；贴身圈和瞬时照明也属于亮处。
 function nightSpawnMul(x, y) {
@@ -10424,7 +11013,7 @@ function nightBeginWholeZone() {
   if (n.active) nightFinish('zone-entered', false);
   n.zoneNight = true; n.active = true; n.finished = false; n.startedAt = G.t; n.elapsed = 0;
   n.endAt = Infinity; n.warningAt = null; n.fadeOutAt = null; n.tideEvent = null;
-  n.event = { startedAt: G.t, endedAt: null, warningAt: null, reason: null, zone: 'dark' };
+  n.event = { startedAt: G.t, endedAt: null, warningAt: null, reason: null, zone: currentZone().id };
   G.nightStats.events.push(n.event);
 }
 function registerNightLight(x, y, radius, life = NIGHT_RULES.lightDuration) {
@@ -10476,13 +11065,14 @@ function updateNight(dt, rdt) {
     if (!n.tideEvent && G.tideIndex > 1) { nightFinish('skipped'); return; }
     if (!n.tideEvent && !nightWindowOpen()) { nightFinish('rescheduled', false); return; }
     if (n.tideEvent?.endedAt !== null && n.tideEvent?.endedAt !== undefined && n.fadeOutAt === null) {
-      n.fadeOutAt = Math.min(n.startedAt + cfg.maxDuration - cfg.fadeOut, n.tideEvent.endedAt + cfg.afterTide);
+      n.fadeOutAt = abyssLongNight() ? n.startedAt + nightMaxDuration() - cfg.fadeOut : Math.min(n.startedAt + cfg.maxDuration - cfg.fadeOut, n.tideEvent.endedAt + cfg.afterTide);
       n.endAt = n.fadeOutAt + cfg.fadeOut;
     }
-    if (n.fadeOutAt === null && n.elapsed >= cfg.maxDuration - cfg.fadeOut) {
-      n.fadeOutAt = n.startedAt + cfg.maxDuration - cfg.fadeOut; n.endAt = n.startedAt + cfg.maxDuration;
+    const maxDuration = nightMaxDuration();
+    if (n.fadeOutAt === null && n.elapsed >= maxDuration - cfg.fadeOut) {
+      n.fadeOutAt = n.startedAt + maxDuration - cfg.fadeOut; n.endAt = n.startedAt + maxDuration;
     }
-    if (n.elapsed >= cfg.maxDuration - 1e-9 || n.fadeOutAt !== null && G.t >= n.endAt - 1e-9) { nightFinish(n.elapsed >= cfg.maxDuration - 1e-9 ? 'timeout' : 'tide-ended'); return; }
+    if (n.elapsed >= maxDuration - 1e-9 || n.fadeOutAt !== null && G.t >= n.endAt - 1e-9) { nightFinish(n.elapsed >= maxDuration - 1e-9 ? 'timeout' : 'tide-ended'); return; }
   }
   for (const light of n.lights) light.life -= worldDt;
   compact(n.lights, light => light.life > 1e-9);
@@ -10528,7 +11118,7 @@ onHurt('night', () => { if (nightActive()) G.nightStats.hits++; });
 onKill('night', enemy => {
   if (!nightActive() || !nightRunAlive()) return;
   G.nightStats.kills++;
-  if (!enemy.elite || enemy.boss || G.night.zoneNight && !currentZone().reward.eliteFlare) return;
+  if (!enemy.elite || enemy.boss || G.night.zoneNight && !currentZone().reward.eliteFlare && !G.weekly?.mods.longNight) return;
   const occupied = G.night.flares.length + G.pickups.filter(item => item.kind === 'flare' && !item.dead).length;
   if (occupied >= NIGHT_RULES.maxFlares) return;
   G.pickups.push({ kind: 'flare', x: enemy.x, y: enemy.y, v: 1, mag: false, vx: 0, vy: 0, t: 0 });
@@ -10574,12 +11164,14 @@ function tideCanWarn(index) {
   const latestEnd = startAt + duration + TIDE_RULES.routDuration;
   return latestEnd < nextAction && latestEnd <= (BOSS_TIMES[G.bossIdx] ?? Infinity) - TIDE_RULES.bossWarning;
 }
-function tideWarn(index) {
-  const cfg = TIDE_RULES, scheduledAt = cfg.times[index], startAt = G.t + cfg.warning;
-  const event = { id: index + 1, scheduledAt, warningAt: G.t, startedAt: null, endedAt: null,
+// extra：周规则「虫潮之周」加的一次虫潮（第 3、4 次，不占原来两次的序号，夜袭仍跟第二次），index 是用哪一档虫墙
+function tideWarn(index, extra = null) {
+  const cfg = TIDE_RULES, scheduledAt = extra ? extra.at : cfg.times[index], startAt = G.t + cfg.warning;
+  const event = { id: extra ? cfg.times.length + 1 + extra.n : index + 1, scheduledAt, warningAt: G.t, startedAt: null, endedAt: null,
     duration: tideDuration(index, startAt), kills: 0, peakCharged: false, coreSpawned: false,
     coreKilled: false, reason: null, rewardCoins: 0, spawned: 0, rows: 0 };
   G.tide = { phase: 'warning', direction: Math.random() * TAU, event, warningUntil: startAt, nextRowAt: startAt, core: null, peakChecked: false };
+  if (extra) { G.tide.size = index; G.tide.extra = true; event.extra = true; }
   toast({ text: '猩红虫潮将至 · 横向寻找缺口', t: cfg.warning, priority: 3 });
   if (G.settings?.shake !== false) G.shake = Math.max(G.shake || 0, cfg.warningShake);
   SFX.tide?.();
@@ -10597,7 +11189,7 @@ function tideSpawn(type, angle, lead = 0, core = false) {
   return e;
 }
 function tideSpawnRow() {
-  const tide = G.tide, cfg = TIDE_RULES, index = tide.event.id - 1, n = cfg.crawlers[index], half = cfg.sector / 2;
+  const tide = G.tide, cfg = TIDE_RULES, index = tide.size ?? tide.event.id - 1, n = cfg.crawlers[index], half = cfg.sector / 2;
   tide.event.rows++;
   // 重甲先占两个前排位置；爬虫沿同一扇区的屏外矩形边界展开成墙。
   for (let i = 0; i < cfg.shields; i++) tideSpawn('brute', tide.direction + (i ? 1 : -1) * half * .35, cfg.shieldLead);
@@ -10646,6 +11238,13 @@ function tideFinish(reason, reward = true) {
   }
   G.tide = null; tideClearRout(true);
 }
+// 周赛加的虫潮：各有一段可开潮的时间窗，过了窗口没开成就作废；原来两次虫潮到点时先让原来的
+function tideExtraWarn(list) {
+  const n = G.tideExtraIndex || 0, extra = list[n];
+  if (!extra) return;
+  if (G.t > extra.until) { G.tideExtraIndex = n + 1; return; }
+  if (G.t >= extra.at - TIDE_RULES.warning && tideCanWarn(extra.size)) tideWarn(extra.size, { ...extra, n });
+}
 function tideDamageMultiplier(e) {
   return e?.tideRoutUntil > G.t ? TIDE_RULES.routDamageMul : 1;
 }
@@ -10680,6 +11279,7 @@ function updateTide(dt) {
   if (!G.tide) {
     const index = G.tideIndex;
     if (index < cfg.times.length && G.t >= cfg.times[index] - cfg.warning && nightTideReady(index) && tideCanWarn(index)) tideWarn(index);
+    else if (G.weekly?.mods.extraTides) tideExtraWarn(G.weekly.mods.extraTides);
     return;
   }
   const tide = G.tide, event = tide.event;
@@ -10687,7 +11287,7 @@ function updateTide(dt) {
     // 预告中途被首领或行动打断：保留未消费的档期，安全后重新给足预告时间。
     if (tideBattleBlocked()) { G.tide = null; return; }
     if (G.t < tide.warningUntil - 1e-9) return;
-    tide.phase = 'active'; event.startedAt = G.t; G.tideIndex++; G.tideStats.events.push(event);
+    tide.phase = 'active'; event.startedAt = G.t; if (tide.extra) G.tideExtraIndex = (G.tideExtraIndex || 0) + 1; else G.tideIndex++; G.tideStats.events.push(event);
     tide.nextRowAt = G.t;
   }
   if (tideBattleBlocked()) { tideFinish('interrupted', false); return; }
@@ -10773,7 +11373,7 @@ function mortarRunActive(dt) {
 }
 function scheduleMortar(dt) {
   if (!mortarRunActive(dt) || !G.mortarStats || G.t < G.mortarNextAt || G.boss || G.warn || tideBusy()) return;
-  const late = G.t >= MORTAR_RULES.lateAt, cap = late ? MORTAR_RULES.lateCap : MORTAR_RULES.cap;
+  const late = G.t >= MORTAR_RULES.lateAt, cap = abyssMortarCap(late ? MORTAR_RULES.lateCap : MORTAR_RULES.cap); // 深渊词条「迫击齐射」
   if (G.enemies.filter(e => !e.dead && e.type === 'mortar').length >= cap) {
     G.mortarNextAt = G.t + MORTAR_RULES.retry; return;
   }
@@ -10785,7 +11385,7 @@ function scheduleMortar(dt) {
   const [x, y] = ringPos(entryAngle), enemy = spawnEnemy('mortar', x, y);
   if (!enemy) { G.mortarNextAt = G.t + MORTAR_RULES.retry; return; }
   enemy.cd = 0; enemy.mortarCharging = false; enemy.mortarGoal = goal;
-  G.mortarNextAt = G.t + (late ? MORTAR_RULES.lateInterval : MORTAR_RULES.interval);
+  G.mortarNextAt = G.t + (late ? MORTAR_RULES.lateInterval : MORTAR_RULES.interval) * abyssMul('mortarInterval');
   G.mortarStats.spawned++;
 }
 function mortarScreenContains(point, e, camera = G.cam || G.player, width = VW, height = VH) {
@@ -10925,9 +11525,12 @@ function updateMortarShells(dt) {
 // newRun 里在 initZones() 之前调用（classic 测试接在 initZones 后面把开关钉成关）
 function initFormations() {
   G.formationsEnabled = FORMATION_RULES.enabled && !G.practice && (meta?.wins || 0) >= FORMATION_RULES.winsRequired;
-  G.formation = { picks: null, squads: [], pending: null, nextAt: FORMATION_RULES.lightFrom, full: false, turn: 0, forced: null, serial: 0, planT: 0 };
+  G.formation = { picks: null, squads: [], pending: null, nextAt: formationLightFrom(), full: false, turn: 0, forced: null, serial: 0, planT: 0 };
   G.formationStats = { announced: {}, spawned: {}, cancelled: 0, volleys: 0, shots: 0, memberKills: 0, squads: [] };
 }
+// 深渊规则「编队全开」：三种都进本局，第一幕轻量版提前开排
+function formationLightFrom() { return abyssHas('formations') ? abyssDef('formations').lightFrom : FORMATION_RULES.lightFrom; }
+function formationPickCount() { return abyssHas('formations') ? abyssDef('formations').picks : FORMATION_RULES.picks; }
 function formationsEnabled() { return !!G?.formation && !G.practice && !!G.formationsEnabled; }
 
 // 本局抽到的两种：第一次用到时才抽（模拟在开局后才写种子），同一局之后不变；每日挑战按当天配置固定
@@ -10936,7 +11539,7 @@ function formationPicks() {
   const f = G?.formation; if (!f) return [];
   if (!f.picks) {
     const random = mulberry32(dailyHash(formationSeedText())), pool = Object.keys(FORMATIONS), picks = [];
-    while (picks.length < Math.min(FORMATION_RULES.picks, Object.keys(FORMATIONS).length)) picks.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
+    while (picks.length < Math.min(formationPickCount(), Object.keys(FORMATIONS).length)) picks.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
     f.picks = picks;
   }
   return f.picks;
@@ -10950,7 +11553,7 @@ function formationPickText() {
 // 现在按哪一段排：第一幕（第一只首领登场前）60 秒起排轻量版，第二幕起排完整版；都不是返回 null
 function formationPhase() {
   if (currentZoneIndex() >= 1) return 'full';
-  return G.bossIdx === 0 && G.t >= FORMATION_RULES.lightFrom ? 'light' : null;
+  return G.bossIdx === 0 && G.t >= formationLightFrom() ? 'light' : null;
 }
 // 这些时候不排新队：首领预警和首领战、猩红虫潮预告到溃散、坠落（预警到着陆）、谢幕、胜利以后（含虫皇）
 function formationBlocked() {
@@ -11253,6 +11856,120 @@ function debugFormation(id) {
   return true;
 }
 
+// ---- src/game/abyss-hazards.js ----
+// 深渊无底里会动手的部分：深渊毒圈（精英前压留下的、毒地冒出的）、裂变、首领护卫、精英再生、黑潮、首领狂暴飘字和调试入口
+// 规则开没开、倍率多少都问 game/abyss.js；没开的局这里什么都不做，不刷怪、不扣血、不抽随机数。
+
+// 首领护卫：首领登场时从首领那一侧的屏幕边缘带进 2 只词缀精英
+function abyssBossArrived(boss) {
+  if (!abyssHas('bossGuard')) return;
+  const p = G.player, base = Math.atan2(boss.y - p.y, boss.x - p.x), n = abyssDef('bossGuard').count;
+  for (let i = 0; i < n; i++) {
+    const affix = ELITE_AFFIX_ORDER[G.abyss.guardTurn++ % ELITE_AFFIX_ORDER.length], [x, y] = ringPos(base + (i - (n - 1) / 2) * .7);
+    const e = spawnEnemy(ELITE_AFFIXES[affix].type, x, y, { elite: true, affix });
+    if (e) { e.abyssGuard = true; G.abyssStats.guards++; }
+  }
+}
+
+// 深渊毒圈：先亮 1 秒红圈，再在原地留 life 秒，站在里面每秒挨一下（推出圈外）
+function abyssDropPool(x, y, r, life) {
+  const pools = G.abyss.pools, cfg = ABYSS_RULES.pool;
+  if (pools.length >= cfg.cap) pools.shift();
+  pools.push({ x, y, r, age: 0, warn: cfg.warn, life, tick: 0 });
+  G.abyssStats.pools++;
+}
+function abyssUpdatePools(dt) {
+  const pools = G.abyss.pools, cfg = ABYSS_RULES.pool, p = G.player;
+  for (const pool of pools) {
+    pool.age += dt;
+    if (pool.age < pool.warn) continue;
+    pool.tick -= dt;
+    if (pool.tick > 0) continue;
+    pool.tick += cfg.tick;
+    const rr = pool.r + p.hurtR;
+    if ((p.x - pool.x) ** 2 + (p.y - pool.y) ** 2 > rr * rr) continue;
+    const before = p.hp;
+    if (hurtPlayer(cfg.damage, pool.x, pool.y, 'abyss:pool')) { G.abyssStats.poolHits++; G.abyssStats.poolDamage += Math.max(0, before - p.hp); }
+  }
+  for (let i = pools.length - 1; i >= 0; i--) if (pools[i].age >= pools[i].warn + pools[i].life) pools.splice(i, 1);
+}
+// 对局还在打（没分出胜负、不在虫皇登场后）
+function abyssRunLive() { return G.player.hp > 0 && !(G.endT > 0) && !G.won && !G.escaped && !G.emperor && !(G.victoryT > 0) && !G.finale; }
+
+// 每帧（世界 dt；时停、坠落中为 0）：毒圈、毒地、精英再生、黑潮
+function updateAbyss(dt) {
+  const a = G?.abyss;
+  if (!a?.list.length || !(dt > 0) || G.practice) return;
+  if (a.pools.length) abyssUpdatePools(dt);
+  if (!abyssRunLive()) return;
+  // 首领狂暴：abyssBossTempo 判定进狂暴的那一帧之后补一句飘字
+  const boss = G.boss;
+  if (boss?.abyssRage && !boss.abyssRageShown) { boss.abyssRageShown = true; floatText(boss.x, boss.y - boss.size / 2 - 30, '深渊狂暴！', '255,70,90', 26, 1.4); }
+  if (a.on.toxicGround) {
+    const cfg = abyssDef('toxicGround');
+    if (a.poolAt === null) a.poolAt = G.t + cfg.interval;
+    else if (G.t >= a.poolAt) {
+      a.poolAt += cfg.interval;
+      const angle = abyssRoll() * TAU, d = abyssRoll() * cfg.near, p = G.player;
+      abyssDropPool(p.x + Math.cos(angle) * d, p.y + Math.sin(angle) * d, cfg.r, cfg.life);
+    }
+  }
+  if (a.on.eliteRegen) {
+    const cfg = abyssDef('eliteRegen');
+    for (const e of G.enemies) {
+      if (e.dead || !e.elite || e.boss || e.amalgam || !(e.hp < e.maxHp) || G.t - (e.abyssHitAt ?? -Infinity) < cfg.delay) continue;
+      const heal = Math.min(e.maxHp - e.hp, e.maxHp * cfg.rate * dt);
+      e.hp += heal; G.abyssStats.regen += heal;
+    }
+  }
+  if (a.on.blackTide && currentZoneIndex() >= 2) {
+    const cfg = abyssDef('blackTide');
+    if (a.tideAt === null) a.tideAt = G.t + cfg.interval;
+    else if (G.t >= a.tideAt) {
+      // 首领预警中先让一让，5 秒后再来
+      if (G.warn) a.tideAt = G.t + 5;
+      else { a.tideAt += cfg.interval; abyssBlackTide(cfg.count); }
+    }
+  }
+}
+// 黑潮：一圈小虫从屏幕边缘涌进来（位置按角度均分，不抽随机）
+function abyssBlackTide(n) {
+  let made = 0;
+  for (let i = 0; i < n; i++) { const [x, y] = ringPos(i / n * TAU + G.abyss.tideAt * .37); if (spawnEnemy(i % 6 === 5 ? 'bomber' : 'crawler', x, y)) made++; }
+  G.abyssStats.tides++;
+  if (made) toast({ text: '黑潮涌来 · 小虫潮从四面压上', priority: 2 });
+}
+
+// 精英再生：记下精英最后一次挨打的时间
+onHit('abyss-hazards', e => { if (G?.abyss?.on.eliteRegen && e.elite) e.abyssHitAt = G.t; });
+// 精英前压：精英死时留毒圈；裂变：爬虫死时有概率分裂（下一帧再刷，避免在伤害结算中途改敌人列表）
+onKill('abyss-hazards', e => {
+  const a = G?.abyss;
+  if (!a?.list.length || e.boss) return;
+  if (a.on.elites && e.elite && !e.amalgam) { const cfg = abyssDef('elites'); abyssDropPool(e.x, e.y, cfg.poolR, cfg.poolLife); }
+  if (a.on.split && e.type === 'crawler' && !e.elite && !e.abyssSplit) {
+    const cfg = abyssDef('split');
+    if (abyssRoll() >= cfg.chance) return;
+    const x = e.x, y = e.y, r = e.r;
+    G.later.push({ t: 0, fn: () => {
+      for (let i = 0; i < cfg.count; i++) {
+        const side = i % 2 ? 1 : -1, child = spawnEnemy('crawler', x + side * r, y + (i - .5) * r * .6);
+        if (!child) continue;
+        child.abyssSplit = true; child.r *= cfg.size; child.size *= cfg.size; child.hp *= cfg.hp; child.maxHp = child.hp; child.xp *= .5;
+        G.abyssStats.splits++;
+      }
+    } });
+  }
+});
+// 调试（浏览器试玩）：数字 = 把本局换成深渊 N 层的倍率和规则；'pool' 在机甲旁边冒一个毒圈；'tide' 来一波黑潮
+function debugAbyss(cmd) {
+  if (!G?.abyss || G.practice) return false;
+  if (Number.isInteger(cmd) && cmd >= 0) { G.tier = cmd; G.mods = tierMods(cmd); initAbyss(); return G.abyss.list.slice(); }
+  if (cmd === 'pool') { abyssDropPool(G.player.x + 40, G.player.y, abyssDef('toxicGround').r, abyssDef('toxicGround').life); return true; }
+  if (cmd === 'tide') { G.abyss.tideAt = G.t; abyssBlackTide(abyssDef('blackTide').count); return true; }
+  return false;
+}
+
 // ---- src/game/spawn.js ----
 // 刷怪导演：普通刷怪、虫群包围、精英、首领登场、新手提示
 
@@ -11261,13 +11978,14 @@ function spawnEnemy(type, x, y, o = {}) {
   // 所有虫群、守卫和首领召唤都走这一入口；非首领时期留出一个首领位置。生命再乘当前敌群阶段的 hpMul（只有中期两段有）。
   // 活跃潮尚未出潮心时，普通刷怪也保留这一格；潮心只豁免该预留，仍遵守原上限。
   const reserveTideCore = G.tide?.phase === 'active' && !G.tide.event.coreSpawned && !o.tideCore ? 1 : 0;
-  const cap = Math.floor(spawnCap(t)) - (G.boss ? 0 : 1) - reserveTideCore;
+  const cap = Math.floor(spawnCap(t) * abyssMul('spawnCap')) - (G.boss ? 0 : 1) - reserveTideCore; // 深渊词条「狂潮」放宽同屏上限
   if (G.enemies.length >= cap) return null;
   const e = { id: G.eid++, type, d, img: d.img, x, y, r: d.r, size: d.size, hp: d.hp * enemyHpMul(t) * (enemyPhaseAt(t)?.hpMul || 1), speed: d.speed * rand(.9, 1.1) * enemySpeedMul(t) * zoneMul('enemySpeed'), dmg: d.dmg, xp: d.xp, col: d.col, kx: 0, ky: 0, flash: 0, ang: Math.atan2(G.player.y - y, G.player.x - x), st: 'walk', stT: 0, cd: rand(1, 2.6), elite: false, sawT: 0, q: 0, wob: Math.random() * TAU, fuse: 0 };
   if (o.elite) {
     e.elite = true; e.xp *= 6;
     if (!applyEliteAffix(e, o.affix)) { e.hp *= 9; e.r *= 1.45; e.size *= 1.45; e.dmg *= 1.4; e.speed *= .9; }
   }
+  abyssEnemySpawned(e, !!o.elite); // 深渊词条「虫群加速」：普通敌人
   applyRunModifiers(e);
   e.hp *= anomalyEnemyHpMul(); // 连锁殉爆的代价：敌人生命 +15%（首领不走这里）
   e.maxHp = e.hp; G.enemies.push(e); return e;
@@ -11323,12 +12041,12 @@ function director(dt) {
     G.banner = { kind: 'info', title: '虫群包围！', sub: '找准缺口冲刺突破', t: 2.2, max: 2.2, col: '255,80,90' };
   }
   if (t >= G.nextElite && !G.boss && !G.warn) {
-    const nextBoss = BOSS_TIMES[G.bossIdx] ?? Infinity;
+    const nextBoss = BOSS_TIMES[G.bossIdx] ?? Infinity, elitePhase = abyssElitePhase(t, phase); // 深渊规则「精英前压」：第一段精英从 2:00 起
     const liveElites = G.enemies.filter(e => e.elite && !e.dead);
-    if ((phase && (liveElites.length >= phase.eliteCap || nextBoss - t < ELITE_SPAWN_RULES.bossGrace))) G.nextElite = t + ELITE_SPAWN_RULES.retry;
+    if ((elitePhase && (liveElites.length >= abyssEliteCap(elitePhase.eliteCap) || nextBoss - t < ELITE_SPAWN_RULES.bossGrace))) G.nextElite = t + ELITE_SPAWN_RULES.retry;
     else {
       let id = null;
-      if (phase) {
+      if (elitePhase) {
         const index = G.eliteAffixIndex || 0;
         for (let i = 0; i < ELITE_AFFIX_ORDER.length; i++) {
           const candidate = ELITE_AFFIX_ORDER[(index + i) % ELITE_AFFIX_ORDER.length];
@@ -11338,14 +12056,14 @@ function director(dt) {
       const type = id ? ELITE_AFFIXES[id].type : pick(t > 100 ? ['brute', 'charger', 'gunner'] : ['brute', 'gunner']);
       const elite = spawnAround(type, { elite: true, affix: id });
       // 总量已满时短暂重试；成功后从当前时间排下一次，不补发首领战积压。
-      G.nextElite = t + (elite ? (phase ? phase.eliteInterval : 35) / zoneMul('eliteRate') : ELITE_SPAWN_RULES.retry);
+      G.nextElite = t + (elite ? (elitePhase ? elitePhase.eliteInterval : 35) / (zoneMul('eliteRate') * (G.weekly?.mods.eliteRate ?? 1)) : ELITE_SPAWN_RULES.retry); // 周规则「精英狂欢」×2
       if (elite) {
         if (id) G.eliteAffixIndex = (ELITE_AFFIX_ORDER.indexOf(id) + 1) % ELITE_AFFIX_ORDER.length;
         toast({ text: id ? `${ELITE_AFFIXES[id].name}精英出现 · 击败可得补给箱` : '精英出现！击败它掉落补给箱', priority: 3 });
       }
     }
   }
-  const rate = spawnRate(t, !!(G.boss || G.warn) && !rideActive()) * runMul('spawn'), cap = spawnCap(t);
+  const rate = spawnRate(t, !!(G.boss || G.warn) && !rideActive()) * runMul('spawn'), cap = spawnCap(t) * abyssMul('spawnCap');
   G.spawnAcc += rate * dt;
   updateFormations(dt); // 敌军编队：排队、进场（进场时从 spawnAcc 扣成员数）、站位、齐射计时、散队
   while (G.spawnAcc >= 1) {
@@ -11372,6 +12090,7 @@ function spawnBoss(i) {
   if (b.kind === 'fortress') initFortressBoss(e); // 从机甲正上方的地下顶出来，不从屏外走进来
   G.enemies.push(e); G.boss = e; MUS.intensity = 2;
   G.banner = { kind: 'boss', title: b.name, sub: b.final ? '最终决战 · 击破它即可突围' : '击败首领获得补给箱', t: 2.4, max: 2.4, col: e.col };
+  abyssBossArrived(e); // 深渊词条「首领护卫」
   return true;
 }
 
@@ -11559,7 +12278,7 @@ function failRelay(reason) {
 
 // dt 给玩家的子弹和导弹，enemyDt 给敌弹：时停中 enemyDt 为 0，敌弹整段不更新；玩家的飞一小段后悬停
 function updateBullets(dt, enemyDt = dt) {
-  const p = G.player, hd = halfDiag() * 1.5, frozen = timeStopActive();
+  const p = G.player, hd = halfDiag() * 1.5, frozen = timeStopActive(), abyssBullet = abyssMul('bulletSpeed');
   for (const b of G.pbullets) {
     if (b.dead || frozen && timeStopHover(b, dt)) continue;
     const previousX = b.x, previousY = b.y;
@@ -11581,7 +12300,7 @@ function updateBullets(dt, enemyDt = dt) {
   compact(G.missiles, m => !m.dead);
   for (const b of G.ebullets) {
     if (b.dead || !(enemyDt > 0)) continue;
-    const bdt = enemyDt * anomalyBulletMul(b); // 静滞核心：站定时屏内敌弹放慢，射程不变
+    const bdt = enemyDt * anomalyBulletMul(b) * abyssBullet; // 静滞核心：站定时屏内敌弹放慢，射程不变；深渊词条「弹雨」加快
     if (b.home > 0) { b.home -= bdt; const want = Math.atan2(p.y - b.y, p.x - b.x), cur = Math.atan2(b.vy, b.vx), a = angLerp(cur, want, Math.min(1, bdt * 1.6)); b.vx = Math.cos(a) * b.spd; b.vy = Math.sin(a) * b.spd; }
     b.x += b.vx * bdt; b.y += b.vy * bdt; b.life -= bdt;
     if (b.life <= 0 || Math.abs(b.x - p.x) > hd || Math.abs(b.y - p.y) > hd) { b.dead = true; continue; }
@@ -11615,15 +12334,18 @@ function updatePickups(dt) {
   const p = G.player, R = G.stats.pickR;
   // 本帧致命伤先于拾取发生，治疗包不能替代紧急重启。
   if (p.hp <= 0 || G.endT > 0) return;
+  // 深渊词条：血包延迟（落地多久后才吸得到、捡得到）、回收税（经验球多久没吸走就消失）；没开时是 0 和无穷
+  const healReady = abyssHealReady(), xpLife = abyssXpLife();
   for (const o of G.pickups) {
     o.t += dt;
-    const dd = d2(o.x, o.y, p.x, p.y);
-    if (o.t > .25 && (o.mag || dd < R * R || (o.kind === 'chest' && dd < 60 * 60))) {
+    if (o.kind === 'xp' && !o.mag && o.t > xpLife) { o.dead = true; abyssXpLost(); continue; }
+    const dd = d2(o.x, o.y, p.x, p.y), ready = o.t > .25 && (o.kind !== 'heal' || o.t > healReady);
+    if (ready && (o.mag || dd < R * R || (o.kind === 'chest' && dd < 60 * 60))) {
       o.mag = true; const d = Math.sqrt(dd) || 1, s = 260 + o.t * 300;
       o.vx = lerp(o.vx, (p.x - o.x) / d * s, Math.min(1, dt * 8)); o.vy = lerp(o.vy, (p.y - o.y) / d * s, Math.min(1, dt * 8));
     } else { o.vx *= .9; o.vy *= .9; }
     o.x += o.vx * dt; o.y += o.vy * dt;
-    if (dd < 20 * 20 && o.t > .25) { o.dead = true; collect(o); }
+    if (dd < 20 * 20 && ready) { o.dead = true; collect(o); }
   }
   compact(G.pickups, o => !o.dead);
 }
@@ -11735,6 +12457,9 @@ const ACHIEVEMENTS = [
   { id: 'veteran-30', name: '久经沙场', desc: '累计打完 30 局', test: (s, meta) => Math.max(meta.runs || 0, MECHS.reduce((n, m) => n + (meta.mechStats?.[m.id]?.runs || 0), 0)) >= 30 },
   { id: 'tier-1', name: '坠入深渊', desc: '在深渊 1 层或更高层突围', test: s => s.win && s.tier >= 1 },
   { id: 'tier-5', name: '深渊行者', desc: '在深渊 5 层或更高层突围', test: s => s.win && s.tier >= 5 },
+  // 深渊 10 起打败虫皇才算通关，这两条照同一判定
+  { id: 'tier-15', name: '深渊十五', desc: '通关深渊 15 层或更深（要打败虫皇）', test: s => s.tier >= 15 && abyssClearCounts(s.tier, s.win, s.emperorDefeated) },
+  { id: 'tier-20', name: '深渊二十', desc: '通关深渊 20 层或更深（要打败虫皇）', test: s => s.tier >= 20 && abyssClearCounts(s.tier, s.win, s.emperorDefeated) },
 ];
 // 协议勋章墙：每个协议第一次突围点亮一格，六台机甲各三格
 const PROTOCOL_MEDALS = TALENTS.map(t => ({ id: 'proto:' + t.id, mechId: t.mechId, talentId: t.id, name: t.name }));
@@ -11851,6 +12576,9 @@ function drawCosmeticFragment(ctx, q, zoom = 1, flashes = true) {
     ctx.rotate((q.angle || 0) + (1 - t) * 1.2); ctx.beginPath(); ctx.moveTo(-size * .7, 0); ctx.lineTo(0, -size * .3); ctx.lineTo(size * .7, 0); ctx.lineTo(0, size * .3); ctx.closePath(); ctx.fill();
   } else if (q.kind === 'cosmeticPixel') {
     const pixel = Math.max(2, Math.round(size * .6)); ctx.fillRect(-pixel / 2, -pixel / 2, pixel, pixel);
+  } else if (q.kind === 'cosmeticAbyss' && !q.ring) {
+    // 渊裂：一道折线裂缝
+    ctx.rotate(q.angle || 0); ctx.lineWidth = 1.6 / zoom; ctx.beginPath(); ctx.moveTo(-size * .8, 0); ctx.lineTo(-size * .25, -size * .3); ctx.lineTo(size * .15, size * .22); ctx.lineTo(size * .8, -size * .12); ctx.stroke();
   } else if (q.ring) {
     ctx.lineWidth = (1 + t) / zoom; ctx.beginPath(); ctx.arc(0, 0, size * (.45 + (1 - t) * 1.9), 0, Math.PI * 2); ctx.stroke();
   } else {
@@ -12021,19 +12749,36 @@ function drawHangarWeapon(ctx, mech, t, over, color) {
 window.addEventListener('resize', () => { if (hangarPreviewCanvas && !hangarPreviewCanvas.closest('[hidden]') && !hangarPreviewFrame) drawHangarPreview(0, false); });
 
 // ---- src/ui/achievements.js ----
-// 机库里的协议勋章墙、成就列表和单台机甲战绩
+// 机库里的协议勋章墙、周赛周章、成就列表和单台机甲战绩
 
 function mechRecordText(mechId) {
   const s = meta.mechStats?.[mechId];
   if (!s || !s.runs) return '本机还没有出击记录';
   return `本机战绩 · 出击 ${s.runs} · 突围 ${s.wins}${s.fastest ? ` · 最快突围 ${fmtTime(s.fastest)}` : ''} · 最久存活 ${fmtTime(s.best)} · 最多击杀 ${s.bestKills}`;
 }
+// 勋章墙最后一格：全账号通关过的最深层
+function medalDepthRow() {
+  const best = bestTierCleared(meta), text = best > 0 ? tierName(best) : '还没通关深渊';
+  return `<div class="medal-row medal-depth"><i aria-hidden="true">渊</i><b>最深层</b><span class="medal${best > 0 ? ' on' : ''}" aria-label="最深层：${text}">${text}</span></div>`;
+}
 function renderAchievements() {
   const have = meta.achievements || {};
   const got = ACHIEVEMENTS.filter(a => have[a.id]).length + PROTOCOL_MEDALS.filter(m => have[m.id]).length;
   $('#achCount').textContent = `${got} / ${ACHIEVEMENT_TOTAL}`;
-  $('#medalWall').innerHTML = MECHS.map(mech => `<div class="medal-row"><img src="assets/sprites/${mech.img}.webp" alt="" width="32" height="32"><b>${mech.name}</b>${PROTOCOL_MEDALS.filter(m => m.mechId === mech.id).map(m => `<span class="medal${have[m.id] ? ' on' : ''}" aria-label="${mech.name}${m.name}${have[m.id] ? '，已突围' : '，未突围'}">${m.name}</span>`).join('')}</div>`).join('');
+  $('#medalWall').innerHTML = MECHS.map(mech => `<div class="medal-row"><img src="assets/sprites/${mech.img}.webp" alt="" width="32" height="32"><b>${mech.name}</b>${PROTOCOL_MEDALS.filter(m => m.mechId === mech.id).map(m => `<span class="medal${have[m.id] ? ' on' : ''}" aria-label="${mech.name}${m.name}${have[m.id] ? '，已突围' : '，未突围'}">${m.name}</span>`).join('')}</div>`).join('') + medalDepthRow();
+  renderWeeklyWall();
   $('#achList').innerHTML = ACHIEVEMENTS.map(a => { const secret = a.hidden && !have[a.id], skin = !secret && skinForAchievement(a.id); return `<div class="ach${have[a.id] ? ' on' : ''}"><b>${secret ? '？' : a.name}</b><span>${secret ? '？？？' : a.desc}</span>${skin ? `<em class="ach-skin">解锁涂装 · ${skin.name}</em>` : ''}</div>`; }).join('');
+}
+// 勋章墙「周赛」一节：最近 12 周每周一格（铜/银/金/没拿），更早的只记总数
+function renderWeeklyWall() {
+  const wall = $('#weeklyWall'); if (!wall) return;
+  const w = meta.weekly || {}, history = w.history || {}, totals = w.totals || {};
+  const keys = Object.keys(history).filter(isWeekKey).sort().reverse().slice(0, WEEKLY_RULES.historyWeeks);
+  const older = ['gold', 'silver', 'bronze'].map((k, i) => totals[k] ? `${WEEKLY_MEDAL_NAMES[3 - i]} ${totals[k]}` : '').filter(Boolean);
+  const got = keys.filter(key => history[key] > 0).length + ['bronze', 'silver', 'gold'].reduce((n, k) => n + (totals[k] || 0), 0);
+  $('#weeklyMedalCount').textContent = got ? `${got} 枚` : '';
+  wall.innerHTML = (keys.length ? `<div class="weekly-wall-grid">${keys.map(key => `<span class="weekly-cell weekly-medal-${WEEKLY_MEDAL_KEYS[history[key]] || 'none'}" title="${weekLabel(key)}"><small>${key.slice(2)}</small><b>${WEEKLY_MEDAL_NAMES[history[key]] || WEEKLY_MEDAL_NAMES[0]}</b></span>`).join('')}</div>` : '<p class="weekly-empty">还没有参加过每周异变赛。首次突围后，主菜单「每日挑战」下面就有入口。</p>')
+    + (older.length ? `<p class="weekly-older">更早的周：${older.join(' · ')}</p>` : '');
 }
 
 // ---- src/ui/zone-codex.js ----
@@ -12347,10 +13092,101 @@ window.addEventListener('keydown', event => {
   else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
 }, true);
 
+// ---- src/ui/weekly.js ----
+// 每周异变赛界面：主菜单入口、出击前说明卡、暂停页的本周规则、结算页周分明细和可复制战绩
+
+// 调试换周：__IR.week('2026-W46') 把「本周」临时换成别的周，空串恢复按时钟算
+let weeklyDebugKey = '';
+function weeklyCurrentKey() { return isWeekKey(weeklyDebugKey) ? weeklyDebugKey : weekKey(); }
+function setWeeklyDebugKey(key) { weeklyDebugKey = isWeekKey(key) ? key : ''; return weeklyCurrentKey(); }
+// 总开关开着、练完教学、首次突围后才有入口
+function weeklyEntryOpen() { return !!WEEKLY_RULES.enabled && !!meta.tutorial && (meta.wins || 0) >= WEEKLY_RULES.unlockWins; }
+function weeklyNames(setup) {
+  const mech = MECHS.find(m => m.id === setup.mechId), talent = getTalentOptions(setup.mechId).find(o => o.id === setup.talentId);
+  return { mech, talent, weapon: WDEF[setup.weaponId]?.name || setup.weaponId, rule: WEEKLY_MUTATIONS[setup.rule] };
+}
+const weeklyChipIcon = id => { const d = ANOMALIES[id]; return `<span class="anomaly-icon weekly-chip-icon" style="--chip:${d.color}" aria-hidden="true">${d.icon}</span>`; };
+const weeklyMedalTag = medal => `<span class="weekly-medal weekly-medal-${WEEKLY_MEDAL_KEYS[medal] || 'none'}">${WEEKLY_MEDAL_NAMES[medal] || WEEKLY_MEDAL_NAMES[0]}</span>`;
+function weeklyDaysText(key) { const days = weekDaysLeft(key); return days <= 1 ? '最后一天' : `还剩 ${days} 天`; }
+function weeklyThisWeek(key) { return meta.weekly?.key === key ? meta.weekly : null; }
+
+// 主菜单「每日挑战」下面一行：本周机体 · 武器、两枚芯片、本周规则、还剩几天、本周最高和已拿的章
+function renderWeeklyEntry() {
+  const entry = $('#menuWeekly'); if (!entry) return;
+  entry.hidden = !weeklyEntryOpen();
+  if (entry.hidden) { entry.innerHTML = ''; return; }
+  const key = weeklyCurrentKey(), setup = weeklySetup(key), n = weeklyNames(setup), week = weeklyThisWeek(key);
+  entry.setAttribute('aria-label', `每周异变赛，本周规则${n.rule.name}，${n.mech.name}，${n.weapon}`);
+  entry.innerHTML = `<span class="weekly-text"><small>每周异变赛 · ${weeklyDaysText(key)}</small><b>${n.rule.name} · ${n.mech.name} · ${n.weapon}</b>`
+    + `<span class="weekly-note">${week?.rewarded ? `本周最高 ${week.best} · ${WEEKLY_MEDAL_NAMES[week.medal || 0]}` : `本周首次结算 +${WEEKLY_RULES.firstReward} 金币`}</span></span>`
+    + `<span class="weekly-chips">${setup.chips.map(weeklyChipIcon).join('')}</span>`;
+}
+// 出击前的说明卡：三幕路线、两枚芯片的得失、本周规则、计分和三档分数线
+function renderWeeklyBrief(key) {
+  const setup = weeklySetup(key), n = weeklyNames(setup), week = weeklyThisWeek(key), [bronze, silver, gold] = WEEKLY_RULES.medals;
+  const notes = n.mech && n.talent ? startWeaponNotes(n.mech, n.talent, setup.weaponId) : [];
+  const route = setup.route.map((id, i) => { const z = ZONES[id]; return `<li class="weekly-act"><small>第${'一二三'[i]}幕 · 危险 ${z.risk}</small><b>${z.name}</b><span>${z.rule}</span></li>`; }).join('');
+  const chips = setup.chips.map(id => { const d = ANOMALIES[id]; return `<div class="weekly-chip">${weeklyChipIcon(id)}<div><b>${d.name}<em>强制 · 锁定</em></b><p class="weekly-good">好处 ${d.benefit}</p><p class="weekly-cost">代价 ${d.cost}</p></div></div>`; }).join('');
+  const s = WEEKLY_RULES.score, r = WEEKLY_RULES.medalRewards;
+  $('#weeklyCoins').textContent = meta.coins;
+  $('#weeklyBrief').innerHTML = `<p class="weekly-week">${key} · ${weekLabel(key)} · ${weeklyDaysText(key)}</p>`
+    + `<div class="weekly-rule"><span class="weekly-rule-icon" aria-hidden="true">${n.rule.icon}</span><div><small>本周规则</small><b>${n.rule.name}</b><p>${n.rule.desc}</p></div></div>`
+    + `<h3 class="weekly-sec">出击配置</h3><div class="weekly-loadout"><img src="assets/sprites/${n.mech.img}.webp" alt="" width="52" height="52"><div><b>${n.mech.name} · ${n.mech.cls}</b><p>协议 ${n.talent?.name || '—'} · 初始武器 ${n.weapon}</p><p>${tierName(WEEKLY_RULES.tier)}：${tierModsText(WEEKLY_RULES.tier)}</p>${notes.map(note => `<p class="weekly-warn">${note}</p>`).join('')}<p class="weekly-muted">没解锁的机体也能出击；不能押悬赏，不记深渊通关和最快突围。</p></div></div>`
+    + `<h3 class="weekly-sec">强制异常芯片</h3><div class="weekly-chip-list">${chips}<p class="weekly-muted">占两个异常槽，换不下来；第三个槽照常可选。</p></div>`
+    + `<h3 class="weekly-sec">三幕路线</h3><ol class="weekly-route">${route}</ol>`
+    + `<h3 class="weekly-sec">周分与周章</h3><p class="weekly-formula">存活秒 × ${s.perSecond} + 击杀 ÷ ${s.killsPerPoint} + 首领 × ${s.boss} + 突围 ${s.win} + 打败虫皇 ${s.emperor} + 评级高光分</p>`
+    + `<div class="weekly-lines"><span class="weekly-medal-bronze">铜 ${bronze}<small>+${r[0]}</small></span><span class="weekly-medal-silver">银 ${silver}<small>+${r[1]}</small></span><span class="weekly-medal-gold">金 ${gold}<small>+${r[2]}</small></span></div>`
+    + `<p class="weekly-muted">每周第一次结算 +${WEEKLY_RULES.firstReward} 金币；本周第一次到铜、银、金各发一次。不限次数，只记最高分；错过的周就没了。</p>`
+    + `<p class="weekly-best">${week?.rewarded ? `本周最高 ${week.best} · ` : '本周还没出击 · '}${weeklyMedalTag(week?.medal || 0)}</p>`;
+  return setup;
+}
+let weeklyBriefKey = '';
+function openWeeklyBrief() {
+  if (!weeklyEntryOpen()) return false;
+  weeklyBriefKey = weeklyCurrentKey(); renderWeeklyBrief(weeklyBriefKey); show('weekly');
+  return true;
+}
+// 暂停页一节：本周规则、两枚强制芯片和三幕路线，接在技能一览后面
+function weeklyPauseHtml(run = G) {
+  if (!run?.weekly || run.practice) return '';
+  const w = run.weekly, rule = WEEKLY_MUTATIONS[w.rule], score = weeklyRunScore(run);
+  return `<div class="weekly-pause"><h3>每周异变赛 · ${w.key}</h3><p><b>本周规则：${rule?.name || ''}</b> · ${rule?.desc || ''}</p>`
+    + `<p>强制芯片：${w.chips.map(id => `${ANOMALIES[id].name}（锁定）`).join('、')}</p>`
+    + `<p>路线：${w.route.map(id => ZONES[id]?.name || id).join(' → ')}</p><p>当前周分约 ${score.total} · ${WEEKLY_MEDAL_NAMES[score.medal]}</p></div>`;
+}
+// 结算页：周分明细、本周最高、这次拿到的章和奖励，一行可复制战绩
+function renderEndWeekly(run, win, settlement) {
+  const box = $('#endWeekly'), visible = !!run?.weekly && !run.practice;
+  if (!box) return;
+  box.hidden = !visible;
+  if (!visible) return;
+  const receipt = settlement?.weekly, score = receipt ? { total: receipt.score, rows: receipt.rows, medal: receipt.medal } : weeklyRunScore({ ...run, won: win });
+  const rule = WEEKLY_MUTATIONS[run.weekly.rule], n = weeklyNames(run.weekly);
+  const rewards = [receipt?.firstReward && `本周首次 +${receipt.firstReward}`, receipt?.medalReward && `周章奖励 +${receipt.medalReward}`].filter(Boolean).join(' · ');
+  $('#endWeeklyLine').innerHTML = `<b class="weekly-total">周分 ${score.total}</b>${weeklyMedalTag(score.medal)}${receipt?.newBest ? '<span class="weekly-rec">本周新高</span>' : ''}`
+    + `<span class="weekly-sub">${receipt?.stale ? '这是旧一周的中断局，不计入本周纪录' : `本周最高 ${receipt?.best ?? score.total} · ${WEEKLY_MEDAL_NAMES[receipt?.bestMedal ?? score.medal]}`}${rewards ? ` · ${rewards} 金币` : ''}</span>`;
+  $('#endWeeklyRows').innerHTML = score.rows.map(row => `<div class="weekly-score-row"><span>${row.label}<small>${row.detail}</small></span><b>${row.value}</b></div>`).join('');
+  $('#endWeeklyShare').value = weeklyShareText(run.weekly.key, rule?.name || '', run.mech.name, n.weapon, { win, t: run.t, kills: run.kills, score: score.total, medal: score.medal });
+  $('#endWeeklyCopy').textContent = '复制战绩';
+}
+$('#menuWeekly')?.addEventListener('click', () => { audioInit(); SFX.click(); openWeeklyBrief(); });
+$('#weeklyBack')?.addEventListener('click', () => { SFX.click(); show('menu'); });
+// 说明卡开着时跨了周：按开卡时那一周出击会拿旧周的配置，改成重新出本周的卡
+$('#weeklyGo')?.addEventListener('click', () => {
+  const key = weeklyCurrentKey();
+  if (key !== weeklyBriefKey) { weeklyBriefKey = key; renderWeeklyBrief(key); return; }
+  startRun({ weekly: weeklySetup(key) });
+});
+$('#endWeeklyCopy')?.addEventListener('click', () => {
+  const box = $('#endWeeklyShare'), done = ok => { $('#endWeeklyCopy').textContent = ok ? '已复制' : '已选中，长按复制'; };
+  box.focus?.(); box.select?.();
+  try { navigator.clipboard.writeText(box.value).then(() => done(true), () => done(false)); } catch (_) { done(false); }
+});
+
 // ---- src/ui/screens.js ----
 // 界面切换、主菜单与机库：预览、解锁、装备和出击分别执行
 
-const scr = { menu: $('#scrMenu'), hangar: $('#scrHangar'), settings: $('#scrSettings'), level: $('#scrLevel'), zone: $('#scrZone'), armory: $('#scrArmory'), chest: $('#scrChest'), anomaly: $('#scrAnomaly'), relay: $('#scrRelay'), trained: $('#scrTrained'), pause: $('#scrPause'), end: $('#scrEnd') };
+const scr = { menu: $('#scrMenu'), hangar: $('#scrHangar'), settings: $('#scrSettings'), level: $('#scrLevel'), zone: $('#scrZone'), armory: $('#scrArmory'), chest: $('#scrChest'), anomaly: $('#scrAnomaly'), relay: $('#scrRelay'), trained: $('#scrTrained'), pause: $('#scrPause'), end: $('#scrEnd'), weekly: $('#scrWeekly') };
 let previewMechId = meta.sel;
 let cosmeticConfirm = null, cosmeticBuying = false;
 function show(name) {
@@ -12407,6 +13243,7 @@ function refreshMenu() {
   $('#mFastest').textContent = meta.fastestWin ? `最快突围 · ${fmtTime(meta.fastestWin)}` : '最快突围 · 等待首次胜利';
   setBadge($('#btnHangar'), hangarBadge(meta));
   renderDailyEntry();
+  renderWeeklyEntry(); // 每周异变赛入口在每日挑战下面（ui/weekly.js）
   // 新玩家（没打过正式局、也没练完教学）先去训练：主按钮换成新兵训练，出击降为次级按钮；练完后恢复。
   const rookie = meta.runs === 0 && !meta.tutorial;
   $('#btnStart').hidden = rookie; $('#btnRookie').hidden = !rookie;
@@ -12559,13 +13396,13 @@ $('#bountyStakes').addEventListener('click', e => {
   if (!choice || !BOUNTY_STAKES.includes(stake) || stake > meta.coins) return;
   meta.bounty.choice = { ...choice, stake }; saveMeta(); SFX.click(); renderHangar();
 });
-// 成就涂装保持原解锁条件；金币涂装只列出当前预览机体的四款。
+// 成就涂装保持原解锁条件；金币涂装只列出当前预览机体的四款；深渊涂装通关深渊 30 才有，没拿到时写解锁条件。
 function renderSkins(m, unlocked) {
   const now = selectedSkin(meta, m.id), open = SKINS.filter(skin => skinUnlocked(skin, meta)).length;
-  $('#skinList').innerHTML = [...SKINS, ...COSMETICS.filter(item => item.type === 'skin' && item.mech === m.id)].map(skin => {
+  $('#skinList').innerHTML = [...SKINS, ...COSMETICS.filter(item => item.type === 'skin' && item.mech === m.id), ...ABYSS_COSMETICS.filter(item => item.type === 'skin' && item.mech === m.id)].map(skin => {
     const free = skinUnlocked(skin, meta), on = skin.id === now.id;
     const confirming = cosmeticConfirm?.id === skin.id;
-    const note = skin.cost && !free ? confirming ? '再点购买' : `${skin.cost} 金币` : !free ? `${achievementById(skin.need).name}解锁` : on ? '使用中' : skin.cost ? '已购买' : '';
+    const note = skin.cost && !free ? confirming ? '再点购买' : `${skin.cost} 金币` : skin.abyss && !free ? `通关深渊 ${skin.abyss} 解锁` : !free ? `${achievementById(skin.need).name}解锁` : on ? '使用中' : skin.cost ? '已购买' : skin.abyss ? '已获得' : '';
     return `<button type="button" class="skin-choice${on ? ' selected' : ''}${!free && !skin.cost ? ' locked' : ''}${confirming ? ' confirming' : ''}" data-skin="${skin.id}" aria-pressed="${on}" aria-label="${skin.name}涂装${note ? '，' + note : ''}" ${unlocked && (free || skin.cost) && !cosmeticBuying ? '' : 'disabled'}><i class="skin-dot${skin.h === undefined ? ' factory' : ''}"${skin.h === undefined ? '' : ` style="background:${skinSwatch(skin)}"`}></i><b>${skin.name}</b><small>${note}</small></button>`;
   }).join('');
   const paid = COSMETICS.filter(item => item.type === 'skin' && item.mech === m.id && cosmeticOwned(meta, item.id)).length;
@@ -12573,10 +13410,10 @@ function renderSkins(m, unlocked) {
 }
 function renderCosmetics() {
   $('#cosmeticList').innerHTML = [['trail', '冲刺拖尾'], ['killFx', '击杀特效']].map(([type, title]) => {
-    const items = COSMETICS.filter(item => item.type === type), current = meta.cosmetics?.[type] || '';
+    const items = [...COSMETICS, ...ABYSS_COSMETICS].filter(item => item.type === type), current = meta.cosmetics?.[type] || '';
     return `<div class="cosmetic-group"><h4>${title}</h4><div class="cosmetic-choices">${[{ id: '', name: '默认' }, ...items].map(item => {
       const owned = !item.id || cosmeticOwned(meta, item.id), on = current === item.id, confirming = cosmeticConfirm?.id === item.id && !!item.id;
-      const note = on ? '使用中' : owned ? '可换装' : confirming ? '再点购买' : `${item.cost} 金币`;
+      const note = on ? '使用中' : owned ? '可换装' : item.abyss ? `通关深渊 ${item.abyss} 解锁` : confirming ? '再点购买' : `${item.cost} 金币`;
       return `<button type="button" class="skin-choice${on ? ' selected' : ''}${confirming ? ' confirming' : ''}" data-cosmetic="${item.id}" data-cosmetic-type="${type}" aria-pressed="${on}" aria-label="${title}：${item.name}，${note}" ${cosmeticBuying ? 'disabled' : ''}><b>${item.name}</b><small>${note}</small></button>`;
     }).join('')}</div></div>`;
   }).join('');
@@ -12594,6 +13431,11 @@ async function useHangarCosmetic(id, type) {
   const item = cosmeticById(id), mech = MECHS.find(m => m.id === previewMechId);
   if (!mech || type === 'skin' && (!item || item.mech !== mech.id || !meta.unlocked[mech.id])) return;
   const epoch = meta.saveEpoch || '';
+  // 深渊外观不卖：没拿到时只预览并写明解锁条件
+  if (item?.abyss && !cosmeticOwned(meta, id)) {
+    cosmeticConfirm = null; renderHangar(); previewHangarCosmetic(type, id, mech);
+    cosmeticMessage(`${item.name}预览 · 通关深渊 ${item.abyss} 解锁，不能用金币购买。`); return;
+  }
   if (item && !cosmeticOwned(meta, id)) {
     if (meta.coins < item.cost) {
       cosmeticConfirm = null; renderHangar(); previewHangarCosmetic(type, id, mech);
@@ -12641,16 +13483,39 @@ $('#skinList').addEventListener('click', e => {
   $('#hgSelectionStatus').textContent = `${m.name}换上了${skin.name}涂装。`;
 });
 // 深渊层级：任意机体突围后全账号解锁，共用出击选择并显示单机战绩
+// 普通～深渊 10 一排按钮；能选到 11 层以后再加一行「◀ 深渊 N ▶」和「最深」，只能选到全账号最高通关 +1
 function renderTiers(m, unlocked) {
   const top = tierMaxSelectable(meta), now = selectedTier(meta), cleared = tierCleared(meta, m.id);
-  $('#tierList').innerHTML = Array.from({ length: Math.min(TIER_MAX, top + 1) + 1 }, (_, L) => {
+  const shown = Math.min(top + 1, top > TIER_OLD_MAX ? TIER_OLD_MAX : Math.min(tierLimit(), TIER_OLD_MAX + 1));
+  $('#tierList').innerHTML = Array.from({ length: shown + 1 }, (_, L) => {
     const open = L <= top, on = L === now, note = !open ? (L === 1 ? '突围后解锁' : `通关${tierName(L - 1)}`) : on ? '已选' : '';
     return `<button type="button" class="tier-choice${on ? ' selected' : ''}${open ? '' : ' locked'}" data-tier="${L}" aria-pressed="${on}" ${open && unlocked ? '' : 'disabled'}><b>${tierName(L)}</b><small>${note}</small></button>`;
-  }).join('');
+  }).join('') + (top > TIER_OLD_MAX ? tierDeepRow(now, top, unlocked) : '');
   const best = bestTierCleared(meta), bestMech = MECHS.find(mech => mech.id === bestTierMech(meta, MECHS.map(mech => mech.id)));
   const personal = bestMech?.id === m.id ? '' : ` · ${m.name}最高：${cleared < 0 ? '还没突围' : tierName(cleared)}`;
   $('#tierStatus').textContent = best < 0 ? '任意机体突围一次后解锁深渊层级：敌人更强，金币更多。'
-    : `全账号最高通关：${tierName(best)}（${bestMech?.name || '未知机体'}）${personal}。所有机体共用出击层级。${tierName(now)}：${tierModsText(now)}。`;
+    : `全账号最高通关：${tierName(best)}（${bestMech?.name || '未知机体'}）${personal}。所有机体共用出击层级。${tierName(now)}：${tierModsOnlyText(now)}。${abyssEmperorGate(now) ? '这一层打败虫皇才算通关。' : ''}`;
+  renderTierRules(now);
+}
+// 10 层以上的步进行：只有能选的层带 data-tier，点它们走下面同一个点击处理
+function tierDeepRow(now, top, unlocked) {
+  const deep = TIER_OLD_MAX + 1, onDeep = now >= deep, n = onDeep ? now : deep;
+  const prev = onDeep ? now - 1 : null, next = onDeep ? now + 1 : deep;
+  const step = (cls, L, label, aria, body) => `<button type="button" class="${cls}"${L !== null && L <= top && unlocked ? ` data-tier="${L}"` : ' disabled'} aria-label="${aria}">${body || label}</button>`;
+  return `<div class="tier-deep" role="group" aria-label="深渊 ${deep} 层以上">`
+    + step('tier-step', prev, '◀', prev === null ? '上一层' : `上一层：${tierName(prev)}`)
+    + `<button type="button" class="tier-deep-now${onDeep ? ' selected' : ''}"${unlocked ? ` data-tier="${n}"` : ' disabled'} aria-pressed="${onDeep}"><b>${tierName(n)}</b><small>${onDeep ? '已选' : '点选'}</small></button>`
+    + step('tier-step', next, '▶', `下一层：${tierName(next)}`)
+    + step(`tier-deep-max${now === top ? ' selected' : ''}`, now === top ? null : top, '', `最深：${tierName(top)}`, `<b>最深</b><small>${tierName(top)}</small>`)
+    + '</div>';
+}
+// 本层生效的规则和词条，这一层新加的那条高亮并写出说明
+function renderTierRules(L) {
+  const box = $('#tierRules'); if (!box) return;
+  const list = abyssRuleList(L), newest = abyssNewest(L);
+  box.hidden = !list.length;
+  box.innerHTML = list.length ? `<span class="tier-rules-head">本层规则</span>${list.map(d => `<span class="tier-rule${d.kind === 'affix' ? ' affix' : ''}${d === newest || d.id === newest?.id ? ' newest' : ''}" title="${d.text}">${d.name}</span>`).join('')}`
+    + `<small class="tier-rules-note">${newest ? `新加 · ${newest.name}：${newest.text}` : '深渊词条已经叠满，往下每层只涨倍率'}</small>` : '';
 }
 $('#tierList').addEventListener('click', e => {
   const b = e.target.closest('[data-tier]'); if (!b || b.disabled) return;
@@ -12716,7 +13581,7 @@ function startRun(options = {}, deferred = false) {
   if (pendingBountyLaunch) return pendingBountyLaunch;
   if (!deferred) { audioInit(); SFX.click(); }
   if (!gameAssetsReady()) return assemblingRun || (assemblingRun = waitGameAssets().then(() => { assemblingRun = null; return startRun(options, true); }));
-  const choice = !options.practice && !options.daily && hangarBountyChoice();
+  const choice = !options.practice && !options.daily && !options.weekly && hangarBountyChoice();
   if (choice) {
     const expected = { ...choice, coins: meta.coins, mech: meta.sel, tier: selectedTier(meta) };
     pendingBountyLaunch = Promise.resolve().then(() => withBountyLock(() => {
@@ -13986,8 +14851,14 @@ function colossusRunLive() {
     !(G.endT > 0) && !G.won && !(G.victoryT > 0);
 }
 function colossusActIndex() { return zonesEnabled() ? currentZoneIndex() : battlefieldMixAt(G.t).index; }
+// 周规则「巨兽之周」：第二、三幕各一个过境时间窗，不看战区的 events.colossus；第一次过境结束后在第三幕重新排上
+function colossusWeeklyWindow() {
+  const list = G.weekly?.mods.colossus;
+  return list ? list[Math.min(list.length - 1, G.colossus?.wave || 0)] : null;
+}
 function colossusCanEnter() {
-  if (zonesEnabled() && (currentZoneIndex() !== 2 || !currentZone().events.colossus)) return false;
+  const weekly = colossusWeeklyWindow();
+  if (weekly ? zonesEnabled() && currentZoneIndex() !== weekly.act : zonesEnabled() && (currentZoneIndex() !== 2 || !currentZone().events.colossus)) return false;
   if (['warning', 'falling', 'landing'].includes(G.actFall?.phase)) return false;
   const nextRelay = RELAY_CONFIG.times.find(time => time > G.t) ?? Infinity;
   return !G.boss && !G.warn && nextRelay - G.t > COLOSSUS_RULES.relayGrace;
@@ -14157,16 +15028,22 @@ function updateColossus(dt) {
   for (const impact of c.impacts) impact.t += dt;
   c.impacts = c.impacts.filter(impact => impact.t < impact.max);
   if (c.corpse && c.corpse.act !== colossusActIndex()) c.corpse = null;
+  const weekly = colossusWeeklyWindow(), win = weekly || cfg;
+  if (weekly && ['toppled', 'gone', 'skipped'].includes(c.phase) && (c.wave || 0) + 1 < G.weekly.mods.colossus.length && G.t >= G.weekly.mods.colossus[(c.wave || 0) + 1].startAt - cfg.warningTime) {
+    // 第二幕那次走完（或错过）了：清掉腿和跪倒的尸体，第三幕再来一次
+    G.colossus = { ...c, phase: 'waiting', wave: (c.wave || 0) + 1, warningT: 0, elapsed: 0, legs: [], corpse: null, toppleT: 0, stepClock: 0, dropClock: 0 };
+    return;
+  }
   if (c.phase === 'toppled') { c.toppleT += dt; return; }
   if (c.phase === 'waiting') {
-    if (G.t >= cfg.giveUpAt) { c.phase = 'skipped'; return; }
-    if (G.t < cfg.startAt || !colossusCanEnter()) return;
+    if (G.t >= win.giveUpAt) { c.phase = 'skipped'; return; }
+    if (G.t < win.startAt || !colossusCanEnter()) return;
     c.phase = 'warning'; c.warningT = cfg.warningTime; c.direction = Math.random() < .5 ? -1 : 1;
     G.banner = { kind: 'info', title: '行山者 · 过境', sub: '躲开红色脚印 · 靠近膝关节拆断同侧双腿', t: cfg.warningTime, max: cfg.warningTime, col: cfg.stompColor };
     return;
   }
   if (c.phase === 'warning') {
-    if (G.boss || G.warn) { c.phase = G.t >= cfg.giveUpAt ? 'skipped' : 'waiting'; c.warningT = 0; return; }
+    if (G.boss || G.warn) { c.phase = G.t >= win.giveUpAt ? 'skipped' : 'waiting'; c.warningT = 0; return; }
     c.warningT = Math.max(0, c.warningT - dt); G.shake = Math.max(G.shake, .08);
     colossusBodyPosition(c);
     if (c.warningT <= 1e-9) colossusBeginTransit(c);
@@ -14269,7 +15146,8 @@ function renderAnomalySlots() {
   let html = '<span class="anomaly-slots-label">异常槽</span>';
   for (let i = 0; i < ANOMALY_RULES.slots; i++) {
     const id = slots[i];
-    html += id ? `<button type="button" class="anomaly-slot filled${replacing ? ' swap' : ''}" data-anomaly-slot="${id}" title="${ANOMALIES[id].name}" ${replacing ? '' : 'tabindex="-1"'}>${anomalyIconBox(id, 'small')}</button>` : '<span class="anomaly-slot"></span>';
+    const locked = !!G.weekly?.chips?.includes(id); // 每周异变赛的强制芯片换不下来
+    html += id ? `<button type="button" class="anomaly-slot filled${replacing && !locked ? ' swap' : ''}${locked ? ' locked' : ''}" data-anomaly-slot="${id}" title="${ANOMALIES[id].name}${locked ? '（周赛锁定）' : ''}" ${replacing && !locked ? '' : 'tabindex="-1"'}${locked ? ' disabled' : ''}>${anomalyIconBox(id, 'small')}</button>` : '<span class="anomaly-slot"></span>';
   }
   $('#anomalySlots').innerHTML = html + `<span class="anomaly-slots-count">${slots.length}/${ANOMALY_RULES.slots}</span>`;
   $('#anomalySlots').classList.toggle('replacing', replacing);
@@ -14419,6 +15297,17 @@ function renderEndReport(run, win) {
   if (run.escaped) $('#endAdvice').textContent += ' 轻点空白处返回主菜单。';
   renderEndLoadout(run);
 }
+// 深渊结算说明：深渊 10 起突围但没打败虫皇时写明为什么不算通关；第一次通关深渊 15/20/30 写送了什么外观
+function endAbyssNotes(run, settlement) {
+  let html = '';
+  if (settlement?.tierBlocked) {
+    const next = run.tier + 1, locked = tierMaxSelectable(meta) < next;
+    html += `<p class="end-abyss-note">${tierName(ABYSS_RULES.gateTier)} 起打败虫皇才算通关：这局${run.escaped ? '虫皇逃走了' : '没有打败虫皇'}，金币照发但不记通关。${locked ? `打败虫皇才能解锁${tierName(next)}。` : ''}</p>`;
+  }
+  const rewards = ABYSS_REWARDS.filter(r => r.ids.some(id => settlement?.abyssRewards?.includes(id)));
+  if (rewards.length) html += `<p class="end-abyss-note reward">${rewards.map(r => `首次通关${tierName(r.tier)} · 获得${r.name}`).join('<br>')}</p>`;
+  return html;
+}
 // 每日挑战：今日最佳、首次完成奖励和一行可复制的战绩
 function renderEndDaily(run, win, settlement) {
   const show = !!run.daily && !run.practice; $('#endDaily').hidden = !show;
@@ -14481,7 +15370,9 @@ function finishEndRun(win) {
   $('#endSub').textContent = practice ? '安全训练 · 不计金币、场次与战绩' : win ? run.emperorDefeated ? '黑金王座崩塌，六机凯旋。' : run.escaped ? '虫皇逃走了 · 本局仍按突围结算' : `${run.mech.cls} · ${run.mech.name} 击破了深渊母巢` : run.abandoned ? '当前进度已结算，可调整配装再次出击' : run.boss ? `倒在了${run.boss.name}面前` : run.bossIdx < BOSS_TIMES.length ? `再撑 ${fmtTime(Math.max(0, BOSS_TIMES[run.bossIdx] - run.t))} 就能见到${(run.bossPoolEnabled ? runBossDef(run.bossIdx, run) : BOSSES[run.bossIdx]).name}` : '母巢还在，再来一次';
   if (settlement?.previousPaid > 0) $('#endSub').textContent += ` · 已保存 ${settlement.previousPaid} 金币，本次新增 ${settlement.credited}`;
   // 每日挑战、深渊层级和新解锁的层级接在副标题后面
-  const tags = [run.daily && `每日挑战 ${dailyLabel(run.daily.key)}`, run.tier && tierName(run.tier), settlement?.tierUnlocked && `解锁${tierName(settlement.tierUnlocked)}`].filter(Boolean);
+  // 深渊 10 层以上的新最深层把层级标签换成「新纪录：深渊 N」
+  const deepRecord = settlement?.tierRecord > TIER_OLD_MAX && settlement.tierRecord === run.tier;
+  const tags = [run.daily && `每日挑战 ${dailyLabel(run.daily.key)}`, run.weekly && `每周异变赛 ${weekLabel(run.weekly.key)}`, run.tier && (deepRecord ? `新纪录：${tierName(run.tier)}` : tierName(run.tier)), settlement?.tierUnlocked && `解锁${tierName(settlement.tierUnlocked)}`].filter(Boolean);
   if (tags.length) $('#endSub').textContent += ' · ' + tags.join(' · ');
   const stat = (label, value, extra = '') => `<div class="stat"><small>${label}</small><b class="num">${value}</b>${extra}</div>`;
   // 首屏只留存活、击杀、等级和金币，其余收进「更多数据」
@@ -14492,8 +15383,9 @@ function finishEndRun(win) {
   // 本局拿着的异常芯片和各自贡献
   const anomalies = practice ? [] : anomalySummary(run);
   if (anomalies.length) $('#endStats').innerHTML += `<p class="build-training">异常芯片：${anomalies.map(row => { const done = anomalyContributionText(row); return done ? `${row.name}（${done}）` : row.name; }).join('、')}</p>`;
+  $('#endStats').innerHTML += endAbyssNotes(run, settlement);
   // 最快突围按层级分开记
-  const fastestRecord = run.tier ? meta.tierFastest?.[run.tier] : meta.fastestWin;
+  const fastestRecord = run.weekly ? 0 : run.tier ? meta.tierFastest?.[run.tier] : meta.fastestWin; // 周赛不记最快突围
   $('#endMoreStats').innerHTML = stat('最高连杀', run.bestCombo) + stat('极限闪避', run.perfects) + stat('时停', run.timeStops || 0) + stat('击破首领', run.bossKills) + stat('完成行动', run.relayClears || 0) + stat('武器进化', run.player.weapons.filter(w => w.evo).length) + stat('迫击借刀', run.mortarStats?.borrowedKills || 0) + stat('借巨兽踩死', `${run.colossusStats?.stompKills || 0} 只`) +
     (!practice ? stat('最高评级', STYLE_RANK.labels[style?.maxRank] || STYLE_RANK.labels[0]) + stat('S 档以上时长', `${Number.isFinite(style?.highSeconds) ? Math.max(0, style.highSeconds).toFixed(1) : '0.0'} 秒`) + stat('评级奖金', `${styleBonus} 金币`) : '') +
     (!practice && mercyEndText(run) ? stat('饶它一命', mercyEndText(run)) : '') +
@@ -14505,7 +15397,7 @@ function finishEndRun(win) {
   const goal = practice ? null : nextGoal(meta);
   $('#endGoal').hidden = !goal;
   if (goal) {
-    $('#endGoalLine').innerHTML = goalLineHtml(goal, meta.coins - (settlement?.credited ?? earned) - (settlement?.dailyReward || 0) - (settlement?.bountyReward || 0) - zoneReward);
+    $('#endGoalLine').innerHTML = goalLineHtml(goal, meta.coins - (settlement?.credited ?? earned) - (settlement?.dailyReward || 0) - (settlement?.bountyReward || 0) - (settlement?.weeklyReward || 0) - zoneReward);
     $('#endGoalLine').className = 'goal-line' + (goal.ready ? ' ready' : '');
     $('#endGoalGo').hidden = !goal.ready; $('#endGoalGo').dataset.target = goalTarget(goal);
     $('#endGoalGo').textContent = goal.kind === 'mech' ? `去解锁${goal.name}` : goal.kind === 'cosmetic' ? '去选外观' : '去改装';
@@ -14514,8 +15406,9 @@ function finishEndRun(win) {
   $('#endAch').hidden = !newAchievements.length;
   $('#endAchList').innerHTML = newAchievements.map(id => { const skin = skinForAchievement(id); return `<span class="ach-chip ${id.startsWith('proto:') ? 'medal' : ''}">${id.startsWith('proto:') ? '协议勋章 · ' : ''}${achievementById(id).name}${skin ? ` · 解锁${skin.name}涂装` : ''}</span>`; }).join('');
   renderEndDaily(run, win, settlement);
+  renderEndWeekly(run, win, settlement);
   renderEndReport(run, win);
-  $('#endAgain').textContent = practice ? '再次训练' : run.daily ? '再战每日挑战' : `驾驶 ${run.mech.name} 再战`;
+  $('#endAgain').textContent = practice ? '再次训练' : run.daily ? '再战每日挑战' : run.weekly ? '再战本周异变赛' : `驾驶 ${run.mech.name} 再战`;
   setTimeout(() => { if (G === run && run.state === 'end') show('end'); }, 50);
 }
 $('#endAgain').addEventListener('click', () => {
@@ -14523,6 +15416,8 @@ $('#endAgain').addEventListener('click', () => {
   const practice = !!G.practice;
   // 每日挑战再战按今天的配置开，不改菜单里的出击机体和协议
   if (G.daily && !practice) { startRun({ daily: dailySetup(dailyKey()) }); return; }
+  // 周赛再战按「本周」重新取配置：跨了周就是新一周
+  if (G.weekly && !practice) { startRun({ weekly: weeklySetup(weeklyCurrentKey()) }); return; }
   reloadMeta();
   meta.sel = G.mech.id;
   if (G.talent) { if (!meta.talents) meta.talents = {}; meta.talents[G.mech.id] = G.talent.id; }
@@ -14779,6 +15674,10 @@ function sheetModuleRow(p, m) {
   return `<div class="sheet-row m"><img src="assets/sprites/${d.icon}.webp" alt="" width="28" height="28"><div class="sheet-main"><b>${d.name}<em>首领模块</em></b><span class="sheet-stats">${bossModuleDesc(m.id)}</span>${note}</div></div>`;
 }
 // 异常芯片：好处、代价和本局到现在的贡献
+// 深渊规则：本局生效的规则和词条，这一层新加的那条描边高亮
+function sheetAbyssRow(r) {
+  return `<div class="sheet-row abyss-row${r.newest ? ' newest' : ''}"><span class="abyss-badge" aria-hidden="true">${r.from}</span><div class="sheet-main"><b>${r.name}<em>${r.kind === 'affix' ? '词条' : '规则'} · 深渊 ${r.from} 起</em></b><span class="sheet-stats">${r.text}</span>${r.newest ? '<small class="abyss-new">本层新加</small>' : ''}</div></div>`;
+}
 function sheetAnomalyRow(row) {
   const d = ANOMALIES[row.id], done = anomalyContributionText(row);
   return `<div class="sheet-row anomaly-row"><span class="anomaly-icon" style="--chip:${d.color}" aria-hidden="true">${d.icon}</span><div class="sheet-main"><b>${d.name}<em>${ANOMALY_TIER_NAMES[d.tier]}</em></b><span class="sheet-stats">${d.benefit}</span><small class="anomaly-cost">代价：${d.cost}</small>${done ? `<small>本局 · ${done}</small>` : ''}</div></div>`;
@@ -14820,6 +15719,7 @@ function loadoutSheet(p, skillExtras = '') {
     + sheetSection('芯片', p.passives.map(s => sheetChipRow(p, s)).join(''))
     + sheetSection('首领模块', (p.modules || []).map(m => sheetModuleRow(p, m)).join(''))
     + sheetSection('异常芯片', anomalySummary().map(sheetAnomalyRow).join(''))
+    + sheetSection('深渊规则', abyssRunRules().map(sheetAbyssRow).join(''))
     + sheetSection('协议', talent ? `<div class="sheet-row proto"><div class="sheet-main"><b>${talent.name}</b><span class="sheet-stats">${talent.description}</span></div></div>` : '')
     + formationSheetLine() + mercySheetLine();
 }
@@ -15005,9 +15905,11 @@ $('#btnStartAlt').addEventListener('click', () => startRun());
 // 对局：开局、属性结算、每帧主更新
 
 // daily：每日挑战配置（data/daily.js 的 dailySetup），指定机体和协议，可以是未解锁的机体
-function newRun({ practice = false, daily = null, bountyChoice = null } = {}) {
+// weekly：每周异变赛配置（data/weekly.js 的 weeklySetup），另外定死初始武器、三幕路线、两枚芯片和本周规则；不能押悬赏
+function newRun({ practice = false, daily = null, weekly = null, bountyChoice = null } = {}) {
   reloadMeta();
-  const mech = (daily && MECHS.find(m => m.id === daily.mechId)) || MECHS.find(m => m.id === meta.sel && meta.unlocked[m.id]) || MECHS[0];
+  const fixed = daily || weekly;
+  const mech = (fixed && MECHS.find(m => m.id === fixed.mechId)) || MECHS.find(m => m.id === meta.sel && meta.unlocked[m.id]) || MECHS[0];
   setG({
     state: 'playing', runId: createRunIdentity(), debugGod: false, practice, settings: meta.settings || {}, report: initRunReport(), t: 0, rt: 0, mech, kills: 0, coins: 0, combo: 0, comboT: 0, bestCombo: 0, perfects: 0, bossKills: 0,
     enemies: [], ebullets: [], pbullets: [], prints: [], missiles: [], beams: [], bolts: [], waves: [], pickups: [], parts: [], texts: [], decals: [], later: [],
@@ -15019,16 +15921,16 @@ function newRun({ practice = false, daily = null, bountyChoice = null } = {}) {
     cam: { x: 0, y: 0 }, stats: {},
     player: { training: { power: 0, guard: 0, mobility: 0 }, modules: [], x: 0, y: 0, vx: 0, vy: 0, r: 13, hurtR: 9, angle: -PI / 2, hp: 1, maxHp: 0, level: 1, xp: 0, xpNext: xpFor(1), weapons: [], passives: [], invuln: 1, dashT: 0, dashCd: 0, ddx: 0, ddy: -1, perfectUsed: false, ghosts: [], overload: 0, overT: 0, aim: null, legA: -PI / 2, ph: 0, amp: 0, walkDir: 1, lastCs: 1, recoil: 0, mf: [0, 0, 0], gunI: 0, hitT: 0 },
   });
-  G.talent = initTalent(G.player, mech, daily?.talentId || getSelectedTalent(mech.id, meta.talents).id);
+  G.talent = initTalent(G.player, mech, fixed?.talentId || getSelectedTalent(mech.id, meta.talents).id);
   initMechTraits(G.player, mech);
   initMechAwaken();
   initExecute();
-  let startId = daily ? mech.weapon : startWeaponFor(meta, mech.id);
+  let startId = weekly?.weaponId || (daily ? mech.weapon : startWeaponFor(meta, mech.id));
   if (practice && startId === 'snowball') startId = mech.weapon;
   G.startWeapon = startId;
   G.player.weapons.push(newWeapon(startId));
   recalc(); G.player.hp = G.player.maxHp;
-  initRunModifiers(daily); initProps(); initCordState(); initTimeStop(); initTide(); initMortarState();
+  initRunModifiers(daily, weekly); initProps(); initCordState(); initTimeStop(); initTide(); initMortarState();
   initFormations(); // 敌军编队：要在 initZones() 之前（classic 测试在 initZones 之后把开关钉成关）
   initMercy();
   initRide();
@@ -15043,8 +15945,9 @@ function newRun({ practice = false, daily = null, bountyChoice = null } = {}) {
   initAmalgam();
   initAllies(); initFinale(); initEmperor();
   initAnomalies();
+  if (G.weekly) initWeeklyRun(); // 周赛：固定路线、装上两枚强制芯片（要在 initZones、initAnomalies 之后）
   // 本次押注必须由显示报价并拿到跨页锁的入口明确传入；不继承别页刚写入的选择。
-  const choice = !practice && !daily && meta.wins > 0 && bountyChoice;
+  const choice = !practice && !daily && !weekly && meta.wins > 0 && bountyChoice;
   if (choice && !reserveBounty(G, choice)) { setG(null); return false; }
   if (!practice) { meta.runs++; saveMeta(); }
   requestOpeningZone(meta.wins); // 首发战区：突围过的账号开局先选第一幕（第一帧打开三选一）
@@ -15057,13 +15960,15 @@ function recalc() {
   st.cd = Math.max(.4, 1 - .08 * L('cooler'));
   st.speed = m.speed * (1 + .08 * L('thruster')) * (1 + .05 * upLv('spd')) * training.speedMul * talent.speedMul;
   st.dashCd = m.dashCd * (1 - .08 * L('thruster')) * training.dashMul * talent.dashMul;
-  const old = p.maxHp; p.maxHp = m.hp + 25 * L('plating') + 12 * upLv('hp') + training.hpBonus + talent.hpBonus; if (old) p.hp = Math.min(p.maxHp, p.hp + Math.max(0, p.maxHp - old));
+  const old = p.maxHp; p.maxHp = m.hp + 25 * L('plating') + 12 * upLv('hp') + training.hpBonus + talent.hpBonus; if (G.weekly?.mods.maxHp) p.maxHp = Math.round(p.maxHp * G.weekly.mods.maxHp); if (old) p.hp = Math.min(p.maxHp, p.hp + Math.max(0, p.maxHp - old));
   st.regen = .3 + .4 * L('plating');
   st.pickR = 88 * (1 + .35 * L('magnet'));
   st.xpMul = (1 + .08 * L('magnet')) * (1 + .08 * upLv('xp'));
   st.crit = .05 + .08 * L('crit') + talent.critBonus; st.critMul = 2.2; st.armor = m.armor + talent.armorBonus;
   applyStealStats(st);
   applyAnomalyStats(st); // 异常芯片的代价：冷却、冲刺冷却、关自然回复
+  applyAbyssStats(st); // 深渊词条「冲刺迟滞」
+  if (G.weekly?.mods.dmg) st.dmg *= G.weekly.mods.dmg; // 周规则：玻璃大炮 +50%、冲刺杀手 −30%
 }
 const halfDiag = () => Math.hypot(VW, VH) / 2;
 function update(rdt) {
@@ -15118,6 +16023,7 @@ function update(rdt) {
   updateMortarShells(dt);
   if (G.props?.length) updateProps(dt);
   updateZoneHazards(dt, pdt);
+  updateAbyss(dt); // 深渊毒圈、毒地、精英再生、黑潮（没有深渊规则时直接返回）
   if (!G.practice) updateRelay(dt); // 中继落点先结算伤害，再拾取，避免致命伤被治疗包绕过。
   updateStyleRank();
   updateAllies(pdt, dt);
@@ -15333,12 +16239,14 @@ function updateBoss(e, dt) {
   // 神经核心被打碎：瘫痪几秒，不动、不出招；破绽期间先走完破绽再瘫
   if (e.stunT > 0 && !(e.vulnerableT > 0)) { e.stunT = Math.max(0, e.stunT - dt); return; }
   if (updateBossWeakPoint(e, dt)) return;
-  e.stT += dt;
+  // 深渊规则「首领狂暴」：血量低于 30% 起招式计时加快（间隔 ×0.8）、移速 +20%；没有这条规则时 tempo 为 1
+  const tempo = abyssBossTempo(e), tdt = dt * tempo;
+  e.stT += tdt;
   // 巢穴炮垒不转身、不走路：登场、钻地和三招都在 game/fortress.js
-  if (e.kind === 'fortress') { updateFortress(e, dt); return; }
+  if (e.kind === 'fortress') { updateFortress(e, tdt); return; }
   // 穿身后丢失目标：照常出招但不转身，招式和走位都朝它原来的方向
   const blind = e.blindT > 0, p = G.player, dx = p.x - e.x, dy = p.y - e.y, d = Math.hypot(dx, dy) || 1, toA = blind ? e.ang : Math.atan2(dy, dx);
-  const enr = e.hp < e.maxHp * .5, sp = e.speed * (enr ? 1.3 : 1), ux = blind ? Math.cos(toA) : dx / d, uy = blind ? Math.sin(toA) : dy / d;
+  const enr = e.hp < e.maxHp * .5, sp = e.speed * (enr ? 1.3 : 1) * abyssBossSpeed(e), ux = blind ? Math.cos(toA) : dx / d, uy = blind ? Math.sin(toA) : dy / d;
   // 深渊凝视自己控制朝向（限速追踪）
   if (e.st !== 'gaze' && (e.st !== 'charge' || e.sub === 0)) e.ang = angLerp(e.ang, toA, Math.min(1, dt * 2.5));
   const walk = (k = 1) => { e.x += ux * sp * k * dt; e.y += uy * sp * k * dt; };
@@ -15368,13 +16276,13 @@ function updateBoss(e, dt) {
         if (e.stT > 1.3) nextBossPhase(e); break;
     }
     if (e.vulnerableT > 0) return;
-    if (enr) { e.sumT -= dt; if (e.sumT <= 0) { e.sumT = 6; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; spawnEnemy('crawler', e.x + Math.cos(a) * 110, e.y + Math.sin(a) * 110); } } }
+    if (enr) { e.sumT -= tdt; if (e.sumT <= 0) { e.sumT = 6; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; spawnEnemy('crawler', e.x + Math.cos(a) * 110, e.y + Math.sin(a) * 110); } } }
   } else {
     const F = e.final;
     switch (e.st) {
       case 'walk': walk(); if (e.stT > (enr ? 1 : 1.4)) nextBossPhase(e); break;
       case 'spiral':
-        walk(.35); e.sub -= dt;
+        walk(.35); e.sub -= tdt;
         if (e.sub <= 0) {
           // 孢子喷口被打碎：发射频率降低，螺旋弹少约四成
           e.sub = (F ? .075 : .09) / (bossPartBroken(e, 'vents') ? BOSS_PART_WEAKEN.spiralRate : 1); e.spA += .19; const arms = F ? 5 : 4;
@@ -15971,7 +16879,7 @@ function hitEnemy(e, dmg, o = {}) {
   const mark = o.flat ? 1 : bossMarkMul(e), angle = o.kx !== undefined ? Math.atan2(o.ky, o.kx) : Math.atan2(e.y - G.player.y, e.x - G.player.x);
   dmg *= mercyGrudgeDamageMul(e, angle);
   // supportMul：巢穴炮垒每打碎一个支撑多受 20% 伤害（别的敌人没有这个字段，乘 1）
-  if (!o.flat) dmg *= rand(.92, 1.08) * (e.vulnerableT > 0 ? e.weakMul || 1 : 1) * (e.supportMul || 1) * talentDamageMultiplier(e, o.source) * mark * tideDamageMultiplier(e) * anomalyDamageMul(e, o.source);
+  if (!o.flat) dmg *= rand(.92, 1.08) * (e.vulnerableT > 0 ? e.weakMul || 1 : 1) * (e.supportMul || 1) * talentDamageMultiplier(e, o.source) * mark * tideDamageMultiplier(e) * anomalyDamageMul(e, o.source) * abyssDamageMul(e); // 深渊词条「硬壳」
   // 深渊凝视期间按命中方向：正面挡掉一半（显示灰色「挡」），侧面、背后加伤；部位累计同样乘
   // 报恩钳击和飞锤按首领生命固定比例结算，不受凝视方位或暗夜照明加伤影响；甲壳仍走统一入口。
   const mercyFixedBossHit = e.boss && o.flat && (o.source === 'ally:mercy' || o.source === 'clawHammer');
@@ -16734,6 +17642,7 @@ function pauseGame() {
   const modules = p.modules || [];
   // 「技能一览」：武器、技能（觉醒和改装接在后面）、芯片、首领模块、协议，见 ui/loadout-sheet.js
   $('#psBuild').innerHTML = `<div class="loadout-summary" style="grid-column:1/-1"><span>武器 <b>${weaponSlotsUsed(p)}/4</b></span><span>芯片 <b>${p.passives.length}/4</b></span>${modules.length ? `<span>模块 <b>${modules.length}/${BOSS_MODULE_SLOTS}</b></span>` : ''}</div>` + (G.bounty && !G.practice && !G.daily ? `<div class="pause-bounty"><b>${bountyProgressText(G)}</b><p>押金 ${G.bounty.stake} 金币 · 主动退出或关页会损失押金。</p></div>` : '') + loadoutSheet(p, pauseMechAwakenSummary(p) + pauseSkillMods(p)) + pauseTrainingSummary(p);
+  if (G.weekly && !G.practice) $('#psBuild').innerHTML += weeklyPauseHtml(G); // 每周异变赛：本周规则和两枚强制芯片
   $('#psRecipes').innerHTML = Object.entries(WDEF).filter(([id]) => weaponOfferOpen(id) || p.weapons.some(w => w.id === id)).sort(([a], [b]) => Number(p.weapons.some(w => w.id === b)) - Number(p.weapons.some(w => w.id === a))).map(([id, d]) => {
     const w = p.weapons.find(x => x.id === id), s = p.passives.find(x => x.id === d.evoWith), ready = canEvolve(p, id);
     const blocked = !w && weaponSlotsUsed(p) >= 4 || !s && p.passives.length >= 4;
@@ -20228,7 +21137,7 @@ function colossusCrack(c, mark, detail) {
 }
 function drawColossusGround(c, vis, options = {}) {
   if (!G || G.practice) return;
-  if (G.t >= COLOSSUS_RULES.preloadAt) for (const key of COLOSSUS_IMAGES) colossusRenderSprite(key);
+  if (G.t >= (G.weekly?.mods.colossus ? G.weekly.mods.colossus[0].startAt - 25 : COLOSSUS_RULES.preloadAt)) for (const key of COLOSSUS_IMAGES) colossusRenderSprite(key); // 巨兽之周第二幕就来，提前预载
   const beast = G.colossus; if (!beast) return;
   const zoom = options.zoom || 1, detail = options.budget?.detail ?? 1;
   c.save();
@@ -20505,7 +21414,7 @@ function nightPaintCountdown(c) {
   c.save(); c.setTransform(DPR, 0, 0, DPR, 0, 0); c.globalAlpha = 1;
   c.fillStyle = 'rgba(6,17,31,.94)'; c.fillRect(x, y, width, 25);
   c.fillStyle = '#a9d6f1'; c.fillRect(x, y, 2, 25);
-  c.font = '600 12px "PingFang SC",sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillText(state.zoneNight ? '永夜裂谷 · 整幕夜战' : `黑潮夜袭 · ${seconds}秒`, x + 9, y + 12.5, width - 16);
+  c.font = '600 12px "PingFang SC",sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillText(state.zoneNight ? `${G.weekly?.mods.longNight && state.event?.zone !== 'dark' ? '永夜之周' : '永夜裂谷'} · 整幕夜战` : `黑潮夜袭 · ${seconds}秒`, x + 9, y + 12.5, width - 16);
   c.restore();
 }
 
@@ -22419,6 +23328,44 @@ function drawFormationWarning(c, pending, flashes) {
   c.restore();
 }
 
+// ---- src/render/abyss.js ----
+// 深渊无底的画面：毒圈的 1 秒红圈预告和留在地上的毒圈、狂暴首领脚下的红光；画在敌人下面
+
+const ABYSS_TAU = Math.PI * 2;
+function drawAbyssGround(c, visible, zoom, flashes = true) {
+  const a = G.abyss;
+  if (!a?.list.length) return;
+  c.save(); c.globalCompositeOperation = 'source-over'; c.setLineDash([]);
+  for (const pool of a.pools) {
+    if (!visible(pool.x, pool.y, pool.r + 8)) continue;
+    if (pool.age < pool.warn) {
+      // 预告：红色虚线圈从中心长满，越接近生效越亮
+      const k = pool.age / pool.warn, pulse = flashes ? .55 + .45 * Math.sin(G.rt * 18) : .8;
+      c.globalAlpha = .12 + .14 * k; c.fillStyle = 'rgb(255,60,80)';
+      c.beginPath(); c.arc(pool.x, pool.y, pool.r * k, 0, ABYSS_TAU); c.fill();
+      c.globalAlpha = .55 + .35 * pulse * k; c.strokeStyle = 'rgb(255,70,90)'; c.lineWidth = 2.2 / zoom; c.setLineDash([10 / zoom, 7 / zoom]);
+      c.beginPath(); c.arc(pool.x, pool.y, pool.r, 0, ABYSS_TAU); c.stroke(); c.setLineDash([]);
+      continue;
+    }
+    // 生效：深渊紫的毒圈，最后 1 秒淡出
+    const left = pool.warn + pool.life - pool.age, fade = Math.min(1, Math.max(0, left));
+    const grad = c.createRadialGradient(pool.x, pool.y, pool.r * .15, pool.x, pool.y, pool.r);
+    grad.addColorStop(0, `rgba(${ABYSS_RULES.color},.34)`); grad.addColorStop(.75, 'rgba(120,40,170,.24)'); grad.addColorStop(1, 'rgba(255,70,120,.06)');
+    c.globalAlpha = fade; c.fillStyle = grad; c.beginPath(); c.arc(pool.x, pool.y, pool.r, 0, ABYSS_TAU); c.fill();
+    c.globalAlpha = .7 * fade; c.strokeStyle = `rgb(${ABYSS_RULES.color})`; c.lineWidth = 1.8 / zoom;
+    c.beginPath(); c.arc(pool.x, pool.y, pool.r, 0, ABYSS_TAU); c.stroke();
+  }
+  // 首领狂暴：脚下一圈跳动的红光
+  for (const e of G.enemies) {
+    if (!e.abyssRage || e.dead || !visible(e.x, e.y, e.size)) continue;
+    const pulse = flashes ? .5 + .5 * Math.sin(G.rt * 9) : .7, r = e.r * 1.25 + 8 * pulse;
+    const grad = c.createRadialGradient(e.x, e.y, e.r * .4, e.x, e.y, r);
+    grad.addColorStop(0, 'rgba(255,40,60,.0)'); grad.addColorStop(.7, `rgba(255,40,60,${.22 + .12 * pulse})`); grad.addColorStop(1, 'rgba(255,40,60,0)');
+    c.globalAlpha = 1; c.fillStyle = grad; c.beginPath(); c.arc(e.x, e.y, r, 0, ABYSS_TAU); c.fill();
+  }
+  c.restore();
+}
+
 // ---- src/render/boss-ride.js ----
 // 驾驭首领：跪地蓝环、车辙拖尾、自爆范围、蓝眼与背上机甲的抬升
 
@@ -22635,6 +23582,7 @@ function render(rdt) {
   drawTide(ctx, Z);
   drawMortarTelegraphs(ctx, G.mortarShells || [], p, { visible: vis, zoom: Z });
   drawFormationGround(ctx, vis, Z); // 敌军编队成员脚下的淡色小圈
+  drawAbyssGround(ctx, vis, Z, settings.flashes); // 深渊毒圈和狂暴首领的红光
   drawActFallGround(ctx, G, { x0, y0, x1, y1, settings, budget });
   drawRideGround(ctx, vis, Z);
   // 敌人
@@ -23213,10 +24161,19 @@ loadMenuAssets(k => { $('#lbar').style.width = Math.round(k * 100) + '%'; }).the
   loadGameAssets();
 });
 window.__IR = { get G() { return G; }, get anomalyCatalog() { return ANOMALIES; }, get ANOMALY_RULES() { return ANOMALY_RULES; }, get SKILL_MODS() { return SKILL_MODS; }, meta, startWeapon(id) { reloadMeta(); const mech = MECHS.find(m => m.id === meta.sel); if (!mech || !meta.unlocked[mech.id]) return false; const choice = startWeaponOptions(meta, mech.id).find(o => o.id === id && o.open); if (!choice) return false; meta.startWeapon ||= {}; if (choice.signature) delete meta.startWeapon[mech.id]; else meta.startWeapon[mech.id] = id; return saveMeta(); }, skip(t) { if (G) { G.t = t; G.nextElite = t + 5; while (G.swarmIdx < SWARM_TIMES.length && SWARM_TIMES[G.swarmIdx] < t) G.swarmIdx++; while (G.bossIdx < BOSS_TIMES.length && BOSS_TIMES[G.bossIdx] < t - 3) G.bossIdx++; skipTideSchedule(t); } }, god() { if (G) G.debugGod = true; }, set speed(v) { SPEED = v; }, PERF, IN, RIG, start(id) { if (id) { meta.unlocked[id] = true; meta.sel = id; } return startRun(); }, screenPos() { const p = G.player, z = ZOOM * (G.cam.zoom || 1); return { x: W / 2 + (p.x - G.cam.x) * z, y: H / 2 + (p.y - G.cam.y) * z }; }, ventReady: () => ventReady(), formReady: () => canTransform(), tryForm: () => tryForm(), tryFormFinisher: () => tryFormFinisher(), formSnapshot: () => formSnapshot(), zone(id, index) { return setZoneRoute(id, index); }, get zoneNow() { return G ? currentZone().id : null; }, anomaly(id, replaceId) { return grantAnomaly(id, replaceId); }, anomalyOffer(source = 'debug') { if (!G) return false; G.anomaliesEnabled = !G.practice; return queueAnomaly(source); } };
+window.__IR.abyss = cmd => debugAbyss(cmd); // 浏览器试玩：数字换成深渊 N 层（规则和词条一起换），'pool' 冒毒圈，'tide' 来一波黑潮
 window.__IR.formation = id => debugFormation(id); // 浏览器试玩：本局立刻排一队编队（shield 盾枪队、raid 奔袭队、mortar 迫击队）
 window.__IR.mercy = cmd => debugMercy(cmd); // 浏览器试玩：求饶、绿眼、红眼、报恩和记仇
 window.__IR.snowball = (lv, evo, radius) => debugSnowball(lv, evo, radius);
 window.__IR.ride = cmd => debugRide(cmd); // 浏览器试玩：拆件、跪地、骑上和跳车
+// 浏览器试玩：weekly() 直接开本周异变赛（weekly('', { mechId, rule }) 换机体或规则，换了机体用默认协议），
+// week('2026-W46') 临时换周（空串恢复），weeklyBrief() 打开说明卡
+window.__IR.weekly = (key, patch = {}) => {
+  const setup = weeklySetup(key || weeklyCurrentKey()), mechId = patch.mechId || setup.mechId;
+  return startRun({ weekly: { ...setup, ...patch, mechId, talentId: mechId === setup.mechId ? setup.talentId : '' } });
+};
+window.__IR.week = key => { const now = setWeeklyDebugKey(key); refreshStoredViews(); return now; };
+window.__IR.weeklyBrief = () => openWeeklyBrief();
 })();
 </script>
 </body>
