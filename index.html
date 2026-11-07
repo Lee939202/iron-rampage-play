@@ -1069,8 +1069,15 @@ const CRYO_RULES = {
   ],
   evolved: { cd: .12, dmg: 12, angle: 75 * Math.PI / 180, range: 200, freezeRatio: .3, freezeSeconds: 2, shards: 10 },
   thawImmunity: 1,
+  // 刚冻住的冰雕 0.3 秒内，别的武器没打死它就不碎（掉血照常），留出看清和冲刺的时间；冰片连锁（含碎冰引爆的自爆蜂）、冲刺照样碎。
+  // 实测原版冰雕平均只活 0.19 秒：一半是冰片连锁碎的（这是冰爆本身），四成是别的武器顺手打碎的。
+  statueGrace: .3,
   elite: { freezeRatio: .25, freezeSeconds: .5, immunity: 3, hitRatio: .08 },
-  boss: { coldRatio: .015, damageRatio: .015, finalMul: .5, cooldown: 2, shards: 10 },
+  // 首领冰裂：寒气按喷中的时间攒（连续喷中 1 秒攒满最大生命 1.5% 的寒气线），满了裂一下掉最大生命 3%，2 秒一次；只有虫皇减半。
+  // 早先按喷射实际伤害攒，母巢 7.2 万血要喷 7 秒才裂一次，液氮炮在首领战几乎不出力。
+  boss: { coldRatio: .015, sprayFill: 1, damageRatio: .03, emperorMul: .5, cooldown: 2, shards: 10 },
+  // 射程内有首领时先朝首领喷，锥里的小虫照样冻；否则母巢一直召唤小虫，喷射就一直朝小虫去了。
+  bossAim: true,
   shard: { speed: 520, range: 90, radius: 3, damageMul: 2, coldMul: 2, cap: 160 },
   chain: { cap: 40, burstCount: 12, burstCooldown: 1 },
   dash: { pad: 4, refund: .08, refundCap: .4, highlightCount: 5 },
@@ -17394,7 +17401,7 @@ function nearestWeaponTargets(x, y, maxR, n) {
 function cryoInit() {
   G.cryoEnabled = CRYO_RULES.enabled && !G.practice && (meta?.wins || 0) >= CRYO_RULES.winsRequired;
   G.cryo = { shards: [], fx: [], spray: null, nextChain: 0, dashKey: -1, dashCount: 0, dashRefund: 0, dashAwarded: false, burstAt: -Infinity, hitStopAt: -Infinity, soundAt: -Infinity, frameAt: -Infinity, frameShatters: 0 };
-  G.cryoStats = { obtainedAt: null, ticks: 0, freezes: 0, eliteFreezes: 0, shatters: 0, statueLifeTotal: 0, statueLifeCount: 0, dashShatters: 0, dashHighlights: 0, bursts: 0, chains: 0, chainCaps: 0, chainSizes: [], evolvedChains: 0, evolvedChainCaps: 0, bossCracks: 0, bossDamage: 0, eliteHits: 0, shardHits: 0 };
+  G.cryoStats = { obtainedAt: null, ticks: 0, freezes: 0, eliteFreezes: 0, shatters: 0, statueLifeTotal: 0, statueLifeCount: 0, dashShatters: 0, dashHighlights: 0, bursts: 0, statueEnds: {}, chains: 0, chainCaps: 0, chainSizes: [], evolvedChains: 0, evolvedChainCaps: 0, bossCracks: 0, bossDamage: 0, eliteHits: 0, shardHits: 0 };
 }
 function cryoLive() { return !!(CRYO_RULES.enabled && G?.cryo && G.player?.hp > 0 && G.state === 'playing' && !(G.endT > 0) && !G.won); }
 function cryoWeapon() { return G?.player?.weapons?.find(w => w.id === 'cryo'); }
@@ -17414,8 +17421,11 @@ function cryoFx(kind, e, chain = 0) {
   if (list.length >= cfg.fxCap) list.shift();
   list.push({ kind, x: e.x, y: e.y, r: e.r, life: cfg.shatterLife, max: cfg.shatterLife, chain });
 }
-function cryoRecordLife(e) {
-  if (!cryoElite(e) && e.cryoCounted !== true) { G.cryoStats.statueLifeTotal += e.cryoAge || 0; G.cryoStats.statueLifeCount++; e.cryoCounted = true; }
+// 冰雕怎么没的：shard 冰片连锁、dash 冲刺、hit 别的武器没打死但敲碎、kill 别的武器打死、thaw 自然解冻、other 其它
+function cryoRecordLife(e, end = 'other') {
+  if (cryoElite(e) || e.cryoCounted === true) return;
+  const stats = G.cryoStats, age = e.cryoAge || 0, kind = e.cryoEnd || end, slot = (stats.statueEnds[kind] ||= { count: 0, life: 0 });
+  stats.statueLifeTotal += age; stats.statueLifeCount++; slot.count++; slot.life += age; e.cryoCounted = true; e.cryoEnd = null;
 }
 function cryoThaw(e, remaining = e.cryoT || 0) {
   cryoRecordLife(e);
@@ -17496,11 +17506,16 @@ function cryoBossCrack(e) {
   const cfg = CRYO_RULES.boss;
   if (!(e.cryoCold >= e.maxHp * cfg.coldRatio) || e.cryoBossCd > 0 || e.dead) return false;
   e.cryoCold = 0; e.cryoBossCd = cfg.cooldown;
-  const before = Math.max(0, e.hp) + Math.max(0, e.shield || 0), damage = e.maxHp * cfg.damageRatio * (e.final || e.emperor ? cfg.finalMul : 1);
+  const before = Math.max(0, e.hp) + Math.max(0, e.shield || 0), damage = e.maxHp * cfg.damageRatio * (e.emperor ? cfg.emperorMul : 1);
   hitEnemy(e, damage, { flat: true, crit: false, source: 'cryo:boss' });
   G.cryoStats.bossCracks++; G.cryoStats.bossDamage += Math.max(0, before - Math.max(0, e.hp) - Math.max(0, e.shield || 0));
   cryoFx('crack', e); cryoSound('shatter'); cryoSpawnShards(e, cfg.shards);
   floatText(e.x, e.y - e.r - 24, '冰裂', CRYO_RULES.view.color, 20, .8); return true;
+}
+// 首领寒气按喷中的时间攒：一次喷射间隔占 sprayFill 秒的几分之几，就攒寒气线的几分之几
+function cryoBossTickCold(e, tick = CRYO_RULES.levels[0].cd) {
+  const cfg = CRYO_RULES.boss;
+  return e.maxHp * cfg.coldRatio * Math.max(0, Number.isFinite(tick) ? tick : 0) / cfg.sprayFill;
 }
 function cryoAddCold(e, damage, options = {}) {
   if (!cryoLive() || !cryoCanSpray(e) || e.cryoT > 0 || e.cryoImmuneT > 0 || !(damage > 0) || !Number.isFinite(damage)) return false;
@@ -17522,22 +17537,27 @@ if (CRYO_RULES.enabled) onHit('cryo', (e, dealt, o) => {
   if (e.cryoT > 0) {
     if (o.source === 'cryo') return; // 冷雾既不敲碎，也不刷新冰雕。
     if (cryoElite(e)) { if (!e.dead) cryoEliteHit(e); return; }
+    // 冰片、碎冰引爆的自爆蜂这类液氮自己的连锁不受「刚冻住」限制
+    const shard = o.source?.startsWith('cryo:');
+    if (!shard && !e.dead && (e.cryoAge || 0) + 1e-9 < CRYO_RULES.statueGrace) return;
+    e.cryoEnd = shard ? 'shard' : e.dead ? 'kill' : 'hit';
     cryoShatter(e, o.cryoChain); return;
   }
   if (e.dead || !(dealt > 0)) return;
-  if (o.source === 'cryo') cryoAddCold(e, dealt);
+  if (o.source === 'cryo') cryoAddCold(e, e.boss ? cryoBossTickCold(e, o.cryoTick) : dealt);
   else if (o.source === 'cryo:shard') cryoAddCold(e, dealt * CRYO_RULES.shard.coldMul, { directFreeze: !!o.cryoEvo, chain: o.cryoChain });
 });
 function cryoNearest(L) {
-  const p = G.player; let ordinary = null, hard = null, ordinaryD = Infinity, hardD = Infinity;
+  const p = G.player; let ordinary = null, hard = null, boss = null, ordinaryD = Infinity, hardD = Infinity, bossD = Infinity;
   for (const e of G.enemies) {
     if (!cryoCanSpray(e) || !isWeaponTarget(e) || e.cryoT > 0) continue;
     const dd = (e.x - p.x) ** 2 + (e.y - p.y) ** 2;
     if (dd > (L.range + e.r) ** 2) continue;
+    if (CRYO_RULES.bossAim && e.boss && dd < bossD) { boss = e; bossD = dd; }
     if (!e.boss && !cryoElite(e) && !e.colossusJoint && !e.tideCore && !e.bossPart && !e.partOfBoss) { if (dd < ordinaryD) { ordinary = e; ordinaryD = dd; } }
     else if (dd < hardD) { hard = e; hardD = dd; }
   }
-  return ordinary || hard;
+  return boss || ordinary || hard;
 }
 function cryoUpdateWeapon(w, dt, L, dmgMul = 1, cdMul = 1) {
   if (!cryoLive() || actFallFrozen() || !(dt > 0) || !Number.isFinite(dt)) return;
@@ -17557,7 +17577,7 @@ function cryoUpdateWeapon(w, dt, L, dmgMul = 1, cdMul = 1) {
     if (distance > L.range + e.r) continue;
     const delta = Math.abs(Math.atan2(Math.sin(Math.atan2(dy, dx) - angle), Math.cos(Math.atan2(dy, dx) - angle)));
     if (distance > e.r && delta > L.angle / 2 + Math.asin(Math.min(1, e.r / distance))) continue;
-    hitEnemy(e, L.dmg * dmgMul, { source: 'cryo' });
+    hitEnemy(e, L.dmg * dmgMul, { source: 'cryo', cryoTick: w.cd });
   }
   runFireHooks(w, spray);
 }
@@ -17640,7 +17660,8 @@ function cryoDashContact(x0, y0, x1, y1) {
   for (const e of G.enemies) {
     if (e.dead || !(e.cryoT > 0) || cryoSegment(e, x0, y0, x1, y1, p.r + CRYO_RULES.dash.pad) < 0) continue;
     if (cryoElite(e)) { cryoEliteHit(e); continue; }
-    if (!cryoShatter(e)) continue;
+    e.cryoEnd = 'dash';
+    if (!cryoShatter(e)) { e.cryoEnd = null; continue; }
     count++; s.dashCount++; G.cryoStats.dashShatters++;
     const refund = Math.min(CRYO_RULES.dash.refund, CRYO_RULES.dash.refundCap - s.dashRefund);
     if (!cryoRefundChainDash(refund)) p.dashCd = Math.max(0, (p.dashCd || 0) - refund);
@@ -17662,7 +17683,7 @@ function cryoUpdate(worldDt, playerDt = worldDt) {
     if (!(e.cryoT > 0)) continue;
     const before = e.cryoT; e.cryoAge = (e.cryoAge || 0) + Math.min(before, worldDt); e.cryoT = Math.max(0, before - worldDt);
     if (e.dead) { cryoRecordLife(e); e.cryoT = 0; }
-    else if (e.cryoT <= 1e-9) cryoThaw(e, before);
+    else if (e.cryoT <= 1e-9) { e.cryoEnd = 'thaw'; cryoThaw(e, before); }
   }
   if (!(playerDt > 0) || !Number.isFinite(playerDt) || actFallFrozen()) return;
   if (s.spray) { s.spray.life -= playerDt; if (!(s.spray.life > 0)) s.spray = null; }
