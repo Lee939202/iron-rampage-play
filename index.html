@@ -3157,7 +3157,7 @@ const WDEF = {
   cord: { name: '导爆索', newOfferWeight: 1, icon: 'cord', evoWith: 'thruster', evoName: '烈焰绞索', evoDesc: '圈内燃起 2 秒火海，跨过燃烧的索也会受伤',
     lv: [{ trailSeconds: 4, dmg: 30, cd: 1.6 }, { trailSeconds: 4, dmg: 38, cd: 1.6 }, { trailSeconds: 4.4, dmg: 46, cd: 1.6 }, { trailSeconds: 4.4, dmg: 56, cd: 1.3 }, { trailSeconds: 4.8, dmg: 68, cd: 1.3 }],
     evo: { trailSeconds: 5.2, dmg: 90, cd: 1 },
-    ups: ['走过的路留下导爆索，绕一圈合拢就引爆圈内', '伤害 +8', '导爆索更长，圈得更大', '伤害提升，冷却缩短', '导爆索再加长，伤害提升'] },
+    ups: ['走过的路留下导爆索，碰到的虫会烧伤；绕一圈合拢引爆圈内', '伤害 +8', '导爆索更长，圈得更大', '伤害提升，冷却缩短', '导爆索再加长，伤害提升'] },
   snowball: { name: '滚虫球', newOfferWeight: 1, icon: 'snowball', evoWith: 'magnet', evoName: '深渊星球', evoDesc: '120 内的虫被吸向球；爆炸后留 3 秒碎甲地，敌人减速 40%',
     lv: [{ dmg: 8, cap: 44, grow: .8 }, { dmg: 11, cap: 48, grow: .8 }, { dmg: 14, cap: 52, grow: .8 }, { dmg: 17, cap: 58, grow: .8 }, { dmg: 20, cap: 64, grow: .8 }],
     evo: { dmg: 24, cap: 64, grow: 1 },
@@ -9745,7 +9745,7 @@ function debugRide(cmd) {
 }
 
 // ---- src/data/cord.js ----
-// 导爆索独立规则：距离采样、闭环门槛、引爆反馈与进化火海，不影响公共战斗数值
+// 导爆索独立规则：距离采样、闭环门槛、剪小圈、索身灼烧、引爆反馈与进化火海，不影响公共战斗数值
 const CORD_RULES = Object.freeze({
   sampleDistance: 12,
   maxPoints: 160,
@@ -9762,10 +9762,18 @@ const CORD_RULES = Object.freeze({
   fireKnock: 0,
   effectSeed: 0x434f5244,
   epsilon: 1e-7,
+  // 过小的圈当场剪掉；面积到最小圈这个比例以上才飘「圈太小」，躲弹抖出的小回环不提示，两次提示至少隔几秒
+  smallNoticeShare: .35,
+  smallNoticeGap: 2.5,
+  // 发光的索本身也烧虫：每只敌人碰到索（中心离索不超过自身半径 + reach）每 hitInterval 秒受一次合圈伤害 × damageMul，不击退
+  trail: Object.freeze({ damageMul: .2, hitInterval: .5, reach: 6 }),
+  hintKey: 'cord', hintTime: 6,
+  // 提示条最多两行（约 45 个字），再长会被截断
+  hint: '导爆索：走过的路留下索，虫碰到会烧伤；绕圈穿过自己的索，圈里全炸。索发白光的那段能收口',
 });
 
 // ---- src/game/cord.js ----
-// 导爆索：距离留索、闭环几何、圈内引爆和独立于装备的限时火海
+// 导爆索：距离留索、闭环几何、剪掉小圈、索身灼烧、圈内引爆和独立于装备的限时火海
 
 // 返回新段 a→b 上的交点及两段比例；共线重叠和零长段不构成一个新圈。
 function cordSegmentIntersection(a, b, c, d) {
@@ -9826,7 +9834,7 @@ function cordCanDamage() { return G?.state === 'playing' && G.player?.hp > 0 && 
 function cordRunEnded() { return !!G && (G.player?.hp <= 0 || G.endT > 0 || G.won || G.state === 'end'); }
 function initCordState() {
   G.cordEffects = []; G.cordEffectId = 0; G.cordEffectRandom = mulberry32(CORD_RULES.effectSeed);
-  G.cordStats = { closures: 0, enemiesPerLoop: [], totalEnclosed: 0, maxEnclosed: 0 };
+  G.cordStats = { closures: 0, enemiesPerLoop: [], totalEnclosed: 0, maxEnclosed: 0, cuts: 0, trailHits: 0 };
   for (const w of G.player?.weapons || []) if (w.id === 'cord') w.cord = null;
 }
 function cordClearEnded() {
@@ -9874,45 +9882,111 @@ function cordPrune(st) {
   while (st.points.length && st.points[0].t < cutoff) st.points.shift();
   if (st.points.length > CORD_RULES.maxPoints) st.points.splice(0, st.points.length - CORD_RULES.maxPoints);
 }
+// 新移动段 start→current 上按先后找第一个穿过的旧索：合格大圈直接给出；过小的圈交给调用方剪掉。
+function cordFindClosure(points, start, current) {
+  const cfg = CORD_RULES, crossings = [];
+  for (let i = points.length - 2; i >= 0; i--) {
+    if (cordSamePoint(points[i + 1], start)) continue;
+    const hit = cordSegmentIntersection(start, current, points[i], points[i + 1]);
+    if (!hit || hit.t <= cfg.epsilon) continue;
+    // 同一位置经过多次时只认最近的一段，不能把几个小圈累加成一个大圈。
+    if (crossings.some(c => Math.abs(c.hit.t - hit.t) <= cfg.epsilon)) continue;
+    crossings.push({ i, hit });
+  }
+  crossings.sort((a, b) => a.hit.t - b.hit.t);
+  for (const { i, hit } of crossings) {
+    const polygon = [{ x: hit.x, y: hit.y }];
+    for (const q of points.slice(i + 1)) if (!cordSamePoint(polygon[polygon.length - 1], q)) polygon.push({ x: q.x, y: q.y });
+    if (!cordSamePoint(polygon[polygon.length - 1], start)) polygon.push({ x: start.x, y: start.y });
+    if (cordSamePoint(polygon[polygon.length - 1], polygon[0])) polygon.pop();
+    const area = cordPolygonArea(polygon);
+    if (area + cfg.epsilon < cfg.minArea) return { small: { i, hit, area } };
+    if (cordSimplePolygon(polygon)) return { closure: polygon };
+  }
+  return null;
+}
+// 剪掉过小的圈：索退回交点、从交点接着铺，之后的大圈就不会因为里面套着小回环被判成自交。
+function cordCutLoop(st, small, start, current) {
+  const cfg = CORD_RULES, { i, hit, area } = small;
+  const point = { x: hit.x, y: hit.y, t: start.t + (current.t - start.t) * hit.t };
+  st.points.length = i + 1;
+  if (!cordSamePoint(st.points[i], point)) st.points.push(point);
+  st.distance = 0;
+  if (G.cordStats) G.cordStats.cuts = (G.cordStats.cuts || 0) + 1;
+  if (area >= cfg.minArea * cfg.smallNoticeShare && !(st.noticeT > st.clock)) {
+    st.noticeT = st.clock + cfg.smallNoticeGap;
+    floatText(hit.x, hit.y - 26, '圈太小', '235,205,160', 16, .7);
+  }
+  return point;
+}
+// 第一次铺索时提示怎么用；训练场不提示，只提示一次。
+function cordHintOnce() {
+  if (G.practice || !meta) return;
+  const hints = meta.hints && typeof meta.hints === 'object' ? meta.hints : (meta.hints = {});
+  if (hints[CORD_RULES.hintKey] === true) return;
+  hints[CORD_RULES.hintKey] = true; saveMeta();
+  toast({ text: CORD_RULES.hint, t: CORD_RULES.hintTime, priority: 3 });
+}
+function cordSegmentClosest(p, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y, len = dx * dx + dy * dy;
+  const t = len > 0 ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len)) : 0;
+  return { x: a.x + dx * t, y: a.y + dy * t };
+}
+function cordBurnEnemy(e, ctx) {
+  if (e.dead || e.entering || (e.cordTrailT ?? -Infinity) > ctx.now + CORD_RULES.epsilon || !cordCanDamage()) return;
+  const reach = e.r + CORD_RULES.trail.reach;
+  if (cordSegmentDistanceSq(e, ctx.a, ctx.b) > reach * reach) return;
+  e.cordTrailT = ctx.now + ctx.interval;
+  if (G.cordStats) G.cordStats.trailHits = (G.cordStats.trailHits || 0) + 1;
+  cordHit(e, ctx.damage, cordSegmentClosest(e, ctx.a, ctx.b), 0);
+}
+// 发光的索本身也烧虫：逐段查网格（敌人按半径登记进所有覆盖的格子），每只敌人每 hitInterval 秒最多被烧一次，不击退。
+function cordBurnTrail(st, L, dmgMul, cdMul) {
+  const cfg = CORD_RULES.trail, points = st.points;
+  if (!points.length || !st.head || !cordCanDamage()) return;
+  const ctx = st.burnCtx || (st.burnCtx = { a: null, b: null });
+  ctx.now = actionClock(); ctx.damage = L.dmg * dmgMul * cfg.damageMul; ctx.interval = cfg.hitInterval * cdMul;
+  for (let i = 0; i < points.length && cordCanDamage(); i++) {
+    const a = points[i], b = i + 1 < points.length ? points[i + 1] : st.head;
+    ctx.a = a; ctx.b = b;
+    query((a.x + b.x) / 2, (a.y + b.y) / 2, Math.hypot(b.x - a.x, b.y - a.y) / 2 + cfg.reach, cordBurnEnemy, ctx);
+  }
+}
 function updateCordWeapon(w, dt, L, dmgMul = 1, cdMul = 1) {
   if (cordRunEnded()) { cordClearEnded(); return; }
   if (!cordCanDamage() || !(dt > 0) || !Number.isFinite(dt)) return;
   if (!G.cordStats) initCordState();
   const p = G.player, cfg = CORD_RULES;
+  if (!w.cord) cordHintOnce();
   const st = w.cord || (w.cord = { points: [], head: null, clock: 0, distance: 0, trailSeconds: L.trailSeconds });
   st.clock += dt; st.trailSeconds = L.trailSeconds * (p.overT > 0 ? cfg.overTrailMul : 1);
   cordPrune(st);
   const current = { x: p.x, y: p.y, t: st.clock };
   if (w.cd > 0) { w.cd = Math.max(0, w.cd - dt); st.points.length = 0; st.head = current; st.distance = 0; return; }
   if (!st.head || !st.points.length) { st.head = current; st.points.push(current); st.distance = 0; return; }
-  const previous = st.head, dx = current.x - previous.x, dy = current.y - previous.y, length = Math.hypot(dx, dy);
-  if (length <= cfg.epsilon) { st.head = current; return; }
-  // 先用完整的新移动段查交，再补距离采样点：冲刺跨过多条索时仍能命中第一个有效圈。
-  let closure = null; const seenCrossings = [];
-  for (let i = st.points.length - 2; i >= 0; i--) {
-    if (cordSamePoint(st.points[i + 1], previous)) continue;
-    const hit = cordSegmentIntersection(previous, current, st.points[i], st.points[i + 1]);
-    if (!hit || hit.t <= cfg.epsilon || (closure && hit.t >= closure.t - cfg.epsilon)) continue;
-    // 同一位置经过多次时只认最近的一段，不能把几个小圈累加成一个大圈。
-    if (seenCrossings.some(t => Math.abs(t - hit.t) <= cfg.epsilon)) continue;
-    seenCrossings.push(hit.t);
-    const polygon = [{ x: hit.x, y: hit.y }];
-    for (const q of st.points.slice(i + 1)) if (!cordSamePoint(polygon[polygon.length - 1], q)) polygon.push({ x: q.x, y: q.y });
-    if (!cordSamePoint(polygon[polygon.length - 1], previous)) polygon.push({ x: previous.x, y: previous.y });
-    if (cordSamePoint(polygon[polygon.length - 1], polygon[0])) polygon.pop();
-    if (cordPolygonArea(polygon) + cfg.epsilon < cfg.minArea || !cordSimplePolygon(polygon)) continue;
-    closure = { t: hit.t, points: polygon };
+  let start = st.head;
+  if (Math.hypot(current.x - start.x, current.y - start.y) > cfg.epsilon) {
+    // 先用完整的新移动段查交，再补距离采样点：冲刺跨过多条索时仍能命中第一个有效圈。
+    // 过小的圈当场剪掉、从交点接着找，每剪一次索头都沿本段前进，次数有上限。
+    for (let cuts = 0; cuts <= cfg.maxPoints; cuts++) {
+      const found = cordFindClosure(st.points, start, current);
+      if (found?.closure) { cordDetonate(w, found.closure, L, dmgMul, cdMul); return; }
+      if (!found?.small) break;
+      start = cordCutLoop(st, found.small, start, current);
+    }
+    const dx = current.x - start.x, dy = current.y - start.y, length = Math.hypot(dx, dy);
+    let next = cfg.sampleDistance - st.distance;
+    // 单帧超长移动最多保留末尾 maxPoints 个采样，避免异常速度让循环无界。
+    const count = Math.max(0, Math.floor((length - next) / cfg.sampleDistance) + 1);
+    if (count > cfg.maxPoints) { next += (count - cfg.maxPoints) * cfg.sampleDistance; st.points.length = 0; }
+    for (let offset = next; offset <= length + cfg.epsilon; offset += cfg.sampleDistance) {
+      const f = length > 0 ? Math.min(1, offset / length) : 1;
+      st.points.push({ x: start.x + dx * f, y: start.y + dy * f, t: start.t + (current.t - start.t) * f });
+    }
+    st.distance = (st.distance + length) % cfg.sampleDistance; cordPrune(st);
   }
-  if (closure) { cordDetonate(w, closure.points, L, dmgMul, cdMul); return; }
-  let next = cfg.sampleDistance - st.distance;
-  // 单帧超长移动最多保留末尾 maxPoints 个采样，避免异常速度让循环无界。
-  const count = Math.max(0, Math.floor((length - next) / cfg.sampleDistance) + 1);
-  if (count > cfg.maxPoints) { next += (count - cfg.maxPoints) * cfg.sampleDistance; st.points.length = 0; }
-  for (let offset = next; offset <= length + cfg.epsilon; offset += cfg.sampleDistance) {
-    const f = Math.min(1, offset / length);
-    st.points.push({ x: previous.x + dx * f, y: previous.y + dy * f, t: previous.t + (current.t - previous.t) * f });
-  }
-  st.distance = (st.distance + length) % cfg.sampleDistance; st.head = current; cordPrune(st);
+  st.head = current;
+  cordBurnTrail(st, L, dmgMul, cdMul);
 }
 function cordTouchesFire(a, b, effect) {
   const box = effect.bounds, width = CORD_RULES.edgeWidth;
@@ -20419,13 +20493,37 @@ function drawBattlefieldPropMarkers(c, props, player, options = {}) {
   c.restore();
 }
 
+// ---- src/game/cord-ready.js ----
+// 导爆索可收口判断：纯几何，只读索点，画面和测试共用，不依赖对局模块
+
+// 每段索若从索头这边被穿过、能不能围出合格大圈：按顶点到索头的折线算有向面积，给画面提示「亮的那段可以收口」。
+// 返回的数组第 i 项为真表示第 i 段（points[i]→points[i+1]）可收口；out 可复用以免每帧分配。
+function cordClosableSegments(points, head, out = []) {
+  const n = points?.length || 0, minArea = CORD_RULES.minArea * 2;
+  out.length = Math.max(0, n - 1);
+  if (n < 3 || !head) { out.fill(false); return out; }
+  // tail(i) = Σ cross(P_k, P_k+1)（k=i..n-2）+ cross(P_n-1, H)；2·A(i) = tail(i) + cross(H, P_i)
+  let tail = points[n - 1].x * head.y - head.x * points[n - 1].y, next = 0;
+  for (let i = n - 2; i >= 0; i--) {
+    const a = points[i], b = points[i + 1];
+    tail += a.x * b.y - b.x * a.y;
+    const here = tail + head.x * a.y - a.x * head.y;
+    out[i] = (here >= minArea && next >= minArea) || (here <= -minArea && next <= -minArea);
+    next = here;
+  }
+  return out;
+}
+
 // ---- src/render/cord.js ----
-// 导爆索绘制：渐隐路径、闭环瞬闪与限时火海，不消耗战斗随机数
+// 导爆索绘制：渐隐路径、可收口段发亮、闭环瞬闪与限时火海，不消耗战斗随机数
 
 const CORD_PAINT = Object.freeze({
   normal: '#ffc16d', evolved: '#ffe4a3', rim: '#ff8f36', dark: '#30180e',
   fire: '#f36724', flash: '#ffe3a7', ashes: '#86664c',
+  // 可收口段：白芯加金色外光，按索自身时钟呼吸闪烁（每秒弧度）
+  ready: '#ffffff', readyRim: '#ffd84a', readyPulse: 9,
 });
+const cordReadyScratch = [];
 function cordPaintPolygon(c, points) {
   c.beginPath(); c.moveTo(points[0].x, points[0].y);
   for (let i = 1; i < points.length; i++) c.lineTo(points[i].x, points[i].y);
@@ -20485,6 +20583,7 @@ function drawCordEffects(c, game, options = {}) {
     const st = weapon.cord;
     if (weapon.id !== 'cord' || !st?.points?.length || weapon.cd > 0) continue;
     const points = st.points, count = points.length + (st.head ? 1 : 0), color = weapon.evo ? CORD_PAINT.evolved : CORD_PAINT.normal;
+    const ready = cordClosableSegments(points, st.head, cordReadyScratch), pulse = .5 + .5 * Math.sin((st.clock || 0) * CORD_PAINT.readyPulse);
     for (let i = 1; i < count; i++) {
       const a = points[i - 1], b = i < points.length ? points[i] : st.head;
       if (!a || !b || Math.hypot(b.x - a.x, b.y - a.y) < .01 || !cordPaintVisible(a, b, visible)) continue;
@@ -20492,6 +20591,11 @@ function drawCordEffects(c, game, options = {}) {
       c.strokeStyle = CORD_PAINT.dark; c.lineWidth = 4.5 / zoom; c.globalAlpha = alpha * .8; cordPaintSegment(c, a, b);
       if (detail > 0 && glow > .2) { c.strokeStyle = CORD_PAINT.rim; c.lineWidth = 7 / zoom; c.globalAlpha = alpha * .13 * glow; cordPaintSegment(c, a, b); }
       c.strokeStyle = color; c.lineWidth = (weapon.evo ? 2.8 : 2) / zoom; c.globalAlpha = .2 + alpha * .8; cordPaintSegment(c, a, b);
+      // 从这段穿过去就能围出够大的圈：叠一层发亮的白芯，提示「在这里收口」。
+      if (i < points.length && ready[i - 1]) {
+        if (detail > 0 && glow > .2) { c.strokeStyle = CORD_PAINT.readyRim; c.lineWidth = 9 / zoom; c.globalAlpha = (.18 + .22 * pulse) * glow; cordPaintSegment(c, a, b); }
+        c.strokeStyle = CORD_PAINT.ready; c.lineWidth = 3.2 / zoom; c.globalAlpha = .6 + .4 * pulse; cordPaintSegment(c, a, b);
+      }
     }
   }
   c.restore();
